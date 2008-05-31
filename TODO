@@ -1,0 +1,61 @@
+- SQL schema should support folders, i.e., user can group feeds into
+  categories. By default, all feeds go in a " root" folder (the
+  leading space marks this as special; strip space from user-defined
+  folders).
+- User should also be able to drag feeds around, so they're listed in
+  arbitrary order. Need an "nth" field somewhere, giving the numeric
+  order in which the feed is listed.
+	Ideally, it should be possible to have a feed in multiple
+  folders (e.g., Pharyngula goes in both "Science" and "Atheism", or
+  Daily Kos goes in both "Politics" and "Stuff I Read Daily"), so need
+  a separate entry (and nth field) for each instance. And each user.
+- Folders can contain subfolders, and so on. So each folder needs a
+  pointer to its parent folder.
+- Item states: each post/article/item can be in one of several states:
+	new	Never seen. Added since the last time any articles
+		  were read
+	unread	Presented to the user at least once, but not marked as
+		  read.
+	read	Marked as read, but not yet deleted.
+	deleted	Deleted, but not yet expunged from database. This may
+		  or may not be useful.
+- How to deal with password-protected feeds (e.g., LiveJournal feeds,
+  which may include friends-only items)?
+	Curl plugin has CURLOPT_HTTPAUTH, which might do the trick.
+  Perhaps set this to CURLAUTH_ANYSAFE.
+	CURLOPT_USERPWD can be set to the username and password to use.
+- LiveJournal plugin (or something): would be nice to be able to say
+  "I'm user So-and-so at LiveJournal" (or other site using the LJ
+  code) and have it automatically subscribe to your friends feeds
+  there.
+	Need to somehow keep track of the fact that these feeds were
+  auto-generated. If I change my password on LiveJournal, I should
+  only have to change it once (in the LJ plugin config) and have the
+  engine figure out that the password for all the LJ-friends feeds has
+  changed as well.
+- Multi-user support: this would be nice. It would also be nice if the
+  back-end could avoid duplicating information, i.e., not store two
+  records for the same article.
+	However, for now, there is enough user-specific information in
+  the schema for both feeds and items that this isn't practical. Start
+  out with naive implementation, and see if anyone starts using it on
+  a multi-user system.
+- User authentication: should this be done here, or in .htaccess?
+- See what fields tend to come with the various RSS-like types, and
+  see which ones ought to be included in the database.
+- Deal with malformed text in the RSS feed, e.g., unescaped or
+  poorly-escaped entities, and the like.
+- Would be nice if engine could update multiple feeds at the same
+  time, so that a single unresponsive host doesn't cause a long wait.
+	Use curl_multi_*, to fetch multiple feeds at once.
+- Smarty(?) PHP templates for different skins: full-featured browser
+  vs. palmtop vs. phone, etc.
+- Passwords: need somewhere to store them (outside www tree,
+  preferably), some way of getting them to the server securely.
+- Killfile: automatically mark as read messages that match certain
+  criteria.
+- Smart groups: like iTunes smart playlists, or killfiles (above):
+  automatically populate a group based on user-specified criteria.
+	In fact, ordinary feeds could be implemented with this
+  mechanism: the ordinary dKos article list could simply be the set of
+  all articles that come from the dKos feed.
