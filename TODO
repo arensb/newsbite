@@ -54,8 +54,42 @@
   preferably), some way of getting them to the server securely.
 - Killfile: automatically mark as read messages that match certain
   criteria.
+	Perhaps this should have a scoring system or something: I'd
+  like to killfile the stories on dKos that match /\w\w-\d\d/ (because
+  those talk about specific senate/house races that I generally don't
+  care about), but show the ones that match /MD-\d\d/, since I do care
+  about those. Or kill the "diary rescue" threads, unless they contain
+  "arensb".
 - Smart groups: like iTunes smart playlists, or killfiles (above):
   automatically populate a group based on user-specified criteria.
 	In fact, ordinary feeds could be implemented with this
   mechanism: the ordinary dKos article list could simply be the set of
   all articles that come from the dKos feed.
+- Don't want to automatically display a feed's image: some are good
+  (like LJ icons), others are annoying, like FeedBurner feeds that
+  just have a "Feed powered by FeedBurner" image.
+- For each feed, give the option of displaying just the image (if
+  any), the title, or both.
+- Should feed images be cached locally? How to tell when they're out
+  of date?
+- For each feed and item, should store unrecognized elements
+  (especially in specialized namespaces like "lj") separately, in case
+  a plugin can make use of it.
+	For instance, an LJ plugin can show who posted an article in a
+  community journal, or display appropriate mood and visibility icons.
+- Make curl (and other modules) optional: use references-to-functions
+  to pick the appropriate function to call:
+	function fetch_rss_curl(...) { ... }
+	$fetch_rss = fetch_rss_curl;
+	$fetch_rss($url);
+- Provide hooks for various plugins to do their thing.
+- Would be nice to have "(more)" link at the bottom, for items where
+  description/summary isn't the whole article.
+	Should also have "mark as read" buttons at top and bottom of
+  article: top for when the subject is enough to know you want to skip
+  it, and bottom for marking it as done after you've read it.
+- In Ajax mode, marking an item as read should tell the server to
+  delete it now, so that if you switch from workstation to laptop,
+  your feeds are already up to date.
+- Automatic cleanup: need to periodically delete old items. How? When?
+	Should cron be able to do this?
