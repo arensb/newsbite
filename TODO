@@ -77,6 +77,32 @@
   a plugin can make use of it.
 	For instance, an LJ plugin can show who posted an article in a
   community journal, or display appropriate mood and visibility icons.
+
+	AFAICT getDocNamespaces() returns the namespaces that are
+  declared within a document, while getNamespaces() returns the ones
+  that are actually used. Of course, in a well-formed document, any
+  namespace that's used will also be declared.
+	Experimentation shows that if there's an element with an
+  undeclared namespace, it won't show up in either list. So don't use
+  those. But if a declaration is buried deep within the document,
+  it'll show up in getDocNamespaces(true).
+	Perhaps the sensible thing to do is to look at three levels:
+  the document, feed, and item level; see which namespaces are used,
+  and for each one, see whether there's a plugin that'll handle that
+  namespace (as defined by its DTD).
+	Some namespaces seem to be fairly common, e.g.
+	xmlns:content="http://purl.org/rss/1.0/modules/content/"
+  Should have built-in handlers for these. Also ought to have plugins
+  to add one's own handlers (hooks).
+
+	Also, note that elements in one namespace can have attributes
+  in another, e.g.:
+	<rss xmlns="http://www.foo.com/"
+	     xmlns:bar="http://www.bar.com/">
+	<channel>
+	  <item bar:type="article">
+	    <!-- "item" is in namespace "", but "type" is in namespace
+	    "bar" -->
 - Make curl (and other modules) optional: use references-to-functions
   to pick the appropriate function to call:
 	function fetch_rss_curl(...) { ... }
@@ -93,3 +119,11 @@
   your feeds are already up to date.
 - Automatic cleanup: need to periodically delete old items. How? When?
 	Should cron be able to do this?
+- Perhaps extend Smarty, so don't need to set the paths every time.
+- Need a good way to abort in case of error.
+- Tool to import feeds and items from existing Feed on
+  Feeds/Monkeychow database.
+- In common.inc (or something), need a good function to abort with an
+  error.
+- Use "REPLACE INTO" in MySQL to either update an existing record, or
+  create a new one.
