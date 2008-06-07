@@ -1,0 +1,23 @@
+- Install the required software and modules:
+	- PHP 5.x (might work with earlier versions)
+	- PHP Curl
+	- PHP SimpleXML
+	- MySQL (tested with 5.0)
+	- Smarty (bundled with this package)
+	- Web server (tested with Apache 2.2)
+- Create the database:
+	In MySQL, as the DBA:
+	> create database newsbite character set 'utf8';
+	> grant delete, insert, select, update
+	  on newsbite.*
+	  to `newsbite`@`localhost`
+	  identified by "password";
+	(Obviously, substitute values as appropriate.)
+
+	In shell, create the database tables:
+	% mysql -uDBA newsbite < schema.sql
+	(Replace "DBA" with whatever your DBA account is.)
+
+- Edit "config.php":
+	- Fill in database access parameters.
+	- Set $SMARTY_DIR to the directory containing "Smarty.class.php".

@@ -119,11 +119,18 @@
   your feeds are already up to date.
 - Automatic cleanup: need to periodically delete old items. How? When?
 	Should cron be able to do this?
+	When updating feed is probably a good time.
 - Perhaps extend Smarty, so don't need to set the paths every time.
 - Need a good way to abort in case of error.
 - Tool to import feeds and items from existing Feed on
   Feeds/Monkeychow database.
 - In common.inc (or something), need a good function to abort with an
   error.
-- Use "REPLACE INTO" in MySQL to either update an existing record, or
-  create a new one.
+- Rewrite the XML-parsing code using XMLReader or XML Parser.
+- Rename "config.php" to "config.inc".
+- Better separation between public and private files: *.php scripts
+  need to be in DocumentRoot so browser can find them. *.inc files,
+  smarty files, and (potentially) plugins need not be. And since
+  "config.inc" has database password and such, it's a good idea to put
+  it outside of DocumentRoot, in case of misconfigured .htaccess or
+  something.

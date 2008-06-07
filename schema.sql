@@ -1,0 +1,97 @@
+/* CREATE TABLE users (
+);
+*/
+
+CREATE TABLE options (
+	name		CHAR(64)	NOT NULL,
+	value		VARCHAR(255),
+	PRIMARY KEY(name)
+);
+
+CREATE TABLE feed_options (
+	feed_id		INT		NOT NULL,
+	name		CHAR(64)	NOT NULL,
+	value		VARCHAR(255),
+	PRIMARY KEY(feed_id, name)
+);
+
+/* groups
+ * For grouping feeds into nested groups.
+ * 'parent' says which group this group belongs to. The root group has
+ * id 0.
+ */
+CREATE TABLE groups (
+	id		INT		NOT NULL AUTO_INCREMENT,
+	parent		INT		NOT NULL,
+	name		VARCHAR(127),
+	PRIMARY KEY(id)
+);
+
+/* XXX - Need another table to specify which feeds go in which groups
+ * (plural) and the relative order within each group.
+ */
+
+CREATE TABLE feeds (
+	id		INT		NOT NULL AUTO_INCREMENT,
+					# Numeric ID
+	title		VARCHAR(127),	# Official title of feed
+	subtitle	VARCHAR(127),	# Official subtitle of feed
+	nickname	VARCHAR(127),	# User-specified nickname (when the title blows)
+	url		VARCHAR(255),	# Site URL
+	feed_url	VARCHAR(255),	# RSS feed URL
+	description	TINYTEXT,	# Brief description of the feed
+	last_update	DATETIME,	# When this feed was last updated
+					# XXX - Should this be a timestamp?
+	ttl		TIME,		# Time to live
+	image		VARCHAR(255),	# URL to image to use
+#	skip_hours	SET('0','1', ..., '23'),	# Hours when not to refresh
+#	skip_days	SET('Sunday', 'Monday',	# Days when not to refresh
+#			'Tuesday', 'Wednesday', Thursday', 'Friday',
+#			'Saturday'),
+	username	char(32),	# Username, for authentication
+	passwd		char(32),	# Password, for authentication
+	PRIMARY KEY(id)
+);
+
+/* items
+ * An item is a story or article in a feed.
+ */
+CREATE TABLE items (
+	id		INT		NOT NULL AUTO_INCREMENT,
+					# Unique identifier for this item
+					# XXX - Should we use GUID, in case
+					# the same article shows up in two
+					# different feeds?
+	feed_id		INT NOT NULL,	# ID of feed
+	url		VARCHAR(127),	# Link to the full item
+	title		TINYTEXT,	# Title of the item
+	summary		TEXT,		# Summary of the item
+	content		TEXT,		# Full content of the item
+	author		VARCHAR(127),	# Author of the item
+			# XXX - Should this be broken down into author name,
+			# URL, and email?
+	category	VARCHAR(255),	# Categories the story goes in
+	comment_url	VARCHAR(127),	# URL for page with comments
+	comment_rss	VARCHAR(127),	# URL for RSS feed for comments
+	guid		VARCHAR(127),	# Globally-unique ID.
+					# XXX - Should we use this instead
+					# of id?
+	pub_date	DATETIME,	# Publication date
+	last_update	DATETIME,	# Time when item was last updated
+					# XXX - Should this be a timestamp?
+	# State of the item:
+	state		ENUM('new',	# Never seen
+			     'unread',	# Shown once, but unread
+			     'read',	# Seen it, read it
+			     'updated',	# Updated since last read
+			     'deleted'),	# Deleted
+	PRIMARY KEY(id),
+	UNIQUE KEY(feed_id, guid)	# Having (feed_id, guid)
+					# instead of (guid) may be
+					# overkill, but it's to ensure
+					# that if two feeds have the
+					# same item (e.g., one
+					# contains the other), then
+					# they'll be considered
+					# separate items.
+);

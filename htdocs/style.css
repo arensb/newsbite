@@ -1,0 +1,25 @@
+/* Main stylesheet
+ */
+body {
+	background-color:	white;
+}
+
+/* Index of feeds */
+table#feeds {
+	background-color:	cyan;
+	border-width:		1px;
+	border-color:		black;
+}
+
+table#feeds tr {
+	border:		1px dotted black;
+}
+
+table#feeds tr td {
+	border:		1px dashed red;
+}
+
+/* Feed view */
+.item {
+	margin-top:		2em;
+}
