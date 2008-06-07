@@ -27,7 +27,8 @@ $smarty->compile_dir	= SMARTY_PATH . "templates_c";
 $smarty->cache_dir	= SMARTY_PATH . "cache";
 $smarty->config_dir	= SMARTY_PATH . "configs";
 
-$smarty->assign('feed', $feed['items']);
+$smarty->assign('feed', $feed);
+$smarty->assign('items', $feed['items']);
 $smarty->display("view.tpl");
 db_disconnect();
 
