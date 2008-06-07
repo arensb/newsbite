@@ -7,12 +7,13 @@ require_once(SMARTY_DIR . "Smarty.class.php");
 $feed_id = $_REQUEST["id"];
 # XXX - Error-checking: make sure '$feed_is' is an integer.
 
-if (is_numeric($feed_id) && is_int($feed_id))
+if (is_numeric($feed_id) && is_int($feed_id+0))
 	update_feed($feed_id);
 elseif ($feed_id == "all")
 	update_all_feeds();
 else {
 	// XXX - Abort with an error message.
+	echo "Invalid feed id: [$feed_id]\n";
 }
 
 // XXX - Put everything that follows in a single 'update_feed()' function
@@ -22,14 +23,17 @@ else {
  */
 function update_feed($feed_id)
 {
+echo "Inside update_feed($feed_id)<br/>\n";
 	/* Get the feed from the database */
 	$feed = db_get_feed($feed_id);
 	if (!$feed)
 	{
 		// XXX - Better error-reporting
 		echo "No such feed: $feed_id<br/>\n";
-		exit(0);
+		exit(1);
 	}
+echo "<h3>Updating feed [$feed[title]]</h3>\n";
+#print_r($feed);
 
 	/* Initialize Curl */
 	// XXX - Use curl_multi_*() to fetch multiple URLs at once.
@@ -88,7 +92,7 @@ function update_feed($feed_id)
 	foreach ($feed['items'] as $item)
 	{
 echo "Need to update item: [$item[title]]<br/>\n";
-echo "<pre>\$item: ["; print_r($item); echo "]\n</pre>\n<br/>\n";
+#echo "<pre>\$item: ["; print_r($item); echo "]\n</pre>\n<br/>\n";
 
 		// This query may look long and redundant, but
 		// basically it means:
@@ -129,7 +133,6 @@ EOT;
 		else
 			$build_time = time();
 
-		global $feed_id;
 		$stmt->bind_param("dsssssssssdd" .
 				  "ssssssssdd",
 				  // Values for new items
@@ -160,10 +163,12 @@ EOT;
 				  $build_time
 			);
 		$err = $stmt->execute();
+if ($err != 11)
+echo "<b>stmt-&gt;execute returned [$err]</b><br/>\n";
 		if ($err)
-			echo "OK<br/>\n";
+			echo "OK (", print_r($err), ") errno ", $sth->errno, ", error [", $sth->error, "]<br/>\n";
 		else
-			echo "Error ", $sth->errno, ": \"", $sth->error, "\"<br/>\n";
+			echo "<b>Error: ", $sth->errno, ": \"", $sth->error, "\"</b><br/>\n";
 	}
 }
 
