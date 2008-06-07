@@ -98,8 +98,7 @@ EOT
  */
 // XXX - Should take arguments to limit what is returned, e.g., only
 // latest 50 items, only new/unread items, etc.
-// XXX - $feed should probably be passed by reference.
-function db_get_feed_items($feed)
+function db_get_feed_items(&$feed)
 {
 	/* Figure out whether we need to get the 'feeds' entry */
 	if (is_numeric($feed) && is_int($feed))
