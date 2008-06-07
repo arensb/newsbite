@@ -20,6 +20,48 @@ table#feeds tr td {
 }
 
 /* Feed view */
+
+/* Icon or image for the feed */
+.feed_icon {
+	float:			right;
+}
+
+/* Descriptive blurb about the feed */
+.feed_description {
+	border:			1px solid orange;
+	background-color:	yellow;
+}
+
+/* Overall box containing an item */
 .item {
 	margin-top:		2em;
+	clear:			both;
+}
+
+/* Header box at top of item */
+.item_header {
+	border:			1px solid blue;
+	background-color:	LightBlue;
+}
+
+/* Title of item */
+.item_title {
+	font-family:		Times, serif;
+	font-size:		180%;
+	font-weight:		bold;
+}
+
+/* Summary of item */
+.item_summary {
+	border:			1px solid red;
+}
+
+/* Content of item */
+.item_content {
+	border:			1px solid blue;
+}
+
+/* Control box at bottom of item */
+.item_footer {
+	background-color:	pink;
 }
