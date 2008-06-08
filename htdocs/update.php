@@ -5,7 +5,6 @@ require_once("rss.inc");
 require_once(SMARTY_DIR . "Smarty.class.php");
 
 $feed_id = $_REQUEST["id"];
-# XXX - Error-checking: make sure '$feed_is' is an integer.
 
 if (is_numeric($feed_id) && is_int($feed_id+0))
 	update_feed($feed_id);
@@ -16,7 +15,6 @@ else {
 	echo "Invalid feed id: [$feed_id]\n";
 }
 
-// XXX - Put everything that follows in a single 'update_feed()' function
 /* update_feed
  * Update a feed: fetch the RSS, parse it, and add/update items in the
  * database.
@@ -85,10 +83,31 @@ echo "<h3>Updating feed [$feed[title]]</h3>\n";
 	/* Parse the feed */
 	$feed = parse_feed($feed_text);
 
-	// XXX - Delete old items (> 90 days?) from feed
+	/* Delete old items from database */
+	// XXX - Should this be put at the end, for feeds that have
+	// items older than $AUTODELETE_DAYS?
+	$sth = db_connect();
+
+	global $AUTODELETE_DAYS;
+	if ($AUTODELETE_DAYS != 0)
+	{
+		$query = <<<EOT
+DELETE FROM	items
+WHERE		feed_id = ?
+  AND		last_update < NOW() - INTERVAL ? DAY
+EOT;
+		$stmt = $sth->prepare($query);
+			// XXX - Error-checking
+		$err = $stmt->bind_param("dd",
+				  $feed_id,
+				  $AUTODELETE_DAYS);
+			// XXX - Error-checking
+		$err = $stmt->execute();
+			// XXX - Error-checking
+echo "Deleted [", $stmt->affected_rows, "] items.<br/>\n";
+	}
 
 	/* Add/replace the items in the database. */
-	$sth = db_connect();
 	foreach ($feed['items'] as $item)
 	{
 echo "Need to update item: [$item[title]]<br/>\n";
