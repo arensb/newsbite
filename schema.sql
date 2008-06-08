@@ -41,7 +41,6 @@ CREATE TABLE feeds (
 	feed_url	VARCHAR(255),	# RSS feed URL
 	description	TINYTEXT,	# Brief description of the feed
 	last_update	DATETIME,	# When this feed was last updated
-					# XXX - Should this be a timestamp?
 	ttl		TIME,		# Time to live
 	image		VARCHAR(255),	# URL to image to use
 #	skip_hours	SET('0','1', ..., '23'),	# Hours when not to refresh
@@ -69,16 +68,13 @@ CREATE TABLE items (
 	content		TEXT,		# Full content of the item
 	author		VARCHAR(127),	# Author of the item
 			# XXX - Should this be broken down into author name,
-			# URL, and email?
+			# URL, and email? Probably yes.
 	category	VARCHAR(255),	# Categories the story goes in
 	comment_url	VARCHAR(127),	# URL for page with comments
 	comment_rss	VARCHAR(127),	# URL for RSS feed for comments
 	guid		VARCHAR(127),	# Globally-unique ID.
-					# XXX - Should we use this instead
-					# of id?
 	pub_date	DATETIME,	# Publication date
 	last_update	DATETIME,	# Time when item was last updated
-					# XXX - Should this be a timestamp?
 	# State of the item:
 	state		ENUM('new',	# Never seen
 			     'unread',	# Shown once, but unread
