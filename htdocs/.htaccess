@@ -1,0 +1,6 @@
+<IfModule mod_php5.c>
+	php_value include_path ".:/folks/arensb/proj/newsbite/trunk/lib"
+</IfModule>
+<IfModule mod_php4.c>
+	php_value include_path ".:/folks/arensb/proj/newsbite/trunk/lib"
+</IfModule>
