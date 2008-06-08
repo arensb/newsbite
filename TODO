@@ -116,13 +116,6 @@
 - In common.inc (or something), need a good function to abort with an
   error.
 - Rewrite the XML-parsing code using XMLReader or XML Parser.
-- Rename "config.php" to "config.inc".
-- Better separation between public and private files: *.php scripts
-  need to be in DocumentRoot so browser can find them. *.inc files,
-  smarty files, and (potentially) plugins need not be. And since
-  "config.inc" has database password and such, it's a good idea to put
-  it outside of DocumentRoot, in case of misconfigured .htaccess or
-  something.
 - Nokia N810 browser identifies itself as:
   "Mozilla/5.0 (X11; U; Linux armv6l; en-US; rv:1.9a6pre) Gecko/20071128 Firefox/3.0a1 Tablet browser 0.2.2 RX-34+RX-44_2008SE_2.2007.51-3"
 
