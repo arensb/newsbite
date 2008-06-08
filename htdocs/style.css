@@ -4,7 +4,9 @@ body {
 	background-color:	white;
 }
 
-/* Index of feeds */
+/*
+ * Index of feeds
+ */
 table#feeds {
 	background-color:	cyan;
 	border-width:		1px;
@@ -19,7 +21,9 @@ table#feeds tr td {
 	border:		1px dashed red;
 }
 
-/* Feed view */
+/*
+ * Feed view
+ */
 
 /* Icon or image for the feed */
 .feed_icon {
@@ -42,11 +46,12 @@ table#feeds tr td {
 .item_header {
 	border:			1px solid blue;
 	background-color:	LightBlue;
+	padding:		0.5em;
 }
 
 /* Title of item */
 .item_title {
-	font-family:		Times, serif;
+	font-family:		Arial, sans-serif;
 	font-size:		180%;
 	font-weight:		bold;
 }
@@ -54,11 +59,15 @@ table#feeds tr td {
 /* Summary of item */
 .item_summary {
 	border:			1px solid red;
+	font-family:		Times, serif;
+	padding:		0.5em;
 }
 
 /* Content of item */
 .item_content {
 	border:			1px solid blue;
+	font-family:		Times, serif;
+	padding:		0.5em;
 }
 
 /* Control box at bottom of item */
