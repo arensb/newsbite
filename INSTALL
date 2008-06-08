@@ -18,6 +18,6 @@
 	% mysql -uDBA newsbite < schema.sql
 	(Replace "DBA" with whatever your DBA account is.)
 
-- Edit "config.php":
+- Edit "config.inc":
 	- Fill in database access parameters.
 	- Set $SMARTY_DIR to the directory containing "Smarty.class.php".
