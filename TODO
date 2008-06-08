@@ -19,11 +19,6 @@
 	read	Marked as read, but not yet deleted.
 	deleted	Deleted, but not yet expunged from database. This may
 		  or may not be useful.
-- How to deal with password-protected feeds (e.g., LiveJournal feeds,
-  which may include friends-only items)?
-	Curl plugin has CURLOPT_HTTPAUTH, which might do the trick.
-  Perhaps set this to CURLAUTH_ANYSAFE.
-	CURLOPT_USERPWD can be set to the username and password to use.
 - LiveJournal plugin (or something): would be nice to be able to say
   "I'm user So-and-so at LiveJournal" (or other site using the LJ
   code) and have it automatically subscribe to your friends feeds
@@ -41,8 +36,6 @@
   out with naive implementation, and see if anyone starts using it on
   a multi-user system.
 - User authentication: should this be done here, or in .htaccess?
-- See what fields tend to come with the various RSS-like types, and
-  see which ones ought to be included in the database.
 - Deal with malformed text in the RSS feed, e.g., unescaped or
   poorly-escaped entities, and the like.
 - Would be nice if engine could update multiple feeds at the same
@@ -50,8 +43,6 @@
 	Use curl_multi_*, to fetch multiple feeds at once.
 - Smarty(?) PHP templates for different skins: full-featured browser
   vs. palmtop vs. phone, etc.
-- Passwords: need somewhere to store them (outside www tree,
-  preferably), some way of getting them to the server securely.
 - Killfile: automatically mark as read messages that match certain
   criteria.
 	Perhaps this should have a scoring system or something: I'd
@@ -70,8 +61,6 @@
   just have a "Feed powered by FeedBurner" image.
 - For each feed, give the option of displaying just the image (if
   any), the title, or both.
-- Should feed images be cached locally? How to tell when they're out
-  of date?
 - For each feed and item, should store unrecognized elements
   (especially in specialized namespaces like "lj") separately, in case
   a plugin can make use of it.
@@ -134,3 +123,12 @@
   "config.inc" has database password and such, it's a good idea to put
   it outside of DocumentRoot, in case of misconfigured .htaccess or
   something.
+- Nokia N810 browser identifies itself as:
+  "Mozilla/5.0 (X11; U; Linux armv6l; en-US; rv:1.9a6pre) Gecko/20071128 Firefox/3.0a1 Tablet browser 0.2.2 RX-34+RX-44_2008SE_2.2007.51-3"
+
+  Palm T|X browser identifies itself as:
+  "Mozilla/4.0 (compatible; MSIE 6.0; Windows 98; PalmSource/Palm-D050; Blazer/4.3) 16;320x320"
+- One possible way of displaying a feed might be to have a small frame
+  at the top, like Google Image results, with a brief identification
+  of the item, and navigation arrows to go to the {previous,next}
+  {item,feed}. The bottom frame shows the original article.
