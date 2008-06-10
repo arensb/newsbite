@@ -84,8 +84,15 @@ echo "<h3>Updating feed [$feed[title]]</h3>\n";
 	$feed = parse_feed($feed_text);
 
 	/* Delete old items from database */
-	// XXX - Should this be put at the end, for feeds that have
-	// items older than $AUTODELETE_DAYS?
+	// XXX - This should probably go at the end: otherwise, with
+	// feeds that have items older than 90 days, you can have:
+	// Monday, 9:00: refresh, get new and old items.
+	// Monday, 10:00: mark old items as read.
+	// Tuesday, 9:00: refresh:
+	//	Old items deleted
+	//	Items added from feed
+	// As a result, messages that were posted > 90 days ago, but
+	// are still in the feed, show up as new.
 	$sth = db_connect();
 
 	global $AUTODELETE_DAYS;
@@ -191,6 +198,14 @@ echo "<b>stmt-&gt;execute returned [$err]</b><br/>\n";
 	}
 }
 
+/* update_all_feeds
+ * As the name implies, this updates all the feeds listed in the
+ * database.
+ */
+// XXX - This ought to use curl_multi_* to update multiple feeds in
+// parallel.
+// XXX - Ought to try to avoid refreshing feeds too often. Add a bool
+// $force argument to force an update.
 function update_all_feeds()
 {
 	$feeds = db_get_feeds();
