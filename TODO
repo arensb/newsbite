@@ -106,9 +106,6 @@
 - In Ajax mode, marking an item as read should tell the server to
   delete it now, so that if you switch from workstation to laptop,
   your feeds are already up to date.
-- Automatic cleanup: need to periodically delete old items. How? When?
-	Should cron be able to do this?
-	When updating feed is probably a good time.
 - Perhaps extend Smarty, so don't need to set the paths every time.
 - Need a good way to abort in case of error.
 - Tool to import feeds and items from existing Feed on
@@ -125,3 +122,96 @@
   at the top, like Google Image results, with a brief identification
   of the item, and navigation arrows to go to the {previous,next}
   {item,feed}. The bottom frame shows the original article.
+- FeedBurner plugin: remove the stuff (esp. bugs) that FeedBurner adds
+  to bottom of articles.
+- Add <form> to view.php, to mark articles as read.
+- In view.php, show 10 articles at a time (or some other configurable
+  value).
+- MediaWiki plugin: if you subscribe to the "recent changes" page on a
+  MediaWiki wiki, there should be buttons at the bottom that allow you
+  to either mark the change as patrolled, or revert it.
+- Feed on Feeds has "Today's items". This is kinda bogus, especially
+  when reading feeds around midnight.
+	Instead, just show all items in reverse chronological order,
+  10 or 50 at a time.
+	If possible, add heading between items when the date changes
+  (like LiveJournal).
+- From conversation with Mike vW:
+	For parsing feed XML, write a generic parser that calls
+  plugins for everything. When it sees
+	<rss><item><author>Firstname Lastname</author>,
+  it calls rss_parse_element(
+  	$context = array("rss", "item"),
+	$name = "author",
+	$value = "Firstname Lastname",
+	$attributes = array(...),
+	$contents = array(),
+	&$retval = array(...));
+
+  - $context gives the context, so a plugin can do different things with
+  <feed><author> and <feed><entry><author> if it wants to.
+  - $name is the name of the element
+  - $value is the value of the element
+  - $attributes holds the attributes of the element
+  - $contents is the $retval filled in by the children (see below)
+  - $retval is an array that rss_parse_element() is expected to fill
+    in.
+
+	Thus, if you have an Atom feed with
+	<feed>
+	  <entry>
+	    <author>
+	      <email>foo@bar.com</email>
+	      <name>J. Random Hacker</name>
+	      <url>http://www.bar.com/~foo/</url>
+	    </author>
+	  </entry>
+	 </feed>
+
+    then first call the Atom plugin when the </email> element has been
+    seen. It sets
+	$retval = array(
+		"email" => "foo@bar.com"
+		);
+    Next call it when the </name> and </url> elements have been seen,
+    so the array looks like
+	$retval = array(
+		"email" => "foo@bar.com",
+		"name" => "J. Random Hacker",
+		"url" = "http://www.bar.com/~foo/"
+		);
+    Next we call it after seeing </author>. It is given
+	$contents = array(
+		"email" => "foo@bar.com",
+		"name" => "J. Random Hacker",
+		"url" = "http://www.bar.com/~foo/"
+		);
+	$retval = array();
+    and is expected to set
+	$retval = array(
+		"author" => "J. Random Hacker <foo@bar.com>"
+		);
+
+    This percolates upward until we eventually have a data structure
+    in a well-known format:
+	$feed = array(
+		"name" => "Some Site",
+		"url => "http://www.foo.com/",
+		"items" = array(
+				array(
+					"title" => "Post title",
+					"post_date" => ...,
+					...
+				)
+			)
+		);
+
+    Further flourishes are possible (and desirable). E.g., imagine a
+    plugin that looks for <lj:mood>Happy</lj:mood> and appends "Mood:
+    happy" to the bottom of the post.
+	Since we don't know the order in which the <lj:mood> and
+    <content> elements appear, the plugin will have to first be called
+    when </lj:mood> has been seen, and again when </entry> has been
+    seen. The latter can then append text to $entry['content'].
+
+	Need to register these sorts of hooks somehow.
