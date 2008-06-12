@@ -130,4 +130,134 @@ EOT
 
 	return $feed;
 }
+
+/* db_update_feed
+ * Update a feed. $feed_id is the ID of the feed to update, and $feed
+ * is a structure containing all the known information and articles in
+ * the feed.
+ */
+function db_update_feed($feed_id, $feed)
+{
+	// XXX - Ought to update the feed itself, e.g., if its title
+	// changes.
+
+	/* Delete old items from database */
+	// XXX - This should probably go at the end: otherwise, with
+	// feeds that have items older than 90 days, you can have:
+	// Monday, 9:00: refresh, get new and old items.
+	// Monday, 10:00: mark old items as read.
+	// Tuesday, 9:00: refresh:
+	//	Old items deleted
+	//	Items added from feed
+	// As a result, messages that were posted > 90 days ago, but
+	// are still in the feed, show up as new.
+	$sth = db_connect();
+
+	global $AUTODELETE_DAYS;
+	if ($AUTODELETE_DAYS != 0)
+	{
+		$query = <<<EOT
+DELETE FROM	items
+WHERE		feed_id = ?
+  AND		last_update < NOW() - INTERVAL ? DAY
+EOT;
+		$stmt = $sth->prepare($query);
+			// XXX - Error-checking
+		$err = $stmt->bind_param("dd",
+				  $feed_id,
+				  $AUTODELETE_DAYS);
+			// XXX - Error-checking
+		$err = $stmt->execute();
+			// XXX - Error-checking
+echo "Deleted [", $stmt->affected_rows, "] items.<br/>\n";
+	}
+
+	/* Add/replace the items in the database. */
+	foreach ($feed['items'] as $item)
+	{
+echo "Need to update item: [$item[title]]<br/>\n";
+#echo "<pre>\$item: ["; print_r($item); echo "]\n</pre>\n<br/>\n";
+
+		// This query may look long and redundant, but
+		// basically it means:
+
+		// If this entry doesn't exist yet, create one, and set the
+		// state to 'new'. If the entry already exists, update it from
+		// the RSS information, and set the state to 'updated' if
+		// necessary.
+
+		// XXX - Unfortunately, this sends the summary and
+		// content to the database twice, which might be
+		// undesirable for feeds that typically have long
+		// posts. Is there a way around this?
+		$query = <<<EOT
+INSERT INTO	items
+		(feed_id, url, title, summary, content, author, category,
+		 comment_url, comment_rss, guid, pub_date,
+		 last_update, state)
+VALUES		(?, ?, ?, ?, ?, ?, ?,
+		 ?, ?, ?, FROM_UNIXTIME(?),
+		 FROM_UNIXTIME(?), 'new')
+ON DUPLICATE KEY UPDATE
+		url=?,
+		title=?,
+		summary=?,
+		content=?,
+		author=?,
+		category=?,
+		comment_url=?,
+		comment_rss=?,
+		pub_date=FROM_UNIXTIME(?),
+		last_update=FROM_UNIXTIME(?),
+		state=IF(state='read' or state='unread',
+			 'updated', state)
+EOT;
+		$stmt = $sth->prepare($query);
+		$dummy_categories = NULL;	// XXX - Hack until I
+						// figure out how to
+						// deal with
+						// categories
+		if (isset($item['build_time']))
+			$build_time = $item['build_time'];
+		else
+			$build_time = time();
+
+		$stmt->bind_param("dsssssssssdd" .
+				  "ssssssssdd",
+				  // Values for new items
+				  $feed_id,
+				  $item['url'],
+				  $item['title'],
+				  $item['description'],
+				  $item['content'],
+				  $item['author_email'],	// XXX - Can do better?
+				  $dummy_categories,	// XXX - Deal with categories
+				  $item['comment_url'],
+				  $item['comment_feed'],
+				  $item['guid'],
+				  $item['pub_time'],
+				  $build_time,
+				  // 'state' set automatically
+
+				  // Values for updated items
+				  $item['url'],
+				  $item['title'],
+				  $item['description'],
+				  $item['content'],
+				  $item['author_email'],	// XXX - Can do better?
+				  $dummy_categories,	// XXX - Deal with categories
+				  $item['comment_url'],
+				  $item['comment_feed'],
+				  $item['pub_time'],
+				  $build_time
+			);
+		$err = $stmt->execute();
+if ($err != 11)
+echo "<b>stmt-&gt;execute returned [$err]</b><br/>\n";
+		if ($err)
+			echo "OK (", print_r($err), ") errno ", $sth->errno, ", error [", $sth->error, "]<br/>\n";
+		else
+			echo "<b>Error: ", $sth->errno, ": \"", $sth->error, "\"</b><br/>\n";
+	}
+}
 ?>
