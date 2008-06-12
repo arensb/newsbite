@@ -110,7 +110,7 @@ function parse_feed($rss_text)
 
 	    default:
 		echo "Unrecognized feed element: [$rss_name]\n";
-		exit(1);
+		return FALSE;
 	}
 }
 
