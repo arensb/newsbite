@@ -1,5 +1,3 @@
-- BUG: Duplicate entries in feed after updating.
-	Also, Jun 11 Cheers & Jeers missing from dKos feed.
 - SQL schema should support folders, i.e., user can group feeds into
   categories. By default, all feeds go in a " root" folder (the
   leading space marks this as special; strip space from user-defined
