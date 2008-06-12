@@ -1,3 +1,5 @@
+- BUG: Duplicate entries in feed after updating.
+	Also, Jun 11 Cheers & Jeers missing from dKos feed.
 - SQL schema should support folders, i.e., user can group feeds into
   categories. By default, all feeds go in a " root" folder (the
   leading space marks this as special; strip space from user-defined
@@ -215,3 +217,8 @@
     seen. The latter can then append text to $entry['content'].
 
 	Need to register these sorts of hooks somehow.
+- Ajax: keybindings for articles:
+	'm'	(more) when viewing preview, show full article
+	'n'	move to next item
+	'd'	mark item as read, and skip to next item
+	'u'	mark item as unread, and skip to next item
