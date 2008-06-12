@@ -217,6 +217,11 @@ EOT;
 						// figure out how to
 						// deal with
 						// categories
+		if (!isset($item['guid']))
+		{
+			// This item doesn't have a GUID, so make one.
+			$item['guid'] = $item['url'];
+		}
 		if (isset($item['build_time']))
 			$build_time = $item['build_time'];
 		else
@@ -252,12 +257,17 @@ EOT;
 				  $build_time
 			);
 		$err = $stmt->execute();
+		// XXX - Can count number of affected rows. Apparently
+		//	0-> duplicate entry (no change)
+		//	1-> new entry
+		//	2-> updated entry
 if ($err != 11)
 echo "<b>stmt-&gt;execute returned [$err]</b><br/>\n";
 		if ($err)
 			echo "OK (", print_r($err), ") errno ", $sth->errno, ", error [", $sth->error, "]<br/>\n";
 		else
 			echo "<b>Error: ", $sth->errno, ": \"", $sth->error, "\"</b><br/>\n";
+echo "Affected rows: [", $stmt->affected_rows, "]<br/>\n";
 	}
 }
 ?>
