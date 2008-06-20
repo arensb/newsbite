@@ -21,7 +21,7 @@
 # <copyright>					-
 # <managingEditor>	<author><email>		author_email
 #			<author><name>		author_name
-#			<author><url>		author_url
+#			<author><uri>		author_url
 # <webMaster>					webmaster
 #			<contributor>		feed_contributors[]
 # <pubDate>					pub_time
@@ -229,6 +229,10 @@ function parse_rss($rss)
 			// XXX - Likewise with posts: if a post hasn't
 			// changed since we last looked at it, don't
 			// bother parsing it.
+			// XXX - In LJ feeds, apparently lastBuildDate
+			// refers to the time when the RSS feed was
+			// updated. Since it's generated on the fly,
+			// that's pretty useless.
 			$retval['build_time'] = strtotime($value);
 			break;
 
