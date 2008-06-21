@@ -211,3 +211,9 @@
 	- Whether to display oldest-first by default (good for comics)
 	  or newest-first (good for news).
 	- Whether the feed contains BBcode (like top10).
+- Feed-parsing plugins: Need to have a hook for items, and another for
+  feeds. Don't do this as post-element hooks, because the plugin
+  shouldn't be expected to know which element represents an item/feed.
+	Also, if plugins add stuff to the bottom of the article text,
+  want to give the user some control over the order in which they get
+  called.
