@@ -1802,13 +1802,9 @@ function rdf_element_handler(
 		switch ($parent)
 		{
 		    case "channel":
-			// XXX - Make sure $children is a string
-			$retval[$elt_name] = $children;
-			break;
-
 		    case "item":
 			// XXX - Make sure $children is a string
-			$retval[$elt_name] = $children;
+			$retval['url'] = $children;
 			break;
 
 		    default:
