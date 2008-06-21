@@ -1,3 +1,4 @@
+- Bug: updating all feeds complains of NULL handles.
 - Make a list of conditions for calling it version 1.0
 - php.ini for testing and debugging.
 - Makefile:
