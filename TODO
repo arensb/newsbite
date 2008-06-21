@@ -1,3 +1,5 @@
+- Bug: pubDate doesn't make it into database correctly: parse_feed()
+  finds it, but in database it's NULL.
 - Make a list of conditions for calling it version 1.0
 - php.ini for testing and debugging.
 - Makefile:
