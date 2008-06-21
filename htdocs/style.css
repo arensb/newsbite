@@ -35,6 +35,12 @@ h1 a {
 	float:			right;
 }
 
+/* Feed subtitle */
+.feed_subtitle {
+	border:			1px dashed orange;
+	background-color:	yellow;
+}
+
 /* Descriptive blurb about the feed */
 .feed_description {
 	border:			1px solid orange;

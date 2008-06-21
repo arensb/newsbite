@@ -1488,6 +1488,10 @@ function atom_element_handler(
 			    case "self":
 				// Link to the Atom feed itself.
 				// Ignore it.
+
+				// XXX - Or perhaps ought to save it,
+				// in case the feed changes, and
+				// update the database automatically.
 				break;
 
 			    case "license":

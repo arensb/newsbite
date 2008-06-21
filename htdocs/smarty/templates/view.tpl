@@ -20,6 +20,9 @@
     <a href="{$feed.url}">{$feed.title}</a>
   {/if}
 </h1>
+{if $feed.subtitle != ""}
+<div class="feed_subtitle">{$feed.subtitle}</div>
+{/if}
 {/strip}
 
 {if $feed.description != ""}
