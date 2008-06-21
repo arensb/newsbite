@@ -1,4 +1,5 @@
 <?
+// XXX - Rename this to feed.inc, since it's not just RSS
 /* rss.inc
  * Functions for parsing RSS (and similar) XML files.
  */
@@ -6,483 +7,1152 @@
 // links or images are relative, try to make them absolute. Or maybe
 // there's a way in HTML/XHTML to specify a base URL.
 
-# Make sure the fields set by parse_{rss,atom}{,_item} are the same:
-# RSS:			Atom:			field
-# <item>		<entry>			items[]
-# <rss>			<feed>			feed_type
-# <rss version>		-			rss_version
-# <title>		<title>			title
-# -			<subtitle>		subtitle
-# <link>		<link rel=alternate>	url
-# -			<link rel=replies type=html>	comment_url
-# -			<link rel=replies type=xml>	comment_feed
-# <description>					description
-# <language>					language
-# <copyright>					-
-# <managingEditor>	<author><email>		author_email
-#			<author><name>		author_name
-#			<author><uri>		author_url
-# <webMaster>					webmaster
-#			<contributor>		feed_contributors[]
-# <pubDate>					pub_time
-# <lastBuildDate>	<updated>		build_time
-# <category>		<category><term>	categories[][term]
-#			<category><scheme>	categories[][scheme]
-#			<category><label>	categories[][label]
-# <generator>		<generator>text		generator
-#			<generator uri>		generator_url
-#			<generator version>	generator_version
-# <docs>					-
-# <cloud>					-
-# <ttl>						ttl (secs)
-# <image><url>		<icon>			image[url]
-# <image><title>				image[title]
-# <image><link>					image[link]
-# <rating>					-
-# <textInput>					-
-# <skipHours>					-
-# <skipDays>					-
-#			<guid>			guid
-#			<rights>		rights
+// Make sure the fields set by parse_{rss,atom}{,_item} are the same:
+// RSS:			Atom:			field
+// <item>		<entry>			items[]
+// <rss>			<feed>			feed_type
+// <rss version>		-			rss_version
+// <title>		<title>			title
+// -			<subtitle>		subtitle
+// <link>		<link rel=alternate>	url
+// -			<link rel=replies type=html>	comment_url
+// -			<link rel=replies type=xml>	comment_feed
+// <description>					description
+// <language>					language
+// <copyright>					-
+// <managingEditor>	<author><email>		author_email
+//			<author><name>		author_name
+//			<author><uri>		author_url
+// <webMaster>					webmaster
+//			<contributor>		feed_contributors[]
+// <pubDate>					pub_time
+// <lastBuildDate>	<updated>		build_time
+// <category>		<category><term>	categories[][term]
+//			<category><scheme>	categories[][scheme]
+//			<category><label>	categories[][label]
+// <generator>		<generator>text		generator
+//			<generator uri>		generator_url
+//			<generator version>	generator_version
+// <docs>					-
+// <cloud>					-
+// <ttl>						ttl (secs)
+// <image><url>		<icon>			image[url]
+// <image><title>				image[title]
+// <image><link>					image[link]
+// <rating>					-
+// <textInput>					-
+// <skipHours>					-
+// <skipDays>					-
+//			<guid>			guid
+//			<rights>		rights
 
-# RSS item:		Atom entry		field
-# <title>		<title>			title
-# <link>		<link rel=alternate>	url
-# <description>		<summary>		description
-#			<content>		content
-# <author>		<author><email>		author_email
-#			<author><name>		author_name
-#			<author><url>		author_url
-# <category>		<category>		categories[]
-# <comments>		<link rel=replies type=html>	comment_url
-#			<link rel=replies type=xml>	comment_feed
-# <enclosure>		<link {other}>?		enclosure{}
-# <guid>		<guid>			guid
-# <pubDate>		<published>		pub_time
-#			<updated>		build_time
-# <source>		<source>		-
-#			<rights>		-
+// RSS item:		Atom entry		field
+// <title>		<title>			title
+// <link>		<link rel=alternate>	url
+// <description>		<summary>		description
+//			<content>		content
+// <author>		<author><email>		author_email
+//			<author><name>		author_name
+//			<author><url>		author_url
+// <category>		<category>		categories[]
+// <comments>		<link rel=replies type=html>	comment_url
+//			<link rel=replies type=xml>	comment_feed
+// <enclosure>		<link {other}>?		enclosure{}
+// <guid>		<guid>			guid
+// <pubDate>		<published>		pub_time
+//			<updated>		build_time
+// <source>		<source>		-
+//			<rights>		-
+
+/* $element_hooks
+ * Lists hooks to be called after a particular element has been seen.
+ * The entries are of the form
+ *	""	=> array(			// Namespace URL
+ *		"channel"	=> array(		// Element name
+ *			rss_rss_cleanup
+ *			),
+ *		"item"	=> array(		// Element name
+ *			rss_rss_cleanup
+ *			)
+ *		)
+ */
+$element_hooks = array();
+
+/* url2handler
+ * Maps the URL for a given namespace to its handler.
+ * Elements of this array are of the form
+ *	$URL => array(
+ *			"element" => element_handler,
+ *			"attribute" => attribute_handler,
+ *			"text" => text_handler,
+ *		),
+ */
+$url2handler = array(		// Handlers for specific URLs
+	// Root element URLs
+
+	// RSS 0.9x, 1.x, 2.0
+	"" => array(
+		"init"		=> rss_init,
+		"element"	=> rss_element_handler,
+		"attribute"	=> rss_attribute_handler,
+//		"text"		=> rss_text_handler
+		),
+
+	// Atom
+	"http://www.w3.org/2005/Atom"	=> array(
+		"init"		=> atom_init,
+		"element"	=> atom_element_handler,
+		"attribute"	=> atom_attribute_handler,
+		),
+
+	// RDF
+	"http://purl.org/rss/1.0/" => array(
+		"element"	=> rdf_element_handler,
+		),
+	"http://www.w3.org/1999/02/22-rdf-syntax-ns#"	=> array(
+		"element"	=> rdf_element_handler,
+		),
+
+// Other namespaces I've seen, for additional features inside a feed:
+// admin	http://webns.net/mvcb/
+// atom		http://www.w3.org/2005/Atom
+// blogChannel	http://backend.userland.com/blogChannelModule
+// cc		http://web.resource.org/cc/
+// content	http://purl.org/rss/1.0/modules/content/
+// dc		http://purl.org/dc/elements/1.1/
+// feedburner	http://rssnamespace.org/feedburner/ext/1.0
+// flickr	http://flickr.com/services/feeds/
+// itunes	http://www.itunes.com/dtds/podcast-1.0.dtd
+// lj		http://www.livejournal.org/rss/lj/1.0/
+	"http://www.livejournal.org/rss/lj/1.0/" => array(
+		"init"		=> lj_init,
+		"element"	=> lj_element_handler,
+		),
+// media	http://search.yahoo.com/mrss/
+// openSearch	http://a9.com/-/spec/opensearchrss/1.0/
+// sy		http://purl.org/rss/1.0/modules/syndication/
+// thr		http://purl.org/syndication/thread/1.0
+// wfw		http://wellformedweb.org/CommentAPI/
+	);
 
 /* parse_feed
- * Given the text of a feed, parse it into a reasonable data structure.
+ * Take an XML string (read from a file or URL) and parse it down to a
+ * PHP data structure of the form
+ * $feed = array(			// Assoc describing the feed
+ *	"title" => "Some Feed",
+ *	"url" => "http://link.to/site/",
+ *	...
+ *	"items" => array(		// Array of posts in the feed
+ *			array(		// First post
+ *				"title" => "Title of post",
+ *				"author" => "Author of post",
+ *				"description" => "Summary of post",
+ *				"content" => "Full body of post",
+ *				...
+ *			),
+ *			array( ... ),	// Second post
+ *			array( ... ),	// Thir post
+ *			...
+ *		),
+ * );
+ *
+ * (See field list, above)
+ *
+ * The first thing we need to do is to find the root node, and decide
+ * what to do with the rest of the XML file. In practice, this falls
+ * into one of three cases:
+ *	1) The root node has an 'xmlns=$URL' attribute, which tells us
+ *	what kind of file this is, and therefore how to parse it.
+ *	2) The root node is <rss> but has no 'xmlns=' attribute.
+ *	Assume that it's an RSS file.
+ *	3) None of the above. Throw an error.
+ *	In particular, this can happen if you request a feed from
+ *	LiveJournal and specify authentication, but don't supply a
+ *	username or password. Then you get a fragment of HTML code
+ *	with an error message.
+ *
+ *	After this initialization, the main loop walks through the XML
+ * file, tag by tag and attribute by attribute. Whenever it sees a
+ * closing tag (or an attribute) it calls a handler to Do the Right
+ * Thing.
  */
-function parse_feed($rss_text)
+function parse_feed($feed_text)
 {
-	$rss = @simplexml_load_string($rss_text);
-		// XXX - The '@' is to hide parsing error messages
-		// from the user. In some cases at least, ought to
-		// show them to the user.
+	$ns2url = array();		// Maps namespace prefixes to their
+					// URL identifiers
+	$context = array();		// Context stack. Shows
+					// handlers where they are
 
-	$rss_name = $rss->getName();	// Name of top-level element
+	// This preg_replace_callback is a butt-ugly hack to deal with
+	// the top10 feed: it has constructs of the form
+	//	<description>
+	//	Some <b>unescaped</b> HTML text
+	//	</description>
 
-	// XXX - Try to figure out what kind of feed this is.
-	// RSS 0.91:
-	// http://www.scripting.com/netscapeDocs/RSS%200_91%20Spec,%20revision%203.html
-	//	RSS 0.91 should be upward-compatible with 2.0
-	// RSS 0.92: http://backend.userland.com/rss092
-	//	upward-compatible with 0.91 (and 0.92 is
-	//	upward-compatible with 2.0)
-	// RSS 2.0: http://cyber.law.harvard.edu/rss/rss.html
-	// Atom: XXX
+	// For all I know, this may be legal, but I don't have a good
+	// way to deal with it. So this hack looks for
+	// <description>...</description> pairs, and escapes the ones
+	// that
+	// a) don't begin with "<![CDATA[", and
+	// b) contain a "<".
+	// Oh, and it unescapes entities like "&quot;"
+	$feed_text = preg_replace_callback('{<description>(.*?)</description>}s',
+					   create_function('$matches',
+							   'if (substr($matches[1], 0, 9) == "<![CDATA[")
+					// Properly escpaed
+					return $matches[0];
+			       if (strpbrk($matches[1], "<>"))
+					// Contains <>. Must escape
+					return "<description><![CDATA[" .
+						htmlspecialchars_decode($matches[1]) .
+						"]]></description>";
+			       // No need to escape
+			       return $matches[0];'),
+					   $feed_text);
 
+	/* Initialize the feed reader */
+	$reader = new XMLReader();
+	$reader->xml($feed_text);
 
-	// XXX - What follows is a rather naive implementation: each
-	// element, whether with or without a prefix, is inside some
-	// namespace. In the case of simple formats, this can be
-	// implied.
+	/* Find root node
+	 * Although this code repeats a lot of code found further
+	 * down, under "case ELEMENT:", it has to be separate: we want
+	 * to do some top-level initialization and error-checking.
+	 */
+	while ($reader->read())
+	{
+		if ($reader->nodeType != XMLReader::ELEMENT)
+			// Skip past things like document type and
+			// preprocessing instructions.
+			continue;
 
-	// XXX - RDF Site Summary: typepad uses this, so can't duck
-	// out of supporting it. I think the Right Thing to do is to
-	// preprocess the XML tree to resolve internal RDF links,
-	// which (hopefully) will turn the tree into an ordinary RSS
-	// or Atom document. RDF doco:
-	// http://web.resource.org/rss/1.0/spec
+		/* Create a new node for the root of the tree */
+		$node = array(
+			"ns"		=> $reader->prefix,
+			"name"		=> $reader->localName,
+			"ns_url"	=> $reader->namespaceURI,
+			"is_empty"	=> $reader->isEmptyElement,
+			// Can't just use
+			// $reader->isEmptyElement at the end,
+			// because the attribute parsing code
+			// is going to change $parser's state.
+			"retval"	=> NULL,
+			);
 
-	// Pick a function to parse the XML, based on the name of the
-	// root element.
-	switch ($rss_name) {
+		/* Find attributes */
+		if ($reader->attributeCount > 0)
+		{
+			$attributes = array();
+
+			$reader->moveToFirstAttribute();
+			do {
+				$attr_prefix     = $reader->prefix;
+				$attr_name       = $reader->localName;
+				$attr_fullname   = $reader->name;
+				$attr_value      = $reader->value;
+
+				// Namespaces look kinda like attributes, but
+				// we handle them separately.
+				// Namespace declarations come in two
+				// varieties:
+				//	xmlns="some/url" (default namespace)
+				//	xmlns:prefix="some/url"
+				if ($attr_prefix == "" &&
+				    $attr_name == "xmlns")
+				{
+					// Default namespace
+					$ns2url[""] = $attr_value;
+					continue;
+				}
+
+				if ($attr_prefix == "xmlns")
+				{
+					// Non-default namespace
+					$ns2url[$attr_name] = $attr_value;
+					continue;
+				}
+
+				// Save all info about this attribute, so we
+				// can call a handler for it below.
+				$attributes[] = array(
+					"prefix"	=> $attr_prefix,
+					"name"		=> $attr_name,
+					"value"		=> $attr_value,
+					"url"		=> $reader->namespaceURI,
+					);
+			} while ($reader->moveToNextAttribute());
+			// XXX - Ideally, ought to remember scope of
+			// namespaces, so that you can have things
+			// like
+			//	<item>
+			//	  <foo:elem1 xmlns:foo="abc">
+			//	    <!-- "foo" -> "abc" -->
+			//	  </foo:elem1>
+			//	  <foo:elem2 xmlns:foo="xyz">
+			//	    <!-- "foo" -> "xyz" -->
+			//	  </foo:elem2>
+			// but I suspect that's too rare to worry about until
+			// it crops up in real life.
+		}
+
+		break;	// Found the root node.
+	}
+
+	/* Based on the default namespace in the root node, figure out which
+	 * handler to use for the rest:
+	 * If there's a default namespace (with URL)
+	 *	If the URL has a handler in $known_handlers, use it
+	 *	Else throw an error
+	 * Else if the root node is <rss>
+	 *	Use the RSS handler
+	 * Else
+	 *	Throw an error.
+	 */
+	if (isset($ns2url[""]))
+	{
+		// There's a default namespace for this XML file
+
+		/* Do we have a handler for it? */
+		if (isset($url2handler[$ns2url[""]]))
+		{
+			// Yes
+		} else {
+			// No
+			// XXX - Abort
+		}
+	} elseif ($node['name'] == "rss")
+	{
+		// Use the default
+	} else {
+		exit(1);		// XXX - Abort better
+	}
+
+	/* Run the init hooks for any namespaces we've found */
+	foreach ($ns2url as $ns => $url)
+	{
+		if (isset($url2handler[$url]['init']))
+			$url2handler[$url]['init']($ns, $url);
+	}
+
+	/* Process handlers for any attributes we've seen. This is
+	 * outside the loop above that records the attributes, because
+	 * for all I know it's possible to have
+	 *	<rss foo:attr="some value" xmlns:foo="http://some/url">
+	 * If the attribute handler were inside the loop, we'd see
+	 * "foo:attr" before the declaration of "xmlns:foo", and
+	 * wouldn't know which handler to call.
+	 */
+	if (isset($attributes))
+	{
+		$node['@attrs'] = array();	// List of root attributes
+		array_push($context, &$node);
+				// Push $node onto context, for handler
+		foreach ($attributes as $a)
+		{
+			/* If there's an attribute handler for this
+			 * namespace, call it. Otherwise, use the
+			 * default.
+			 */
+			if (isset($url2handler[$a['url']]['attribute']))
+				$url2handler[$a['url']]['attribute'](
+					$a['prefix'],
+					$a['name'],
+					$a['value'],
+					$node['@attrs'],
+					$context
+					);
+			else
+				default_attribute_handler(
+					$a['prefix'],
+					$a['name'],
+					$a['value'],
+					$node['@attrs'],
+					$context
+					);
+		}
+		$node = array_pop($context);
+				// We're no longer looking at attributes
+	}
+
+	/* Parse the rest of the file */
+	while ($reader->read())
+	{
+		switch ($reader->nodeType)
+		{
+		    case XMLReader::ELEMENT:
+			array_push($context, $node);
+			// Save $node on context stack
+
+			// $node describes the node we're currently looking
+			// at. Be careful to separate the return value
+			// ("retval") from the description of the node itself.
+			$node = array(
+				"ns"		=> $reader->prefix,
+				"name"		=> $reader->localName,
+				"ns_url"	=> $reader->namespaceURI,
+				"is_empty"	=> $reader->isEmptyElement,
+				// Can't just use
+				// $reader->isEmptyElement at
+				// the end, because the
+				// attribute parsing code is
+				// going to change $parser's
+				// state.
+				"retval"	=> NULL,
+				);
+
+			/* Check attributes */
+			if ($reader->hasAttributes)
+			{
+				$attributes = array();
+
+				$reader->moveToFirstAttribute();
+
+				do {
+					$attr_prefix     = $reader->prefix;
+					$attr_name       = $reader->localName;
+					$attr_fullname   = $reader->name;
+					$attr_value      = $reader->value;
+
+					/* Is this a namespace
+					 * declaration? If so, it's of
+					 * the form
+					 * xmlns:foo="some url"
+					 * or
+					 * xmlns="some url"
+					 */
+					if ($attr_prefix == "" &&
+					    $attr_name == "xmlns")
+					{
+						// Default namespace
+
+						/* Run init hook if
+						 * there is one
+						 */
+						if (!isset($ns2url[""]) &&
+						    isset($url2handler[$attr_value]['init']))
+							$url2handler[$attr_value]['init'](
+								$attr_prefix,
+								$attr_value);
+						$ns2url[""] = $attr_value;
+						continue;
+					}
+
+					if ($attr_prefix == "xmlns")
+					{
+						// Non-default namespace
+						$ns2url[$attr_name] = $attr_value;
+						if (!isset($ns2url[$attr_name]) &&
+						    isset($url2handler[$attr_value]['init']))
+							$url2handler[$attr_value]['init'](
+								$attr_prefix,
+								$attr_value);
+						continue;
+					}
+
+					/* Call attribute handler */
+					array_push($context, $node);
+						// Push $node onto
+						// context, for the
+						// handler's benefit
+					if (isset($url2handler[$node['ns_url']]["attribute"]))
+						$url2handler[$node['ns_url']]["attribute"](
+							$attr_prefix,
+							$attr_name,
+							$attr_value,
+							$attributes,
+							$context);
+					default_attribute_handler(
+						$attr_prefix,
+						$attr_name,
+						$attr_value,
+						$attributes,
+						$context);
+					$node = array_pop($context);
+						// Restore $node
+				} while ($reader->moveToNextAttribute());
+				$node['@attrs'] = $attributes;
+			}
+
+			if ($node['is_empty'])
+				// This is an empty element (<foo/>), so we
+				// need to close it right away, as if we'd
+				// just seen <foo></foo>.
+				_feed_close_element($node, $context);
+			break;
+
+		    case XMLReader::END_ELEMENT:
+			_feed_close_element($node, $context);
+			break;
+
+		    case XMLReader::TEXT:
+		    case XMLReader::CDATA:
+			// TEXT and CDATA are combined because
+			// XMLReader is nice enough to expand the HTML
+			// entities in TEXT, so they're both presented
+			// to us the same way.
+			if (isset($url2handler[$node['ns_url']]["text"]))
+				$url2handler[$node['ns_url']]["text"](
+					$node,
+					$reader->value,
+					$node['retval'],
+					$context);
+			else
+				default_text_handler(
+					$node,
+					$reader->value,
+					$node['retval'],
+					$context);
+			break;
+
+			/* The following tokens are either never used, or
+			 * aren't useful.
+			 */
+		    case XMLReader::ATTRIBUTE:
+			// Should never show up here. Look under
+			// XMLReader::ELEMENT.
+			break;
+		    case XMLReader::NONE:
+			// Apparently never used
+			break;
+		    case XMLReader::ENTITY_REF:
+			// Apparently never used
+			break;
+		    case XMLReader::ENTITY:
+			// Apparently never used
+			break;
+		    case XMLReader::PI:
+			// Apparently name and value are the only fields with
+			// any values. For
+			// < ?some-thing blah='de' blah? >
+			// 	name="some-thing"
+			//	value="blah='de' blah"
+
+			// Some of these are stylesheets, but it's not worth
+			// applying them, because the ones I've seen are all
+			// aimed at making XML look presentable in a browser.
+			break;
+		    case XMLReader::COMMENT:
+			// This is just XML comments, not HTML comments.
+			// Nothing interesting in here.
+			break;
+		    case XMLReader::DOC:
+			// Apparently never used
+			break;
+		    case XMLReader::DOC_TYPE:
+			// Apparently the only useful information is the name
+			// of the root node. This can be used to guess the
+			// correct handler, but in so many other cases we have
+			// to look it up anyway, that it's not worth the
+			// effort.
+			break;
+		    case XMLReader::DOC_FRAGMENT:
+			// Apparently never used
+			break;
+		    case XMLReader::NOTATION:
+			// Apparently never used
+			break;
+		    case XMLReader::WHITESPACE:
+			// Apparently never used
+			break;
+		    case XMLReader::SIGNIFICANT_WHITESPACE:
+			// Ignore this
+			break;
+		    case XMLReader::END_ENTITY:
+			// Apparently never used
+			break;
+		    case XMLReader::XML_DECLARATION:
+			// Apparently never used
+			break;
+		    default:
+			// XXX - Better error-reporting
+			echo "Unknown node type: [", $reader->nodeType, "], [",
+				$reader->name, "]\n";
+			break;
+		}
+	}
+
+//	echo "context: ["; print_r($context); echo "]\n";
+//	echo "node: ["; print_r($node); echo "]\n";
+
+	return $node['retval'];
+}
+
+/* _feed_close_element
+ * Private function, called when an element is closed, upon seeing
+ * either </foo> or <foo/>.
+ * Runs the appropriate hooks and adjusts the stack.
+ */
+function _feed_close_element(&$node, &$context)
+{
+	global $element_hooks;
+	global $url2handler;
+
+	/* Run any hooks associated with this element.
+	 * Hooks are run before the handler: that way, a hook has a
+	 * chance to clean up the element before the hander determines
+	 * what its return value is.
+	 */
+	$hooks = $element_hooks[$node['ns_url']][$node['name']];
+	if (isset($hooks))
+	{
+		foreach ($hooks as $h)
+		{
+			/* Call each hook in turn */
+			$h($node['name'],
+			   $node['retval'],
+			   $context);
+		}
+	}
+
+	/* Call element handler */
+	$retval =& $context[count($context)-1]['retval'];
+	if (isset($url2handler[$node['ns_url']]["element"]))
+		$url2handler[$node['ns_url']]["element"](
+			$node['ns'],
+			$node['name'],
+			$node['@attrs'],
+			$node['retval'],
+			$retval,
+			$node['ns_url'],
+			$context);
+	else
+		// XXX - Is this a good thing? If we don't have a
+		// handler for this element, do we want to risk the
+		// default one messing things up?
+		default_element_handler($node['ns'],
+					$node['name'],
+					$node['@attrs'],
+					$node['retval'],
+					$retval,
+					$node['ns_url'],
+					$context);
+	/* Pop parent element from context stack, and add
+	 * current $node to it.
+	 * (We didn't do this earlier, because if we had, then
+	 * $context wouldn't have included $parent).
+	 */
+	$parent = array_pop($context);
+	$parent['retval'] = $retval;
+	$node = $parent;
+
+	// XXX - Return something intelligent
+}
+
+/* default_element_handler
+ * Function to do something sensible with an element, if no other
+ * handler does. This function is called after the closing tag has
+ * been seen, and any other hooks have run.
+ *
+ * XXX - Move the following description elsewhere:
+ *
+ * The job of this function is to look at the values returned by the
+ * handlers that looked at the contents of the element, and fill in
+ * $retval.
+ *
+ * $prefix - Prefix of the element: in <lj:mood>, $prefix is "lj"; in
+ *	<title>, it's the empty string. The main purpose of this is to
+ *	let the handler know whether it's in the default namespace or
+ *	not.
+ * $elt_name - Name of the element: in <lj:mood>, it's "mood"; in
+ *	<title>, it's "title".
+ * $attrs - the element's attributes
+ * $retval - A value to return from this element
+ * $ns_url - URL of this element's namespace. Useful mainly if there's
+ *	a handler that deals with several related namespaces
+ * $context - The context stack. Useful if the handler wants to treat
+ *	a given element differently depending on where it is. For instance,
+ * 	<channel><link/> might have to be treated differently from
+ *	<channel><item><link/>
+ */
+function default_element_handler(
+	$prefix,	// Namespace of this element
+	$elt_name,	// Name of this element, without prefix
+	&$attrs,	// Attributes
+	&$children,	// Contents of this element
+	&$retval,	// Fill in the blanks here
+	$ns_url,	// URL of this element's namespace
+	&$context)	// Where we are at the moment
+{
+	$parent = $context[count($context)-1]['name'];
+
+	// XXX - Should probably just pass stuff through:
+	if ($prefix == "")
+		$retval[$elt_name] = $children;
+	else
+		$retval[$prefix . ":" . $elt_name] = $children;
+	$retval['@attrs'] = $attrs;
+
+	return;		// Do nothing.
+
+	if (isset($retval[$elt_name]))
+	{
+		// There's already one or more $elt_names in $parent
+		if (is_array($retval[$elt_name]) &&
+		    array_key_exists(0, $retval[$elt_name]))
+		{
+			// Append $children to existing array
+			array_push($retval[$elt_name], $children);
+		} else {
+			// Create a new array with the old and new values
+			$retval[$elt_name] = array(
+				$retval[$elt_name],
+				$children);
+		}
+	} else {
+		// This is the first $elt_name child
+		switch ($elt_name)
+		{
+//		    case 'item':
+//			// XXX - This is RSS-specific
+//			$retval['items'] = $children;
+//			break;
+		    default:
+			$retval[$elt_name] = $children;
+		}
+	}
+}
+
+function default_text_handler(
+	&$parent,
+	$text,		// The #text element, as a string
+	&$retval,	// Fill in the blanks
+	&$context)	// Where we are at the moment
+{
+	$retval .= $text;
+}
+
+function default_attribute_handler(
+	$prefix,	// Prefix of the attribute
+	$name,		// Name of the attribute
+	$value,		// Value of the attribute
+	&$retval,	// Fill in the blanks
+	&$context	// Where we are at the moment
+	)
+{
+	if ($prefix == "")
+		$retval[$name] = $value;
+	else
+		$retval[$prefix . ":" . $name] = $value;
+}
+
+/********** RSS ************************************************/
+function rss_init($ns, $url)
+{
+//	echo "Inside rss_init($ns, $url)\n";
+}
+
+function rss_element_handler(
+	$prefix,	// Namespace of this element
+	$elt_name,	// Name of this element, without prefix
+	&$attrs,	// Attributes
+	&$children,	// Contents of this element
+	&$retval,	// Fill in the blanks here
+	$ns_url,	// URL of this element's namespace
+	&$context)	// Where we are at the moment
+{
+	$parent = $context[count($context)-1]['name'];
+			// Get parent node's name
+	switch ($elt_name)
+	{
+	    case "title":
+		// This might be:
+		// - <channel><title>
+		// - <image><title>
+		// - <item><title>
+		// - <textInput><title>
+		switch ($parent)
+		{
+		    case "channel":
+		    case "image":
+		    case "item":
+		    case "textInput":
+			$retval[$elt_name] = $children;
+			break;
+		    default:
+			// XXX - Better error-reporting
+			echo "Warning: Unexpected parent: [$parent]\n";
+			break;
+		}
+		break;
+
+	    case "link":
+		// Might be:
+		// - <channel><link>
+		// - <channel><image><link>
+		// - <channel><textInput><link>
+		// - <item><link>
+		// - <textInput><link>
+		switch ($parent)
+		{
+		    case "image":
+			$retval['link'] = $children;
+			break;
+		    case "channel":
+		    case "item":
+		    case "textInput":
+			$retval['url'] = $children;
+			break;
+		    default:
+			// XXX - Better error-reporting
+			echo "Warning: Unexpected parent: [$parent]\n";
+			break;
+		}
+		break;
+
+	    case "description":
+		switch ($parent)
+		{
+		    case "channel":
+		    case "item":
+		    case "image":
+		    case "textInput":
+			$retval[$elt_name] = $children;
+			break;
+		    default:
+			// XXX - Better error-reporting
+			echo "Warning: Unexpected parent: [$parent]\n";
+			break;
+		}
+		break;
+
+	    case "pubDate":
+		switch ($parent)
+		{
+		    case "channel":
+		    case "item":
+			// XXX - Make sure $children is a string.
+			$retval['pub_time'] = strtotime($children);
+			break;
+		    default:
+			// XXX - Better error-reporting
+			echo "Warning: Unexpected parent: [$parent]\n";
+			break;
+		}
+		break;
+
+	    case "lastBuildDate":
+		switch ($parent)
+		{
+		    case "channel":
+			// XXX - Make sure $children is a string.
+			$retval['build_time'] = strtotime($children);
+			break;
+		    default:
+			// XXX - Better error-reporting
+			echo "Warning: Unexpected parent: [$parent]\n";
+			break;
+		}
+		break;
+
+	    case "generator":
+		switch ($parent)
+		{
+		    case "channel":
+			$retval[$elt_name] = $children;
+			break;
+		    default:
+			// XXX - Better error-reporting
+			echo "Warning: Unexpected parent: [$parent]\n";
+			break;
+		}
+		break;
+
+	    case "generator":
+		switch ($parent)
+		{
+		    case "image":
+			$retval[$elt_name] = $children;
+			break;
+		    default:
+			// XXX - Better error-reporting
+			echo "Warning: Unexpected parent: [$parent]\n";
+			break;
+		}
+		break;
+
+	    case "url":
+		switch ($parent)
+		{
+		    case "image":
+			$retval[$elt_name] = $children;
+			break;
+		    default:
+			// XXX - Better error-reporting
+			echo "Warning: Unexpected parent: [$parent]\n";
+			break;
+		}
+		break;
+
+	    case "image":
+		switch ($parent)
+		{
+		    case "channel":
+			$retval[$elt_name] = $children;
+			break;
+		    default:
+			// XXX - Better error-reporting
+			echo "Warning: Unexpected parent: [$parent]\n";
+			break;
+		}
+		break;
+
+	    case "author":
+		switch ($parent)
+		{
+		    case "item":
+			// XXX - Make sure $children is a string
+			$retval['author_email'] = $children;
+			break;
+		    default:
+			// XXX - Better error-reporting
+			echo "Warning: Unexpected parent: [$parent]\n";
+			break;
+		}
+		break;
+
+	    case "managingEditor":
+		switch ($parent)
+		{
+		    case "channel":
+			// XXX - Make sure $children is a string
+			$retval['author_email'] = $children;
+			break;
+		    default:
+			// XXX - Better error-reporting
+			echo "Warning: Unexpected parent: [$parent]\n";
+			break;
+		}
+		break;
+
+	    case "guid":
+		switch ($parent)
+		{
+		    case "item":
+			$retval[$elt_name] = $children;
+			break;
+		    default:
+			// XXX - Better error-reporting
+			echo "Warning: Unexpected parent: [$parent]\n";
+			break;
+		}
+		break;
+
+	    case "width":
+	    case "height":
+		switch ($parent)
+		{
+		    case "image":
+			break;
+		    default:
+			// XXX - Better error-reporting
+			echo "Warning: Unexpected parent: [$parent]\n";
+			break;
+		}
+		break;
+
+	    case "copyright":
+	    case "docs":
+		switch ($parent)
+		{
+		    case "channel":
+			// Ignore copyright.
+			// XXX - Should this be tacked onto the
+			// channel description?
+			break;
+		    default:
+			// XXX - Better error-reporting
+			echo "Warning: Unexpected parent: [$parent]\n";
+			break;
+		}
+		break;
+
+	    case "comments":
+		switch ($parent)
+		{
+		    case "item":
+			$retval['comment_url'] = $children;
+			break;
+		    default:
+			// XXX - Better error-reporting
+			echo "Warning: Unexpected parent: [$parent]\n";
+			break;
+		}
+		break;
+
+	    case "language":
+		switch ($parent)
+		{
+		    case "channel":
+			$retval[$elt_name] = $children;
+			break;
+		    default:
+			// XXX - Better error-reporting
+			echo "Warning: Unexpected parent: [$parent]\n";
+			break;
+		}
+		break;
+
+	    case "webMaster":
+		switch ($parent)
+		{
+		    case "channel":
+			$retval['webmaster'] = $children;
+			break;
+		    default:
+			// XXX - Better error-reporting
+			echo "Warning: Unexpected parent: [$parent]\n";
+			break;
+		}
+		break;
+
+	    case "category":
+		switch ($parent)
+		{
+		    case "item":
+			$retval['categories'][] = $children;
+			break;
+		    default:
+			// XXX - Better error-reporting
+			echo "Warning: Unexpected parent: [$parent]\n";
+			break;
+		}
+		break;
+
+	    case "enclosure":
+		switch ($parent)
+		{
+		    case "item":
+			$retval = array(
+				"url"		=>
+					htmlspecialchars_decode($attrs['url']),
+					// XXX - This might need a
+					// second round of
+					// htmlspecialchars_decode().
+					// Only atheistmedia has this
+					// problem, so I don't know
+					// whether it's a problem with
+					// the blogger.com generator,
+					// or part of the spec.
+				"length"	=> $attrs['length'],
+				"type"		=> $attrs['type'],
+				);
+			break;
+		    default:
+			// XXX - Better error-reporting
+			echo "Warning: Unexpected parent: [$parent]\n";
+			break;
+		}
+		break;
+
+	    case "name":
+		switch ($parent)
+		{
+		    case "textInput":
+			$retval[$elt_name] = $children;
+			break;
+		    default:
+			// XXX - Better error-reporting
+			echo "Warning: Unexpected parent: [$parent]\n";
+			break;
+		}
+		break;
+
+	    case "textInput":
+		switch ($parent)
+		{
+		    case "channel":
+			// Just ignore it.
+			// $retval[$elt_name] = $children;
+			break;
+		    default:
+			// XXX - Better error-reporting
+			echo "Warning: Unexpected parent: [$parent]\n";
+			break;
+		}
+		break;
+
+	    case "ttl":
+		switch ($parent)
+		{
+		    case "channel":
+			// XXX - Make sure $children is a string
+			$retval[$elt_name] = $children * 60;
+			break;
+		    default:
+			// XXX - Better error-reporting
+			echo "Warning: Unexpected parent: [$parent]\n";
+			break;
+		}
+		break;
+
+	    case "item":
+		switch ($parent)
+		{
+		    case "channel":
+			$retval['items'][] = $children;
+			break;
+		    default:
+			// XXX - Better error-reporting
+			echo "Warning: Unexpected parent: [$parent]\n";
+			break;
+		}
+		break;
+
+	    case "channel":
+		switch ($parent)
+		{
+		    case "rss":
+			$retval = $children;
+			break;
+		    default:
+			// XXX - Better error-reporting
+			echo "Warning: Unexpected parent: [$parent]\n";
+			break;
+		}
+		break;
+
 	    case "rss":
-	    case "RDF":		// XXX - Need separate preprocessing
-		return parse_rss($rss);
-
-	    case "feed":
-		return parse_atom($rss);
+		switch ($parent)
+		{
+		    case "":
+			$retval = $children;
+			break;
+		    default:
+			// XXX - Better error-reporting
+			echo "Warning: Unexpected parent: [$parent]\n";
+			break;
+		}
+		break;
 
 	    default:
-		echo "Unrecognized feed element: [$rss_name]\n";
-		return FALSE;
+		echo "Warning: unknown RSS element: [$elt_name]\n";
+		break;
 	}
+
+	// XXX - Return something sensible
 }
 
-/* parse_rss
- * Parse an RSS 0.91, 0.92, or 2.0 feed.
- */
-function parse_rss($rss)
+function rss_attribute_handler(
+	$prefix,	// Prefix of the attribute
+	$name,		// Name of the attribute
+	$value,		// Value of the attribute
+	&$retval,	// Fill in the blanks
+	&$context	// Where we are at the moment
+	)
 {
-	$retval = array();		// A description of the feed
-	$feed_categories = array();	// Categories a feed belongs
-					// in (as far as it's
-					// concerned).
-	$retval['items'] = array();	// Items in this feed
+	// XXX
+	// <rss version=[...]>		Version of RSS spec
+	// <source url=[...]>		XML version of source
+	// <enclosure url=[...]>	Where to find enclosure
+	// <enclosure length=[...]>	Length of enclosure in bytes
+	// <enclosure type=[...]>	MIME type of enclosure
+	// <category domain=[...]>	URL of categorization taxonomy
+	// <guid isPermaLink=[true|false]>	Whether GUID is URL to item
 
-	/* Set the type of feed */
-	$rss_name = $rss->getName();	// Name of top-level element
-	if ($rss_name == "rss")
-	{
-		$retval['feed_type'] = "RSS";
-
-		// Top-level element (which we know to be <rss>) must have a
-		// "version" attribute.
-		$retval['rss_version'] = (string) $rss['version'];
-	} else {
-		// Assume that if we're in parse_rss but the first
-		// element isn't <rss>, then it's an RDF feed.
-		$retval['feed_type'] = "RDF";
-	}
-
-	// Top-level element must contain a single <channel>.
-	// XXX - We don't actually check that there's only one. We
-	// just take whatever SimpleXML gave us.
-	$channel = $rss->channel[0];
-
-	/* Parse channel elements */
-	// A lot of these elements are currently ignored, but may be
-	// of some use to plugins. E.g. someone may find it useful to
-	// add color to a feed depending on its language.
-
-	// XXX - Apparently $channel->children() gives only the
-	// children in the default (no prefix) namespace. This is good
-	// for a first pass, but for the more general case, we want to
-	// be able to look through the list of declared namespaces
-	// (with prefixes) and parse them as well, possibly with
-	// plugins.
-	foreach ($channel->children() as $elt => $value)
-	{
-		switch ($elt) {
-		    // Mandatory elements
-		    case "title":
-		    	// title: name of this feed
-			$retval['title'] = (string) $value;
-			// XXX - Make sure this exists
-			break;
-
-		    case "link":
-			// link: link to the feed's site
-			$retval['url'] = (string) $value;
-			// XXX - Make sure this exists
-			break;
-
-		    case "description":
-			// description: description of the feed/site
-			// XXX - This seems to be plain text in every
-			// case. Is this a safe assumption?
-			$retval['description'] = (string) $value;
-			// XXX - Make sure this exists
-			break;
-
-		    // Optional channel elements
-		    case "language":
-			// language: the language the feed is written
-			// in. Must be a two-letter abbreviation with
-			// optional "-XX" country extension, e.g.,
-			// "fr" or "en-us".
-			// XXX - http://cyber.law.harvard.edu/rss/languages.html
-			//	http://www.w3.org/TR/REC-html40/struct/dirlang.html#langcodes
-			$retval['language'] = $value;
-			break;
-
-		    case "copyright":
-			// copyright: copyright notice
-			// Ignore.
-			break;
-
-		    case "managingEditor":
-			// managingEditor: who's responsible for the
-			// content: an email address (apparently with
-			// optional comment in parens).
-			// I think that in most cases, this is the
-			// email address of the weblog author.
-			$retval['author_email'] = $value;
-			break;
-
-		    case "webMaster":
-			// webMaster: who's responsible for technical
-			// issues: an email address
-			$retval['webmaster'] = $value;
-			break;
-
-		    case "pubDate":
-			// pubDate: publication time for the content,
-			// in RFC 822 format, e.g.:
-			//	Sat, 07 Sep 2002 00:00:01 GMT
-			// (year may be 2 digits instead of 4).
-			$retval['pub_time'] = strtotime($value);
-			break;
-
-		    case "lastBuildDate":
-			// lastBuildDate: the last time the contents
-			// changed (also apparently in RFC 822 format)
-			// XXX - Perhaps use this as shortcut to
-			// decide whether it's worth doing anything
-			// else with the feed: cache the pubDate, and
-			// if it hasn't changed, don't do anything.
-			// XXX - Likewise with posts: if a post hasn't
-			// changed since we last looked at it, don't
-			// bother parsing it.
-			// XXX - In LJ feeds, apparently lastBuildDate
-			// refers to the time when the RSS feed was
-			// updated. Since it's generated on the fly,
-			// that's pretty useless.
-			$retval['build_time'] = strtotime($value);
-			break;
-
-		    case "category":
-			// category: zero or more categories in which
-			// the channel/item belongs.
-			// The assoc is for compatibility with Atom
-			// XXX - Find a test case that has categories
-			$feed_categories[] = array(
-				"term"	=> (string) $value
-				);
-			break;
-
-		    case "generator":
-			// generator: name of program that generated
-			// the RSS. Not terribly useful for now, but
-			// may be of value if we ever need to work
-			// around some version-specific quirks or
-			// something.
-			$retval['generator'] = (string) $value;
-			break;
-
-		    case "docs":
-			// docs: URL pointing to documentation for
-			// format used in this RSS file.
-			// Ignore.
-			break;
-
-		    case "cloud":
-			// cloud: not sure what this is
-			// XXX - Deal with this if it becomes desirable
-			// Ignore for now.
-			break;
-
-		    case "ttl":
-			// ttl: time to live: how long a channel
-			// should be cached before refreshing, in
-			// minutes.
-			// We convert to seconds, just cos.
-			// XXX - Use this if set. Don't refresh feeds
-			// younger than this.
-			// XXX - Perhaps allow overriding?
-			$retval['ttl'] = $value * 60;
-			break;
-
-		    case "image":
-			// image: image to display with the channel.
-			// <url>: URL to image
-			// <title>: image title. Use this for "alt" in HTML.
-			// <link>: link to the site
-			$retval['image'] = array(
-				"url"	=> (string) $value->url,
-				"title"	=> (string) $value->title,
-				"link"	=> (string) $value->link
-				);
-			break;
-
-		    case "rating":
-			// rating: PICS rating for this channel.
-			// XXX - Deal with this if it becomes desirable.
-			break;
-
-		    case "textInput":
-			// textInput: text input box that goes to an
-			// arbitrary CGI script. dKos uses this for a
-			// dKos search function. Most aggregators
-			// ignore this.
-			// We'll ignore it too.
-			# $feed_textinput_title = $value->title;	// Label
-			# $feed_textinput_desc = $value->description;
-			# $feed_textinput_name = $value->name;	// Name of input field
-			# $feed_textinput_link = $value->link;	// CGI script
-			break;
-
-		    case "skipHours":
-			// Hint to aggregators: don't update during
-			// these hours. An array of <hour>s.
-			// 0 = midnight GMT.
-			// Ignore.
-			break;
-
-		    case "skipDays":
-			// Hint to aggregators: don't update during
-			// these days. An array of <day> elements:
-			// "<day>Monday</day>", ... , "<day>Sunday</day>".
-			// Ignore.
-			break;
-
-			// XXX - If we get this far, and the value has
-			// a prefix (e.g., "lj:mood"), see if there's
-			// a handler for the namespace, and pass it
-			// along to it.
-		    case "item":
-			$item = parse_rss_item($value);
-			if ($item !== NULL)
-				$retval['items'][] = $item;
-			break;
-
-		    default:
-			# XXX - Abort somehow
-			echo "Unrecognized channel element: [[$elt]]\n";
-#			break;
-		}
-	}
-
-	// XXX - Should we make sure mandatory channel elements exist?
-
-	// XXX - Do something smart.
-	$retval['categories'] = $feed_categories;
-
-	// Stupid hack for RDF: yes, it can pass through an RSS 1.0
-	// parser that doesn't look too closely. But while an RSS
-	// document has
-	//	<channel>
-	//	  <item>...
-	//	  <item>...
-	// RDF has
-	//	<channel>
-	//	  <items>...</items>
-	//	</channel>
-	//	<item>...
-	//	<item>...
-	// So we need to look outside the <channel> to find the actual
-	// items.
-	if ($rss->getName() == "RDF")
-	{
-		foreach ($rss->children() as $elt => $value)
-		{
-			if ($elt != "item")
-				continue;
-			$item = parse_rss_item($value);
-			if ($item !== NULL)
-				$retval['items'][] = $item;
-		}
-	}
-
-	return $retval;
+	// XXX - Return something sensible
 }
 
-// parse_rss_item
-// Parse an RSS (2.0) <item> element.
-function parse_rss_item($item)
-{
-	$retval = array();		// Return value
-	$item_categories = array();	// Categories item belongs to
-
-	// XXX - The same namespace considerations that apply to <channel>
-	// also apply here.
-	foreach ($item->children() as $elt => $value)
-	{
-		switch ($elt) {
-		    case "title":
-			// title: title of the item
-			$retval['title'] = (string) $value;
-			break;
-
-		    case "link":
-			// link: URL of the item
-			$retval['url'] = (string) $value;
-			break;
-
-		    case "description":
-			// description: synopsis of the item
-			$retval['description'] = (string) $value;
-			break;
-
-		    case "author":
-			// author: email address of the author
-			$retval['author_email'] = (string) $value;
-			break;
-
-		    case "category":
-			// category: category in which the item goes.
-			// There can be several of these, so put them
-			// in an array.
-			$retval_categories[] = (string) $value;
-					// Cast to string: we don't want
-					// the full XML object
-			break;
-
-		    case "comments":
-			// comments: URL of page where comments can be
-			// read. This is a regular page, not an RSS
-			// feed.
-			$retval['comment_url'] = (string) $value;
-			break;
-
-		    case "enclosure":
-			// enclosure: a media item attached to the item.
-			// required attributes:
-			//	url: link to the item
-			//	length: size in bytes
-			//	type: MIME type of attachment
-			// XXX - If we deal with this, we should
-			// probably handle the case where there are
-			// more than one enclosures.
-			$tmp = $value->attributes();
-			$retval['enclosure'] = array(
-				"url"		=>
-					// XXX - Not sure whether this
-					// is always needed.
-					// Apparently atheistmedia
-					// double-encodes the
-					// enclosure URL. It's decoded
-					// once by simpleXML, but we
-					// need to do it again.
-					htmlspecialchars_decode($tmp['url']),
-				"length"	=> $tmp['length'],
-				"type"		=> $tmp['type']
-				);
-			break;
-
-		    case "guid":
-			// guid: globally unique identifier. Often
-			// looks like a URL, but it's really just a
-			// string.
-			// XXX - Perhaps should use this as database key.
-			$retval['guid'] = (string) $value;
-			break;
-
-		    case "pubDate":
-			// pubDate: date when item was published, as
-			// an RFC 822 string.
-			$retval['pub_time'] = strtotime($value);
-			// XXX - If we've cached this, we can use this
-			// as a heuristic, and not update the database
-			// if the item hasn't changed since we last
-			// saw it.
-			break;
-
-		    case "source":
-			// source: the URL of the channel that this
-			// item came from. Doesn't seem to be used.
-			// XXX - Deal with this when it becomes
-			// desirable. Ignore for now.
-			break;
-
-		    default:
-			# XXX - Abort cleanly
-			echo "Unrecognized item element: [[$elt]]\n";
-			break;
-		}
-	}
-
-	return $retval;
-}
-
-/* parse_atom
- * Parse an Atom feed.
- */
+/********** Atom ****** ****************************************/
 /*
  * Summary of http://tools.ietf.org/html/rfc4287 :
  * start = atomFeed | atomEntry
@@ -685,331 +1355,593 @@ function parse_rss_item($item)
  * atomUpdated = element atom:updated { atomDateConstruct }
  *	Time when entry/feed was last updated.
  */
-function parse_atom($rss)
+
+function atom_init($ns, $url)
 {
-	$retval = array();
-	$feed_categories = array();	// Categories the feed claims
-					// to belong to
-	$feed_contributors = array();	// People who have contributed
-					// to this feed
-	$retval['items'] = array();	// Entries in this feed
-
-	// Theoretically, an Atom feed can be just a single item. In
-	// practice, we should probably assume it's a feed.
-
-	$retval['feed_type'] = "Atom";
-	// XXX - Perhaps abort if $name != "feed".
-
-	foreach ($rss->children() as $elt => $value)
-	{
-		switch ($elt) {
-		    case "author":
-			// atomAuthor: author of the feed
-			$person = atom_person($value);
-			$retval['author_name']  = $person['name'];
-			$retval['author_url']   = $person['url'];
-			$retval['author_email'] = $person['email'];
-			break;
-
-		    case "category":
-			// atomCategory: category, and optional scheme
-			// and label for this feed.
-			$attrs = $value->attributes();
-			$feed_categories[] = array(
-				"term"		=> $attrs['term'],
-				"scheme"	=> $attrs['scheme'],
-				"label"		=> $attrs['label']
-				);
-			break;
-
-		    case "contributor":
-			// atomContributor: someone who contributed to
-			// this feed.
-			// XXX - Not used in practice, apparently
-			$person = atom_person($value);
-			$feed_contributors[] = $person;
-			break;
-
-		    case "generator":
-			// atomGenerator: the software that wrote this feed
-			$attrs = $value->attributes();
-			$retval['generator'] = (string) $value[0];
-			if (isset($attrs['uri']))
-				$retval['generator_url'] = $attrs['uri'];
-			if (isset($attrs['version']))
-			$retval['generator_version'] = $attrs['version'];
-			break;
-
-		    case "icon":
-			// atomIcon: an icon that goes with this feed.
-			// The assoc is for compatibility with RSS's
-			// <image>.
-			$retval['image'] = array(
-				"url"	=> (string) $value[0],
-				);
-			break;
-
-		    case "id":
-			// atomId: GUID for this feed
-			$retval['guid'] = (string) $value[0];
-			break;
-
-		    case "link":
-			// atomLink: links to various documents
-			// pertaining to this feed.
-			$attrs = $value->attributes();
-
-			// There's an infinite number of possible
-			// '<link rel's, and we only care about a few
-			// of them. Look for those and ignore the
-			// others.
-			$link_rel = $attrs['rel'];
-			$link_type = $attrs['type'];
-			$link_href = $attrs['href'];
-			if ($link_rel == "alternate")
-			{
-				// Real page for this feed
-				$retval['url'] = (string) $link_href;
-			} elseif ($link_rel == "replies" &&
-				  $link_type == "text/html")
-			{
-				// Page where comments can be found
-				$retval['comment_url'] = $attrs['href'];
-			} elseif ($link_rel == "replies" &&
-				  $link_type == "application/atom+xml")
-			{
-				// Feed for comments on this post
-				$retval['comment_feed'] = $attrs['href'];
-			}
-			break;
-
-		    case "logo":
-			// atomLogo: a logo that goes with this feed.
-			// XXX - Not sure how it differs from an icon,
-			// except that an icon should be small and
-			// square, whereas a logo should have an
-			// aspect ratio of 2:1.
-			$retval['logo'] = (string) $value[0];
-			break;
-
-		    case "rights":
-			// atomRights: copying rights and whatnot.
-			// XXX - I don't have an example of this in use.
-			$retval['rights'] = $value;
-			break;
-
-		    case "subtitle":
-			// atomSubtitle: feed subtitle
-			$retval['subtitle'] = atom_text_construct($value);
-			break;
-
-		    case "title":
-			// atomTitle: feed title
-			$retval['title'] = atom_text_construct($value);
-			break;
-
-		    case "updated":
-			// atomUpdated: when the feed was last updated
-			$retval['build_time'] = strtotime($value[0]);
-			break;
-
-		    case "entry":
-			// atomEntry: an entry in this feed
-			$entry = parse_atom_entry($value);
-			if ($entry !== NULL)
-				$retval['items'][] = $entry;
-			break;
-
-		    default:
-			// XXX - Abort gracefully
-			echo "Unrecognized feed element [$elt]\n";
-			break;
-		}
-	}
-
-	return $retval;
+//	echo "Inside atom_init($ns, $url)\n";
 }
 
-// parse_atom_entry
-// Parse an Atom <entry> tag.
-function parse_atom_entry($entry)
+function atom_element_handler(
+	$prefix,	// Namespace of this element
+	$elt_name,	// Name of this element, without prefix
+	&$attrs,	// Attributes
+	&$children,	// Contents of this element
+	&$retval,	// Fill in the blanks here
+	$ns_url,	// URL of this element's namespace
+	&$context)	// Where we are at the moment
 {
-	$retval = array();		// Return value
-	$entry_categories = array();	// Categories entry belongs in
-
-	foreach ($entry->children() as $elt => $value)
+	if ($prefix != "")
 	{
-		switch ($elt) {
-		    case "author":
-			// atomAuthor: author of this entry
-			$person = atom_person($value);
-			$retval['author_name']  = (string) $person['name'];
-			$retval['author_url']   = (string) $person['url'];
-			$retval['author_email'] = (string) $person['email'];
-			break;
+		// If we're a guest, just pass this element along.
+		// XXX - Should put this in the other
+		// *_element_handler()s.
+		$retval["$prefix:$elt_name"] = $children;
+		$retval["$prefix:$elt_name"]['@attrs'] = $attrs;
+		return;
+	}
 
-		    case "category":
-			// atomCategory: category, and optional scheme
-			// and label, for this entry.
-			$attrs = $value->attributes();
-			$entry_categories[] = array(
-				"term"		=> (string) $attrs['term'],
-				"scheme"	=> (string) $attrs['scheme'],
-				"label"		=> (string) $attrs['label']
-				);
-			break;
-
-		    case "content":
-			// atomContent: the actual content of the entry.
-			$attrs = $value->attributes();
-			switch ($attrs['type']) {
-			    case "text":
-			    case "html":
-			    case "xhtml":
-				$retval['content'] = atom_text_construct($value);
-				break;
-
-			    default:
-				// XXX - Better error-reporting
-				echo "Unrecognized content type: [$attrs[type]]\n";
-$retval['content2'] = $value;
-				// XXX - Actually, this could be link
-				// to external content, and this is legal.
-				// XXX - Find a test case.
-				break;
-			}
-			break;
-
-		    case "contributor":
-			// atomContributor
-			$person = atom_person($value);
-			$retval['contributors'] = $person;
-			break;
-
-		    case "id":
-			// atomId: GUID for this entry
-			$retval['guid'] = (string) $value[0];
-			break;
-
-		    case "link":
-			// atomLink: links to various documents
-			// pertaining to this entry.
-			$attrs = $value->attributes();
-
-			// There's an infinite number of possible
-			// '<link rel's, and we only care about a few
-			// of them. Look for those and ignore the
-			// others.
-			$link_rel  = (string) $attrs['rel'];
-			$link_type = (string) $attrs['type'];
-			$link_href = (string) $attrs['href'];
-			if ($link_rel == "alternate")
-			{
-				// Real page for this entry
-				$retval['url'] = $link_href;
-			} elseif ($link_rel == "replies" &&
-				  $link_type == "text/html")
-			{
-				// Link to comments on this entry
-				$retval['comment_url'] = $link_href;
-			} elseif ($link_rel == "replies" &&
-				  $link_type == "application/atom+xml")
-			{
-				// Link to feed for comments on this entry
-				$retval['comment_feed'] = $link_href;
-			}
-			break;
-
-		    case "published":
-			// atomPublished: when the entry was first published.
-			$retval['pub_time'] = strtotime($value[0]);
-			break;
-
-		    case "rights":
-			// atomRights: copying rights and whatnot.
-			// XXX - I don't have an example of this in use.
-			break;
-
-		    case "source":
-			// atomSource: metadata from when this entry
-			// was moved here from other feed.
-			// XXX - Try this again when there's an
-			// example to test with.
-			break;
-
-		    case "summary":
-			// atomSummary: summary/abstract of the entry.
-			$retval['description'] = atom_text_construct($value);
-			break;
-
-		    case "title":
-			// atomTitle: entry title
-			$retval['title'] = atom_text_construct($value);
-			break;
-
-		    case "updated":
-			// atomUpdated: when the entry was last updated
-			$retval['build_time'] = strtotime($value[0]);
+	$parent = $context[count($context)-1]['name'];
+	switch ($elt_name)
+	{
+	    case "id":
+		switch ($parent)
+		{
+		    case "feed":
+		    case "entry":
+			// Entry ID, in a not-terribly-useful format.
+			// Ignore it.
 			break;
 
 		    default:
 			// XXX - Better error-reporting
-			echo "Unrecognized entry element: [$elt]\n";
+			echo "Warning: Unexpected parent: [$parent]\n";
 			break;
 		}
-	}
+		break;
 
-	$retval['categories'] = $entry_categories;
+	    case "updated":
+		switch ($parent)
+		{
+		    case "feed":
+		    case "entry":
+			// XXX - Make sure $children is a string.
+			$retval['build_time'] = strtotime($children);
+			break;
 
-	return $retval;
-}
+		    default:
+			// XXX - Better error-reporting
+			echo "Warning: Unexpected parent: [$parent]\n";
+			break;
+		}
+		break;
 
-/* atom_text_construct
- * Parse an atomTextConstruct node, and return it as a string of HTML
- * that can be sent to a browser.
- */
-function atom_text_construct($node)
-{
-	$attrs = $node->attributes();
+	    case "title":
+		switch ($parent)
+		{
+		    case "feed":
+		    case "entry":
+			// XXX - Make sure $children is a string.
+			$retval[$elt_name] = $children;
+			break;
 
-	switch ($attrs['type']) {
-	    case "text":
-	    case "":		// No type -> assume text
-		// This is a text node. Its value has already been
-		// HTML-escaped for the XML feed. So leave it alone.
-		return (string) $node[0];
+		    default:
+			// XXX - Better error-reporting
+			echo "Warning: Unexpected parent: [$parent]\n";
+			break;
+		}
+		break;
 
-	    case "html":
-		// This is an HTML node. Its value has had the HTML
-		// markup escaped so that it doesn't interfere with
-		// the surrounding XML. Unescape one level
-		return htmlspecialchars_decode($node[0]);
+	    case "subtitle":
+		switch ($parent)
+		{
+		    case "feed":
+			// XXX - Make sure $children is a string.
+			$retval[$elt_name] = $children;
+			break;
 
-	    case "xhtml":
-		// This is an XHTML node: it's inside a <div>, but is
-		// otherwise fine the way it is. Strip off the <div>.
-		// XXX - I don't have any examples of this to test with.
-		return (string) $node[0]->children();
+		    default:
+			// XXX - Better error-reporting
+			echo "Warning: Unexpected parent: [$parent]\n";
+			break;
+		}
+		break;
+
+	    case "link":
+		switch ($parent)
+		{
+		    case "feed":
+			switch ($attrs['rel'])
+			{
+			    case "alternate":
+				// Real page for this feed
+				$retval['url'] = $attrs['href'];
+				break;
+
+			    case "replies":
+				if ($attrs['type'] == "text/html")
+				{
+					// Page where comments can be found
+					$retval['comment_url'] = $attrs['href'];
+					break;
+				} elseif ($attrs['type'] == "application/atom+xml")
+				{
+					// Feed for comments on this post
+					$retval['comment_feed'] = $attrs['href'];
+					break;
+				} else {
+					// XXX - Better error-reporting
+					echo "Warning: Unexpected replies type [$attrs[type]]\n";
+					break;
+				}
+
+			    case "next":
+				// Apparently this is nonstandard. In
+				// blogspot.com feeds, this points to
+				// the next 25 items. Ignore it.
+				break;
+
+			    case "self":
+				// Link to the Atom feed itself.
+				// Ignore it.
+				break;
+
+			    case "license":
+				// Apparently nonstandard. License
+				// under which this content is
+				// released. Ignore it.
+				break;
+
+			    default:
+				if (preg_match(',^http://,',
+					       $attrs['rel']))
+				{
+					// Not sure what this is, but
+					// blogspot.com has <link
+					// rel="http://schemas.google.com/g/2005#feed" type="application/atom+xml"
+					// that points to the feed URL.
+					break;
+				}
+				// XXX - Better error-reporting
+				echo "Warning: Unexpected link rel: [$attrs[rel]]\n";
+				break;
+			}
+			break;
+
+		    case "entry":
+			switch ($attrs['rel'])
+			{
+			    case "alternate":
+				// Real page for this entry
+				$retval['url'] = $attrs['href'];
+				break;
+
+			    case "replies":
+				if ($attrs['type'] == "text/html")
+				{
+					// Page where comments can be found
+					$retval['comment_url'] = $attrs['href'];
+					break;
+				} elseif ($attrs['type'] == "application/atom+xml")
+				{
+					// Feed for comments on this post
+					$retval['comment_feed'] = $attrs['href'];
+					break;
+				} else {
+					// XXX - Better error-reporting
+					echo "Warning: Unexpected replies type [$attrs[type]]\n";
+					break;
+				}
+
+			    case "self":
+				// Feed for this entry. Seems a bit
+				// pointless, if you ask me, but okay.
+				// Ignore it.
+				break;
+
+			    case "edit":
+				// Link for editing an entry?
+				// Ignore it (for now?)
+				break;
+
+			    default:
+				// XXX - Better error-reporting
+				echo "Warning: Unexpected link rel: [$attrs[rel]]\n";
+				break;
+			}
+			break;
+
+		    default:
+			// XXX - Better error-reporting
+			echo "Warning: Unexpected parent: [$parent]\n";
+			break;
+		}
+		break;
+
+	    case "name":
+		switch ($parent)
+		{
+		    case "author":
+			// XXX - Make sure $children is a string.
+			$retval[$elt_name] = $children;
+			break;
+
+		    default:
+			// XXX - Better error-reporting
+			echo "Warning: Unexpected parent: [$parent]\n";
+			break;
+		}
+		break;
+
+	    case "uri":
+		switch ($parent)
+		{
+		    case "author":
+			// XXX - Make sure $children is a string.
+			$retval[$elt_name] = $children;
+			break;
+
+		    default:
+			// XXX - Better error-reporting
+			echo "Warning: Unexpected parent: [$parent]\n";
+			break;
+		}
+		break;
+
+	    case "email":
+		switch ($parent)
+		{
+		    case "author":
+			// XXX - Make sure $children is a string.
+			$retval[$elt_name] = $children;
+			break;
+
+		    default:
+			// XXX - Better error-reporting
+			echo "Warning: Unexpected parent: [$parent]\n";
+			break;
+		}
+		break;
+
+	    case "author":
+		switch ($parent)
+		{
+		    case "feed":
+		    case "entry":
+			$retval['author_email'] = $children['email'];
+			$retval['author_name']  = $children['name'];
+			$retval['author_url']   = $children['uri'];
+			break;
+
+		    default:
+			// XXX - Better error-reporting
+			echo "Warning: Unexpected parent: [$parent]\n";
+			break;
+		}
+		break;
+
+	    case "generator":
+		switch ($parent)
+		{
+		    case "feed":
+			// XXX - Make sure $children is a string.
+			$retval['generator'] = $children;
+			$retval['generator_url'] = $attrs['uri'];
+			$retval['generator_version'] = $attrs['version'];
+			break;
+
+		    default:
+			// XXX - Better error-reporting
+			echo "Warning: Unexpected parent: [$parent]\n";
+			break;
+		}
+		break;
+
+	    case "published":
+		switch ($parent)
+		{
+		    case "entry":
+			// XXX - Make sure $children is a string.
+			$retval['pub_time'] = strtotime($children);
+			break;
+
+		    default:
+			// XXX - Better error-reporting
+			echo "Warning: Unexpected parent: [$parent]\n";
+			break;
+		}
+		break;
+
+	    case "category":
+		switch ($parent)
+		{
+		    case "entry":
+			// XXX - Make sure $children is a string?
+			$retval['categories'][] = $attrs['term'];
+			// XXX - Should perhaps do something smart with
+			// $attrs['scheme']
+			break;
+
+		    default:
+			// XXX - Better error-reporting
+			echo "Warning: Unexpected parent: [$parent]\n";
+			break;
+		}
+		break;
+
+	    case "summary":
+		switch ($parent)
+		{
+		    case "entry":
+			// XXX - Make sure $children is a string.
+			$retval['description'] = $children;
+			break;
+
+		    default:
+			// XXX - Better error-reporting
+			echo "Warning: Unexpected parent: [$parent]\n";
+			break;
+		}
+		break;
+
+	    case "logo":
+		switch ($parent)
+		{
+		    case "feed":
+			$retval[$elt_name] = $children;
+			break;
+
+		    default:
+			// XXX - Better error-reporting
+			echo "Warning: Unexpected parent: [$parent]\n";
+			break;
+		}
+		break;
+
+	    case "content":
+		switch ($parent)
+		{
+		    case "entry":
+			$retval[$elt_name] = $children;
+			break;
+
+		    default:
+			// XXX - Better error-reporting
+			echo "Warning: Unexpected parent: [$parent]\n";
+			break;
+		}
+		break;
+
+	    case "entry":
+		switch ($parent)
+		{
+		    case "feed":
+			$retval['items'][] = $children;
+			break;
+
+		    default:
+			// XXX - Better error-reporting
+			echo "Warning: Unexpected parent: [$parent]\n";
+			break;
+		}
+		break;
+
+	    case "feed":
+		switch ($parent)
+		{
+		    case "":
+			$retval = $children;
+			break;
+
+		    default:
+			// XXX - Better error-reporting
+			echo "Warning: Unexpected parent: [$parent]\n";
+			break;
+		}
+		break;
 
 	    default:
 		// XXX - Better error-reporting
-		echo "Unrecognized atomTextConstruct type: [$attrs[type]]\n";
+		echo "Warning: unknown Atom element: [$elt_name]\n";
 		break;
 	}
 }
 
-/* atom_person
- * Parse an atomPersonConstruct node, and return it as an array with
- * keys "name", "url", and "email".
- */
-function atom_person($node)
+function atom_attribute_handler(
+	$prefix,	// Prefix of the attribute
+	$name,		// Name of the attribute
+	$value,		// Value of the attribute
+	&$retval,	// Fill in the blanks
+	&$context	// Where we are at the moment
+	)
 {
-	// XXX - Error-checking?
-	$retval = array(
-		"name"	=> $node->name,
-		"url"	=> $node->uri,
-		"email"	=> $node->email
-		);
-	return $retval;
+	// XXX - What attributes does Atom provide that we might care
+	// about?
+//	echo "Inside atom_attribute_handler()\n";
+}
+
+/********** RDF ******* ****************************************/
+function rdf_element_handler(
+	$prefix,	// Namespace of this element
+	$elt_name,	// Name of this element, without prefix
+	&$attrs,	// Attributes
+	&$children,	// Contents of this element
+	&$retval,	// Fill in the blanks here
+	$ns_url,	// URL of this element's namespace
+	&$context)	// Where we are at the moment
+{
+	$parent = $context[count($context)-1]['name'];
+
+	switch ($elt_name)
+	{
+	    case "title":
+		switch ($parent)
+		{
+		    case "channel":
+			// XXX - Make sure $children is a string
+			$retval[$elt_name] = $children;
+			break;
+
+		    case "item":
+			// XXX - Make sure $children is a string
+			$retval[$elt_name] = $children;
+			break;
+
+		    default:
+			// XXX - Better error-reporting
+			echo "Warning: Unexpected parent: [$parent]\n";
+			break;
+		}
+		break;
+
+	    case "link":
+		switch ($parent)
+		{
+		    case "channel":
+			// XXX - Make sure $children is a string
+			$retval[$elt_name] = $children;
+			break;
+
+		    case "item":
+			// XXX - Make sure $children is a string
+			$retval[$elt_name] = $children;
+			break;
+
+		    default:
+			// XXX - Better error-reporting
+			echo "Warning: Unexpected parent: [$parent]\n";
+			break;
+		}
+		break;
+
+	    case "description":
+		switch ($parent)
+		{
+		    case "channel":
+			// XXX - Make sure $children is a string
+			$retval[$elt_name] = $children;
+			break;
+
+		    case "item":
+			// XXX - Make sure $children is a string
+			$retval[$elt_name] = $children;
+			break;
+
+		    default:
+			// XXX - Better error-reporting
+			echo "Warning: Unexpected parent: [$parent]\n";
+			break;
+		}
+		break;
+
+	    case "li":
+		switch ($parent)
+		{
+		    case "Seq":
+			// XXX - Check attributes
+			$retval['li'][] = $attrs['resource'];
+			break;
+
+		    default:
+			// XXX - Better error-reporting
+			echo "Warning: Unexpected parent: [$parent]\n";
+			break;
+		}
+		break;
+
+	    case "Seq":
+		switch ($parent)
+		{
+		    case "items":
+			$retval['RDF:Seq'] = $children['li'];
+			break;
+
+		    default:
+			// XXX - Better error-reporting
+			echo "Warning: Unexpected parent: [$parent]\n";
+			break;
+		}
+		break;
+
+	    case "items":
+		switch ($parent)
+		{
+		    case "channel":
+			$retval['RDF:Seq'] = $children['RDF:Seq'];
+			break;
+
+		    default:
+			// XXX - Better error-reporting
+			echo "Warning: Unexpected parent: [$parent]\n";
+			break;
+		}
+		break;
+
+	    case "channel":
+		switch ($parent)
+		{
+		    case "RDF":
+			$retval = $children;
+			break;
+
+		    default:
+			// XXX - Better error-reporting
+			echo "Warning: Unexpected parent: [$parent]\n";
+			break;
+		}
+		break;
+
+	    case "item":
+		switch ($parent)
+		{
+		    case "RDF":
+			$retval['items'][] = $children;
+			break;
+
+		    default:
+			// XXX - Better error-reporting
+			echo "Warning: Unexpected parent: [$parent]\n";
+			break;
+		}
+		break;
+
+	    case "RDF":
+		switch ($parent)
+		{
+		    case "":
+			$retval = $children;
+			break;
+
+		    default:
+			// XXX - Better error-reporting
+			echo "Warning: Unexpected parent: [$parent]\n";
+			break;
+		}
+		break;
+
+	    default:
+		// XXX - Better error-reporting
+		echo "Warning: unknown RDF element: [$elt_name]\n";
+		break;
+	}
+
+	// XXX - Return something sensible
+}
+
+/********** LiveJournal ****************************************/
+function lj_init($ns, $url)
+{
+//	echo "Inside lj_init($ns, $url)\n";
+}
+
+function lj_element_handler(
+	$prefix,	// Namespace of this element
+	$elt_name,	// Name of this element, without prefix
+	&$attrs,	// Attributes
+	&$children,	// Contents of this element
+	&$retval,	// Fill in the blanks here
+	&$context)	// Where we are at the moment
+{
+	// XXX
+	$retval["lj_" . $elt_name] = $children;
 }
 ?>

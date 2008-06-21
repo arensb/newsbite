@@ -1,3 +1,13 @@
+- Make a list of conditions for calling it version 1.0
+- php.ini for testing and debugging.
+- Makefile:
+	Run tests:
+		php -l <everything>
+		Try to call various functions and make sure they return
+		correct results
+	Build distro
+- Tool to import feeds and items from existing Feed on
+  Feeds/Monkeychow database.
 - SQL schema should support folders, i.e., user can group feeds into
   categories. By default, all feeds go in a " root" folder (the
   leading space marks this as special; strip space from user-defined
@@ -78,7 +88,7 @@
 	Perhaps the sensible thing to do is to look at three levels:
   the document, feed, and item level; see which namespaces are used,
   and for each one, see whether there's a plugin that'll handle that
-  namespace (as defined by its DTD).
+  namespace (as defined by its URL).
 	Some namespaces seem to be fairly common, e.g.
 	xmlns:content="http://purl.org/rss/1.0/modules/content/"
   Should have built-in handlers for these. Also ought to have plugins
@@ -98,6 +108,35 @@
 	$fetch_rss = fetch_rss_curl;
 	$fetch_rss($url);
 - Provide hooks for various plugins to do their thing.
+	- In rss.inc, to parse an attribute with namespace, e.g.:
+	  <author flickr:profile="http://www.flickr.com/people/annebphoto/">
+	- In rss.inc, to parse an element with namespace, e.g.:
+	  <lj:journaltype>personal</lj:journaltype>
+	- After parsing an element type, so plugin can handle it. A
+	  plugin can thus parse an element nested deep within the XML
+	  structure, and pull it out from the depths, as it were.
+	- After parsing an <item> or <entry>. For instance, an LJ
+	  plugin can know about the <lj:mood> tag, but doesn't know
+	  whether it comes before or after the <content> element. This
+	  way, the plugin can add $item['lj:mood'] = "Happy" when it
+	  sees the <lj:happy> tag, then append "Mood: Happy" at the
+	  bottom of $item['content'].
+		Or, if the feed uses an unusual format (e.g., some
+	  kind of wiki notation), convert the body to HTML.
+	- After parsing an <rss> or <feed>. Same reasoning as the
+	  previous type.
+	- After adding or updating a feed in the database. Perhaps to
+	  add fields to a custom table.
+		Could use this to automatically delete subscription to
+	  feeds that haven't been updated in a while, e.g., comment
+	  threads.
+	- After adding or updating an item in the database. Perhaps to
+	  add fields to a custom table.
+	- Before marking an item as read.
+	- Before deleting an item in the database. Perhaps to clean up
+	  custom tables.
+	- Before deleting a feed in the database. Perhaps to clean up
+	  custom tables.
 - Would be nice to have "(more)" link at the bottom, for items where
   description/summary isn't the whole article.
 	Should also have "mark as read" buttons at top and bottom of
@@ -108,8 +147,6 @@
   your feeds are already up to date.
 - Perhaps extend Smarty, so don't need to set the paths every time.
 - Need a good way to abort in case of error.
-- Tool to import feeds and items from existing Feed on
-  Feeds/Monkeychow database.
 - In common.inc (or something), need a good function to abort with an
   error.
 - Rewrite the XML-parsing code using XMLReader or XML Parser.
@@ -136,87 +173,41 @@
   10 or 50 at a time.
 	If possible, add heading between items when the date changes
   (like LiveJournal).
-- From conversation with Mike vW:
-	For parsing feed XML, write a generic parser that calls
-  plugins for everything. When it sees
-	<rss><item><author>Firstname Lastname</author>,
-  it calls rss_parse_element(
-  	$context = array("rss", "item"),
-	$name = "author",
-	$value = "Firstname Lastname",
-	$attributes = array(...),
-	$contents = array(),
-	&$retval = array(...));
-
-  - $context gives the context, so a plugin can do different things with
-  <feed><author> and <feed><entry><author> if it wants to.
-  - $name is the name of the element
-  - $value is the value of the element
-  - $attributes holds the attributes of the element
-  - $contents is the $retval filled in by the children (see below)
-  - $retval is an array that rss_parse_element() is expected to fill
-    in.
-
-	Thus, if you have an Atom feed with
-	<feed>
-	  <entry>
-	    <author>
-	      <email>foo@bar.com</email>
-	      <name>J. Random Hacker</name>
-	      <url>http://www.bar.com/~foo/</url>
-	    </author>
-	  </entry>
-	 </feed>
-
-    then first call the Atom plugin when the </email> element has been
-    seen. It sets
-	$retval = array(
-		"email" => "foo@bar.com"
-		);
-    Next call it when the </name> and </url> elements have been seen,
-    so the array looks like
-	$retval = array(
-		"email" => "foo@bar.com",
-		"name" => "J. Random Hacker",
-		"url" = "http://www.bar.com/~foo/"
-		);
-    Next we call it after seeing </author>. It is given
-	$contents = array(
-		"email" => "foo@bar.com",
-		"name" => "J. Random Hacker",
-		"url" = "http://www.bar.com/~foo/"
-		);
-	$retval = array();
-    and is expected to set
-	$retval = array(
-		"author" => "J. Random Hacker <foo@bar.com>"
-		);
-
-    This percolates upward until we eventually have a data structure
-    in a well-known format:
-	$feed = array(
-		"name" => "Some Site",
-		"url => "http://www.foo.com/",
-		"items" = array(
-				array(
-					"title" => "Post title",
-					"post_date" => ...,
-					...
-				)
-			)
-		);
-
-    Further flourishes are possible (and desirable). E.g., imagine a
-    plugin that looks for <lj:mood>Happy</lj:mood> and appends "Mood:
-    happy" to the bottom of the post.
-	Since we don't know the order in which the <lj:mood> and
-    <content> elements appear, the plugin will have to first be called
-    when </lj:mood> has been seen, and again when </entry> has been
-    seen. The latter can then append text to $entry['content'].
-
-	Need to register these sorts of hooks somehow.
 - Ajax: keybindings for articles:
 	'm'	(more) when viewing preview, show full article
 	'n'	move to next item
 	'd'	mark item as read, and skip to next item
 	'u'	mark item as unread, and skip to next item
+- Handle attachments (e.g., <media:content>,
+  <feedburner:origEnclosureLink>) kind of like a mail reader would:
+  put a list at the bottom of the message.
+- Should have different skins for different uses: in a full-featured
+  browser, show everything, use Ajax, etc. On mobile device (PDA,
+  phone, etc.) have a more compact skin better adapted to a small
+  screen.
+	For instance, show just headline, and allow user to delete
+  stuff. That should help get rid of the chaff in a small amount of
+  screen real estate.
+	Mobile device might not have network access at the moment when
+  you delete an item. So have a list of items to be deleted. If
+  JavaScript is available, periodically try to delete these items.
+- Plugin for XKCD: copy the alt text underneath the image, so you
+  don't have to RTFS or "View Properties" to see it.
+- Bookmarklet to find RSS feed for the current page and subscribe to it.
+- Utilities to import/export OPML. See
+  http://www.opml.org/spec2
+  Examples of subscription lists:
+  http://www.opml.org/guidelinesForValidation
+- LiveJournal plugin should look at the <description> and parse lj
+  tags in the body of the item. E.g., expand '<lj:user="foo">' into
+  proper HTML.
+- Security: should probably try to parse the body of any foreign text
+  (in particular, summary and body of posts, as well as titles) to
+  include only known-good HTML.
+	Otherwise, vulnerable to XSS, e.g., by including JavaScript in
+  post.
+	Perhaps add a whitelist of trusted sites (e.g., APOD).
+- Per-feed options:
+	- Whether to display oldest-first by default (good for comics)
+	  or newest-first (good for news).
+	- Whether the feed contains BBcode (like top10).
