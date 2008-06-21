@@ -173,6 +173,11 @@ echo "Deleted [", $stmt->affected_rows, "] items.<br/>\n";
 	}
 
 	/* Add/replace the items in the database. */
+	if (count($feed['items']) == 0)
+		/* Nothing to do */
+		// XXX - Return something sensible?
+		return;
+
 	foreach ($feed['items'] as $item)
 	{
 echo "Need to update item: [$item[title]]<br/>\n";
