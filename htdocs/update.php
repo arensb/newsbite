@@ -190,17 +190,6 @@ echo "Starting [", $feed['title'], "]<br/>\n"; flush();
 				echo "], and I don't know how to handle that.\n";
 				break;
 			}
-			// XXX - Check $err['result'].
-			// 0 - OK
-			// 7 - Couldn't connect
-			// 47 - Too many redirects
-			// Perhaps can use curl_errno(), curl_error() to
-			// display message.
-			if ($err['result'] != CURLE_OK)
-			{
-				echo "    curl_multi_info_read error: [",
-					curl_error(), "]\n";
-			}
 
 			// Find the appropriate handle, and set $handle as a
 			// reference to its entry in $pipeline.
@@ -226,13 +215,17 @@ echo "Starting [", $feed['title'], "]<br/>\n"; flush();
 				continue;
 			}
 
-			// Check whether the transfer completed successfully
+			/* Check whether the transfer completed successfully
+			 * 0 - OK
+			 * 7 - Couldn't connect
+			 * 47 - Too many redirects
+			 */
 			if ($err['result'] == CURLE_OK)
 			{
 				/* We've found the handle we
 				 * want. Get its contents.
 				 */
-echo "Finished [", $handle['feed']['title'], "<br/>\n"; flush();
+echo "Finished [", $handle['feed']['title'], "]<br/>\n"; flush();
 				_save_handle($handle);
 
 				/* We're done with this handle. */
@@ -241,8 +234,9 @@ echo "Finished [", $handle['feed']['title'], "<br/>\n"; flush();
 					$handle['ch']);
 				curl_close($handle['ch']);
 			} else {
-				// XXX - Bette error-reporting
-				echo "Error ",
+				// XXX - Better error-reporting
+				echo "Error in [", $handle['feed']['title'],
+					"]: ",
 					curl_errno($handle['ch']),
 					": [",
 					curl_error($handle['ch']),
@@ -268,9 +262,8 @@ echo "Starting [", $feed['title'], "]<br/>\n"; flush();
 					"feed"	=> $feed
 					);
 			} else {
-				// We have no more feeds to
-				// update. Mark this pipeline
-				// entry as NULL.
+				// We have no more feeds to update.
+				// Mark this pipeline entry as NULL.
 				$handle = NULL;
 			}
 		}
@@ -288,8 +281,8 @@ echo "Starting [", $feed['title'], "]<br/>\n"; flush();
 	 * last handle that was closed. It wasn't caught by the code
 	 * above.
 	 */
-	// XXX - Can't figure out how to deal with the last handle,
-	// without having this special exception at the end.
+	// XXX - Can't figure out how to deal with the last handle in
+	// the code above. Hence this special addition at the end.
 	for ($i = 0; $i < count($pipeline); $i++)
 	{
 		if (isset($pipeline[$i]))
@@ -300,8 +293,6 @@ echo "Finished [", $pipeline[$i]['feed']['title'], "]<br/>\n"; flush();
 	}
 
 	curl_multi_close($mh);
-
-	// XXX - Parse feeds; save them in database
 }
 
 /* _open_curl_handle
@@ -316,8 +307,9 @@ function _open_curl_handle($url, $username = NULL, $passwd = NULL)
 	$err = curl_setopt_array(
 		$ch,
 		array(CURLOPT_URL	=> $url,	// Set the URL
-		      CURLOPT_HEADER	=> FALSE,
-				// Don't give me the header
+		      CURLOPT_HEADER	=> TRUE,
+				// Give me the header, so I can see
+				// the HTTP status code
 		      CURLOPT_RETURNTRANSFER => true,
 				// Give me the result; don't print it.
 		      // Follow up to 2 redirects. Beyond that, it's
@@ -343,7 +335,60 @@ function _save_handle($handle)
 //echo "_save_handle("; print_r($handle); echo ")\n";
 	// Get the feed text from the curl handle
 	$feed_text = curl_multi_getcontent($handle['ch']);
-//echo "feed_text == [$feed_text]\n";
+//echo "feed_text == [", substr($feed_text, 0, 512), "]\n";
+
+	/* XXX - Get the HTTP header(s), for the status code, so we
+	 * can find out whether something went wrong.
+	 * A header is a set of CR-LF-terminated lines of the form
+	 *	HTTP/<version> <code> <msg>
+	 *	another line
+	 *	yet another line
+	 *	\r
+	 * (IOW look for the first blank line (but ending with \r\n,
+	 * not \n).
+	 *
+	 * For redirects, there'll be multiple headers: the first one
+	 * gives the redirect, the next one gives the real location.
+	 * This can be useful for telling the user if the feed URL has
+	 * changed.
+	 * XXX - OTOH, sometimes the redirect is intentional, and
+	 * should be ignored (e.g., feeds at scienceblogs.com and
+	 * other sites are apparently subcontracted to feedburner.com)
+	 */
+	// We only care about the last header.
+	$http_status = -1;
+	$http_error = "This error message intentionally left blank.";
+	do {
+		list($new_header, $new_text) =
+			explode("\r\n\r\n", $feed_text, 2);
+		$header = $new_header;
+		$feed_text = $new_text;
+
+		/* Dig the HTTP status code out of the header */
+		if (preg_match('{^HTTP/\S+\s+(\d+)\s+(.*?)\r}',
+			       $header,
+			       $match))
+		{
+			$http_status = $match[1];
+			$http_error  = $match[2];
+			// XXX - Possible statuses:
+			// 200 OK
+			// 301 Moved permanently (followed by another header)
+			// 302 Moved temporarily (followed by another header)
+			// 401 Authentication required (followed by another header)
+		}
+	} while (substr($feed_text, 0, 5) == "HTTP/");
+
+//echo "Final status: [$http_status] [$http_error]\n";
+	if ($http_status != "200")
+	{
+		// XXX - Better error-reporting
+		echo "Error: $http_status $http_error\nAborting.\n";
+		return;
+	}
+
+	// XXX - Check the status code, and complain if there's an
+	// error.
 
 	/* Parse the feed */
 	$feed_id = $handle['feed']['id'];
