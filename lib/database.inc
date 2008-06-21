@@ -176,7 +176,7 @@ echo "Deleted [", $stmt->affected_rows, "] items.<br/>\n";
 	foreach ($feed['items'] as $item)
 	{
 echo "Need to update item: [$item[title]]<br/>\n";
-#echo "<pre>\$item: ["; print_r($item); echo "]\n</pre>\n<br/>\n";
+//echo "<pre>\$item: ["; print_r($item); echo "]\n</pre>\n<br/>\n";
 
 		// This query may look long and redundant, but
 		// basically it means:
@@ -227,6 +227,18 @@ EOT;
 		else
 			$build_time = time();
 
+		/* Make sure the item has a publication time. If the
+		 * item doesn't have one, try to inherit from the feed
+		 * itself. If that fails, use the current time.
+		 */
+		if ($item['pub_time'] == 0)
+		{
+			if ($feed['pub_time'] != 0)
+				$pub_time = $feed['pub_time'];
+			else
+				$pub_time = time();
+		}
+
 		$stmt->bind_param("dsssssssssdd" .
 				  "ssssssssdd",
 				  // Values for new items
@@ -240,7 +252,7 @@ EOT;
 				  $item['comment_url'],
 				  $item['comment_feed'],
 				  $item['guid'],
-				  $item['pub_time'],
+				  $pub_time,
 				  $build_time,
 				  // 'state' set automatically
 
@@ -253,7 +265,7 @@ EOT;
 				  $dummy_categories,	// XXX - Deal with categories
 				  $item['comment_url'],
 				  $item['comment_feed'],
-				  $item['pub_time'],
+				  $pub_time,
 				  $build_time
 			);
 		$err = $stmt->execute();
