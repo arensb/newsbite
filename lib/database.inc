@@ -231,12 +231,16 @@ EOT;
 		 * item doesn't have one, try to inherit from the feed
 		 * itself. If that fails, use the current time.
 		 */
-		if ($item['pub_time'] == 0)
+
+		$pub_time = $item['pub_time'];
+		if ($pub_time == 0)
 		{
 			if ($feed['pub_time'] != 0)
+			{
 				$pub_time = $feed['pub_time'];
-			else
+			} else {
 				$pub_time = time();
+			}
 		}
 
 		$stmt->bind_param("dsssssssssdd" .
