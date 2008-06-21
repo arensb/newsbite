@@ -118,6 +118,9 @@ $url2handler = array(		// Handlers for specific URLs
 // blogChannel	http://backend.userland.com/blogChannelModule
 // cc		http://web.resource.org/cc/
 // content	http://purl.org/rss/1.0/modules/content/
+	"http://purl.org/rss/1.0/modules/content/"	=> array(
+		"element"	=> content_element_handler,
+		),
 // dc		http://purl.org/dc/elements/1.1/
 // feedburner	http://rssnamespace.org/feedburner/ext/1.0
 // flickr	http://flickr.com/services/feeds/
@@ -187,14 +190,17 @@ function parse_feed($feed_text)
 	//	<description>
 	//	Some <b>unescaped</b> HTML text
 	//	</description>
-
-	// For all I know, this may be legal, but I don't have a good
-	// way to deal with it. So this hack looks for
+	// This is probably legal (<rdf:value> allows it as well), but
+	// I don't have a good way to deal with it. So this hack looks
+	// for
 	// <description>...</description> pairs, and escapes the ones
 	// that
 	// a) don't begin with "<![CDATA[", and
 	// b) contain a "<".
 	// Oh, and it unescapes entities like "&quot;"
+
+	// XXX - Come up with a better way of dealing with this.
+	// Perhaps with $reader->expand?
 	$feed_text = preg_replace_callback('{<description>(.*?)</description>}s',
 					   create_function('$matches',
 							   'if (substr($matches[1], 0, 9) == "<![CDATA[")
@@ -1938,9 +1944,56 @@ function lj_element_handler(
 	&$attrs,	// Attributes
 	&$children,	// Contents of this element
 	&$retval,	// Fill in the blanks here
+	$ns_url,	// URL of this element's namespace
 	&$context)	// Where we are at the moment
 {
 	// XXX
 	$retval["lj_" . $elt_name] = $children;
+}
+
+/********** content ****************************************/
+/* content_element_handler
+ * Handle the RSS Content module:
+ * http://purl.org/rss/1.0/modules/content/
+ *
+ * <content:encoded><![CDATA[...]]></content:encoded>
+ *	The contents of the post
+ *
+ * The following are also defined, but don't seem to be used:
+ * <content:items>
+ * <content:item>
+ * <content:format>
+ * <rdf:value>
+ * <content:encoding>
+ */
+function content_element_handler(
+	$prefix,	// Namespace of this element
+	$elt_name,	// Name of this element, without prefix
+	&$attrs,	// Attributes
+	&$children,	// Contents of this element
+	&$retval,	// Fill in the blanks here
+	$ns_url,	// URL of this element's namespace
+	&$context)	// Where we are at the moment
+{
+	$parent = $context[count($context)-1]['name'];
+	switch ($elt_name)
+	{
+	    case "encoded":
+		/* In practice, only RSS files[1] use the Content
+		 * module (since Atom already has a <content>
+		 * element), so we'll just set the parent's 'content'.
+		 *
+		 * [1] So does RDF, actually, but it's specially
+		 * crafted to look like RSS.
+		 */
+		// XXX - Make sure $chldren is a string?
+		$retval['content'] = $children;
+		break;
+
+	    default:
+		echo "Warning: unknown \"content:\" element: [$elt_name]\n";
+		break;
+		
+	}
 }
 ?>
