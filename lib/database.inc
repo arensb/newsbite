@@ -172,6 +172,57 @@ EOT;
 echo "Deleted [", $stmt->affected_rows, "] items.<br/>\n";
 	}
 
+	/* Update information about the feed itself */
+	// I don't think we can use $stmt->bind_param(), because that
+	// takes a variable number of arguments, and I don't think PHP
+	// has the equivalent of Lisp's (apply).
+
+	// At the same time, some of the fields require special
+	// processing anyway: it's not a simple mapping from
+	// $feed[X] -> database column X.
+	$updates = array();
+	if (isset($feed['title']))
+		// Feed title
+		$updates[] = "title = '" .
+			$sth->real_escape_string($feed['title']) .
+			"'";
+	if (isset($feed['subtitle']))
+		// Feed subtitle
+		$updates[] = "subtitle = '" .
+			$sth->real_escape_string($feed['subtitle']) .
+			"'";
+	if (isset($feed['url']))
+		// URL for the site
+		$updates[] = "url = '" .
+			$sth->real_escape_string($feed['url']) .
+			"'";
+	if (isset($feed['description']))
+		// Description of the site
+		$updates[] = "description = '" .
+			$sth->real_escape_string($feed['description']) .
+			"'";
+	if (isset($feed['ttl']))
+		// Description of the site
+		$updates[] = sprintf("ttl = %ld", $feed['description']);
+	if (isset($feed['image']['url']))
+		// Image associated with the site
+		$updates[] = "image = '" .
+			$sth->real_escape_string($feed['image']['url']) .
+			"'";
+	if (count($updates) > 0)
+	{
+		$query = sprintf("UPDATE feeds SET\n%s\nWHERE id=%d",
+				 implode(",\n", $updates),
+				 $feed_id);
+		$result = $sth->query($query);
+		if (!$result)
+		{
+			echo "Error updating feed information: ",
+				$sth->errno, ": \"",
+				$sth->error, "\"<br/>\n";
+		}
+	}
+
 	/* Add/replace the items in the database. */
 	if (count($feed['items']) == 0)
 		/* Nothing to do */
