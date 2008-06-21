@@ -1,7 +1,6 @@
 <?
-// XXX - Rename this to feed.inc, since it's not just RSS
-/* rss.inc
- * Functions for parsing RSS (and similar) XML files.
+/* feed.inc
+ * Functions for parsing RSS (and similar) XML feed files.
  */
 // XXX - Should probably inspect HTML in summary and content: if any
 // links or images are relative, try to make them absolute. Or maybe
