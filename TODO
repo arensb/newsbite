@@ -1,11 +1,12 @@
 - Make a list of conditions for calling it version 1.0
-- php.ini for testing and debugging.
 - Makefile:
 	Run tests:
 		php -l <everything>
 		Try to call various functions and make sure they return
 		correct results
+		php-cgi -c php.ini <script>
 	Build distro
+- Documentation for how the plugins for feed.inc work.
 - Tool to import feeds and items from existing Feed on
   Feeds/Monkeychow database.
 - SQL schema should support folders, i.e., user can group feeds into
@@ -21,14 +22,6 @@
   a separate entry (and nth field) for each instance. And each user.
 - Folders can contain subfolders, and so on. So each folder needs a
   pointer to its parent folder.
-- Item states: each post/article/item can be in one of several states:
-	new	Never seen. Added since the last time any articles
-		  were read
-	unread	Presented to the user at least once, but not marked as
-		  read.
-	read	Marked as read, but not yet deleted.
-	deleted	Deleted, but not yet expunged from database. This may
-		  or may not be useful.
 - LiveJournal plugin (or something): would be nice to be able to say
   "I'm user So-and-so at LiveJournal" (or other site using the LJ
   code) and have it automatically subscribe to your friends feeds
@@ -71,60 +64,12 @@
   just have a "Feed powered by FeedBurner" image.
 - For each feed, give the option of displaying just the image (if
   any), the title, or both.
-- For each feed and item, should store unrecognized elements
-  (especially in specialized namespaces like "lj") separately, in case
-  a plugin can make use of it.
-	For instance, an LJ plugin can show who posted an article in a
-  community journal, or display appropriate mood and visibility icons.
-
-	AFAICT getDocNamespaces() returns the namespaces that are
-  declared within a document, while getNamespaces() returns the ones
-  that are actually used. Of course, in a well-formed document, any
-  namespace that's used will also be declared.
-	Experimentation shows that if there's an element with an
-  undeclared namespace, it won't show up in either list. So don't use
-  those. But if a declaration is buried deep within the document,
-  it'll show up in getDocNamespaces(true).
-	Perhaps the sensible thing to do is to look at three levels:
-  the document, feed, and item level; see which namespaces are used,
-  and for each one, see whether there's a plugin that'll handle that
-  namespace (as defined by its URL).
-	Some namespaces seem to be fairly common, e.g.
-	xmlns:content="http://purl.org/rss/1.0/modules/content/"
-  Should have built-in handlers for these. Also ought to have plugins
-  to add one's own handlers (hooks).
-
-	Also, note that elements in one namespace can have attributes
-  in another, e.g.:
-	<rss xmlns="http://www.foo.com/"
-	     xmlns:bar="http://www.bar.com/">
-	<channel>
-	  <item bar:type="article">
-	    <!-- "item" is in namespace "", but "type" is in namespace
-	    "bar" -->
 - Make curl (and other modules) optional: use references-to-functions
   to pick the appropriate function to call:
 	function fetch_rss_curl(...) { ... }
 	$fetch_rss = fetch_rss_curl;
 	$fetch_rss($url);
 - Provide hooks for various plugins to do their thing.
-	- In rss.inc, to parse an attribute with namespace, e.g.:
-	  <author flickr:profile="http://www.flickr.com/people/annebphoto/">
-	- In rss.inc, to parse an element with namespace, e.g.:
-	  <lj:journaltype>personal</lj:journaltype>
-	- After parsing an element type, so plugin can handle it. A
-	  plugin can thus parse an element nested deep within the XML
-	  structure, and pull it out from the depths, as it were.
-	- After parsing an <item> or <entry>. For instance, an LJ
-	  plugin can know about the <lj:mood> tag, but doesn't know
-	  whether it comes before or after the <content> element. This
-	  way, the plugin can add $item['lj:mood'] = "Happy" when it
-	  sees the <lj:happy> tag, then append "Mood: Happy" at the
-	  bottom of $item['content'].
-		Or, if the feed uses an unusual format (e.g., some
-	  kind of wiki notation), convert the body to HTML.
-	- After parsing an <rss> or <feed>. Same reasoning as the
-	  previous type.
 	- After adding or updating a feed in the database. Perhaps to
 	  add fields to a custom table.
 		Could use this to automatically delete subscription to
@@ -137,6 +82,12 @@
 	  custom tables.
 	- Before deleting a feed in the database. Perhaps to clean up
 	  custom tables.
+- Feed-parsing plugins: Need to have a hook for items, and another for
+  feeds. Don't do this as post-element hooks, because the plugin
+  shouldn't be expected to know which element represents an item/feed.
+	Also, if plugins add stuff to the bottom of the article text,
+  want to give the user some control over the order in which they get
+  called.
 - Would be nice to have "(more)" link at the bottom, for items where
   description/summary isn't the whole article.
 	Should also have "mark as read" buttons at top and bottom of
@@ -146,15 +97,26 @@
   delete it now, so that if you switch from workstation to laptop,
   your feeds are already up to date.
 - Perhaps extend Smarty, so don't need to set the paths every time.
+- i18n.
 - Need a good way to abort in case of error.
 - In common.inc (or something), need a good function to abort with an
   error.
-- Rewrite the XML-parsing code using XMLReader or XML Parser.
+- Should have different skins for different uses: in a full-featured
+  browser, show everything, use Ajax, etc. On mobile device (PDA,
+  phone, etc.) have a more compact skin better adapted to a small
+  screen.
+	For instance, show just headline, and allow user to delete
+  stuff. That should help get rid of the chaff in a small amount of
+  screen real estate.
+	Mobile device might not have network access at the moment when
+  you delete an item. So have a list of items to be deleted. If
+  JavaScript is available, periodically try to delete these items.
 - Nokia N810 browser identifies itself as:
   "Mozilla/5.0 (X11; U; Linux armv6l; en-US; rv:1.9a6pre) Gecko/20071128 Firefox/3.0a1 Tablet browser 0.2.2 RX-34+RX-44_2008SE_2.2007.51-3"
 
   Palm T|X browser identifies itself as:
   "Mozilla/4.0 (compatible; MSIE 6.0; Windows 98; PalmSource/Palm-D050; Blazer/4.3) 16;320x320"
+	This can be used to pick a default skin.
 - One possible way of displaying a feed might be to have a small frame
   at the top, like Google Image results, with a brief identification
   of the item, and navigation arrows to go to the {previous,next}
@@ -181,16 +143,6 @@
 - Handle attachments (e.g., <media:content>,
   <feedburner:origEnclosureLink>) kind of like a mail reader would:
   put a list at the bottom of the message.
-- Should have different skins for different uses: in a full-featured
-  browser, show everything, use Ajax, etc. On mobile device (PDA,
-  phone, etc.) have a more compact skin better adapted to a small
-  screen.
-	For instance, show just headline, and allow user to delete
-  stuff. That should help get rid of the chaff in a small amount of
-  screen real estate.
-	Mobile device might not have network access at the moment when
-  you delete an item. So have a list of items to be deleted. If
-  JavaScript is available, periodically try to delete these items.
 - Plugin for XKCD: copy the alt text underneath the image, so you
   don't have to RTFS or "View Properties" to see it.
 - Bookmarklet to find RSS feed for the current page and subscribe to it.
@@ -211,9 +163,3 @@
 	- Whether to display oldest-first by default (good for comics)
 	  or newest-first (good for news).
 	- Whether the feed contains BBcode (like top10).
-- Feed-parsing plugins: Need to have a hook for items, and another for
-  feeds. Don't do this as post-element hooks, because the plugin
-  shouldn't be expected to know which element represents an item/feed.
-	Also, if plugins add stuff to the bottom of the article text,
-  want to give the user some control over the order in which they get
-  called.
