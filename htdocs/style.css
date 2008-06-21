@@ -25,6 +25,11 @@ table#feeds tr td {
  * Feed view
  */
 
+h1 a {
+	text-decoration:	none;	/* I know it's a link. Don't
+					 * underline it. */
+}
+
 /* Icon or image for the feed */
 .feed_icon {
 	float:			right;
@@ -54,6 +59,8 @@ table#feeds tr td {
 	font-family:		Arial, sans-serif;
 	font-size:		180%;
 	font-weight:		bold;
+	text-decoration:	none;	/* I know it's a link. Don't
+					 * underline it. */
 }
 
 /* Summary of item */
