@@ -323,7 +323,7 @@ function parse_feed($feed_text)
 	{
 		// Use the default
 	} else {
-		exit(1);		// XXX - Abort better
+		return FALSE;	// Don't know how to handle this
 	}
 
 	/* Run the init hooks for any namespaces we've found */

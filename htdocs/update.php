@@ -128,7 +128,10 @@ function update_all_feeds()
 
 		$url = $feed['feed_url'];
 echo "Starting [", $feed['title'], "]<br/>\n"; flush();
-		$ch = _open_curl_handle($url);	// Curl handle for this URL
+		$ch = _open_curl_handle(	// Curl handle for this URL
+			$url,
+			$feed['username'],
+			$feed['passwd']);
 		$err = curl_multi_add_handle($mh, $ch);
 
 		// Keep track of this feed handle
@@ -253,7 +256,10 @@ echo "Finished [", $handle['feed']['title'], "<br/>\n"; flush();
 				// to the multi-handle
 echo "Starting [", $feed['title'], "]<br/>\n"; flush();
 				$url = $feed['feed_url'];
-				$ch = _open_curl_handle($url);
+				$ch = _open_curl_handle(
+					$url,
+					$feed['username'],
+					$feed['passwd']);
 
 				$err = curl_multi_add_handle($mh, $ch);
 				$handle = array(
@@ -302,7 +308,7 @@ echo "Finished [", $pipeline[$i]['feed']['title'], "]<br/>\n"; flush();
  * Private helper function to open a Curl handle to retrieve a URL,
  * and set the options we want.
  */
-function _open_curl_handle($url)
+function _open_curl_handle($url, $username = NULL, $passwd = NULL)
 {
 	$ch = curl_init();
 //	echo "  \$ch == ["; print_r($ch); echo "]\n";
@@ -319,6 +325,14 @@ function _open_curl_handle($url)
 		      CURLOPT_FOLLOWLOCATION => true,	// Follow redirects
 		      CURLOPT_MAXREDIRS	=> 2));
 				// Max # redirects to follow
+
+	/* Use authentication if required */
+	if ($username != "" || $passwd != "")
+	{
+		curl_setopt($ch, CURLOPT_HTTPAUTH, CURLAUTH_ANYSAFE);
+			// Use reasonable security
+		curl_setopt($ch, CURLOPT_USERPWD, "$feed[username]:$feed[passwd]");
+	}
 
 //echo "_open_curl_handle returning [$ch]\n";
 	return $ch;
