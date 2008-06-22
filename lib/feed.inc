@@ -1027,7 +1027,9 @@ function rss_element_handler(
 		switch ($parent)
 		{
 		    case "item":
-			$retval = array(
+			if (!isset($retval['enclosure']))
+				$retval['enclosure'] = array();
+			$retval['enclosure'][] = array(
 				"url"		=>
 					htmlspecialchars_decode($attrs['url']),
 					// XXX - This might need a
