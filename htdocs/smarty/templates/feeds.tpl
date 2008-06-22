@@ -17,18 +17,11 @@
 <table id="feeds">
 {section name=feed loop=$feeds}
 {strip}
-  <tr>
+  <tr class="{cycle values="odd-row,even-row"}">
     <td>
       <a href="view.php?id={$feeds[feed].id}">{$feeds[feed].title}</a>
       &nbsp;(<a href="{$feeds[feed].url}">site</a>)
       &nbsp;(<a href="{$feeds[feed].feed_url}">RSS</a>)
-    </td>
-    <td>
-      {if $feeds[feed].image eq ""}
-        &nbsp;
-      {else}
-        <img src="{$feeds[feed].image}" />
-      {/if}
     </td>
     <td>
       {* Tools *}

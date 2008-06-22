@@ -123,6 +123,7 @@
   {item,feed}. The bottom frame shows the original article.
 - FeedBurner plugin: remove the stuff (esp. bugs) that FeedBurner adds
   to bottom of articles.
+	Perhaps more generally look for any 1x1 pixel image.
 - Add <form> to view.php, to mark articles as read.
 - In view.php, show 10 articles at a time (or some other configurable
   value).
@@ -163,3 +164,11 @@
 	- Whether to display oldest-first by default (good for comics)
 	  or newest-first (good for news).
 	- Whether the feed contains BBcode (like top10).
+- I think in most cases, where an item has both a summary and a
+  content, the summary is just the first N characters of the content
+  (modulo HTML formatting and whatnot).
+	But in Jesus and Mo, they're both present, and sometimes have
+  completely unrelated content. But I think that's the exception.
+	Of course, it'd also be nice to include the strip in the feed,
+  so it'd probably be good to write a plugin for that anyway, so can
+  fix this there.

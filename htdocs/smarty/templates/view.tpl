@@ -6,7 +6,7 @@
 <title>NewsBite: {$feed.title}</title>
 <link rel="stylesheet" type="text/css" href="style.css" media="all" />
 </head>
-<body>
+<body id="view-body">
 
 {if (isset($feed.image))}
 <img class="feed_icon" src="{$feed.image}"/>

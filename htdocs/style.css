@@ -8,22 +8,42 @@ body {
  * Index of feeds
  */
 table#feeds {
-	background-color:	cyan;
 	border-width:		1px;
 	border-color:		black;
+	border-spacing:		0px 0px;	/* Space between cells, x,y */
+	width:			100%;
+}
+
+.tools {
+	background-color:	yellow;
+	border:			1px solid orange;
+	margin-bottom:		1em;
 }
 
 table#feeds tr {
 	border:		1px dotted black;
 }
 
+table#feeds tr.odd-row {
+	background-color:	#dddddd;
+}
+
+table#feeds tr.even-row {
+/*	background-color:	white;*/
+	background-color:	inherit;
+}
+
 table#feeds tr td {
-	border:		1px dashed red;
+/*	border:		1px dashed red;*/
 }
 
 /*
  * Feed view
  */
+
+body#view-body {
+	padding:		0px;
+}
 
 h1 a {
 	text-decoration:	none;	/* I know it's a link. Don't
@@ -50,6 +70,7 @@ h1 a {
 /* Overall box containing an item */
 .item {
 	margin-top:		2em;
+	margin-left:		0px;
 	clear:			both;
 }
 
