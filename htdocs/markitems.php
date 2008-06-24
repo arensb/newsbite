@@ -1,19 +1,11 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
-	"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
-<html>
-<head>
-<title>NewsBite: {$feed.title}</title>
-<link rel="stylesheet" type="text/css" href="style.css" media="all" />
-</head>
-<body>
-
 <?php
 require_once("config.inc");
 require_once("database.inc");
 
-/* XXX - All this stuff really needs to go above the doctype, so that
- * we can redirect to the REFERER once we're done if all goes well.
- */
+$ok = true;	// Error status. If $ok, then we can just redirect to
+		// wherever we came from when we're done. Otherwise,
+		// need to display an error message.
+
 $mark_new    = array();
 $mark_unread = array();
 $mark_read   = array();
@@ -25,7 +17,6 @@ foreach ($_REQUEST as $k => $v)
 	if (!preg_match('/^state_(\d+)$/', $k, $match))
 		continue;
 	$id = $match[1];
-	echo "Need to update id=[$id]: [$v]<br/>\n";
 	switch ($v[0])
 	{
 	    case "n":		// Mark as new
@@ -46,7 +37,24 @@ foreach ($_REQUEST as $k => $v)
 db_mark_items("new",    $mark_new);
 db_mark_items("read",   $mark_read);
 db_mark_items("unread", $mark_unread);
+
+if ($ok)
+{
+	/* Redirect back to where we came from */
+	header('Location: ' . $_SERVER['HTTP_REFERER']);
+	exit(0);
+}
 ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+	"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html>
+<head>
+<title>NewsBite: Update items</title>
+<link rel="stylesheet" type="text/css" href="style.css" media="all" />
+</head>
+<body>
+
+<p><b>Error:</b> Something went wrong, but I don't know what.</p>
 
 <a href="<?=$_SERVER['HTTP_REFERER']?>">Back</a>.
 
