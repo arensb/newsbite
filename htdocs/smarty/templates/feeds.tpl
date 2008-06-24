@@ -16,14 +16,16 @@
 
 <table id="feeds">
 {section name=feed loop=$feeds}
+{assign var="feed_id" value=$feeds[feed].id}
 {strip}
   <tr class="{cycle values="odd-row,even-row"}">
     <td class="icon-col">&nbsp;</td>{* XXX - Put refresh/status icons here *}
     <td>
-      <a href="view.php?id={$feeds[feed].id}">{$feeds[feed].title}</a>:
-      {$counts[feed].new} new /
-      {$counts[feed].unread || 0} unread /
-      {$counts[feed].read} read
+      <a href="view.php?id={$feed_id}">{$feeds[feed].title}</a>:
+      &nbsp;
+      {$counts[$feed_id].new} new /
+      {$counts[$feed_id].unread || 0} unread /
+      {$counts[$feed_id].read} read
       <br/>
       &nbsp;(<a href="{$feeds[feed].url}">site</a>)
       &nbsp;(<a href="{$feeds[feed].feed_url}">RSS</a>)
