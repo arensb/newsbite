@@ -188,47 +188,6 @@ EOT;
 	return $retval;
 }
 
-/* db_get_feed_items
- * Fetch the items from the database for a given feed.
- * If $feed is an integer, it's a feed ID. Retrieve both the 'feeds'
- * entry and the items. Otherwise, assume it's an assoc (as returned
- * by db_get_feed()) and just fill in the items.
- */
-// XXX - Should take arguments to limit what is returned, e.g., only
-// latest 50 items, only new/unread items, etc.
-function db_get_feed_items(&$feed)
-{
-	/* Figure out whether we need to get the 'feeds' entry */
-	if (is_numeric($feed) && is_int($feed))
-	{
-		$tmp = db_get_feed($feed['id']);
-		if (!$tmp)
-			return NULL;
-		$feed = $tmp;
-	}
-	$feed['items'] = array();	// Clear list of items.
-
-	/* Get the feed items */
-	$dbh = db_connect();
-
-	$query = sprintf(<<<EOT
-SELECT	*
-FROM	items
-WHERE	feed_id=%d
-ORDER BY	pub_date DESC
-LIMIT	50
-EOT
-			 ,
-			 $feed['id']);
-	$result = $dbh->query($query);
-	while ($row = $result->fetch_assoc())
-	{
-		$feed['items'][] = $row;
-	}
-
-	return $feed;
-}
-
 /* db_get_some_feed_items
  * Fetch items from the database that meet certain criteria.
  * The criteria are specified by the variable argument list: the list
