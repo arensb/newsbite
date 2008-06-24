@@ -124,6 +124,8 @@ EOT
 		return NULL;
 	}
 
+	// XXX - Date of last update
+
 	// XXX - Error-checking
 	$row = $result->fetch_assoc();
 	return $row;
@@ -210,6 +212,8 @@ EOT;
  *			'states', 'new,unread'
  *			);
  */
+// XXX - Would it be useful to have a keyword for "just give me the
+// summary, not the content"?
 function db_get_some_feed_items(/* varargs */)
 {
 	$argc = func_num_args();
@@ -266,7 +270,8 @@ function db_get_some_feed_items(/* varargs */)
 	    case "date_desc":
 	    default:
 		// XXX - This fall-through means we don't notice bogus
-		// values
+		// values. Then again, we can probably trust the
+		// caller.
 		$query .= "ORDER BY pub_date DESC\n";
 		break;
 	}
@@ -312,6 +317,9 @@ function db_update_feed($feed_id, $feed)
 	//	Items added from feed
 	// As a result, messages that were posted > 90 days ago, but
 	// are still in the feed, show up as new.
+	//
+	// Then again, what happens if the feed has an article that
+	// was posted 100 days ago, and updated today?
 	$sth = db_connect();
 
 	global $AUTODELETE_DAYS;

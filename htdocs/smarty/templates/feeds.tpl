@@ -14,6 +14,8 @@
   <a href="update.php?id=all">Update all feeds</a>
 </div>
 
+{* XXX - Link to show all feeds *}
+
 <table id="feeds">
 {section name=feed loop=$feeds}
 {assign var="feed_id" value=$feeds[feed].id}

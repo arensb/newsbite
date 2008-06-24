@@ -27,7 +27,7 @@ if (!$feed)
 $items = db_get_some_feed_items(
 	"feed_id",	$feed['id'],
 	"states",	"new,unread",
-	"max_items",	3
+	"max_items",	25
 	);
 $feed['items'] = $items;
 
