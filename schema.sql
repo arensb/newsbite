@@ -80,7 +80,8 @@ CREATE TABLE items (
 			     'unread',	# Shown once, but unread
 			     'read',	# Seen it, read it
 			     'updated',	# Updated since last read
-			     'deleted'),	# Deleted
+			     'deleted')	# Deleted
+				NOT NULL,
 	PRIMARY KEY(id),
 	UNIQUE KEY(feed_id, guid)	# Having (feed_id, guid)
 					# instead of (guid) may be
