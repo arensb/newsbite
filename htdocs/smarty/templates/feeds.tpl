@@ -18,8 +18,13 @@
 {section name=feed loop=$feeds}
 {strip}
   <tr class="{cycle values="odd-row,even-row"}">
+    <td class="icon-col">&nbsp;</td>{* XXX - Put refresh/status icons here *}
     <td>
-      <a href="view.php?id={$feeds[feed].id}">{$feeds[feed].title}</a>
+      <a href="view.php?id={$feeds[feed].id}">{$feeds[feed].title}</a>:
+      {$counts[feed].new} new /
+      {$counts[feed].unread || 0} unread /
+      {$counts[feed].read} read
+      <br/>
       &nbsp;(<a href="{$feeds[feed].url}">site</a>)
       &nbsp;(<a href="{$feeds[feed].feed_url}">RSS</a>)
     </td>

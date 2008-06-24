@@ -11,7 +11,9 @@ $smarty->config_dir	= SMARTY_PATH . "configs";
 
 $dbh = db_connect();
 $feeds = db_get_feeds();
+$counts = db_get_all_feed_counts();
 $smarty->assign('feeds', $feeds);
+$smarty->assign('counts', $counts);
 $smarty->display("feeds.tpl");
 db_disconnect();
 ?>

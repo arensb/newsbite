@@ -62,7 +62,7 @@ EOT;
 		return NULL;
 	}
 
-	# XXX - Error-checking
+	// XXX - Error-checking
 	$retval = array();
 	while ($row = $result->fetch_assoc())
 	{
@@ -88,6 +88,96 @@ EOT
 	$result = $dbh->query($query);
 	$row = $result->fetch_assoc();
 	return $row;
+}
+
+/* db_get_feed_counts
+ * Get the number of new/read/unread articles in a feed.
+ *
+ * Returns an array of the form
+ *	array(
+ *		'new'	=> 10,
+ *		'read'	=> 150,
+ *		'unread'=> 12,
+ *	);
+ */
+function db_get_feed_counts($feed_id)
+{
+	$dbh = db_connect();
+
+	$query = sprintf(<<<EOT
+SELECT		SUM(state='new') as `new`,
+		SUM(state='unread') as `unread`,
+		SUM(state='read') `read`,
+		SUM(state='updated') `updated`,
+		SUM(state='deleted') as `deleted`
+FROM		items
+WHERE		feed_id = %d
+GROUP BY	feed_id
+EOT
+			 ,
+			 $feed_id);
+	$result = $dbh->query($query);
+	if (!$result)
+	{
+		echo "Error ", $dbh->errno, ": \"",
+			$dbh->error, "\"<br/>\n";
+		return NULL;
+	}
+
+	// XXX - Error-checking
+	$row = $result->fetch_assoc();
+	return $row;
+}
+
+/* db_get_all_feed_counts
+ * Get the number of new/read/unread articles in all feeds.
+ *
+ * Returns an array of the form
+ *	array(
+ *		190	=> array(		// Feed ID 190
+ *			'new'	=> 10,
+ *			'read'	=> 150,
+ *			'unread'=> 12,
+ *			),
+ *		191	=> array( ... ),	// Feed ID 191
+ *		...
+ *	);
+ * I.e., the same as calling db_get_feed_counts() once for every feed ID.
+ */
+function db_get_all_feed_counts()
+{
+	$dbh = db_connect();
+
+	// XXX - This probably breaks in cases when there aren't any
+	// items in a feed. Probably need a left join or something for
+	// that.
+	$query = <<<EOT
+SELECT		feed_id,
+		SUM(state='new') as `new`,
+		SUM(state='unread') as `unread`,
+		SUM(state='read') `read`,
+		SUM(state='updated') `updated`,
+		SUM(state='deleted') as `deleted`
+FROM		items
+GROUP BY	feed_id
+EOT;
+	$result = $dbh->query($query);
+	if (!$result)
+	{
+		echo "Error ", $dbh->errno, ": \"",
+			$dbh->error, "\"<br/>\n";
+		return NULL;
+	}
+
+	// XXX - Error-checking
+	$retval = array();
+	while ($row = $result->fetch_assoc())
+	{
+		$feed_id = $row['feed_id'];
+		unset($row['feed_id']);
+		$retval[$feed_id] = $row;
+	}
+	return $retval;
 }
 
 /* db_get_feed_items
@@ -340,6 +430,39 @@ echo "<b>stmt-&gt;execute returned [$err]</b><br/>\n";
 		else
 			echo "<b>Error: ", $sth->errno, ": \"", $sth->error, "\"</b><br/>\n";
 echo "Affected rows: [", $stmt->affected_rows, "]<br/>\n";
+	}
+}
+
+/* db_mark_items
+ * Change the state of a set of items. $state is one of "new",
+ * "unread", or "read" (or potentially any other state that
+ * items.state might have in the database), and $items is an array of
+ * item IDs to mark.
+ */
+function db_mark_items($state, $items)
+{
+	if (count($items) < 1)
+		// Nothing to do
+		return;
+
+	$dbh = db_connect();
+
+	/* XXX - Ought to check that $state is a valid state */
+
+	$query = sprintf(<<<EOT
+UPDATE	items
+SET	state='%s'
+WHERE	id IN(%s)
+EOT
+			 ,
+			 $state,
+			 implode(",", $items));
+	$result = $dbh->query($query);
+	if (!$result)
+	{
+		echo "Error updating feed information: ",
+			$sth->errno, ": \"",
+			$sth->error, "\"<br/>\n";
 	}
 }
 ?>

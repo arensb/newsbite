@@ -1,3 +1,5 @@
+- Bug: item count isn't showing up correctly in in view.tpl correctly:
+  counts are off by one, and 1st feed doesn't have a number.
 - Make a list of conditions for calling it version 1.0
 - Makefile:
 	Run tests:
@@ -7,6 +9,14 @@
 		php-cgi -c php.ini <script>
 	Build distro
 - Documentation for how the plugins for feed.inc work.
+- Function to get overview of a feed/all feeds:
+	- # new/unread/read articles
+	- last update time
+- More fine-grained function to select items from a feed:
+	- One feed, or all feeds
+	- Time range: e.g., the last 24 hours
+	- Order: oldest to youngest/youngest to oldest
+	- How many articles to get
 - Tool to import feeds and items from existing Feed on
   Feeds/Monkeychow database.
 - SQL schema should support folders, i.e., user can group feeds into
@@ -160,10 +170,12 @@
 	Otherwise, vulnerable to XSS, e.g., by including JavaScript in
   post.
 	Perhaps add a whitelist of trusted sites (e.g., APOD).
+- Page to edit options and such for a feed.
 - Per-feed options:
 	- Whether to display oldest-first by default (good for comics)
 	  or newest-first (good for news).
 	- Whether the feed contains BBcode (like top10).
+- Page to add/remove feeds.
 - I think in most cases, where an item has both a summary and a
   content, the summary is just the first N characters of the content
   (modulo HTML formatting and whatnot).
@@ -172,3 +184,6 @@
 	Of course, it'd also be nice to include the strip in the feed,
   so it'd probably be good to write a plugin for that anyway, so can
   fix this there.
+- Icons for common actions:
+	- Refresh (feed, all feeds)
+	- Mark as read

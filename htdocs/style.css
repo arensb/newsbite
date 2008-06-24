@@ -14,6 +14,10 @@ table#feeds {
 	width:			100%;
 }
 
+table#feeds .icon-col {
+	width:			32px;
+}
+
 .tools {
 	background-color:	yellow;
 	border:			1px solid orange;
@@ -84,7 +88,7 @@ h1 a {
 /* Title of item */
 .item_title {
 	font-family:		Arial, sans-serif;
-	font-size:		180%;
+	font-size:		144%;
 	font-weight:		bold;
 	text-decoration:	none;	/* I know it's a link. Don't
 					 * underline it. */
