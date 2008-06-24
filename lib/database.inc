@@ -148,7 +148,7 @@ function db_get_all_feed_counts()
 {
 	$dbh = db_connect();
 
-	// XXX - This probably breaks in cases when there aren't any
+	// XXX - This breaks in cases when there aren't any
 	// items in a feed. Probably need a left join or something for
 	// that.
 	$query = <<<EOT
@@ -221,6 +221,113 @@ EOT
 	return $feed;
 }
 
+/* db_get_some_feed_items
+ * Fetch items from the database that meet certain criteria.
+ * The criteria are specified by the variable argument list: the list
+ * is a list of {keyword, value} pairs.
+ * !!! Note that unlike db_get_feed_items(), this just returns a list
+ * of items. It doesn't fill in the 'items' field in a feed list.
+ *
+ * feed_id => int id
+ *	Which feed's items to fetch. If missing, fetch from all feeds
+ * start_at => int n
+ *	Skip the first n items.
+ * max_items => int n
+ *	How many items to fetch.
+ * order => date_desc (default) | date_asc
+ *	Order in which to return the items
+ * states => string
+ *	Comma-separated list of states. We only want to see items in one
+ *	of these states. Example:
+ *		db_get_some_feed_items(
+ *			'states', 'new,unread'
+ *			);
+ */
+function db_get_some_feed_items(/* varargs */)
+{
+	$argc = func_num_args();
+
+	/* Sanity check: make sure we got an even number of arguments */
+	if ($argc % 2 != 0)
+	{
+		die("db_get_some_feed_items(): got $argc arguments. Expecting an even number.");
+	}
+
+	/* Turn the argument list into an assoc */
+	// XXX - There might be a better way to do this, but I don't
+	// know what it is. None of the array functions seem to do the
+	// job.
+	$args = array();
+	for ($i = 0; $i < $argc; $i += 2)
+		$args[func_get_arg($i)] = func_get_arg($i+1);
+
+	/* Beginning of query */
+	$query = "SELECT * FROM items\n";
+
+	$conditions = array();	// All of the "WHERE x AND y AND z" conditions
+
+	/* Were we asked for just one feed ID? */
+	if (is_numeric($args['feed_id']))
+	{
+		$c = sprintf("feed_id=%d\n", $args['feed_id']);
+		array_push($conditions, $c);
+	}
+
+	/* Which states does caller want? */
+	// XXX - Presumably we can trust the caller, and don't need to
+	// sanitize input.
+	if (isset($args['states']))
+	{
+		$states = explode(",", $args['states']);
+		$c = sprintf("state IN('%s')\n",
+			     implode("','", $states));
+		array_push($conditions, $c);
+	}
+
+	/* Add selection conditions to query */
+	if (count($conditions) > 0)
+	{
+		$query .= "WHERE " . implode("\nAND ", $conditions) . "\n";
+	}
+
+	/* Specify order in query */
+	switch ($args['order'])
+	{
+	    case "date_asc":
+		$query .= "ORDER BY pub_date ASC\n";
+		break;
+	    case "date_desc":
+	    default:
+		// XXX - This fall-through means we don't notice bogus
+		// values
+		$query .= "ORDER BY pub_date DESC\n";
+		break;
+	}
+
+	/* Add limit and offset to query */
+	if (is_int($args['max_items']))
+		$query .= "LIMIT " . $args['max_items'] . "\n";
+	else
+		// XXX - Should probably put the default limit in a
+		// constant.
+		$query .= "LIMIT 50\n";
+
+	if (is_int($args['start_at']))
+		$query .= "OFFSET " . $args['start_at'] . "\n";
+
+	/* Run the SQL query */
+	$dbh = db_connect();
+	$result = $dbh->query($query);
+			// XXX - Error-checking
+	$retval = array();
+	while ($row = $result->fetch_assoc())
+	{
+		$retval[] = $row;
+	}
+
+	return $retval;
+}
+
 /* db_update_feed
  * Update a feed. $feed_id is the ID of the feed to update, and $feed
  * is a structure containing all the known information and articles in
@@ -228,9 +335,6 @@ EOT
  */
 function db_update_feed($feed_id, $feed)
 {
-	// XXX - Ought to update the feed itself, e.g., if its title
-	// changes.
-
 	/* Delete old items from database */
 	// XXX - This should probably go at the end: otherwise, with
 	// feeds that have items older than 90 days, you can have:

@@ -24,7 +24,12 @@ if (!$feed)
 	exit(0);
 }
 
-$feed = db_get_feed_items($feed);
+$items = db_get_some_feed_items(
+	"feed_id",	$feed['id'],
+	"states",	"new,unread",
+	"max_items",	3
+	);
+$feed['items'] = $items;
 
 // Remove FeedBurner bugs.
 // XXX - This belongs in a separate FeedBurner plugin.
