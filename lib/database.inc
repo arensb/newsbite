@@ -148,18 +148,20 @@ function db_get_all_feed_counts()
 {
 	$dbh = db_connect();
 
-	// XXX - This breaks in cases when there aren't any
-	// items in a feed. Probably need a left join or something for
-	// that.
+	// XXX - When a feed doesn't have any items, this returns NULL
+	// for all the counts. We fix this below with a hack, but
+	// there's got to be a better way.
 	$query = <<<EOT
-SELECT		feed_id,
-		SUM(state='new') as `new`,
-		SUM(state='unread') as `unread`,
-		SUM(state='read') `read`,
-		SUM(state='updated') `updated`,
-		SUM(state='deleted') as `deleted`
-FROM		items
-GROUP BY	feed_id
+SELECT		feeds.id as `feed_id`,
+		SUM(items.state='new') as `new`,
+		SUM(items.state='unread') as `unread`,
+		SUM(items.state='read') `read`,
+		SUM(items.state='updated') `updated`,
+		SUM(items.state='deleted') as `deleted`
+FROM		feeds
+LEFT JOIN	items
+  ON		feeds.id=items.feed_id
+GROUP BY	feeds.id
 EOT;
 	$result = $dbh->query($query);
 	if (!$result)
@@ -173,6 +175,12 @@ EOT;
 	$retval = array();
 	while ($row = $result->fetch_assoc())
 	{
+		// XXX - Hack to make sure that NULL values come out as 0.
+		// I'm sure there's a better way to do this.
+		foreach ($row as $k => $v)
+			if ($v == NULL)
+				$row[$k] = 0;
+
 		$feed_id = $row['feed_id'];
 		unset($row['feed_id']);
 		$retval[$feed_id] = $row;
