@@ -1,5 +1,3 @@
-- Bug: item count isn't showing up correctly in in view.tpl correctly:
-  counts are off by one, and 1st feed doesn't have a number.
 - Make a list of conditions for calling it version 1.0
 - Makefile:
 	Run tests:
