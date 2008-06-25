@@ -104,6 +104,7 @@ function db_get_feed_counts($feed_id)
 {
 	$dbh = db_connect();
 
+	/* Get the number of items in each state */
 	$query = sprintf(<<<EOT
 SELECT		SUM(state='new') as `new`,
 		SUM(state='unread') as `unread`,
@@ -123,12 +124,34 @@ EOT
 			$dbh->error, "\"<br/>\n";
 		return NULL;
 	}
+	$retval = $result->fetch_assoc();
+		// XXX - Error-checking
 
-	// XXX - Date of last update
-
-	// XXX - Error-checking
+	/* Get the times when the feed was last published to, and last
+	 * updated.
+	 */
+	$query = sprintf(<<<EOT
+SELECT		MAX(`pub_date`) as `latest_pub_date`,
+		MAX(`last_update`) as `latest_update`,
+FROM		items
+WHERE		feed_id = %d
+EOT
+			 ,
+			 $feed_id);
+	$result = $dbh->query($query);
+	if (!$result)
+	{
+		echo "Error ", $dbh->errno, ": \"",
+			$dbh->error, "\"<br/>\n";
+		return NULL;
+	}
 	$row = $result->fetch_assoc();
-	return $row;
+		// XXX - Error-checking
+
+	$retval['latest_pub_date'] = strtotime($row['latest_pub_date']);
+	$retval['latest_update']   = strtotime($row['latest_update']);
+
+	return $retval;
 }
 
 /* db_get_all_feed_counts
@@ -150,6 +173,7 @@ function db_get_all_feed_counts()
 {
 	$dbh = db_connect();
 
+	/* Get the number of items in each state in each feed */
 	// XXX - When a feed doesn't have any items, this returns NULL
 	// for all the counts. We fix this below with a hack, but
 	// there's got to be a better way.
@@ -168,15 +192,16 @@ EOT;
 	$result = $dbh->query($query);
 	if (!$result)
 	{
+		// XXX - Better error-reporting
 		echo "Error ", $dbh->errno, ": \"",
 			$dbh->error, "\"<br/>\n";
 		return NULL;
 	}
 
-	// XXX - Error-checking
 	$retval = array();
 	while ($row = $result->fetch_assoc())
 	{
+		// XXX - Error-checking
 		// XXX - Hack to make sure that NULL values come out as 0.
 		// I'm sure there's a better way to do this.
 		foreach ($row as $k => $v)
@@ -186,6 +211,46 @@ EOT;
 		$feed_id = $row['feed_id'];
 		unset($row['feed_id']);
 		$retval[$feed_id] = $row;
+	}
+
+	/* Get the latest pub_date and last_update of any item in each
+	 * feed.
+	 */
+	// XXX - When a feed doesn't have any items, this returns NULL
+	// for all the counts. We fix this below with a hack, but
+	// there's got to be a better way.
+	$query = <<<EOT
+SELECT		feeds.id as `feed_id`,
+		MAX(items.`pub_date`) as `latest_pub_date`,
+		MAX(items.`last_update`) as `latest_update`
+FROM		feeds
+LEFT JOIN	items
+  ON		feeds.id=items.feed_id
+GROUP BY	feeds.id
+EOT;
+	$result = $dbh->query($query);
+	if (!$result)
+	{
+		// XXX - Better error-reporting
+		echo "Error ", $dbh->errno, ": \"",
+			$dbh->error, "\"<br/>\n";
+		return NULL;
+	}
+
+	while ($row = $result->fetch_assoc())
+	{
+		// XXX - Error-checking
+		// XXX - Hack to make sure that NULL values come out as 0.
+		// I'm sure there's a better way to do this.
+		foreach ($row as $k => $v)
+			if ($v == NULL)
+				$row[$k] = 0;
+
+		$feed_id = $row['feed_id'];
+		$retval[$feed_id]['latest_pub_date'] =
+			strtotime($row['latest_pub_date']);
+		$retval[$feed_id]['latest_update'] =
+			strtotime($row['latest_update']);
 	}
 	return $retval;
 }

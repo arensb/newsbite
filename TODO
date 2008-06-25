@@ -7,9 +7,6 @@
 		php-cgi -c php.ini <script>
 	Build distro
 - Documentation for how the plugins for feed.inc work.
-- Function to get overview of a feed/all feeds:
-	- # new/unread/read articles
-	- last update time
 - More fine-grained function to select items from a feed:
 	- One feed, or all feeds
 	- Time range: e.g., the last 24 hours
@@ -185,3 +182,21 @@
 - Icons for common actions:
 	- Refresh (feed, all feeds)
 	- Mark as read
+- How do skins, templates, scripts, and HTML files interact?
+	If a skin wants to link to, say, an "about.html" file that
+  gives the author's name, where should the "about.html" file go?
+	If a skin uses frames, and therefore requires an HTML file for
+  each frame, where do those go?
+	What about ancillary files like JavaScript scripts and CSS
+  files?
+	A skin should come in one directory, for ease of installation
+  and removal. Should it be
+	myskin/html
+	myskin/templates
+  OTOH, this means that the skin can't easily contain private elements
+  like PHP include files, since those are (preferably) in a separate,
+  directory, not visible by the web client.
+- Should it be possible to have different skins for different feeds?
+  E.g., for the Onion, just seeing the headlines (sometimes summaries)
+  is sufficient. For This Modern World, might want a strip-frame at
+  the top, and the original site underneath.
