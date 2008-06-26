@@ -209,3 +209,9 @@
 - Pages should link to useful stuff: feed page should have
   update/refesh button. update.php should link/redirect to whatever
   was refreshed (either feed page or feed index page, as appropriate).
+- Perhaps save feeds to a temporary directory, for ease of debugging:
+  capture a feed that exhibits a bug.
+- RSS doesn't provide content by default, just a summary
+  (<description>). Perhaps add a hook after processing <item>, such
+  that if there's a <description> but no <content:encoded> or such,
+  then move the description to content.

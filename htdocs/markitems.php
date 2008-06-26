@@ -11,10 +11,10 @@ $mark_unread = array();
 $mark_read   = array();
 foreach ($_REQUEST as $k => $v)
 {
-	/* Look for POST variables of the form "state_{id}", where
+	/* Look for POST variables of the form "state-{id}", where
 	 * {id} is the ID of the item to be updated.
 	 */
-	if (!preg_match('/^state_(\d+)$/', $k, $match))
+	if (!preg_match('/^state-(\d+)$/', $k, $match))
 		continue;
 	$id = $match[1];
 	switch ($v[0])
