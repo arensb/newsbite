@@ -34,7 +34,6 @@ echo "<h3>Updating feed [$feed[title]]</h3>\n";
 #print_r($feed);
 
 	/* Initialize Curl */
-	// XXX - Use curl_multi_*() to fetch multiple URLs at once.
 	$ch = curl_init();
 	curl_setopt($ch, CURLOPT_URL, $feed['feed_url']);
 		// Set the URL
@@ -100,7 +99,7 @@ function update_all_feeds()
 	global $PARALLEL_UPDATES;
 
 	$feeds = db_get_feeds();
-	// XXX - Error-checking
+		// XXX - Error-checking
 
 	/* XXX - Hack: the code below doesn't work if
 	 * $PARALLEL_UPDATES is set to 1. If someone tries to disable
@@ -111,7 +110,7 @@ function update_all_feeds()
 	{
 		foreach ($feeds as $f)
 			update_feed($f['id']);
-		// XXX - Error-checking
+			// XXX - Error-checking
 	}
 
 	/* Initialize curl_multi and some variables */
@@ -127,7 +126,7 @@ function update_all_feeds()
 			break;
 
 		$url = $feed['feed_url'];
-echo "Starting [", $feed['title'], "]<br/>\n"; flush();
+echo "Starting ($feed[id]) [", $feed['title'], "]<br/>\n"; flush();
 		$ch = _open_curl_handle(	// Curl handle for this URL
 			$url,
 			$feed['username'],
@@ -141,7 +140,6 @@ echo "Starting [", $feed['title'], "]<br/>\n"; flush();
 			"feed"	=> $feed	// Reference to the feed
 			);
 	}
-//echo "Pipeline: ["; print_r($pipeline); echo "]\n";
 
 	/* Tell curl_multi to process what we've given it so far */
 	$active = NULL;		// Number of active connections, according
@@ -179,7 +177,6 @@ echo "Starting [", $feed['title'], "]<br/>\n"; flush();
 		$in_queue = NULL;
 		while ($err = curl_multi_info_read($mh, $in_queue))
 		{
-//echo "curl_multi_info_read returned ["; print_r($err); echo "], in_queue ($in_queue)\n";
 			// XXX - The CURLMSG_DONE test isn't
 			// particularly useful, since it's the only
 			// status that curl_multi_info_read() returns.
@@ -197,13 +194,11 @@ echo "Starting [", $feed['title'], "]<br/>\n"; flush();
 			$handle = NULL;
 			for ($i = 0; $i < count($pipeline); $i++)
 			{
-//echo "Checking [", $pipeline[$i]['ch'], "] vs. [", $err['handle'], "]\n";
 				if ($pipeline[$i]['ch'] == $err['handle'])
 				{
 					$handle = &$pipeline[$i];
 						// Note: reference to
 						// $pipeline[$i], not copy.
-//echo "Now handle == ["; print_r($handle); echo "]\n";
 					break;
 				}
 			}
@@ -225,7 +220,7 @@ echo "Starting [", $feed['title'], "]<br/>\n"; flush();
 				/* We've found the handle we
 				 * want. Get its contents.
 				 */
-echo "Finished [", $handle['feed']['title'], "]<br/>\n"; flush();
+echo "Finished (", $handle['feed']['id'], ") [", $handle['feed']['title'], "]<br/>\n"; flush();
 				_save_handle($handle);
 
 				/* We're done with this handle. */
@@ -248,7 +243,7 @@ echo "Finished [", $handle['feed']['title'], "]<br/>\n"; flush();
 			{
 				// Yes. Open a Curl handle, and add it
 				// to the multi-handle
-echo "Starting [", $feed['title'], "]<br/>\n"; flush();
+echo "Starting ($feed[id]) [", $feed['title'], "]<br/>\n"; flush();
 				$url = $feed['feed_url'];
 				$ch = _open_curl_handle(
 					$url,
@@ -287,7 +282,7 @@ echo "Starting [", $feed['title'], "]<br/>\n"; flush();
 	{
 		if (isset($pipeline[$i]))
 		{
-echo "Finished [", $pipeline[$i]['feed']['title'], "]<br/>\n"; flush();
+echo "Finished (", $pipeline[$i]['feed']['id'], ") [", $pipeline[$i]['feed']['title'], "]<br/>\n"; flush();
 			_save_handle($pipeline[$i]);
 		}
 	}
@@ -302,7 +297,6 @@ echo "Finished [", $pipeline[$i]['feed']['title'], "]<br/>\n"; flush();
 function _open_curl_handle($url, $username = NULL, $passwd = NULL)
 {
 	$ch = curl_init();
-//	echo "  \$ch == ["; print_r($ch); echo "]\n";
 
 	$err = curl_setopt_array(
 		$ch,
@@ -326,16 +320,13 @@ function _open_curl_handle($url, $username = NULL, $passwd = NULL)
 		curl_setopt($ch, CURLOPT_USERPWD, "$feed[username]:$feed[passwd]");
 	}
 
-//echo "_open_curl_handle returning [$ch]\n";
 	return $ch;
 }
 
 function _save_handle($handle)
 {
-//echo "_save_handle("; print_r($handle); echo ")\n";
 	// Get the feed text from the curl handle
 	$feed_text = curl_multi_getcontent($handle['ch']);
-//echo "feed_text == [", substr($feed_text, 0, 512), "]\n";
 
 	/* XXX - Get the HTTP header(s), for the status code, so we
 	 * can find out whether something went wrong.
@@ -379,7 +370,6 @@ function _save_handle($handle)
 		}
 	} while (substr($feed_text, 0, 5) == "HTTP/");
 
-//echo "Final status: [$http_status] [$http_error]\n";
 	if ($http_status != "200")
 	{
 		// XXX - Better error-reporting
@@ -392,7 +382,7 @@ function _save_handle($handle)
 
 	/* Parse the feed */
 	$feed_id = $handle['feed']['id'];
-//echo "feed_id == [$feed_id]\n";
+echo "Parsing feed [$feed_id] from [", $handle['feed']['feed_url'], "]<br/>\n";
 	$feed = parse_feed($feed_text);
 	if (!$feed)
 		// XXX - Better error-handling

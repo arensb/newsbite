@@ -180,6 +180,8 @@ $url2handler = array(		// Handlers for specific URLs
  */
 function parse_feed($feed_text)
 {
+echo "Inside parse_feed(",
+	htmlspecialchars(substr($feed_text, 0, 512)), ")<br/>\n";
 	$ns2url = array();		// Maps namespace prefixes to their
 					// URL identifiers
 	$context = array();		// Context stack. Shows
@@ -224,7 +226,9 @@ function parse_feed($feed_text)
 	 * down, under "case ELEMENT:", it has to be separate: we want
 	 * to do some top-level initialization and error-checking.
 	 */
-	while ($reader->read())
+	// XXX - This can run into syntax errors. Shouldn't send
+	// those to the user.
+	while ($err = $reader->read())
 	{
 		if ($reader->nodeType != XMLReader::ELEMENT)
 			// Skip past things like document type and
@@ -302,6 +306,7 @@ function parse_feed($feed_text)
 
 		break;	// Found the root node.
 	}
+echo "\$err: ["; print_r($err); echo "]<br/>\n";
 
 	/* Based on the default namespace in the root node, figure out which
 	 * handler to use for the rest:

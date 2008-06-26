@@ -45,7 +45,7 @@
      Read:<input type="radio" name="state_{$item.id}" value="ra" />
     )
     <br/>
-  </div>
+  </div>{* item_header *}
 
 {* XXX - If JavaScript is turned on, should have selectable tabs for the
  * summary and full content.

@@ -1,3 +1,9 @@
+- Bug: Some feed is causing feed.inc to spit out syntax errors:
+	Warning: XMLReader::read() [function.XMLReader-read]: /folks/arensb/proj/newsbite/trunk/htdocs/:14: parser error : AttValue: " or ' expected in /folks/arensb/proj/newsbite/trunk/lib/feed.inc on line 229
+
+	Warning: XMLReader::read() [function.XMLReader-read]: <td><b><font face=times color=#0039b6 size=10>G</font><font face=times color=#c4 in /folks/arensb/proj/newsbite/trunk/lib/feed.inc on line 229
+  ...
+  Evidently this happens when authorization fails.
 - Make a list of conditions for calling it version 1.0
 - Makefile:
 	Run tests:
@@ -200,3 +206,6 @@
   E.g., for the Onion, just seeing the headlines (sometimes summaries)
   is sufficient. For This Modern World, might want a strip-frame at
   the top, and the original site underneath.
+- Pages should link to useful stuff: feed page should have
+  update/refesh button. update.php should link/redirect to whatever
+  was refreshed (either feed page or feed index page, as appropriate).

@@ -40,12 +40,11 @@
 <input type="reset" name="clearit" value="Clear changes"/>
 <input type="submit" name="doit" value="Apply changes"/>
 
-{section name=i loop=$items}
-{* XXX - Should have a separate template for items. That way,
- * JavaScript can add items to an existing page, and still use the
- * current skin.
+{* List of items. Items are displayed using the separate "item.tpl"
+ * template
  *}
-{include file='item.tpl' item=$items[i]}
+{section name=i loop=$items}
+  {include file='item.tpl' item=$items[i]}
 {/section}
 
 <input type="reset" name="clearit" value="Clear changes"/>

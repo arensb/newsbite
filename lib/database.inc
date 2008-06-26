@@ -403,7 +403,7 @@ EOT;
 			// XXX - Error-checking
 		$err = $stmt->execute();
 			// XXX - Error-checking
-echo "Deleted [", $stmt->affected_rows, "] items.<br/>\n";
+//echo "Deleted [", $stmt->affected_rows, "] items.<br/>\n";
 	}
 
 	/* Update information about the feed itself */
@@ -465,7 +465,7 @@ echo "Deleted [", $stmt->affected_rows, "] items.<br/>\n";
 
 	foreach ($feed['items'] as $item)
 	{
-echo "Need to update item: [$item[title]]<br/>\n";
+//echo "Need to update item: [$item[title]]<br/>\n";
 //echo "<pre>\$item: ["; print_r($item); echo "]\n</pre>\n<br/>\n";
 
 		// This query may look long and redundant, but
@@ -567,13 +567,14 @@ EOT;
 		//	0-> duplicate entry (no change)
 		//	1-> new entry
 		//	2-> updated entry
-if ($err != 11)
-echo "<b>stmt-&gt;execute returned [$err]</b><br/>\n";
+//if ($err != 11)
+//echo "<b>stmt-&gt;execute returned [$err]</b><br/>\n";
+		// XXX - Error-checking
 		if ($err)
-			echo "OK (", print_r($err), ") errno ", $sth->errno, ", error [", $sth->error, "]<br/>\n";
+			;// echo "OK (", print_r($err), ") errno ", $sth->errno, ", error [", $sth->error, "]<br/>\n";
 		else
-			echo "<b>Error: ", $sth->errno, ": \"", $sth->error, "\"</b><br/>\n";
-echo "Affected rows: [", $stmt->affected_rows, "]<br/>\n";
+			;// echo "<b>Error: ", $sth->errno, ": \"", $sth->error, "\"</b><br/>\n";
+//echo "Affected rows: [", $stmt->affected_rows, "]<br/>\n";
 	}
 }
 
