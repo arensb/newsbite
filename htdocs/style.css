@@ -55,18 +55,18 @@ h1 a {
 }
 
 /* Icon or image for the feed */
-.feed_icon {
+.feed-icon {
 	float:			right;
 }
 
 /* Feed subtitle */
-.feed_subtitle {
+.feed-subtitle {
 	border:			1px dashed orange;
 	background-color:	yellow;
 }
 
 /* Descriptive blurb about the feed */
-.feed_description {
+.feed-description {
 	border:			1px solid orange;
 	background-color:	yellow;
 }
@@ -79,14 +79,14 @@ h1 a {
 }
 
 /* Header box at top of item */
-.item_header {
+.item-header {
 	border:			1px solid blue;
 	background-color:	LightBlue;
 	padding:		0.5em;
 }
 
 /* Title of item */
-.item_title {
+.item-title {
 	font-family:		Arial, sans-serif;
 	font-size:		144%;
 	font-weight:		bold;
@@ -95,20 +95,20 @@ h1 a {
 }
 
 /* Summary of item */
-.item_summary {
+.item-summary {
 	border:			1px solid red;
 	font-family:		Times, serif;
 	padding:		0.5em;
 }
 
 /* Content of item */
-.item_content {
+.item-content {
 	border:			1px solid blue;
 	font-family:		Times, serif;
 	padding:		0.5em;
 }
 
 /* Control box at bottom of item */
-.item_footer {
+.item-footer {
 	background-color:	pink;
 }

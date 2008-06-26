@@ -9,7 +9,7 @@
 <body id="view-body">
 
 {if (isset($feed.image))}
-<img class="feed_icon" src="{$feed.image}"/>
+<img class="feed-icon" src="{$feed.image}"/>
 {/if}
 
 {strip}
@@ -21,12 +21,12 @@
   {/if}
 </h1>
 {if $feed.subtitle != ""}
-<div class="feed_subtitle">{$feed.subtitle}</div>
+<div class="feed-subtitle">{$feed.subtitle}</div>
 {/if}
 {/strip}
 
 {if $feed.description != ""}
-<div class="feed_description">{$feed.description}</div>
+<div class="feed-description">{$feed.description}</div>
 {/if}
 
 <!-- List of items -->

@@ -7,9 +7,9 @@
  *	$item - The item to display
  *}
 {strip}
-<div class="item" id="item_{$item.guid}" style="border: 1px solid black">
-  <div class="item_header">
-    <a class="item_title" href="{$item.url}">
+<div class="item" id="item-{$item.guid}" style="border: 1px solid black">
+  <div class="item-header">
+    <a class="item-title" href="{$item.url}">
       {if ($item.title == "")}
         [no title]
       {else}
@@ -40,19 +40,19 @@
  * should have different values.
  *}
     <br/>
-    (New: <input type="radio" name="state_{$item.id}" value="na" />
-     Unread: <input type="radio" name="state_{$item.id}" value="ua" />
-     Read:<input type="radio" name="state_{$item.id}" value="ra" />
+    (New: <input type="radio" name="state-{$item.id}" value="na" />
+     Unread: <input type="radio" name="state-{$item.id}" value="ua" />
+     Read:<input type="radio" name="state-{$item.id}" value="ra" />
     )
     <br/>
-  </div>{* item_header *}
+  </div>{* item-header *}
 
 {* XXX - If JavaScript is turned on, should have selectable tabs for the
  * summary and full content.
  *}
   {if ($item.summary != "")}
 {*    <h5>Summary:</h5>*}
-    <div class="item_summary">
+    <div class="item-summary">
       {$item.summary}
 
       {* This is for items with floating elements in them (such as
@@ -65,10 +65,10 @@
 
   {if ($item.content != "")}
 {*    <h5>Content:</h5>*}
-    <div class="item_content">{$item.content}</div>
+    <div class="item-content">{$item.content}</div>
   {/if}
 
-  <div class="item_footer">
+  <div class="item-footer">
     {if (isset($item.comment_url))}
       <a href="{$item.comment_url}">Comments</a>
       {if (isset($item.comment_rss))}
@@ -79,9 +79,9 @@
     {/if}
 {* XXX - Control buttons to mark as read and whatnot. *}
     &nbsp;
-    (New: <input type="radio" name="state_{$item.id}" value="nb" />
-     Unread: <input type="radio" name="state_{$item.id}" value="ub" />
-     Read:<input type="radio" name="state_{$item.id}" value="rb" />
+    (New: <input type="radio" name="state-{$item.id}" value="nb" />
+     Unread: <input type="radio" name="state-{$item.id}" value="ub" />
+     Read:<input type="radio" name="state-{$item.id}" value="rb" />
     )
   </div>
 </div>
