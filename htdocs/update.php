@@ -79,11 +79,25 @@ echo "<h3>Updating feed [$feed[title]]</h3>\n";
 
 	curl_close($ch);
 
+	/* Save a copy of the feed text for debugging */
+	if (defined(FEED_CACHE) && is_dir(FEED_CACHE))
+	{
+		// This will fail if permissions aren't right. Deal
+		// with it. It's a debugging feature, so you should be
+		// paying attention to error messages anyway.
+		$fh = fopen(FEED_CACHE . "/$feed_id", "w");
+		fwrite($fh, $feed_text);
+		fclose($fh);
+	}
+
 	/* Parse the feed */
 	$feed = parse_feed($feed_text);
+	if (!$feed)
+		// XXX - Better error-handling
+		return;
 
 	db_update_feed($feed_id, $feed);
-	// XXX - Error-checking
+		// XXX - Error-checking
 }
 
 /* update_all_feeds
@@ -383,6 +397,18 @@ function _save_handle($handle)
 	/* Parse the feed */
 	$feed_id = $handle['feed']['id'];
 echo "Parsing feed [$feed_id] from [", $handle['feed']['feed_url'], "]<br/>\n";
+
+	/* Save a copy of the feed text for debugging */
+	if (defined("FEED_CACHE") && is_dir(FEED_CACHE))
+	{
+		// This will fail if permissions aren't right. Deal
+		// with it. It's a debugging feature, so you should be
+		// paying attention to error messages anyway.
+		$fh = fopen(FEED_CACHE . "/$feed_id", "w");
+		fwrite($fh, $feed_text);
+		fclose($fh);
+	}
+
 	$feed = parse_feed($feed_text);
 	if (!$feed)
 		// XXX - Better error-handling

@@ -180,8 +180,8 @@ $url2handler = array(		// Handlers for specific URLs
  */
 function parse_feed($feed_text)
 {
-echo "Inside parse_feed(",
-	htmlspecialchars(substr($feed_text, 0, 512)), ")<br/>\n";
+//echo "Inside parse_feed(",
+//	htmlspecialchars(substr($feed_text, 0, 512)), ")<br/>\n";
 	$ns2url = array();		// Maps namespace prefixes to their
 					// URL identifiers
 	$context = array();		// Context stack. Shows
@@ -306,7 +306,7 @@ echo "Inside parse_feed(",
 
 		break;	// Found the root node.
 	}
-echo "\$err: ["; print_r($err); echo "]<br/>\n";
+//echo "\$err: ["; print_r($err); echo "]<br/>\n";
 
 	/* Based on the default namespace in the root node, figure out which
 	 * handler to use for the rest:
@@ -385,7 +385,7 @@ echo "\$err: ["; print_r($err); echo "]<br/>\n";
 	}
 
 	/* Parse the rest of the file */
-	while ($reader->read())
+	while ($err = @$reader->read())
 	{
 		switch ($reader->nodeType)
 		{
@@ -579,6 +579,19 @@ echo "\$err: ["; print_r($err); echo "]<br/>\n";
 				$reader->name, "]\n";
 			break;
 		}
+	}
+//echo "\$err: ["; print_r($err); echo "]<br/>\n";
+
+	// Unfortunately XMLReader::read() only returns two values: 1
+	// and false. False can mean either end of file, or parsing
+	// error.
+	// Check the context stack to see whether we're at the end of
+	// the file.
+	if (count($context) != 0)
+	{
+		// Error
+echo "Error in parsing feed<br/>\n";
+		return FALSE;
 	}
 
 //	echo "context: ["; print_r($context); echo "]\n";

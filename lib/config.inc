@@ -16,6 +16,13 @@ $AUTODELETE_DAYS = 90;
  */
 $PARALLEL_UPDATES = 10;
 
+/* If FEED_CACHE is set and refers to an existing directory,
+ * update.php will save a copy of the raw feed to "FEED_CACHE/$id", to
+ * make it easier to debug.
+ * To turn this feature off, comment out the following line.
+ */
+define('FEED_CACHE', "/tmp/feed-cache");
+
 define('SMARTY_DIR', "/folks/arensb/proj/newsbite/trunk/Smarty/Smarty/");
 define('SMARTY_PATH', "smarty/");
 ?>

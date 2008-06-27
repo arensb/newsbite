@@ -3,7 +3,31 @@
 
 	Warning: XMLReader::read() [function.XMLReader-read]: <td><b><font face=times color=#0039b6 size=10>G</font><font face=times color=#c4 in /folks/arensb/proj/newsbite/trunk/lib/feed.inc on line 229
   ...
-  Evidently this happens when authorization fails.
+
+	This is apparently caused by bad XML (which can actually be
+  bad HTML in the article body. This is going to crop up a lot, and
+  should be fixed.
+	Worst solution: skip the entire feed, making it unusable until
+  the bad article expires.
+	Better solution: just skip the article, and proceed with the
+  next one. Presumably this involves checkpointing when each article
+  begins, and skipping the bad ones.
+	Better solution: just skip the bad element, and somehow mark
+  it bad in a user-visible way. Again, this involves checkpointing.
+	Better solution?: Punt: bad XML is not necessarily bad HTML,
+  at least so bad that a browser can't deal with it (Firefox displays
+  "&#2;" as a gray box; Safari seems to remove them from the source
+  altogether. Try to suck out the bits between <description> and
+  </description> as a string, and leave it up to the browser to render
+  it. Unfortunately, this invites XSS attacks.
+	Hack solution: look for /&#\d{0,2};/ and fix them.
+
+	Unfortunately, XMLReader doesn't seem to support
+  checkpointing. Perhaps another XML module can deal with this more
+  gracefully? OTOH, is it a good idea to be too liberal in what we
+  accept? Isn't that an invitation to XSS? XML is supposed to be
+  really anal about syntax.
+- Try rewriting feed.inc using XML Parser (see bug, above).
 - Make a list of conditions for calling it version 1.0
 - Makefile:
 	Run tests:
