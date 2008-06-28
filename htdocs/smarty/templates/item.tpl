@@ -53,24 +53,11 @@
       </td>
     </tr>
   </table>
-{* XXX - If JavaScript is turned on, should have selectable tabs for the
- * summary and full content.
- *}
 {* XXX - Four cases:
  * no summary, no content: link to real page.
  *    summary, no content: show summary, "More->" link.
  * no summary,    content: show content.
- *    summary,    content: see below:
- *
- * In the case where there's both a summary and a content, behavior
- * should be different depending on whether JS is on or off: when off,
- * show the content.
- * (XXX - However, this causes a problem with feeds like jesusandmo,
- * which can have different text for summary and content.)
- *
- * If JS is on, show the summary, with an "expand" button. Clicking on
- * it hides the summary and displays the content, with a "collapse"
- * button (that reverts to the previous state, of course).
+ *    summary,    content: show content. With JS, add toggle bars.
  *}
   {if ($item.summary == "")}
     {if ($item.content == "")}

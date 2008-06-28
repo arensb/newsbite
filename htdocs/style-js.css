@@ -6,9 +6,9 @@
  * <div class="content-panes">
  */
 .content-panes .item-summary {
-	display:		block;
+	display:		none;
 }
 
 .content-panes .item-content {
-	display:		none;
+	display:		block;
 }

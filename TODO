@@ -1,14 +1,7 @@
-- Bug: Some feed is causing feed.inc to spit out syntax errors:
-	Warning: XMLReader::read() [function.XMLReader-read]: /folks/arensb/proj/newsbite/trunk/htdocs/:14: parser error : AttValue: " or ' expected in /folks/arensb/proj/newsbite/trunk/lib/feed.inc on line 229
-
-	Warning: XMLReader::read() [function.XMLReader-read]: <td><b><font face=times color=#0039b6 size=10>G</font><font face=times color=#c4 in /folks/arensb/proj/newsbite/trunk/lib/feed.inc on line 229
-  ...
-
-	This is apparently caused by bad XML (which can actually be
-  bad HTML in the article body. This is going to crop up a lot, and
-  should be fixed.
+- Bad HTML in item description/content causes parse errors in
+  XMLReader. This is going to crop up a lot, and should be fixed.
 	Worst solution: skip the entire feed, making it unusable until
-  the bad article expires.
+  the bad article expires. (Currently implemented.)
 	Better solution: just skip the article, and proceed with the
   next one. Presumably this involves checkpointing when each article
   begins, and skipping the bad ones.
@@ -239,3 +232,6 @@
   (<description>). Perhaps add a hook after processing <item>, such
   that if there's a <description> but no <content:encoded> or such,
   then move the description to content.
+- Make the "vvv Expand vvv" and "^^^ Collapse ^^^" bars prettier.
+- Once an item has been sent to the browser, change its state from
+  "new" to "unread".

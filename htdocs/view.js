@@ -1,3 +1,16 @@
+/* collapse
+ * Intended to be called from within
+ * <div content-panes>
+ *   <div {item-summary|item-content}>
+ *     <div {expand-bar|collapse-bar}>
+ * The <div content-panes> is expected to have one <div item-summary>
+ * and one <div item-content>.
+ *
+ * This function makes the current pane invisible, and the other one
+ * visible.
+ */
+// XXX - Actually, this is misnamed, since it implements both collapse()
+// and expand(). Perhaps it should be toggle_pane() or some such.
 function collapse(node)
 {
 	var my_pane;		// Pane containing the calling element
