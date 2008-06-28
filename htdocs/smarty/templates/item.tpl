@@ -102,18 +102,21 @@
            * <div> and doesn't go overflowing where we don't want it.
            *}
           <br style="clear: both"/>
-          <div class="expand-bar">
-            <a onclick="javascript:expand(this)">vvv Expand vvv</a>
+          <div class="expand-bar"
+               onclick="javascript:expand(this)">
+            vvv Expand vvv
           </div>
         </div>
         <div class="item-content">
-          <div class="collapse-bar">
-            <a onclick="javascript:collapse(this)">^^^ Collapse ^^^</a>
+          <div class="collapse-bar"
+               onclick="javascript:collapse(this)">
+            ^^^ Collapse ^^^
           </div>
           {$item.content}
           <br style="clear: both"/>
-          <div class="collapse-bar">
-            <a onclick="javascript:collapse(this)">^^^ Collapse ^^^</a>
+          <div class="collapse-bar"
+               onclick="javascript:collapse(this)">
+            ^^^ Collapse ^^^
           </div>
         </div>
       </div>

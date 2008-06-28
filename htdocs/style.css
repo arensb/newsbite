@@ -195,6 +195,24 @@ h1 a {
 	padding:		0.5em;
 }
 
+/* expand-bar, collapse-bar
+ * Bars at top and bottom of article, for expanding summary, or collapsing
+ * content.
+ */
+.collapse-bar {
+	width:			100%;
+	background-color:	#808080;
+	color:			white;
+	text-align:		center;
+}
+
+.expand-bar {
+	width:			100%;
+	background-color:	#808080;
+	color:			white;
+	text-align:		center;
+}
+
 /* Control box at bottom of item */
 .item-footer {
 	background-color:	pink;

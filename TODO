@@ -233,5 +233,3 @@
   that if there's a <description> but no <content:encoded> or such,
   then move the description to content.
 - Make the "vvv Expand vvv" and "^^^ Collapse ^^^" bars prettier.
-- Once an item has been sent to the browser, change its state from
-  "new" to "unread".
