@@ -25,6 +25,9 @@
     <td>
       <a href="view.php?id={$feed_id}">{$feeds[feed].title}</a>:
       &nbsp;
+      {* XXX - These should be links, to show only new items,
+       * new and unread items, or all items.
+       *}
       {$counts[$feed_id].new} new /
       {$counts[$feed_id].unread || 0} unread /
       {$counts[$feed_id].read} read

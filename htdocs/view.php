@@ -38,6 +38,9 @@ foreach ($feed['items'] as &$i)
 {
 	$i['summary'] = defeedburn($i['summary']);
 	$i['content'] = defeedburn($i['content']);
+	unset($i);	// Otherwise, $feed['items'] messed up: last
+			// item removed, replaced with copy of
+			// next-to-last item.
 }
 
 $smarty = new Smarty();
@@ -49,6 +52,19 @@ $smarty->config_dir	= SMARTY_PATH . "configs";
 $smarty->assign('feed', $feed);
 $smarty->assign('items', $feed['items']);
 $smarty->display("view.tpl");
+
+/* Now that these items have been sent to the browser, mark them as
+ * "unread".
+ */
+$unread = array();
+foreach ($feed['items'] as $i)
+{
+	if ($i['state'] == "new")
+		$unread[] = $i['id'];
+}
+if (count($unread) > 0)
+	db_mark_items("unread", $unread);
+
 db_disconnect();
 
 /* defeedburn
