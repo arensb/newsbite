@@ -72,23 +72,66 @@
  * it hides the summary and displays the content, with a "collapse"
  * button (that reverts to the previous state, of course).
  *}
-  {if ($item.summary != "")}
-{*    <h5>Summary:</h5>*}
-    <div class="item-summary">
-      {$item.summary}
-
-      {* This is for items with floating elements in them (such as
-       * tall images): make sure the image is contained within the
-       * <div> and doesn't go overflowing where we don't want it.
-       *}
-      <br style="clear: both"/>
-    </div>
-  {/if}
-
-  {if ($item.content != "")}
-{*    <h5>Content:</h5>*}
-    <div class="item-content">{$item.content}</div>
-  {/if}
+  {if ($item.summary == "")}
+    {if ($item.content == "")}
+      {* No summary, no content *}
+      {if ($item.url == "")}
+        {* In practice it doesn't look as if there are any items with no
+         * summary, no content, and no URL.
+         *}
+        <div class="item-empty">This space intentionally left blank.</div>
+      {else}
+        <div class="item-empty"><a href="{$item.url}">Read on</a></div>
+      {/if}
+    {else}
+      {* No summary, content *}
+      <div class="item-content">
+        {$item.content}
+        <br style="clear: both"/>
+      </div>
+    {/if}
+  {else}
+    {if ($item.content == "")}
+      {* Summary, no content *}
+      <div class="item-summary">
+        {$item.summary}
+        {* This is for items with floating elements in them (such as
+         * tall images): make sure the image is contained within the
+         * <div> and doesn't go overflowing where we don't want it.
+         *}
+        <br style="clear: both"/>
+      </div>
+      {if ($item.url != "")}
+        {* Link to the full item *}
+        <div><a href="{$item.url}">Read more</a></div>
+      {/if}
+    {else}
+      {* Summary, content *}
+      <div class="content-panes">
+        <div class="item-summary">
+          {$item.summary}
+          {* This is for items with floating elements in them (such as
+           * tall images): make sure the image is contained within the
+           * <div> and doesn't go overflowing where we don't want it.
+           *}
+          <br style="clear: both"/>
+          <div class="expand-bar">
+            <a onclick="javascript:expand(this)">vvv Expand vvv</a>
+          </div>
+        </div>
+        <div class="item-content">
+          <div class="collapse-bar">
+            <a onclick="javascript:collapse(this)">^^^ Collapse ^^^</a>
+          </div>
+          {$item.content}
+          <br style="clear: both"/>
+          <div class="collapse-bar">
+            <a onclick="javascript:collapse(this)">^^^ Collapse ^^^</a>
+          </div>
+        </div>
+      </div>
+    {/if}
+  {/if}{* item.summary == "" *}
 
   <div class="item-footer">
     {if (isset($item.comment_url))}

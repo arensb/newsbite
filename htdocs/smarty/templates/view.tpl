@@ -5,6 +5,19 @@
 <head>
 <title>NewsBite: {$feed.title}</title>
 <link rel="stylesheet" type="text/css" href="style.css" media="all" />
+<!-- If JavaScript is turned on, slurp in the JavaScript-specific
+     stylesheet
+-->
+<script type="text/javascript">
+  document.write('<link rel="stylesheet" type="text/css" href="style-js.css" media="all" />\n');
+</script>
+<!-- If JavaScript is turned off, slurp in the no-JavaScript-specific
+     stylesheet
+-->
+<noscript>
+  <link rel="stylesheet" type="text/css" href="style-nojs.css" media="all" />
+</noscript>
+<script type="text/javascript" src="view.js"></script>
 </head>
 <body id="view-body">
 

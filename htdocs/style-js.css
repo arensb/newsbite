@@ -1,0 +1,14 @@
+/* style-js.css
+ * This file is included only when the browser understands JavaScript.
+ */
+
+/* If both the summary and content are present, they're put inside a
+ * <div class="content-panes">
+ */
+.content-panes .item-summary {
+	display:		block;
+}
+
+.content-panes .item-content {
+	display:		none;
+}

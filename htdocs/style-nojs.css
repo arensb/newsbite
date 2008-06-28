@@ -1,0 +1,7 @@
+/* style-nojs.css
+ * This file is included only when the browser has JavaScript turned off.
+ */
+
+.collapse-bar {
+	display:	none;
+}
