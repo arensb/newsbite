@@ -51,6 +51,7 @@
  *}
 <form name="mark-items" method="post" action="markitems.php">
 <input type="reset" name="clearit" value="Clear changes"/>
+<input type="submit" name="read-all" value="Mark all as read"/>
 <input type="submit" name="doit" value="Apply changes"/>
 
 {* List of items. Items are displayed using the separate "item.tpl"
@@ -61,6 +62,7 @@
 {/section}
 
 <input type="reset" name="clearit" value="Clear changes"/>
+<input type="submit" name="read-all" value="Mark all as read"/>
 <input type="submit" name="doit" value="Apply changes"/>
 </form>
 {else}

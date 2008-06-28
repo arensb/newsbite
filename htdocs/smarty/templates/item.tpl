@@ -11,6 +11,10 @@
   <table class="item-header">
     <tr>
       <td class="date-box">
+      {* This hidden field just lists the ID of an item that was displayed,
+       * so that we can mark it with the "Mark all read" button.
+       *}
+      <input type="hidden" name="item-{$item.id}" value=""/>
       {* XXX - This should probably include the year somewhere *}
         <ul>
           <li class="day">{$item.pub_date|date_format:"%e"}</li>
@@ -102,6 +106,9 @@
            * <div> and doesn't go overflowing where we don't want it.
            *}
           <br style="clear: both"/>
+          {* XXX - expand-bar and collapse-bar have the same style.
+           * Come up with a name for both, so as not to duplicate.
+           *}
           <div class="expand-bar"
                onclick="javascript:expand(this)">
             vvv Expand vvv
@@ -132,7 +139,6 @@
       {/if}
       <br/>
     {/if}
-{* XXX - Control buttons to mark as read and whatnot. *}
     &nbsp;
     (New: <input type="radio" name="state-{$item.id}" value="nb" />
      Unread: <input type="radio" name="state-{$item.id}" value="ub" />

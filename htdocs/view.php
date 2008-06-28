@@ -31,6 +31,9 @@ $items = db_get_some_feed_items(
 	);
 $feed['items'] = $items;
 
+// XXX - Find out how many items there are in this list, so we can put
+// up a navigation bar.
+
 // Remove FeedBurner bugs.
 // XXX - This belongs in a separate FeedBurner plugin.
 // XXX - In fact, it should be done before adding items to database.

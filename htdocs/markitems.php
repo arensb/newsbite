@@ -6,32 +6,67 @@ $ok = true;	// Error status. If $ok, then we can just redirect to
 		// wherever we came from when we're done. Otherwise,
 		// need to display an error message.
 
+/* Figure out what we're expected to do */
+if (isset($_REQUEST['doit']))
+	// Mark each item according to its radio buttons
+	$cmd = "mark";
+elseif (isset($_REQUEST['read-all']))
+	// Mark all items as read
+	$cmd = "read-all";
+else
+	// XXX - Abort with an error message
+	exit(0);
+
 $mark_new    = array();
 $mark_unread = array();
 $mark_read   = array();
-foreach ($_REQUEST as $k => $v)
+
+switch ($cmd)
 {
-	/* Look for POST variables of the form "state-{id}", where
-	 * {id} is the ID of the item to be updated.
-	 */
-	if (!preg_match('/^state-(\d+)$/', $k, $match))
-		continue;
-	$id = $match[1];
-	switch ($v[0])
+    case "mark":
+	foreach ($_REQUEST as $k => $v)
 	{
-	    case "n":		// Mark as new
-		$mark_new[] = $id;
-		break;
-	    case "u":		// Mark as unread
-		$mark_unread[] = $id;
-		break;
-	    case "r":		// Mark as read
-		$mark_read[] = $id;
-		break;
-	    default:
-		echo "Unknown update status: [$v]<br/>\n";
-		break;
+		/* Look for POST variables of the form "state-{id}",
+		 * where {id} is the ID of the item to be updated.
+		 */
+		if (!preg_match('/^state-(\d+)$/', $k, $match))
+			continue;
+		$id = $match[1];
+		switch ($v[0])
+		{
+		    case "n":		// Mark as new
+			$mark_new[] = $id;
+			break;
+		    case "u":		// Mark as unread
+			$mark_unread[] = $id;
+			break;
+		    case "r":		// Mark as read
+			$mark_read[] = $id;
+			break;
+		    default:
+			echo "Unknown update status: [$v]<br/>\n";
+			break;
+		}
 	}
+	break;
+
+    case "read-all":
+	foreach ($_REQUEST as $k => $v)
+	{
+		/* Look for POST variables of the form "item-{id}",
+		 * where {id} is the ID of the item to be updated.
+		 */
+		if (!preg_match('/^item-(\d+)$/', $k, $match))
+			continue;
+		$id = $match[1];
+		$mark_read[] = $id;
+	}
+	break;
+
+    default:
+	// This should never happen.
+	echo "Unknown command [$cmd]. This should never happen.\n";
+	exit(1);
 }
 
 db_mark_items("new",    $mark_new);
