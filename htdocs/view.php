@@ -6,15 +6,21 @@ require_once("config.inc");
 require_once("database.inc");
 require_once(SMARTY_DIR . "Smarty.class.php");
 
-$feed_id = $_REQUEST["id"];
-# XXX - Error-checking: make sure '$feed_is' is an integer.
-
+$feed_id = $_REQUEST['id'];		// ID of feed to show
+/* Make sure $feed_id is an integer */
 if (!is_numeric($feed_id) || !is_integer($feed_id+0))
 {
 	// XXX - Abort more gracefully
 	echo "<p>Error: non-numeric feed ID.</p>\n";
 	exit(0);
 }
+
+$start = $_REQUEST['s'];		// Skip first $start items
+/* Make sure $feed_id is an integer */
+if (!is_numeric($start) || !is_integer($start+0))
+	/* Ignore illegal values. */
+	$start = 0;
+$start = (int) $start;
 
 $feed = db_get_feed($feed_id);
 if (!$feed)
@@ -24,15 +30,34 @@ if (!$feed)
 	exit(0);
 }
 
+$num_items = 25;		// How many items to show
+		// XXX - Should probably be a parameter
+
 $items = db_get_some_feed_items(
 	"feed_id",	$feed['id'],
 	"states",	"new,unread",
-	"max_items",	25
+	"max_items",	$num_items,
+	"start_at",	$start
 	);
 $feed['items'] = $items;
 
 // XXX - Find out how many items there are in this list, so we can put
 // up a navigation bar.
+// XXX - At least, ought to find out how many items there are, so as
+// not to add "earlier" link when there's nothing earlier.
+/* Construct URL for earlier and later pages, and names for those links */
+$prev_link = $_SERVER['PHP_SELF'] . "?id=$feed_id&s=" .
+	($start + $num_items);
+$prev_link_text = "Earlier";
+
+if ($start > $num_items)
+{
+	$next_link = $_SERVER['PHP_SELF'] . "?id=$feed_id&s=" .
+		($start - $num_items);
+	$next_link_text = "Later";
+} else {
+	$next_link = $next_link_text = NULL;
+}
 
 // Remove FeedBurner bugs.
 // XXX - This belongs in a separate FeedBurner plugin.
@@ -54,6 +79,10 @@ $smarty->config_dir	= SMARTY_PATH . "configs";
 
 $smarty->assign('feed', $feed);
 $smarty->assign('items', $feed['items']);
+$smarty->assign('prev_link', $prev_link);
+$smarty->assign('prev_link_text', $prev_link_text);
+$smarty->assign('next_link', $next_link);
+$smarty->assign('next_link_text', $next_link_text);
 $smarty->display("view.tpl");
 
 /* Now that these items have been sent to the browser, mark them as

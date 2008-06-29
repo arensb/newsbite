@@ -54,6 +54,19 @@
 <input type="submit" name="read-all" value="Mark all as read"/>
 <input type="submit" name="doit" value="Apply changes"/>
 
+{* Navigation bar. *}
+{* XXX - Should probably be a template, since it should be identical to
+ * the one below.
+ *}
+<div class="navbar">
+  <span class="earlier">
+    <a href="{$prev_link}">{$prev_link_text}</a>
+  </span>
+  <span class="later">
+    <a href="{$next_link}">{$next_link_text}</a>
+  </span>
+</div>
+
 {* List of items. Items are displayed using the separate "item.tpl"
  * template
  *}
@@ -65,7 +78,22 @@
 <input type="submit" name="read-all" value="Mark all as read"/>
 <input type="submit" name="doit" value="Apply changes"/>
 </form>
+
+{* Navigation bar. *}
+{* XXX - Should probably be a template, since it should be identical to
+ * the one above.
+ *}
+<div class="navbar">
+  <span class="earlier">
+    <a href="{$prev_link}">{$prev_link_text}</a>
+  </span>
+  <span class="later">
+    <a href="{$next_link}">{$next_link_text}</a>
+  </span>
+</div>
+
 {else}
+
 {* XXX - Would it be worth having a separate template for an empty feed? *}
 <p>There are no articles to display.</p>
 {/if}

@@ -71,6 +71,39 @@ h1 a {
 	background-color:	yellow;
 }
 
+/***** view ************************************/
+/* navbar
+ * Navigation bar, for going to earlier, later items.
+ */
+.navbar {
+	width:			100%;
+	/* For some reason, the parent block has to have a "position"
+	 * property in order for its children to be positioned.
+	 * {relative, 0, 0}, of course, means "position this block
+	 * exactly where you normally would". Go fig.
+	 */
+	position:		relative;
+	top:			0px;
+	left:			0px;
+	outline:		1px solid red;
+}
+
+.navbar .earlier {
+	text-align:		left;
+	outline:		1px dotted blue;
+	position:		absolute;
+	top:			0px;
+	left:			0px;
+}
+
+.navbar .later {
+	text-align:		right;
+	outline:		1px dotted blue;
+	position:		absolute;
+	top:			0px;
+	right:			0px;
+}
+
 /* Overall box containing an item */
 .item {
 	margin-top:		2em;
