@@ -2,6 +2,26 @@
 /* feed.inc
  * Functions for parsing RSS (and similar) XML feed files.
  */
+/* Note on time:
+
+ * One bit of odd behavior that might be reported as a bug is that the
+ * displayed time of an item is several days in the future from what
+ * it ought to be. This is not a bug in this code:
+ *	At least one feed (The Unspeakable Vault of Doom) has a
+ * problem in its RSS feed: its <pubDate>s are of the form
+ * "thu, 11 July 2008 00:00:00 -0800".
+ * Since I first noticed this bug on Jun. 29, 2008, the obvious
+ * problem is that the time is in the future.
+ *	But the real problem is that 11 July 2008 is not a Thursday,
+ * but a Friday. Apparently this confuses strtotime() (or causes it to
+ * be smart, or something): apparently it thinks that "thu" is
+ * _relative_ to "11 July 2008 00:00:00 -0800". That is, if someone
+ * says, on Jul 11, "let's meet on Thursday", they obviously don't
+ * mean "let's meet today", they mean "let's meet in six days". So
+ * strtotime() adds six days to the date.
+ *
+ * This is not a bug in this code, and therefore will not be fixed.
+ */
 // XXX - Should probably inspect HTML in summary and content: if any
 // links or images are relative, try to make them absolute. Or maybe
 // there's a way in HTML/XHTML to specify a base URL.
@@ -590,7 +610,8 @@ function parse_feed($feed_text)
 	if (count($context) != 0)
 	{
 		// Error
-echo "Error in parsing feed<br/>\n";
+		// XXX - Better error-reporting
+		echo "Error in parsing feed<br/>\n";
 		return FALSE;
 	}
 
@@ -845,6 +866,7 @@ function rss_element_handler(
 		    case "item":
 			// XXX - Make sure $children is a string.
 			$retval['pub_time'] = strtotime($children);
+				// See note on time at top of file
 			break;
 		    default:
 			// XXX - Better error-reporting
@@ -859,6 +881,7 @@ function rss_element_handler(
 		    case "channel":
 			// XXX - Make sure $children is a string.
 			$retval['build_time'] = strtotime($children);
+				// See note on time at top of file
 			break;
 		    default:
 			// XXX - Better error-reporting
@@ -1431,6 +1454,7 @@ function atom_element_handler(
 		    case "entry":
 			// XXX - Make sure $children is a string.
 			$retval['build_time'] = strtotime($children);
+				// See note on time at top of file
 			break;
 
 		    default:
@@ -1671,6 +1695,7 @@ function atom_element_handler(
 		    case "entry":
 			// XXX - Make sure $children is a string.
 			$retval['pub_time'] = strtotime($children);
+				// See note on time at top of file
 			break;
 
 		    default:
