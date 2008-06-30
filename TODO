@@ -1,3 +1,4 @@
+- Bug: Last commit broke "view one feed".
 - (bug?) Bad HTML in item description/content causes parse errors in
   XMLReader. This is going to crop up a lot, and should be fixed.
 	Worst solution: skip the entire feed, making it unusable until
@@ -242,3 +243,12 @@
   that if there's a <description> but no <content:encoded> or such,
   then move the description to content.
 - Make the "vvv Expand vvv" and "^^^ Collapse ^^^" bars prettier.
+- Keep statistics: keep track of which feeds/groups user reads, how
+  often, etc.
+	Keep track of how often a feed is updated. Perhaps can have
+  rarely-updated feeds percolate to the top.
+- Skin for comics that don't include the image in the feed: add an
+  <iframe> or something in the view template, that shows the original
+  page. Perhaps scroll to a position where the image is visible.
+	For gocomics.com, can scroll to <div id="comicTools">.
+  Probably sufficient.
