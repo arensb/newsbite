@@ -8,10 +8,13 @@ require_once(SMARTY_DIR . "Smarty.class.php");
 
 $feed_id = $_REQUEST['id'];		// ID of feed to show
 /* Make sure $feed_id is an integer */
-if (!is_numeric($feed_id) || !is_integer($feed_id+0))
-{
+if (is_numeric($feed_id) && is_integer($feed_id+0))
+	$feed_id = (int) $feed_id;
+elseif ($feed_id == "all")
+	;
+else {
 	// XXX - Abort more gracefully
-	echo "<p>Error: non-numeric feed ID.</p>\n";
+	echo "<p>Error: invalid feed ID.</p>\n";
 	exit(0);
 }
 
@@ -22,23 +25,36 @@ if (!is_numeric($start) || !is_integer($start+0))
 	$start = 0;
 $start = (int) $start;
 
-$feed = db_get_feed($feed_id);
-if (!$feed)
+if ($feed_id == "all")
 {
-	// XXX - Abort more gracefully
-	echo "No such feed: $feed_id<br/>\n";
-	exit(0);
+	/* Showing items from all feeds.
+	 * Construct a pseudo-feed to put the items in
+	 */
+	$feed = array(
+		"title"	=> "All feeds"
+		);
+	$feeds = db_get_feeds();
+} else {
+	$feed = db_get_feed($feed_id);
+	if (!$feed)
+	{
+		// XXX - Abort more gracefully
+		echo "No such feed: $feed_id<br/>\n";
+		exit(0);
+	}
 }
 
 $num_items = 25;		// How many items to show
 		// XXX - Should probably be a parameter
 
-$items = db_get_some_feed_items(
-	"feed_id",	$feed['id'],
+$get_feed_args = array(
 	"states",	"new,unread",
 	"max_items",	$num_items,
 	"start_at",	$start
 	);
+if (is_integer($feed_id))
+	$get_feed_args['feed_id'] = $feed_id;
+$items = db_get_some_feed_items($get_feed_args);
 $feed['items'] = $items;
 
 // XXX - Find out how many items there are in this list, so we can put
@@ -78,6 +94,8 @@ $smarty->cache_dir	= SMARTY_PATH . "cache";
 $smarty->config_dir	= SMARTY_PATH . "configs";
 
 $smarty->assign('feed', $feed);
+if (isset($feeds))
+	$smarty->assign('feeds', $feeds);
 $smarty->assign('items', $feed['items']);
 $smarty->assign('prev_link', $prev_link);
 $smarty->assign('prev_link_text', $prev_link_text);

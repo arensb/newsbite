@@ -32,6 +32,13 @@
             {/if}
           </a>
         </h3>
+        {if ($items != "")}
+          <h3 class="feed-title">
+            <a href="{$feeds[$item.feed_id].url}">
+              {$feeds[$item.feed_id].title}
+            </a>
+          </h3>
+        {/if}
       </td>
       <td class="icon-box">
 {* XXX - Do something with categories *}
@@ -57,11 +64,15 @@
       </td>
     </tr>
   </table>
-{* XXX - Four cases:
+{* Four cases:
  * no summary, no content: link to real page.
  *    summary, no content: show summary, "More->" link.
  * no summary,    content: show content.
  *    summary,    content: show content. With JS, add toggle bars.
+ *}
+{* XXX - Should <div content-panes> be outside everything, so that we
+ * can hide _all_ of the item text (but still show the header, grayed
+ * out), when marking an item as read?
  *}
   {if ($item.summary == "")}
     {if ($item.content == "")}

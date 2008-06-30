@@ -164,18 +164,34 @@ h1 a {
 }
 
 /* Title of item */
-.item-title {
+.item-header .item-title {
 	font-family:		Arial, sans-serif;
 	font-size:		144%;
 	font-weight:		bold;
 	text-decoration:	none;	/* I know it's a link. Don't
 					 * underline it. */
+	color:			LightBlue;
+	display:		block;
+	margin-top:		0px;
+	margin-bottom:		0.2em;
 }
 
-.item-header .info .item-title {
+.item-header .feed-title {
+	font-family:		Arial, sans-serif;
+	font-size:		120%;
+	font-weight:		bold;
+	text-decoration:	none;	/* I know it's a link. Don't
+					 * underline it. */
 	color:			LightBlue;
-	display:		inline;
-	margin-top:		0px;
+	display:		block;
+	margin-top:		0.2em;
+	margin-bottom:		0px;
+}
+
+.item-header .feed-title a {
+	text-decoration:	none;	/* I know it's a link. Don't
+					 * underline it. */
+	color:			LightBlue;
 }
 
 /* .info: the box in the middle of the article header, with useful info

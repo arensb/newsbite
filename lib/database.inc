@@ -66,7 +66,7 @@ EOT;
 	$retval = array();
 	while ($row = $result->fetch_assoc())
 	{
-		$retval[] = $row;
+		$retval[$row['id']] = $row;
 	}
 	return $retval;
 }
@@ -259,6 +259,10 @@ EOT;
  * Fetch items from the database that meet certain criteria.
  * The criteria are specified by the variable argument list: the list
  * is a list of {keyword, value} pairs.
+ *
+ * This function can also be called with a single argument, an assoc
+ * of keyword => value pairs.
+ *
  * !!! Note that unlike db_get_feed_items(), this just returns a list
  * of items. It doesn't fill in the 'items' field in a feed list.
  *
@@ -283,19 +287,36 @@ function db_get_some_feed_items(/* varargs */)
 {
 	$argc = func_num_args();
 
-	/* Sanity check: make sure we got an even number of arguments */
-	if ($argc % 2 != 0)
+	if ($argc == 1)
 	{
-		die("db_get_some_feed_items(): got $argc arguments. Expecting an even number.");
-	}
+		/* We were called with a single argument: this is an
+		 * assoc with keyword => value pairs.
+		 */
+		$args = array();
+		$argv = func_get_arg(0);
+		for ($i = 0; $i < count($argv); $i += 2)
+			$args[$argv[$i]] = $argv[$i+1];
+	} else {
+		/* We were called with n != 1 arguments. This means a
+		 * variable number of arguments as keyword => value
+		 * pairs.
+		 */
+		/* Sanity check: make sure we got an even number of
+		 * arguments
+		 */
+		if ($argc % 2 != 0)
+		{
+			die("db_get_some_feed_items(): got $argc arguments. Expecting an even number.");
+		}
 
-	/* Turn the argument list into an assoc */
-	// XXX - There might be a better way to do this, but I don't
-	// know what it is. None of the array functions seem to do the
-	// job.
-	$args = array();
-	for ($i = 0; $i < $argc; $i += 2)
-		$args[func_get_arg($i)] = func_get_arg($i+1);
+		/* Turn the argument list into an assoc */
+		// XXX - There might be a better way to do this, but I don't
+		// know what it is. None of the array functions seem to do the
+		// job.
+		$args = array();
+		for ($i = 0; $i < $argc; $i += 2)
+			$args[func_get_arg($i)] = func_get_arg($i+1);
+	}
 
 	/* Beginning of query */
 	$query = "SELECT * FROM items\n";
@@ -303,6 +324,8 @@ function db_get_some_feed_items(/* varargs */)
 	$conditions = array();	// All of the "WHERE x AND y AND z" conditions
 
 	/* Were we asked for just one feed ID? */
+	// XXX - Would be nice to request some, but not all, feeds, by
+	// listing their IDs.
 	if (is_numeric($args['feed_id']))
 	{
 		$c = sprintf("feed_id=%d\n", $args['feed_id']);
@@ -310,7 +333,7 @@ function db_get_some_feed_items(/* varargs */)
 	}
 
 	/* Which states does caller want? */
-	// XXX - Presumably we can trust the caller, and don't need to
+	// Presumably we can trust the caller, and don't need to
 	// sanitize input.
 	if (isset($args['states']))
 	{
@@ -330,14 +353,14 @@ function db_get_some_feed_items(/* varargs */)
 	switch ($args['order'])
 	{
 	    case "date_asc":
-		$query .= "ORDER BY pub_date ASC\n";
+		$query .= "ORDER BY last_update ASC\n";
 		break;
 	    case "date_desc":
 	    default:
 		// XXX - This fall-through means we don't notice bogus
 		// values. Then again, we can probably trust the
 		// caller.
-		$query .= "ORDER BY pub_date DESC\n";
+		$query .= "ORDER BY last_update DESC\n";
 		break;
 	}
 
@@ -512,16 +535,11 @@ EOT;
 			// This item doesn't have a GUID, so make one.
 			$item['guid'] = $item['url'];
 		}
-		if (isset($item['build_time']))
-			$build_time = $item['build_time'];
-		else
-			$build_time = time();
 
 		/* Make sure the item has a publication time. If the
 		 * item doesn't have one, try to inherit from the feed
 		 * itself. If that fails, use the current time.
 		 */
-
 		$pub_time = $item['pub_time'];
 		if ($pub_time == 0)
 		{
@@ -532,6 +550,13 @@ EOT;
 				$pub_time = time();
 			}
 		}
+		/* Make sure the item has a build time (last update time).
+		 * If it doesn't have one, use the publication time.
+		 */
+		if (isset($item['build_time']))
+			$build_time = $item['build_time'];
+		else
+			$build_time = $pub_time;
 
 		$stmt->bind_param("dsssssssssdd" .
 				  "ssssssssdd",

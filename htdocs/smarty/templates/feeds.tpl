@@ -14,10 +14,11 @@
   <a href="update.php?id=all">Update all feeds</a>
 </div>
 
-{* XXX - Link to show all feeds *}
+{* Link to show all feeds *}
+<p><a href="view.php?id=all">View all feeds</a></p>
 
 <table id="feeds">
-{section name=feed loop=$feeds}
+{section name=feed loop=$feeds start=1}
 {assign var="feed_id" value=$feeds[feed].id}
 {strip}
   <tr class="{cycle values="odd-row,even-row"}">
