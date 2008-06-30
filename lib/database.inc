@@ -292,10 +292,7 @@ function db_get_some_feed_items(/* varargs */)
 		/* We were called with a single argument: this is an
 		 * assoc with keyword => value pairs.
 		 */
-		$args = array();
-		$argv = func_get_arg(0);
-		for ($i = 0; $i < count($argv); $i += 2)
-			$args[$argv[$i]] = $argv[$i+1];
+		$args = func_get_arg(0);
 	} else {
 		/* We were called with n != 1 arguments. This means a
 		 * variable number of arguments as keyword => value

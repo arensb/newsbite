@@ -48,9 +48,9 @@ $num_items = 25;		// How many items to show
 		// XXX - Should probably be a parameter
 
 $get_feed_args = array(
-	"states",	"new,unread",
-	"max_items",	$num_items,
-	"start_at",	$start
+	"states"	=> "new,unread",
+	"max_items"	=> $num_items,
+	"start_at"	=> $start
 	);
 if (is_integer($feed_id))
 	$get_feed_args['feed_id'] = $feed_id;
