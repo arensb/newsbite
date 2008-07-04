@@ -62,7 +62,7 @@ echo "<h3>Updating feed [$feed[title]]</h3>\n";
 	if ($feed_text === false)
 	{
 		// XXX - Better error-reporting
-		echo "Curl error [", curl_errno($ch), "]: ", htmlspecialchars(curl_error($ch)), "\n";
+		echo "<b>Curl error [", curl_errno($ch), "]: ", htmlspecialchars(curl_error($ch)), "</b><br/>\n";
 		curl_close($ch);
 		return false;
 	}
@@ -72,7 +72,7 @@ echo "<h3>Updating feed [$feed[title]]</h3>\n";
 	if ($http_code != 200)
 	{
 		// XXX - Better error-reporting
-		echo "HTTP error [$http_code], feed_text [[$feed_text]]\n";
+		echo "<b>HTTP error [$http_code], feed_text [[$feed_text]]</b><br/>\n";
 		curl_close($ch);
 		exit(2);
 	}
@@ -219,8 +219,8 @@ echo "Starting ($feed[id]) [", $feed['title'], "]<br/>\n"; flush();
 			if (!isset($handle))
 			{
 				// Hopefully this will never happen
-				echo "Error: couldn't find curl handle ",
-					$err['handle'], " in pipeline\n";
+				echo "<b>Error: couldn't find curl handle ",
+					$err['handle'], " in pipeline</b><br/>\n";
 				continue;
 			}
 
@@ -244,12 +244,12 @@ echo "Finished (", $handle['feed']['id'], ") [", $handle['feed']['title'], "]<br
 				curl_close($handle['ch']);
 			} else {
 				// XXX - Better error-reporting
-				echo "Error in [", $handle['feed']['title'],
+				echo "<b>Error in [", $handle['feed']['title'],
 					"]: ",
 					curl_errno($handle['ch']),
 					": [",
 					curl_error($handle['ch']),
-					"]\n";
+					"]</b><br/>\n";
 			}
 
 			/* See if there's another URL to fetch */
@@ -387,7 +387,7 @@ function _save_handle($handle)
 	if ($http_status != "200")
 	{
 		// XXX - Better error-reporting
-		echo "Error: $http_status $http_error\nAborting.\n";
+		echo "<b>Error: $http_status - $http_error. Aborting.</b><br/>\n";
 		return;
 	}
 
