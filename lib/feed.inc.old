@@ -2,8 +2,8 @@
 /* feed.inc
  * Functions for parsing RSS (and similar) XML feed files.
  */
-
 /* Note on time:
+
  * One bit of odd behavior that might be reported as a bug is that the
  * displayed time of an item is several days in the future from what
  * it ought to be. This is not a bug in this code:
@@ -22,34 +22,11 @@
  *
  * This is not a bug in this code, and therefore will not be fixed.
  */
-
-/* Note on the term "handler":
-
- * The word "handler" is, confusingly, used in two different senses:
- * the XML text is processed by the XML Parser PHP module, which calls
- * functions (which it calls handlers) to deal with the various XML
- * tokens it encounters.
- *
- * In this module the XML Parser handlers call other functions, to
- * deal with the specific type of XML file we're parsing (e.g., RSS,
- * Atom, etc.). These are also called handlers.
- *
- * The functions
- *	_element_start_handler
- *	_element_end_handler
- *	_cdata_handler
- *	_namespace_handler
- *	_end_namespace_handler
- * are XML Parser handlers. All others are the other kind of handler.
- */
-
 // XXX - Should probably inspect HTML in summary and content: if any
 // links or images are relative, try to make them absolute. Or maybe
 // there's a way in HTML/XHTML to specify a base URL.
 
-// XXX - Functions to add handlers
-
-// Element-to-field mapping:
+// Make sure the fields set by parse_{rss,atom}{,_item} are the same:
 // RSS:			Atom:			field
 // <item>		<entry>			items[]
 // <rss>			<feed>			feed_type
@@ -180,20 +157,6 @@ $url2handler = array(		// Handlers for specific URLs
 // wfw		http://wellformedweb.org/CommentAPI/
 	);
 
-$url2ns = array();	// Map URLs to their namespace prefixes
-$ns2url = array();	// Map namespace prefixes to their URLs
-
-/* $_context
- * Context stack. Tells handlers where they are within the tree.
- */
-$_context = array();
-
-$feed_err = 0;		// Error code.
-			// 0 - No error
-			// 1 - Some error
-			// XXX - Is it worth expanding this?
-$feed_errmsg = "";	// Error message
-
 /* parse_feed
  * Take an XML string (read from a file or URL) and parse it down to a
  * PHP data structure of the form
@@ -237,8 +200,12 @@ $feed_errmsg = "";	// Error message
  */
 function parse_feed($feed_text)
 {
-	global $feed_err, $feed_errmsg;
-	global $_context;
+//echo "Inside parse_feed(",
+//	htmlspecialchars(substr($feed_text, 0, 512)), ")<br/>\n";
+	$ns2url = array();		// Maps namespace prefixes to their
+					// URL identifiers
+	$context = array();		// Context stack. Shows
+					// handlers where they are
 
 	// This preg_replace_callback is a butt-ugly hack to deal with
 	// the top10 feed: it has constructs of the form
@@ -255,6 +222,7 @@ function parse_feed($feed_text)
 	// Oh, and it unescapes entities like "&quot;"
 
 	// XXX - Come up with a better way of dealing with this.
+	// Perhaps with $reader->expand?
 	$feed_text = preg_replace_callback('{<description>(.*?)</description>}s',
 					   create_function('$matches',
 							   'if (substr($matches[1], 0, 9) == "<![CDATA[")
@@ -269,257 +237,406 @@ function parse_feed($feed_text)
 			       return $matches[0];'),
 					   $feed_text);
 
-	/* Initialize parser */
-	$xml_parser = xml_parser_create_ns();
-	xml_parser_set_option($xml_parser, XML_OPTION_CASE_FOLDING, false);
-	xml_set_element_handler($xml_parser,
-				_element_start_handler,
-				_element_end_handler);
-	xml_set_start_namespace_decl_handler($xml_parser, _namespace_handler);
-	// I'd set xml_set_end_namespace_decl_handler(), but it
-	// doesn't seem to do anything, due to a bug in libxml2.
-	xml_set_character_data_handler($xml_parser, _cdata_handler);
+	/* Initialize the feed reader */
+	$reader = new XMLReader();
+	$reader->xml($feed_text);
 
-	/* Create a node to contain the value returned by the
-	 * document, and push it onto the context stack.
+	/* Find root node
+	 * Although this code repeats a lot of code found further
+	 * down, under "case ELEMENT:", it has to be separate: we want
+	 * to do some top-level initialization and error-checking.
 	 */
-	$node = array(
-		"retval"	=> NULL
-		);
-	array_push($_context, $node);
-
-	/* Start parsing */
-	$err = xml_parse($xml_parser, $feed_text, true);
-//echo "err [$err], error_code [", xml_get_error_code($xml_parser),
-//	"], error_string [", xml_error_string(xml_get_error_code($xml_parser)),
-//	"]\n";
-
-	if ($err == 0)
+	// XXX - This can run into syntax errors. Shouldn't send
+	// those to the user.
+	while ($err = $reader->read())
 	{
-		// XML Parser found an error.
-		$feed_err = 1;
-		$feed_errmsg = xml_error_string(xml_get_error_code($xml_parser));
-		return FALSE;
-	} else	if ($feed_err)
+		if ($reader->nodeType != XMLReader::ELEMENT)
+			// Skip past things like document type and
+			// preprocessing instructions.
+			continue;
+
+		/* Create a new node for the root of the tree */
+		$node = array(
+			"ns"		=> $reader->prefix,
+			"name"		=> $reader->localName,
+			"ns_url"	=> $reader->namespaceURI,
+			"is_empty"	=> $reader->isEmptyElement,
+			// Can't just use
+			// $reader->isEmptyElement at the end,
+			// because the attribute parsing code
+			// is going to change $parser's state.
+			"retval"	=> NULL,
+			);
+
+		/* Find attributes */
+		if ($reader->attributeCount > 0)
+		{
+			$attributes = array();
+
+			$reader->moveToFirstAttribute();
+			do {
+				$attr_prefix     = $reader->prefix;
+				$attr_name       = $reader->localName;
+				$attr_fullname   = $reader->name;
+				$attr_value      = $reader->value;
+
+				// Namespaces look kinda like attributes, but
+				// we handle them separately.
+				// Namespace declarations come in two
+				// varieties:
+				//	xmlns="some/url" (default namespace)
+				//	xmlns:prefix="some/url"
+				if ($attr_prefix == "" &&
+				    $attr_name == "xmlns")
+				{
+					// Default namespace
+					$ns2url[""] = $attr_value;
+					continue;
+				}
+
+				if ($attr_prefix == "xmlns")
+				{
+					// Non-default namespace
+					$ns2url[$attr_name] = $attr_value;
+					continue;
+				}
+
+				// Save all info about this attribute, so we
+				// can call a handler for it below.
+				$attributes[] = array(
+					"prefix"	=> $attr_prefix,
+					"name"		=> $attr_name,
+					"value"		=> $attr_value,
+					"url"		=> $reader->namespaceURI,
+					);
+			} while ($reader->moveToNextAttribute());
+			// XXX - Ideally, ought to remember scope of
+			// namespaces, so that you can have things
+			// like
+			//	<item>
+			//	  <foo:elem1 xmlns:foo="abc">
+			//	    <!-- "foo" -> "abc" -->
+			//	  </foo:elem1>
+			//	  <foo:elem2 xmlns:foo="xyz">
+			//	    <!-- "foo" -> "xyz" -->
+			//	  </foo:elem2>
+			// but I suspect that's too rare to worry about until
+			// it crops up in real life.
+		}
+
+		break;	// Found the root node.
+	}
+//echo "\$err: ["; print_r($err); echo "]<br/>\n";
+
+	/* Based on the default namespace in the root node, figure out which
+	 * handler to use for the rest:
+	 * If there's a default namespace (with URL)
+	 *	If the URL has a handler in $known_handlers, use it
+	 *	Else throw an error
+	 * Else if the root node is <rss>
+	 *	Use the RSS handler
+	 * Else
+	 *	Throw an error.
+	 */
+	if (isset($ns2url[""]))
 	{
-		// The handlers have found an error.
+		// There's a default namespace for this XML file
+
+		/* Do we have a handler for it? */
+		if (isset($url2handler[$ns2url[""]]))
+		{
+			// Yes
+		} else {
+			// No
+			// XXX - Abort
+		}
+	} elseif ($node['name'] == "rss")
+	{
+		// Use the default
+	} else {
+		return FALSE;	// Don't know how to handle this
+	}
+
+	/* Run the init hooks for any namespaces we've found */
+	foreach ($ns2url as $ns => $url)
+	{
+		if (isset($url2handler[$url]['init']))
+			$url2handler[$url]['init']($ns, $url);
+	}
+
+	/* Process handlers for any attributes we've seen. This is
+	 * outside the loop above that records the attributes, because
+	 * for all I know it's possible to have
+	 *	<rss foo:attr="some value" xmlns:foo="http://some/url">
+	 * If the attribute handler were inside the loop, we'd see
+	 * "foo:attr" before the declaration of "xmlns:foo", and
+	 * wouldn't know which handler to call.
+	 */
+	if (isset($attributes))
+	{
+		$node['@attrs'] = array();	// List of root attributes
+		array_push($context, &$node);
+				// Push $node onto context, for handler
+		foreach ($attributes as $a)
+		{
+			/* If there's an attribute handler for this
+			 * namespace, call it. Otherwise, use the
+			 * default.
+			 */
+			if (isset($url2handler[$a['url']]['attribute']))
+				$url2handler[$a['url']]['attribute'](
+					$a['prefix'],
+					$a['name'],
+					$a['value'],
+					$node['@attrs'],
+					$context
+					);
+			else
+				default_attribute_handler(
+					$a['prefix'],
+					$a['name'],
+					$a['value'],
+					$node['@attrs'],
+					$context
+					);
+		}
+		$node = array_pop($context);
+				// We're no longer looking at attributes
+	}
+
+	/* Parse the rest of the file */
+	while ($err = @$reader->read())
+	{
+		switch ($reader->nodeType)
+		{
+		    case XMLReader::ELEMENT:
+			array_push($context, $node);
+			// Save $node on context stack
+
+			// $node describes the node we're currently looking
+			// at. Be careful to separate the return value
+			// ("retval") from the description of the node itself.
+			$node = array(
+				"ns"		=> $reader->prefix,
+				"name"		=> $reader->localName,
+				"ns_url"	=> $reader->namespaceURI,
+				"is_empty"	=> $reader->isEmptyElement,
+				// Can't just use
+				// $reader->isEmptyElement at
+				// the end, because the
+				// attribute parsing code is
+				// going to change $parser's
+				// state.
+				"retval"	=> NULL,
+				);
+
+			/* Check attributes */
+			if ($reader->hasAttributes)
+			{
+				$attributes = array();
+
+				$reader->moveToFirstAttribute();
+
+				do {
+					$attr_prefix     = $reader->prefix;
+					$attr_name       = $reader->localName;
+					$attr_fullname   = $reader->name;
+					$attr_value      = $reader->value;
+
+					/* Is this a namespace
+					 * declaration? If so, it's of
+					 * the form
+					 * xmlns:foo="some url"
+					 * or
+					 * xmlns="some url"
+					 */
+					if ($attr_prefix == "" &&
+					    $attr_name == "xmlns")
+					{
+						// Default namespace
+
+						/* Run init hook if
+						 * there is one
+						 */
+						if (!isset($ns2url[""]) &&
+						    isset($url2handler[$attr_value]['init']))
+							$url2handler[$attr_value]['init'](
+								$attr_prefix,
+								$attr_value);
+						$ns2url[""] = $attr_value;
+						continue;
+					}
+
+					if ($attr_prefix == "xmlns")
+					{
+						// Non-default namespace
+						$ns2url[$attr_name] = $attr_value;
+						if (!isset($ns2url[$attr_name]) &&
+						    isset($url2handler[$attr_value]['init']))
+							$url2handler[$attr_value]['init'](
+								$attr_prefix,
+								$attr_value);
+						continue;
+					}
+
+					/* Call attribute handler */
+					array_push($context, $node);
+						// Push $node onto
+						// context, for the
+						// handler's benefit
+					if (isset($url2handler[$node['ns_url']]["attribute"]))
+						$url2handler[$node['ns_url']]["attribute"](
+							$attr_prefix,
+							$attr_name,
+							$attr_value,
+							$attributes,
+							$context);
+					default_attribute_handler(
+						$attr_prefix,
+						$attr_name,
+						$attr_value,
+						$attributes,
+						$context);
+					$node = array_pop($context);
+						// Restore $node
+				} while ($reader->moveToNextAttribute());
+				$node['@attrs'] = $attributes;
+			}
+
+			if ($node['is_empty'])
+				// This is an empty element (<foo/>), so we
+				// need to close it right away, as if we'd
+				// just seen <foo></foo>.
+				_feed_close_element($node, $context);
+			break;
+
+		    case XMLReader::END_ELEMENT:
+			_feed_close_element($node, $context);
+			break;
+
+		    case XMLReader::TEXT:
+		    case XMLReader::CDATA:
+			// TEXT and CDATA are combined because
+			// XMLReader is nice enough to expand the HTML
+			// entities in TEXT, so they're both presented
+			// to us the same way.
+			if (isset($url2handler[$node['ns_url']]["text"]))
+				$url2handler[$node['ns_url']]["text"](
+					$node,
+					$reader->value,
+					$node['retval'],
+					$context);
+			else
+				default_text_handler(
+					$node,
+					$reader->value,
+					$node['retval'],
+					$context);
+			break;
+
+			/* The following tokens are either never used, or
+			 * aren't useful.
+			 */
+		    case XMLReader::ATTRIBUTE:
+			// Should never show up here. Look under
+			// XMLReader::ELEMENT.
+			break;
+		    case XMLReader::NONE:
+			// Apparently never used
+			break;
+		    case XMLReader::ENTITY_REF:
+			// Apparently never used
+			break;
+		    case XMLReader::ENTITY:
+			// Apparently never used
+			break;
+		    case XMLReader::PI:
+			// Apparently name and value are the only fields with
+			// any values. For
+			// < ?some-thing blah='de' blah? >
+			// 	name="some-thing"
+			//	value="blah='de' blah"
+
+			// Some of these are stylesheets, but it's not worth
+			// applying them, because the ones I've seen are all
+			// aimed at making XML look presentable in a browser.
+			break;
+		    case XMLReader::COMMENT:
+			// This is just XML comments, not HTML comments.
+			// Nothing interesting in here.
+			break;
+		    case XMLReader::DOC:
+			// Apparently never used
+			break;
+		    case XMLReader::DOC_TYPE:
+			// Apparently the only useful information is the name
+			// of the root node. This can be used to guess the
+			// correct handler, but in so many other cases we have
+			// to look it up anyway, that it's not worth the
+			// effort.
+			break;
+		    case XMLReader::DOC_FRAGMENT:
+			// Apparently never used
+			break;
+		    case XMLReader::NOTATION:
+			// Apparently never used
+			break;
+		    case XMLReader::WHITESPACE:
+			// Apparently never used
+			break;
+		    case XMLReader::SIGNIFICANT_WHITESPACE:
+			// Ignore this
+			break;
+		    case XMLReader::END_ENTITY:
+			// Apparently never used
+			break;
+		    case XMLReader::XML_DECLARATION:
+			// Apparently never used
+			break;
+		    default:
+			// XXX - Better error-reporting
+			echo "Unknown node type: [", $reader->nodeType, "], [",
+				$reader->name, "]\n";
+			break;
+		}
+	}
+//echo "\$err: ["; print_r($err); echo "]<br/>\n";
+
+	// Unfortunately XMLReader::read() only returns two values: 1
+	// and false. False can mean either end of file, or parsing
+	// error.
+	// Check the context stack to see whether we're at the end of
+	// the file.
+	if (count($context) != 0)
+	{
+		// Error
+		// XXX - Better error-reporting
+		echo "Error in parsing feed<br/>\n";
 		return FALSE;
 	}
 
-	/* Pop the node that we pushed earlier, and return its value */
-	$node = array_pop($_context);
+//	echo "context: ["; print_r($context); echo "]\n";
+//	echo "node: ["; print_r($node); echo "]\n";
+
 	return $node['retval'];
 }
 
-/* _feed_abort
- * Abort parsing the feed. Actually, we can't stop XML Parser from
- * running to completion, but this turns off any handlers, so that
- * they don't call any hooks that might have side effects.
- * Also, set the error code ($feed_err) and error message ($feed_errmsg).
+/* _feed_close_element
+ * Private function, called when an element is closed, upon seeing
+ * either </foo> or <foo/>.
+ * Runs the appropriate hooks and adjusts the stack.
  */
-function _feed_abort($parser, $err, $msg)
+function _feed_close_element(&$node, &$context)
 {
-	global $feed_err, $feed_errmsg;
-
-	/* Disable all handlers */
-	xml_set_element_handler($parser,
-				FALSE, FALSE);
-	xml_set_character_data_handler($parser, FALSE);
-
-	/* Set the error code and message */
-	$feed_err = $err;
-	$feed_errmsg = $msg;
-}
-
-/* _element_start_handler
- * Handler for beginning of element. Private function.
- */
-function _element_start_handler($parser, $fullname, $attrs)
-{
-	global $_context;
-	global $url2handler;
-	global $url2ns;
-
-	/* Parse $fullname into URL and name */
-	if (preg_match('/^(.*):(.*)$/', $fullname, $match))
-	{
-		$ns_url = $match[1];
-		$name = $match[2];
-	} else {
-		$ns_url = "";
-		$name = $fullname;
-	}
-
-	/* Create a new node */
-	$node = array(
-		"url"		=> $ns_url,
-		"name"		=> $name,
-		"retval"	=> NULL,
-		);
-
-	/* If this is the root node, decide how we're going to handle
-	 * the rest of the file.
-	 */
-	if (count($_context) == 1)	// Only the topmost collector
-					// on the context stack so far
-	{
-		/* Figure out what kind of file this is */
-
-		if (isset($ns2url[""]))
-		{
-			// There's an explicit declaration of the
-			// default namespace. (e.g., Atom, RDF, random
-			// XML files)
-			/* Do we have handler for default namespace? */
-			if (!function_exists($url2handler[$ns2url[""]]))
-			{
-				// ...but we don't have a handler for
-				// the default namespace that was
-				// declared.
-				_feed_abort($parser, 1,
-					    "No handler for default namespace");
-			} 
-		} elseif ($ns_url == "")
-		{
-			// No explicit default namespace declaration,
-			// and root has no prefix. This can still be
-			// okay if the root node is "rss".
-			if ($name != "rss")
-				// This is probably HTML or something.
-				_feed_abort($parser, 1,
-					    "Unknown document type");
-		}
-
-		/* Can we process the root node?
-		 * If it has no prefix, we've already established that
-		 * it's "rss". But if the root node has a prefix, and
-		 * we don't know how to handle it, abort.
-		 */
-		if (($ns_url != "") &&
-		    (!isset($url2handler[$ns_url])))
-			// We use isset() here instead of
-			// function_exists() because we expect this to
-			// be an assoc, and we don't want to have to
-			// require any particular handler to exist.
-		{
-			// Error: no handler
-			_feed_abort($parser, 1,
-				    "No handler for this document type");
-		}
-
-		/* Call init handler, if any */
-		if (function_exists($url2handler[$ns_url]["init"]))
-		{
-			$err = $url2handler[$ns_url]["init"](
-				$ns_url,
-				$url2ns[$ns_url]
-				);
-			/* Allow the handler to abort processing */
-			if (!$err)
-				_feed_abort($parser, 1,
-					    "Aborted by init handler");
-		}
-	}
-
-	/* Process attributes. Call handlers as necessary */
-	if (count($attrs) > 0)
-	{
-		$node['@attrs'] = array();
-
-		foreach ($attrs as $k => $v)
-		{
-			/* Parse $k into URL and name */
-			if (preg_match('/^(.*):(.*)$/', $k, $match))
-			{
-				$attr_url = $match[1];
-				$attr_name = $match[2];
-			} else {
-				$attr_url = "";
-				$attr_name = $k;
-			}
-
-			/* Figure out which handler to call */
-			// There's a potential problem here: let's say
-			// we have
-			// <feed xmlns="http://feed/type/"
-			//	xmlns:ext="http://extension/type/">
-			// ...
-			//   <ext:element attr="value">
-			//
-			// Here, <element> is in the "ext" namespace,
-			// and presumably the spec for "ext" says what
-			// "attr" means. But since "attr" is in the
-			// default namespace, it'll be processed by
-			// some function that doesn't know about
-			// "attr". It ought to pass "attr" through, so
-			// that the function that'll handle
-			// </ext:element> will see the attribute.
-			//
-			// This can cause some confusion, but
-			// http://www.w3.org/TR/REC-xml-names/
-			// explicitly says that attributes without a
-			// prefix are in no namespace at all.
-			//
-			// So presumably best practice is for the
-			// attribute handler to put unrecognized
-			// attributes in $retval with their prefix.
-			if (function_exists($url2handler[$attr_url]["attribute"]))				$handler = $url2handler[$attr_url]["attribute"];
-			else
-				$handler = default_attribute_handler;
-
-			$err = $handler(
-				$attr_url,
-				$url2ns[$attr_url],
-				$attr_name,
-				$v,
-				$node['@attrs'],
-				$_context
-				);
-			/* Allow the handler to abort processing */
-			if (!$err)
-				_feed_abort($parser, 1,
-					    "Aborted by attribute handler");
-		}
-	}
-
-	/* Process this node: push it onto the context stack */
-	array_push($_context, &$node);
-//echo "pushed <$ns_url:$name> onto context\n";
-//echo "now context: ["; print_r($_context); echo "]\n";
-}
-
-/* _element_end_handler
- * Handler for end of element. Private function.
- */
-function _element_end_handler($parser, $fullname)
-{
-	global $_context;
-	global $url2handler;
 	global $element_hooks;
-	global $url2ns;
-
-	/* Parse $fullname into URL and name */
-	if (preg_match('/^(.*):(.*)$/', $fullname, $match))
-	{
-		$ns_url = $match[1];
-		$name = $match[2];
-	} else {
-		$ns_url = "";
-		$name = $fullname;
-	}
-
-	$node = array_pop($_context);	// Node that we're closing
-	$retval =& $_context[count($_context)-1]['retval'];
-			// Where to put return value from this element
-
+	global $url2handler;
 
 	/* Run any hooks associated with this element.
 	 * Hooks are run before the handler: that way, a hook has a
 	 * chance to clean up the element before the hander determines
 	 * what its return value is.
 	 */
-	// XXX - Test this code
-	$hooks = $element_hooks[$ns_url][$name];
+	$hooks = $element_hooks[$node['ns_url']][$node['name']];
 	if (isset($hooks))
 	{
 		foreach ($hooks as $h)
@@ -531,101 +648,38 @@ function _element_end_handler($parser, $fullname)
 		}
 	}
 
-	/* Special case: if $node['retval'] is an array with only a
-	 * "#text" entry, replace it with its string value.
-	 */
-	if (is_array($node['retval']) &&
-	    count($node['retval']) == 1 &&
-	    is_string($node['retval']['#text']))
-		$node['retval'] = $node['retval']['#text'];
-
 	/* Call element handler */
-	if (function_exists($url2handler[$ns_url]["element"]))
-		$handler = $url2handler[$ns_url]["element"];
-	else
-		$handler = default_element_handler;
-	$err = $handler($ns_url,
-			$url2ns[$ns_url],
-			$name,
+	$retval =& $context[count($context)-1]['retval'];
+	if (isset($url2handler[$node['ns_url']]["element"]))
+		$url2handler[$node['ns_url']]["element"](
+			$node['ns'],
+			$node['name'],
 			$node['@attrs'],
 			$node['retval'],
 			$retval,
-			$_context
-		);
-	/* Allow handler to abort processing */
-	if (!$err)
-		_feed_abort($parser, 1,
-			    "Aborted by element handler");
-}
+			$node['ns_url'],
+			$context);
+	else
+		// XXX - Is this a good thing? If we don't have a
+		// handler for this element, do we want to risk the
+		// default one messing things up?
+		default_element_handler($node['ns'],
+					$node['name'],
+					$node['@attrs'],
+					$node['retval'],
+					$retval,
+					$node['ns_url'],
+					$context);
+	/* Pop parent element from context stack, and add
+	 * current $node to it.
+	 * (We didn't do this earlier, because if we had, then
+	 * $context wouldn't have included $parent).
+	 */
+	$parent = array_pop($context);
+	$parent['retval'] = $retval;
+	$node = $parent;
 
-/* _cdata_handler
- * Handle character data in the stream.
- * Note that this can be called several times for the same string: in
- *	<title>foo&amp;bar</title>
- * it'll be called for "foo", "&", and "bar".
- * It also gets called for whitespace between elements.
- */
-function _cdata_handler($parser, $data)
-{
-	global $_context;
-
-	// XXX - Call text handler, if one is defined?
-	$parent = &$_context[count($_context)-1];
-	$parent['retval']['#text'] .= $data;
-}
-
-// XXX - This version takes 3 arguments. The version documented at php.net
-// takes four:
-//	($parser, $user_data, $prefix, $uri)
-// Fortunately, it's possible to define a function inside an
-// if-statement, if I can find out how to tell which one is required:
-//
-// if (some condition)
-// {
-//	function foo($a, $b, $c) { ... }
-// } else {
-//	function foo($a, $b, $c, $d) { ... }
-// }
-// The simplest workaround might be to have the handler function
-// defined this way, and have it call a helper function that does the
-// real work.
-function _namespace_handler($parser, $prefix, $url)
-{
-	global $url2handler;
-	global $ns2url, $url2ns;
-
-	/* Remember which URL goes with which prefix */
-	// I suspect it's possible to have nested namespace
-	// declarations with different prefixes:
-	//
-	// <foo xmlns:abc="http://some/url/">
-	//   <abc:someElement/>
-	//   <bar xmlns:def="http://some/url/">
-	//     <def:someElement/>
-	//   </bar>
-	// </foo>
-	//
-	// Since we only look at when namespaces are declared, not
-	// when they go out of scope, $ns2url and $url2ns will record
-	// that "http://some/url/" corresponds to "def", and will
-	// forget that it ever corresponded to "abc". This situation
-	// is rare enough that we can probably ignore it until it
-	// becomes a problem. Besides, handlers shouldn't need to know
-	// which prefix the document uses.
-	$ns2url[$prefix] = $url;
-	$url2ns[$url] = $prefix;
-
-	/* If there's an initialization hook for this URL, call it */
-	if (function_exists($url2handler[$url]['init']))
-		$url2handler[$url]['init']($url, $prefix);
-}
-
-// XXX - Apparently this is supposed to be called when leaving the
-// scope of a namespace declaration. Unfortunately, there appears to
-// be a bug in libxml that prevents it from working.
-function _end_namespace_handler($parser, $prefix)
-{
-//	echo "End namespace:\n\tprefix: [$prefix]\n";
+	// XXX - Return something intelligent
 }
 
 /* default_element_handler
@@ -633,7 +687,7 @@ function _end_namespace_handler($parser, $prefix)
  * handler does. This function is called after the closing tag has
  * been seen, and any other hooks have run.
  *
- * XXX - Move the following description to the formal documentation.
+ * XXX - Move the following description elsewhere:
  *
  * The job of this function is to look at the values returned by the
  * handlers that looked at the contents of the element, and fill in
@@ -655,71 +709,63 @@ function _end_namespace_handler($parser, $prefix)
  *	<channel><item><link/>
  */
 function default_element_handler(
-	$ns_url,	// URL of this element's namespace
 	$prefix,	// Namespace of this element
 	$elt_name,	// Name of this element, without prefix
 	&$attrs,	// Attributes
 	&$children,	// Contents of this element
 	&$retval,	// Fill in the blanks here
+	$ns_url,	// URL of this element's namespace
 	&$context)	// Where we are at the moment
 {
+	$parent = $context[count($context)-1]['name'];
 
-	/* Figure out this element's name, with prefix */
+	// XXX - Should probably just pass stuff through:
 	if ($prefix == "")
-		$my_name = $elt_name;
+		$retval[$elt_name] = $children;
 	else
-		$my_name = "$prefix:$elt_name";
+		$retval[$prefix . ":" . $elt_name] = $children;
+	$retval['@attrs'] = $attrs;
 
-	if (is_array($children))
-	{
-		if (count($children) == 1 &&
-		    array_key_exists('#text', $children))
-			// $children is an array whose only element is a #text
-			// string. Simplify and replace $children with that
-			// string.
-			$children = $children['#text'];
-		else
-			unset($children['#text']);
-	}
+	return;		// Do nothing.
 
-	if (isset($retval[$my_name]))
+	if (isset($retval[$elt_name]))
 	{
-		// There's already one or more $my_names in $parent
-		if (is_array($retval[$my_name]) &&
-		    array_key_exists(0, $retval[$my_name]))
+		// There's already one or more $elt_names in $parent
+		if (is_array($retval[$elt_name]) &&
+		    array_key_exists(0, $retval[$elt_name]))
 		{
 			// Append $children to existing array
-			array_push($retval[$my_name], $children);
+			array_push($retval[$elt_name], $children);
 		} else {
 			// Create a new array with the old and new values
-			$retval[$my_name] = array(
-				$retval[$my_name],
+			$retval[$elt_name] = array(
+				$retval[$elt_name],
 				$children);
 		}
 	} else {
-		// This is the first $my_name child
-		$retval[$my_name] = $children;
+		// This is the first $elt_name child
+		switch ($elt_name)
+		{
+//		    case 'item':
+//			// XXX - This is RSS-specific
+//			$retval['items'] = $children;
+//			break;
+		    default:
+			$retval[$elt_name] = $children;
+		}
 	}
-
-	return true;
 }
 
-// XXX - Should there even be a text/CDATA handler?
-//function default_text_handler(
-//	&$parent,
-//	$text,		// The #text element, as a string
-//	&$retval,	// Fill in the blanks
-//	&$context)	// Where we are at the moment
-//{
-//	$retval .= $text;
-//}
+function default_text_handler(
+	&$parent,
+	$text,		// The #text element, as a string
+	&$retval,	// Fill in the blanks
+	&$context)	// Where we are at the moment
+{
+	$retval .= $text;
+}
 
-/* default_attribute_handler
- * Handles attributes that don't have a more specific handler: just
- * passes them through, with whichever prefix they have in the file.
- */
 function default_attribute_handler(
-	$ns_url,	// URL of this element's namespace
 	$prefix,	// Prefix of the attribute
 	$name,		// Name of the attribute
 	$value,		// Value of the attribute
@@ -731,23 +777,21 @@ function default_attribute_handler(
 		$retval[$name] = $value;
 	else
 		$retval[$prefix . ":" . $name] = $value;
-
-	return true;
 }
 
 /********** RSS ************************************************/
-function rss_init($url, $prefix)
+function rss_init($ns, $url)
 {
-	return true;
+//	echo "Inside rss_init($ns, $url)\n";
 }
 
 function rss_element_handler(
-	$ns_url,	// URL of this element's namespace
 	$prefix,	// Namespace of this element
 	$elt_name,	// Name of this element, without prefix
 	&$attrs,	// Attributes
 	&$children,	// Contents of this element
 	&$retval,	// Fill in the blanks here
+	$ns_url,	// URL of this element's namespace
 	&$context)	// Where we are at the moment
 {
 	$parent = $context[count($context)-1]['name'];
@@ -1133,14 +1177,10 @@ function rss_element_handler(
 		break;
 	}
 
-	return true;
+	// XXX - Return something sensible
 }
 
-/* rss_attribute_handler
- * Deal with RSS attributes.
- */
 function rss_attribute_handler(
-	$ns_url,	// URL of this element's namespace
 	$prefix,	// Prefix of the attribute
 	$name,		// Name of the attribute
 	$value,		// Value of the attribute
@@ -1148,13 +1188,16 @@ function rss_attribute_handler(
 	&$context	// Where we are at the moment
 	)
 {
-	// XXX - Check for prefix, and pass through.
-	if ($prefix == "")
-		$retval[$name] = $value;
-	else
-		$retval["$prefix:$name"] = $value;
+	// XXX
+	// <rss version=[...]>		Version of RSS spec
+	// <source url=[...]>		XML version of source
+	// <enclosure url=[...]>	Where to find enclosure
+	// <enclosure length=[...]>	Length of enclosure in bytes
+	// <enclosure type=[...]>	MIME type of enclosure
+	// <category domain=[...]>	URL of categorization taxonomy
+	// <guid isPermaLink=[true|false]>	Whether GUID is URL to item
 
-	return true;
+	// XXX - Return something sensible
 }
 
 /********** Atom ****** ****************************************/
@@ -1361,42 +1404,28 @@ function rss_attribute_handler(
  *	Time when entry/feed was last updated.
  */
 
-/* atom_init
- * Atom initialization hook. Do whatever is necessary to initialize
- * Atom.
- */
-function atom_init($url, $prefix)
+function atom_init($ns, $url)
 {
-	return true;
+//	echo "Inside atom_init($ns, $url)\n";
 }
 
 function atom_element_handler(
-	$ns_url,	// URL of this element's namespace
 	$prefix,	// Namespace of this element
 	$elt_name,	// Name of this element, without prefix
 	&$attrs,	// Attributes
 	&$children,	// Contents of this element
 	&$retval,	// Fill in the blanks here
+	$ns_url,	// URL of this element's namespace
 	&$context)	// Where we are at the moment
 {
 	if ($prefix != "")
 	{
-		/* If we're a guest (i.e., an Atom element inside a
-		 * non-Atom XML file), just pass this element along.
-		 */
+		// If we're a guest, just pass this element along.
 		// XXX - Should put this in the other
 		// *_element_handler()s.
 		$retval["$prefix:$elt_name"] = $children;
-		if ($children === NULL)
-		{
-			$retval["$prefix:$elt_name"] = array(
-				"@attrs" => $attrs
-				);
-		} elseif (is_array($children))
-		{
-			$retval["$prefix:$elt_name"]['@attrs'] = $attrs;
-		}
-		return true;
+		$retval["$prefix:$elt_name"]['@attrs'] = $attrs;
+		return;
 	}
 
 	$parent = $context[count($context)-1]['name'];
@@ -1769,12 +1798,9 @@ function atom_element_handler(
 		echo "Warning: unknown Atom element: [$elt_name]\n";
 		break;
 	}
-
-	return true;
 }
 
 function atom_attribute_handler(
-	$ns_url,	// URL of this element's namespace
 	$prefix,	// Prefix of the attribute
 	$name,		// Name of the attribute
 	$value,		// Value of the attribute
@@ -1784,17 +1810,17 @@ function atom_attribute_handler(
 {
 	// XXX - What attributes does Atom provide that we might care
 	// about?
-	return true;
+//	echo "Inside atom_attribute_handler()\n";
 }
 
-/********** RDF ***********************************************/
+/********** RDF ******* ****************************************/
 function rdf_element_handler(
-	$ns_url,	// URL of this element's namespace
 	$prefix,	// Namespace of this element
 	$elt_name,	// Name of this element, without prefix
 	&$attrs,	// Attributes
 	&$children,	// Contents of this element
 	&$retval,	// Fill in the blanks here
+	$ns_url,	// URL of this element's namespace
 	&$context)	// Where we are at the moment
 {
 	$parent = $context[count($context)-1]['name'];
@@ -1948,19 +1974,29 @@ function rdf_element_handler(
 		break;
 	}
 
-	return true;
+	// XXX - Return something sensible
 }
 
 /********** LiveJournal ****************************************/
-// XXX - This belongs in a plugin
-function lj_init($url, $prefix)
+function lj_init($ns, $url)
 {
-	return true;
+//	echo "Inside lj_init($ns, $url)\n";
 }
 
+function lj_element_handler(
+	$prefix,	// Namespace of this element
+	$elt_name,	// Name of this element, without prefix
+	&$attrs,	// Attributes
+	&$children,	// Contents of this element
+	&$retval,	// Fill in the blanks here
+	$ns_url,	// URL of this element's namespace
+	&$context)	// Where we are at the moment
+{
+	// XXX
+	$retval["lj_" . $elt_name] = $children;
+}
 
 /********** content ****************************************/
-// XXX - This belongs in a plugin
 /* content_element_handler
  * Handle the RSS Content module:
  * http://purl.org/rss/1.0/modules/content/
@@ -1976,12 +2012,12 @@ function lj_init($url, $prefix)
  * <content:encoding>
  */
 function content_element_handler(
-	$ns_url,	// URL of this element's namespace
 	$prefix,	// Namespace of this element
 	$elt_name,	// Name of this element, without prefix
 	&$attrs,	// Attributes
 	&$children,	// Contents of this element
 	&$retval,	// Fill in the blanks here
+	$ns_url,	// URL of this element's namespace
 	&$context)	// Where we are at the moment
 {
 	$parent = $context[count($context)-1]['name'];
@@ -2004,7 +2040,5 @@ function content_element_handler(
 		break;
 		
 	}
-
-	return true;
 }
 ?>

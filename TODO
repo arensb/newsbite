@@ -30,6 +30,7 @@
 		php-cgi -c php.ini <script>
 	Build distro
 - Documentation for how the plugins for feed.inc work.
+	Texinfo? Add code to Makefile to generate HTML documentation.
 - More fine-grained function to select items from a feed:
 	- One feed, or all feeds
 	- Time range: e.g., the last 24 hours
@@ -121,6 +122,13 @@
   your feeds are already up to date.
 - Perhaps extend Smarty, so don't need to set the paths every time.
 - i18n.
+	Can start by identifying translatable strings and marking
+  them, so they can be translated later. Define dummy _() and N_()
+  functions.
+	Can't trust things like $LANG and $LC_* to decide which
+  language to translate to. Probably ought to try to guess from
+  browser settings. Failing that, use a cookie or an option in the
+  database.
 - Need a good way to abort in case of error.
 - In common.inc (or something), need a good function to abort with an
   error.
@@ -134,6 +142,9 @@
 	Mobile device might not have network access at the moment when
   you delete an item. So have a list of items to be deleted. If
   JavaScript is available, periodically try to delete these items.
+	Should have an XML skin that just returns the data as XML
+  (thus, for instance, it can be used as a feed aggregator for a
+  different RSS reader).
 - Nokia N810 browser identifies itself as:
   "Mozilla/5.0 (X11; U; Linux armv6l; en-US; rv:1.9a6pre) Gecko/20071128 Firefox/3.0a1 Tablet browser 0.2.2 RX-34+RX-44_2008SE_2.2007.51-3"
 
@@ -251,3 +262,22 @@
   page. Perhaps scroll to a position where the image is visible.
 	For gocomics.com, can scroll to <div id="comicTools">.
   Probably sufficient.
+	Unfortunately, cross-site permissions don't seem to allow
+  manipulating the contents of an <iframe>, not even to scroll the
+  window around. But can have
+	<iframe src="http://some/url#some-anchor"></iframe>
+  where "some-anchor" is an ID or anchor.
+	gocomics.com "#comicTools".
+	This Modern World: "#post_items".
+	I Drew This: no good anchors.
+	Jesus and Mo: "#comic"
+	Russell's Teapot: no good anchors.
+	Zero Punctuation: ?
+	The Pain: no good anchors
+	Perry Bible Fellowship: "#topimg"
+	User Friendly: no good anchors
+- Key bindings:
+	- Move to previous/next item
+	- Mark current item as read/unread
+	- Mark current item as read, and move to next item.
+- Add state "later": article saved for reading later.

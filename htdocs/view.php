@@ -54,6 +54,9 @@ $get_feed_args = array(
 	);
 if (is_integer($feed_id))
 	$get_feed_args['feed_id'] = $feed_id;
+// XXX - Put these selection criteria in a JS object, which we can put
+// at the top of the rendered page, so that scripts on that page can
+// tell what we're displaying.
 $items = db_get_some_feed_items($get_feed_args);
 $feed['items'] = $items;
 
