@@ -20,8 +20,10 @@
   gracefully? OTOH, is it a good idea to be too liberal in what we
   accept? Isn't that an invitation to XSS? XML is supposed to be
   really anal about syntax.
-- Try rewriting feed.inc using XML Parser (see bug, above).
 - Make a list of conditions for calling it version 1.0
+	- Can add, remove feeds
+	- Documentation for installing
+	- Proper error pages
 - Makefile:
 	Run tests:
 		php -l <everything>
@@ -29,6 +31,9 @@
 		correct results
 		php-cgi -c php.ini <script>
 	Build distro
+- Installation:
+	htdocs/smarty/templates_c must be writable by httpd.
+	htdocs/smarty/cache must be writable by httpd.
 - Documentation for how the plugins for feed.inc work.
 	Texinfo? Add code to Makefile to generate HTML documentation.
 - More fine-grained function to select items from a feed:
@@ -36,6 +41,16 @@
 	- Time range: e.g., the last 24 hours
 	- Order: oldest to youngest/youngest to oldest
 	- How many articles to get
+- Passwords probably shouldn't be stored in database. As first pass,
+  try removing them from the database. Put them in another file, and
+  add functions to read and write passwords.
+	Plus, it's possible that at some point it'll become
+  necessary/desirable to use authentication methods other than
+  username/password, possibly involving certificate exchange or
+  something.
+- Should be able to specify password for all of livejournal.com, not
+  have to specify it separately for every LJ feed.
+	Use parse_url() to get hostname.
 - Tool to import feeds and items from existing Feed on
   Feeds/Monkeychow database.
 - SQL schema should support folders, i.e., user can group feeds into

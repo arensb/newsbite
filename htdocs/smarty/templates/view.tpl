@@ -25,6 +25,7 @@
 <img class="feed-icon" src="{$feed.image}"/>
 {/if}
 
+{* XXX - Link to edit feed/feed options *}
 {strip}
 <h1>
   {if ($feed.url == "")}

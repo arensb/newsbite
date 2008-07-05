@@ -1,4 +1,16 @@
 <?
+/* database.inc
+ * Database-related functions. Nothing else should access the database
+ * directly.
+ */
+// XXX - Need function to add feed.
+//	- Insert new record
+//	- Call user hooks
+
+// XXX - Need function to delete feed:
+//	- Call user hooks
+//	- delete 'items' entries with items.feed_id == feed.id
+//	- delete the entry from 'feeds'
 require_once("config.inc");
 
 $dbh = NULL;		# Database handle
@@ -385,6 +397,93 @@ function db_get_some_feed_items(/* varargs */)
 	return $retval;
 }
 
+// XXX - Function to create new feed entry. Takes $fields, returns new
+// ID.
+
+/* db_update_feed_info
+ * Update the record for a feed in the 'feeds' table. $feed_id is the
+ * ID of the feed to update, and $fields is an assoc containing the
+ * fields we care about. The keys are column names.
+ *
+ * Returns the number of columns updated, or FALSE in case of error.
+ */
+function db_update_feed_info($feed_id, $fields)
+{
+	$dbh = db_connect();
+
+	/* Get info about existing feed */
+	$old = db_get_feed($feed_id);
+	if ($old === NULL)
+		// No such feed
+		return FALSE;
+
+	/* Go through the fields, and compare them to what's already
+	 * in the database.
+	 */
+	// Can't use $stmt->bind_param(), because that takes a
+	// variable number of arguments, and I don't think PHP has the
+	// equivalent of Lisp's (apply).
+
+	// Also, some of the fields require special processing anyway:
+	// it's not a simple mapping from $feed[X] -> database column
+	// X.
+
+	// XXX - Should any of these check to see if the new value is
+	// empty, and if so, set the column to NULL?
+	$updates = array();		// Array of changes we're
+					// going to make, as an array
+					// of SQL fragments.
+	/* Plain string fields */
+	foreach (array('title', 'subtitle', 'nickname', 'url', 'feed_url',
+		       'description', 'username', 'passwd')
+		 as $f)
+	{
+		if (array_key_exists($f, $fields) &&
+		    $fields[$f] != $old[$f])
+			$updates[] = "$f = '" .
+				$dbh->real_escape_string($fields[$f]) .
+				"'";
+	}
+
+	/* Other fields that require special processing */
+	if (is_array($fields['image']) &&
+	    array_key_exists('url', $fields['image']) &&
+	    $fields['image']['url'] != $old['image'])
+		// Image associated with the site
+		$updates[] = "image = '" .
+			$dbh->real_escape_string($feed['image']['url']) .
+			"'";
+
+	if (array_key_exists('last_update', $fields) &&
+	    $fields['last_update'] != $old['last_update'])
+		// Last update (time_t)
+		$updates[] = sprintf("last_update = %ld", $feed['last_update']);
+
+	if (array_key_exists('ttl', $fields) &&
+	    $fields['ttl'] != $old['ttl'])
+		// Time to live (seconds)
+		$updates[] = sprintf("ttl = %ld", $feed['ttl']);
+
+	/* Update the database, if necessary */
+	if (count($updates) > 0)
+	{
+		$query = sprintf("UPDATE feeds SET\n%s\nWHERE id=%d",
+				 implode(",\n", $updates),
+				 $feed_id);
+		$result = $dbh->query($query);
+		if (!$result)
+		{
+			// XXX - Better error-reporting
+			echo "<b>Error updating feed information: ",
+				$dbh->errno, ": \"",
+				$dbh->error, "\"</b><br/>\n";
+			return FALSE;
+		}
+	}
+
+	return count($updates);
+}
+
 /* db_update_feed
  * Update a feed. $feed_id is the ID of the feed to update, and $feed
  * is a structure containing all the known information and articles in
@@ -405,7 +504,7 @@ function db_update_feed($feed_id, $feed)
 	//
 	// Then again, what happens if the feed has an article that
 	// was posted 100 days ago, and updated today?
-	$sth = db_connect();
+	$dbh = db_connect();
 
 	global $AUTODELETE_DAYS;
 	if ($AUTODELETE_DAYS != 0)
@@ -415,7 +514,7 @@ DELETE FROM	items
 WHERE		feed_id = ?
   AND		last_update < NOW() - INTERVAL ? DAY
 EOT;
-		$stmt = $sth->prepare($query);
+		$stmt = $dbh->prepare($query);
 			// XXX - Error-checking
 		$err = $stmt->bind_param("dd",
 				  $feed_id,
@@ -423,59 +522,10 @@ EOT;
 			// XXX - Error-checking
 		$err = $stmt->execute();
 			// XXX - Error-checking
-//echo "Deleted [", $stmt->affected_rows, "] items.<br/>\n";
 	}
 
 	/* Update information about the feed itself */
-	// I don't think we can use $stmt->bind_param(), because that
-	// takes a variable number of arguments, and I don't think PHP
-	// has the equivalent of Lisp's (apply).
-
-	// At the same time, some of the fields require special
-	// processing anyway: it's not a simple mapping from
-	// $feed[X] -> database column X.
-	$updates = array();
-	if (isset($feed['title']))
-		// Feed title
-		$updates[] = "title = '" .
-			$sth->real_escape_string($feed['title']) .
-			"'";
-	if (isset($feed['subtitle']))
-		// Feed subtitle
-		$updates[] = "subtitle = '" .
-			$sth->real_escape_string($feed['subtitle']) .
-			"'";
-	if (isset($feed['url']))
-		// URL for the site
-		$updates[] = "url = '" .
-			$sth->real_escape_string($feed['url']) .
-			"'";
-	if (isset($feed['description']))
-		// Description of the site
-		$updates[] = "description = '" .
-			$sth->real_escape_string($feed['description']) .
-			"'";
-	if (isset($feed['ttl']))
-		// Description of the site
-		$updates[] = sprintf("ttl = %ld", $feed['description']);
-	if (isset($feed['image']['url']))
-		// Image associated with the site
-		$updates[] = "image = '" .
-			$sth->real_escape_string($feed['image']['url']) .
-			"'";
-	if (count($updates) > 0)
-	{
-		$query = sprintf("UPDATE feeds SET\n%s\nWHERE id=%d",
-				 implode(",\n", $updates),
-				 $feed_id);
-		$result = $sth->query($query);
-		if (!$result)
-		{
-			echo "Error updating feed information: ",
-				$sth->errno, ": \"",
-				$sth->error, "\"<br/>\n";
-		}
-	}
+	db_update_feed_info($feed_id, $feed);
 
 	/* Add/replace the items in the database. */
 	if (count($feed['items']) == 0)
@@ -522,7 +572,7 @@ ON DUPLICATE KEY UPDATE
 		state=IF(state='read' or state='unread',
 			 'updated', state)
 EOT;
-		$stmt = $sth->prepare($query);
+		$stmt = $dbh->prepare($query);
 		$dummy_categories = NULL;	// XXX - Hack until I
 						// figure out how to
 						// deal with
@@ -593,9 +643,9 @@ EOT;
 //echo "<b>stmt-&gt;execute returned [$err]</b><br/>\n";
 		// XXX - Error-checking
 		if ($err)
-			;// echo "OK (", print_r($err), ") errno ", $sth->errno, ", error [", $sth->error, "]<br/>\n";
+			;// echo "OK (", print_r($err), ") errno ", $dbh->errno, ", error [", $dbh->error, "]<br/>\n";
 		else
-			;// echo "<b>Error: ", $sth->errno, ": \"", $sth->error, "\"</b><br/>\n";
+			;// echo "<b>Error: ", $dbh->errno, ": \"", $dbh->error, "\"</b><br/>\n";
 //echo "Affected rows: [", $stmt->affected_rows, "]<br/>\n";
 	}
 }
@@ -628,8 +678,8 @@ EOT
 	if (!$result)
 	{
 		echo "Error updating feed information: ",
-			$sth->errno, ": \"",
-			$sth->error, "\"<br/>\n";
+			$dbh->errno, ": \"",
+			$dbh->error, "\"<br/>\n";
 	}
 }
 ?>

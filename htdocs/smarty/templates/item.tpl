@@ -109,6 +109,30 @@
       {/if}
     {else}
       {* Summary, content *}
+      {* XXX - Perhaps new articles should be expanded by default, and
+       * unread ones should be collapsed by default.
+       *}
+      {* XXX - Perhaps a better way to do switching, and which allows
+       * switching panes better:
+       * <div class="content-panes" which="summary">
+       * or
+       * <div class="content-panes" which="content">
+       *
+       * Then, in "style.css":
+       *
+       * .content-panes[which="summary"] .item-summary,
+       * .content-panes[which="content"] .item-content {
+       * 	display:		block;
+       * }
+       * 
+       * .content-panes[which="summary"] .item-content,
+       * .content-panes[which="content"] .item-summary {
+       * 	display:		none;
+       * }
+       *
+       * and the function that toggles between the two can simply use
+       * getAttribute("which") and setAttribute("which", "summary");
+       *}
       <div class="content-panes">
         <div class="item-summary">
           {$item.summary}
