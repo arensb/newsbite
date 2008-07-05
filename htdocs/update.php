@@ -15,6 +15,8 @@ else {
 	echo "Invalid feed id: [$feed_id]\n";
 }
 
+// XXX - Move the HTTP-fetching stuff to a separate function, so that
+// we can retrieve URLs separately.
 /* update_feed
  * Update a feed: fetch the RSS, parse it, and add/update items in the
  * database.
@@ -34,6 +36,8 @@ echo "<h3>Updating feed [$feed[title]]</h3>\n";
 #print_r($feed);
 
 	/* Initialize Curl */
+	// XXX - This seems to duplicate _open_curl_handle().
+	// Consolidate if possible.
 	$ch = curl_init();
 	curl_setopt($ch, CURLOPT_URL, $feed['feed_url']);
 		// Set the URL
@@ -46,9 +50,12 @@ echo "<h3>Updating feed [$feed[title]]</h3>\n";
 		// unreasonable.
 	curl_setopt($ch, CURLOPT_MAXREDIRS, 2);
 
-	// Use authentication if required
-	if (isset($feed['username']) || isset($feed['passwd']))
+	/* Use authentication if required */
+	// We use '== ""' instead of 'isset()' because the uesrname or
+	// password might have been set to the empty string.
+	if ($feed['username'] != "" || $feed['passwd'] != "")
 	{
+echo "username or passwd is set<br/>\n";
 		curl_setopt($ch, CURLOPT_HTTPAUTH, CURLAUTH_ANYSAFE);
 			// Use reasonable security
 		curl_setopt($ch, CURLOPT_USERPWD, "$feed[username]:$feed[passwd]");

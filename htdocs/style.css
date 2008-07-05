@@ -1,5 +1,8 @@
 /* Main stylesheet
  */
+/* XXX - Ought to split this up into the main stylesheet, and
+ * page-specific ones.
+ */
 body {
 	background-color:	white;
 }

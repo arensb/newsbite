@@ -24,7 +24,13 @@
   <tr class="{cycle values="odd-row,even-row"}">
     <td class="icon-col">&nbsp;</td>{* XXX - Put refresh/status icons here *}
     <td>
-      <a href="view.php?id={$feed_id}">{$feeds[feed].title}</a>:
+      <a href="view.php?id={$feed_id}">
+        {if $feeds[feed].nickname != ""}
+          {$feeds[feed].nickname}
+        {else}
+          {$feeds[feed].title}
+        {/if}
+      </a>:
       &nbsp;
       {* XXX - These should be links, to show only new items,
        * new and unread items, or all items.
@@ -39,6 +45,8 @@
     <td>
       {* Tools *}
       <a href="update.php?id={$feeds[feed].id}">update</a>
+      &nbsp;
+      <a href="editfeed.php?id={$feeds[feed].id}">edit</a>
     </td>
   </tr>
 {/strip}
