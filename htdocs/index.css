@@ -1,0 +1,36 @@
+/*
+ * Index of feeds
+ */
+table#feeds {
+	border-width:		1px;
+	border-color:		black;
+	border-spacing:		0px 0px;	/* Space between cells, x,y */
+	width:			100%;
+}
+
+table#feeds .icon-col {
+	width:			32px;
+}
+
+.tools {
+	background-color:	yellow;
+	border:			1px solid orange;
+	margin-bottom:		1em;
+}
+
+table#feeds tr {
+	border:		1px dotted black;
+}
+
+table#feeds tr.odd-row {
+	background-color:	#dddddd;
+}
+
+table#feeds tr.even-row {
+/*	background-color:	white;*/
+	background-color:	inherit;
+}
+
+table#feeds tr td {
+/*	border:		1px dashed red;*/
+}

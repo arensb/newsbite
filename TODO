@@ -209,7 +209,6 @@
 	Otherwise, vulnerable to XSS, e.g., by including JavaScript in
   post.
 	Perhaps add a whitelist of trusted sites (e.g., APOD).
-- Page to edit options and such for a feed.
 - Per-feed options:
 	- Whether to display oldest-first by default (good for comics)
 	  or newest-first (good for news).

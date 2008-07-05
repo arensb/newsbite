@@ -5,6 +5,7 @@
 <head>
 <title>NewsBite: Feeds</title>
 <link rel="stylesheet" type="text/css" href="style.css" media="all" />
+<link rel="stylesheet" type="text/css" href="index.css" media="all" />
 </head>
 <body>
 

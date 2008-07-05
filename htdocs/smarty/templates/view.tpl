@@ -1,3 +1,6 @@
+{* XXX - Should probably have separate template for page top (and
+ * possibly page bottom). Should include all the CSS magic.
+ *}
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
 	"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
@@ -5,6 +8,7 @@
 <head>
 <title>NewsBite: {$feed.title}</title>
 <link rel="stylesheet" type="text/css" href="style.css" media="all" />
+<link rel="stylesheet" type="text/css" href="view.css" media="all" />
 <!-- If JavaScript is turned on, slurp in the JavaScript-specific
      stylesheet
 -->
