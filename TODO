@@ -83,11 +83,9 @@
   out with naive implementation, and see if anyone starts using it on
   a multi-user system.
 - User authentication: should this be done here, or in .htaccess?
+	Go with .htaccess for now.
 - Deal with malformed text in the RSS feed, e.g., unescaped or
   poorly-escaped entities, and the like.
-- Would be nice if engine could update multiple feeds at the same
-  time, so that a single unresponsive host doesn't cause a long wait.
-	Use curl_multi_*, to fetch multiple feeds at once.
 - Smarty(?) PHP templates for different skins: full-featured browser
   vs. palmtop vs. phone, etc.
 - Killfile: automatically mark as read messages that match certain
@@ -106,8 +104,6 @@
 - Don't want to automatically display a feed's image: some are good
   (like LJ icons), others are annoying, like FeedBurner feeds that
   just have a "Feed powered by FeedBurner" image.
-- For each feed, give the option of displaying just the image (if
-  any), the title, or both.
 - Make curl (and other modules) optional: use references-to-functions
   to pick the appropriate function to call:
 	function fetch_rss_curl(...) { ... }
@@ -179,17 +175,12 @@
 - MediaWiki plugin: if you subscribe to the "recent changes" page on a
   MediaWiki wiki, there should be buttons at the bottom that allow you
   to either mark the change as patrolled, or revert it.
-- Feed on Feeds has "Today's items". This is kinda bogus, especially
-  when reading feeds around midnight.
-	Instead, just show all items in reverse chronological order,
-  10 or 50 at a time.
-	If possible, add heading between items when the date changes
-  (like LiveJournal).
 - Ajax: keybindings for articles:
 	'm'	(more) when viewing preview, show full article
 	'n'	move to next item
 	'd'	mark item as read, and skip to next item
 	'u'	mark item as unread, and skip to next item
+	?	move to previous item
 - Handle attachments (e.g., <media:content>,
   <feedburner:origEnclosureLink>) kind of like a mail reader would:
   put a list at the bottom of the message.
@@ -290,8 +281,13 @@
 	The Pain: no good anchors
 	Perry Bible Fellowship: "#topimg"
 	User Friendly: no good anchors
-- Key bindings:
-	- Move to previous/next item
-	- Mark current item as read/unread
-	- Mark current item as read, and move to next item.
 - Add state "later": article saved for reading later.
+- Try to make a "collapsed" view for long articles that don't have a
+  summary: clip to 10em or something.
+- When updating all feeds in Ajax mode: if there's an error, display
+  an error icon, perhaps with a tooltip with the error. Or make the
+  icon a link that'll pop up the error message.
+- Date box in default skin: pretty, but the prettiness doesn't
+  outweigh usefulness. Switch to a more conventional date display.
+  Show year.
+- Need to rethink states. Too many of them; code getting out of hand.

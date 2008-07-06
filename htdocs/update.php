@@ -17,6 +17,15 @@ else {
 
 // XXX - Move the HTTP-fetching stuff to a separate function, so that
 // we can retrieve URLs separately.
+//
+// Need some sort of callback mechanism, so that caller can decide
+// what to do when status changes:
+//	- Start fetching a feed
+//	- Finished fetching a feed
+//
+// In fact, the calls to parse_feed() and db_update_feed() should be
+// moved out into the callback function.
+
 /* update_feed
  * Update a feed: fetch the RSS, parse it, and add/update items in the
  * database.
@@ -55,7 +64,6 @@ echo "<h3>Updating feed [$feed[title]]</h3>\n";
 	// password might have been set to the empty string.
 	if ($feed['username'] != "" || $feed['passwd'] != "")
 	{
-echo "username or passwd is set<br/>\n";
 		curl_setopt($ch, CURLOPT_HTTPAUTH, CURLAUTH_ANYSAFE);
 			// Use reasonable security
 		curl_setopt($ch, CURLOPT_USERPWD, "$feed[username]:$feed[passwd]");
@@ -398,12 +406,9 @@ function _save_handle($handle)
 		return;
 	}
 
-	// XXX - Check the status code, and complain if there's an
-	// error.
-
 	/* Parse the feed */
 	$feed_id = $handle['feed']['id'];
-echo "Parsing feed [$feed_id] from [", $handle['feed']['feed_url'], "]<br/>\n";
+//echo "Parsing feed [$feed_id] from [", $handle['feed']['feed_url'], "]<br/>\n";
 
 	/* Save a copy of the feed text for debugging */
 	if (defined("FEED_CACHE") && is_dir(FEED_CACHE))
