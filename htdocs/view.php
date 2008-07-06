@@ -48,7 +48,7 @@ $num_items = 25;		// How many items to show
 		// XXX - Should probably be a parameter
 
 $get_feed_args = array(
-	"states"	=> "new,unread",
+	"states"	=> "new,unread,updated",
 	"max_items"	=> $num_items,
 	"start_at"	=> $start
 	);
