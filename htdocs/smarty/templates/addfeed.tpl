@@ -20,11 +20,11 @@
 </noscript>
 <script type="text/javascript" src="view.js"></script>
 </head>
-<body id="edit-feed">
+<body id="add-feed">
 
 <h1>Adding feed</h1>
 
-<form name="edit-feed" method="post" action="addfeed.php">
+<form name="add-feed-form" method="post" action="addfeed.php">
 
 <table id="add-feed">
   <tr>
