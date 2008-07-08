@@ -1,25 +1,10 @@
 <?php
+/* editfeed.php
+ * Edit the user-settable parameters on a feed.
+ */
 require_once("config.inc");
 require_once("database.inc");
 require_once(SMARTY_DIR . "Smarty.class.php");
-
-/* XXX
- * If no command:
- *	if no feed ID
- *		blank form to add new feed
- *	else
- *		edit existing feed
- * else
- *	if no feed ID
- *		?
- *	else
- */
-echo "<pre>\n";
-foreach ($_REQUEST as $k => $v)
-{
-	echo "[$k] =&gt; [$v]\n";
-}
-echo "</pre>\n";
 
 $feed_id = $_REQUEST['id'];		// ID of feed to show
 /* Make sure $feed_id is an integer */

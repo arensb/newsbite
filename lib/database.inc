@@ -400,6 +400,80 @@ function db_get_some_feed_items(/* varargs */)
 // XXX - Function to create new feed entry. Takes $fields, returns new
 // ID.
 
+/* db_add_feed
+ * Add a new feed entry to the database. $feed is an assoc of
+ * key => value mappings, keyed by column name.
+ *
+ * This can be used to set as many or as few columns as desired. For
+ * an ordinary subscription, this will typically just include the feed
+ * URL. But other fields may be specified if importing an OPML file.
+ */
+function db_add_feed($feed)
+{
+	$dbh = db_connect();
+
+	$fields = array();	// Fields we'll be adding
+	$values = array();	// The fields' values
+	foreach ($feed as $k => $v)
+	{
+		switch ($k)
+		{
+		    case "title":
+		    case "subtitle":
+		    case "nickname":
+		    case "url":
+		    case "feed_url":
+		    case "description":
+		    case "image":
+		    case "username":
+		    case "passwd":
+			// These are strings
+			$fields[] = $k;
+			$values[] = "'" . $dbh->real_escape_string($v) . "'";
+			break;
+
+		    case "last_update":
+			// Convert from time_t to SQL date
+			$fields[] = "last_update";
+			$values[] = "FROM_UNIXTIME($v)";
+			break;
+
+		    case "ttl":
+			// Integer value
+			$fields[] = "ttl";
+			$values[] = $v;
+			break;
+
+		    default:
+			// XXX - Complain about unknown field
+echo "Unknown field [$k]<br/>\n";
+			break;
+		}
+	}
+
+	$query = "INSERT INTO feeds (" .
+		implode(",", $fields) .
+		") VALUES (" .
+		implode(",", $values) .
+		")";
+echo "query: [<pre>$query</pre>]\n";
+	$stmt = $dbh->prepare($query);
+		// XXX - Error-checking
+	$err = $stmt->execute();
+	if (!$err)
+	{
+		// XXX - Better error-reporting
+		echo "<b>Error ", $dbh->errno,
+			", \"", $dbh->error, "\"</b><br/>\n";
+		$stmt->close();
+		return false;
+	}
+	$feed_id = $dbh->insert_id;
+echo "feed id [$feed_id]<br/>\n";
+	$stmt->close();
+	return $feed_id;
+}
+
 /* db_update_feed_info
  * Update the record for a feed in the 'feeds' table. $feed_id is the
  * ID of the feed to update, and $fields is an assoc containing the
