@@ -75,9 +75,9 @@
 {* List of items. Items are displayed using the separate "item.tpl"
  * template
  *}
-{section name=i loop=$items}
-  {include file='item.tpl' item=$items[i]}
-{/section}
+{foreach from=$items item=i}
+  {include file='item.tpl' item=$i}
+{/foreach}
 
 <input type="reset" name="clearit" value="Clear changes"/>
 <input type="submit" name="read-all" value="Mark all as read"/>

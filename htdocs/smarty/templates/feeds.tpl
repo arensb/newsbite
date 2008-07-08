@@ -19,20 +19,25 @@
 <p><a href="view.php?id=all">View all feeds</a></p>
 
 <table id="feeds">
-{section name=feed loop=$feeds start=1}
-{assign var="feed_id" value=$feeds[feed].id}
+{foreach from=$feeds item=feed}
+{* Feed ID gets used a lot, so it gets its own variable *}
+{assign var="feed_id" value=$feed.id}
 {strip}
-  <tr class="{cycle values="odd-row,even-row"}">
+  <tr class="{cycle values="odd-row,even-row"}" id="feed-{$feed_id}">
     <td class="icon-col">&nbsp;</td>{* XXX - Put refresh/status icons here *}
     <td>
+      {* Feed title *}
       <a href="view.php?id={$feed_id}">
-        {if $feeds[feed].nickname != ""}
-          {$feeds[feed].nickname}
+        {if $feed.nickname != ""}
+          {$feed.nickname}
+        {elseif $feed.title != ""}
+          {$feed.title}
         {else}
-          {$feeds[feed].title}
+          [no&nbsp;title]
         {/if}
       </a>:
       &nbsp;
+      {* Number of new/unread/read items in the feed *}
       {* XXX - These should be links, to show only new items,
        * new and unread items, or all items.
        *}
@@ -40,18 +45,19 @@
       {$counts[$feed_id].unread || 0} unread /
       {$counts[$feed_id].read} read
       <br/>
-      &nbsp;(<a href="{$feeds[feed].url}">site</a>)
-      &nbsp;(<a href="{$feeds[feed].feed_url}">RSS</a>)
+      {* Links to places related to the feed *}
+      &nbsp;(<a href="{$feed.url}">site</a>)
+      &nbsp;(<a href="{$feed.feed_url}">RSS</a>)
     </td>
     <td>
       {* Tools *}
-      <a href="update.php?id={$feeds[feed].id}">update</a>
+      <a href="update.php?id={$feed.id}">update</a>
       &nbsp;
-      <a href="editfeed.php?id={$feeds[feed].id}">edit</a>
+      <a href="editfeed.php?id={$feed.id}">edit</a>
     </td>
   </tr>
 {/strip}
-{/section}
+{/foreach}
 </table>
 
 </body>
