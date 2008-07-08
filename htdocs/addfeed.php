@@ -2,6 +2,8 @@
 /* addfeed.php
  * Add a feed.
  */
+// XXX - Should accept OPML file.
+// XXX - There should be a bookmarklet for this
 require_once("config.inc");
 require_once("database.inc");
 require_once(SMARTY_DIR . "Smarty.class.php");
@@ -22,10 +24,13 @@ if (isset($feed_url))
 	db_add_feed(array(
 			    "feed_url" => $feed_url)
 		);
+		// XXX - Error-checking
+	// XXX - Refresh the new feed, to get info and new articles
 	exit(0);
 }
 
-// XXX - $feed_url is not set.
+// If we get this far, $feed_url is not set.
+
 /* Display a form for adding a URL */
 $smarty = new Smarty();
 $smarty->template_dir	= SMARTY_PATH . "templates";

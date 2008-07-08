@@ -1,7 +1,3 @@
-- bug: Why doesn't Smarty display feed entry with nothing but id and
-  feed_url?
-	Answer: because {section} is for ordinary arrays, whereas
-  we're using an assoc. Change to {foreach}
 - (bug?) Bad HTML in item description/content causes parse errors in
   XMLReader. This is going to crop up a lot, and should be fixed.
 	Worst solution: skip the entire feed, making it unusable until
@@ -25,7 +21,7 @@
   accept? Isn't that an invitation to XSS? XML is supposed to be
   really anal about syntax.
 - Make a list of conditions for calling it version 1.0
-	- Can add, remove feeds
+	* Can add, remove feeds
 	- Documentation for installing
 	- Proper error pages
 - Makefile:
@@ -209,7 +205,6 @@
 	- Whether to display oldest-first by default (good for comics)
 	  or newest-first (good for news).
 	- Whether the feed contains BBcode (like top10).
-- Page to add/remove feeds.
 - Page to set global and per-feed options.
 - I think in most cases, where an item has both a summary and a
   content, the summary is just the first N characters of the content
@@ -287,6 +282,7 @@
 	Perry Bible Fellowship: "#topimg"
 	User Friendly: no good anchors
 - Add state "later": article saved for reading later.
+	(Or is this a good idea? Too many states already.)
 - Try to make a "collapsed" view for long articles that don't have a
   summary: clip to 10em or something.
 - When updating all feeds in Ajax mode: if there's an error, display
@@ -298,3 +294,6 @@
 - Need to rethink states. Too many of them; code getting out of hand.
 - Should it be possible to mark a feed as inactive, for feeds that are
   only interesting from time to time, like electoral-vote.com?
+- A bunch of elements in the templates have id="..." identifiers
+  (body, forms, etc.) Come up with a good naming scheme for them, to
+  keep them all straight.
