@@ -1,3 +1,7 @@
+- bug: Why doesn't Smarty display feed entry with nothing but id and
+  feed_url?
+	Answer: because {section} is for ordinary arrays, whereas
+  we're using an assoc. Change to {foreach}
 - (bug?) Bad HTML in item description/content causes parse errors in
   XMLReader. This is going to crop up a lot, and should be fixed.
 	Worst solution: skip the entire feed, making it unusable until
@@ -175,6 +179,7 @@
 - MediaWiki plugin: if you subscribe to the "recent changes" page on a
   MediaWiki wiki, there should be buttons at the bottom that allow you
   to either mark the change as patrolled, or revert it.
+	Unfortunately, this doesn't seem possible.
 - Ajax: keybindings for articles:
 	'm'	(more) when viewing preview, show full article
 	'n'	move to next item
@@ -291,3 +296,5 @@
   outweigh usefulness. Switch to a more conventional date display.
   Show year.
 - Need to rethink states. Too many of them; code getting out of hand.
+- Should it be possible to mark a feed as inactive, for feeds that are
+  only interesting from time to time, like electoral-vote.com?

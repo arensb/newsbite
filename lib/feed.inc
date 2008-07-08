@@ -24,7 +24,6 @@
  */
 
 /* Note on the term "handler":
-
  * The word "handler" is, confusingly, used in two different senses:
  * the XML text is processed by the XML Parser PHP module, which calls
  * functions (which it calls handlers) to deal with the various XML
@@ -736,6 +735,8 @@ function default_attribute_handler(
 }
 
 /********** RSS ************************************************/
+// RSS 2.0 spec at
+// http://cyber.law.harvard.edu/rss/rss.html
 function rss_init($url, $prefix)
 {
 	return true;
@@ -770,7 +771,7 @@ function rss_element_handler(
 			break;
 		    default:
 			// XXX - Better error-reporting
-			echo "Warning: Unexpected parent: [$parent]\n";
+			echo "Warning: Unexpected [$elt_name] parent: [$parent]\n";
 			break;
 		}
 		break;
@@ -794,7 +795,7 @@ function rss_element_handler(
 			break;
 		    default:
 			// XXX - Better error-reporting
-			echo "Warning: Unexpected parent: [$parent]\n";
+			echo "Warning: Unexpected [$elt_name] parent: [$parent]\n";
 			break;
 		}
 		break;
@@ -810,7 +811,7 @@ function rss_element_handler(
 			break;
 		    default:
 			// XXX - Better error-reporting
-			echo "Warning: Unexpected parent: [$parent]\n";
+			echo "Warning: Unexpected [$elt_name] parent: [$parent]\n";
 			break;
 		}
 		break;
@@ -826,7 +827,7 @@ function rss_element_handler(
 			break;
 		    default:
 			// XXX - Better error-reporting
-			echo "Warning: Unexpected parent: [$parent]\n";
+			echo "Warning: Unexpected [$elt_name] parent: [$parent]\n";
 			break;
 		}
 		break;
@@ -841,7 +842,7 @@ function rss_element_handler(
 			break;
 		    default:
 			// XXX - Better error-reporting
-			echo "Warning: Unexpected parent: [$parent]\n";
+			echo "Warning: Unexpected [$elt_name] parent: [$parent]\n";
 			break;
 		}
 		break;
@@ -854,7 +855,7 @@ function rss_element_handler(
 			break;
 		    default:
 			// XXX - Better error-reporting
-			echo "Warning: Unexpected parent: [$parent]\n";
+			echo "Warning: Unexpected [$elt_name] parent: [$parent]\n";
 			break;
 		}
 		break;
@@ -867,7 +868,7 @@ function rss_element_handler(
 			break;
 		    default:
 			// XXX - Better error-reporting
-			echo "Warning: Unexpected parent: [$parent]\n";
+			echo "Warning: Unexpected [$elt_name] parent: [$parent]\n";
 			break;
 		}
 		break;
@@ -880,7 +881,7 @@ function rss_element_handler(
 			break;
 		    default:
 			// XXX - Better error-reporting
-			echo "Warning: Unexpected parent: [$parent]\n";
+			echo "Warning: Unexpected [$elt_name] parent: [$parent]\n";
 			break;
 		}
 		break;
@@ -893,7 +894,7 @@ function rss_element_handler(
 			break;
 		    default:
 			// XXX - Better error-reporting
-			echo "Warning: Unexpected parent: [$parent]\n";
+			echo "Warning: Unexpected [$elt_name] parent: [$parent]\n";
 			break;
 		}
 		break;
@@ -907,7 +908,7 @@ function rss_element_handler(
 			break;
 		    default:
 			// XXX - Better error-reporting
-			echo "Warning: Unexpected parent: [$parent]\n";
+			echo "Warning: Unexpected [$elt_name] parent: [$parent]\n";
 			break;
 		}
 		break;
@@ -921,7 +922,7 @@ function rss_element_handler(
 			break;
 		    default:
 			// XXX - Better error-reporting
-			echo "Warning: Unexpected parent: [$parent]\n";
+			echo "Warning: Unexpected [$elt_name] parent: [$parent]\n";
 			break;
 		}
 		break;
@@ -934,7 +935,7 @@ function rss_element_handler(
 			break;
 		    default:
 			// XXX - Better error-reporting
-			echo "Warning: Unexpected parent: [$parent]\n";
+			echo "Warning: Unexpected [$elt_name] parent: [$parent]\n";
 			break;
 		}
 		break;
@@ -947,7 +948,7 @@ function rss_element_handler(
 			break;
 		    default:
 			// XXX - Better error-reporting
-			echo "Warning: Unexpected parent: [$parent]\n";
+			echo "Warning: Unexpected [$elt_name] parent: [$parent]\n";
 			break;
 		}
 		break;
@@ -963,7 +964,7 @@ function rss_element_handler(
 			break;
 		    default:
 			// XXX - Better error-reporting
-			echo "Warning: Unexpected parent: [$parent]\n";
+			echo "Warning: Unexpected [$elt_name] parent: [$parent]\n";
 			break;
 		}
 		break;
@@ -976,7 +977,7 @@ function rss_element_handler(
 			break;
 		    default:
 			// XXX - Better error-reporting
-			echo "Warning: Unexpected parent: [$parent]\n";
+			echo "Warning: Unexpected [$elt_name] parent: [$parent]\n";
 			break;
 		}
 		break;
@@ -989,7 +990,7 @@ function rss_element_handler(
 			break;
 		    default:
 			// XXX - Better error-reporting
-			echo "Warning: Unexpected parent: [$parent]\n";
+			echo "Warning: Unexpected [$elt_name] parent: [$parent]\n";
 			break;
 		}
 		break;
@@ -1002,7 +1003,7 @@ function rss_element_handler(
 			break;
 		    default:
 			// XXX - Better error-reporting
-			echo "Warning: Unexpected parent: [$parent]\n";
+			echo "Warning: Unexpected [$elt_name] parent: [$parent]\n";
 			break;
 		}
 		break;
@@ -1011,11 +1012,12 @@ function rss_element_handler(
 		switch ($parent)
 		{
 		    case "item":
+		    case "channel":
 			$retval['categories'][] = $children;
 			break;
 		    default:
 			// XXX - Better error-reporting
-			echo "Warning: Unexpected parent: [$parent]\n";
+			echo "Warning: Unexpected [$elt_name] parent: [$parent]\n";
 			break;
 		}
 		break;
@@ -1043,7 +1045,7 @@ function rss_element_handler(
 			break;
 		    default:
 			// XXX - Better error-reporting
-			echo "Warning: Unexpected parent: [$parent]\n";
+			echo "Warning: Unexpected [$elt_name] parent: [$parent]\n";
 			break;
 		}
 		break;
@@ -1056,7 +1058,7 @@ function rss_element_handler(
 			break;
 		    default:
 			// XXX - Better error-reporting
-			echo "Warning: Unexpected parent: [$parent]\n";
+			echo "Warning: Unexpected [$elt_name] parent: [$parent]\n";
 			break;
 		}
 		break;
@@ -1070,7 +1072,7 @@ function rss_element_handler(
 			break;
 		    default:
 			// XXX - Better error-reporting
-			echo "Warning: Unexpected parent: [$parent]\n";
+			echo "Warning: Unexpected [$elt_name] parent: [$parent]\n";
 			break;
 		}
 		break;
@@ -1084,7 +1086,24 @@ function rss_element_handler(
 			break;
 		    default:
 			// XXX - Better error-reporting
-			echo "Warning: Unexpected parent: [$parent]\n";
+			echo "Warning: Unexpected [$elt_name] parent: [$parent]\n";
+			break;
+		}
+		break;
+
+	    case "cloud":
+	    case "rating":
+	    case "skipHours":
+	    case "skipDays":
+		switch ($parent)
+		{
+		    case "channel":
+			// Not sure this is worth implementing.
+			// Just ignore it.
+			break;
+		    default:
+			// XXX - Better error-reporting
+			echo "Warning: Unexpected [$elt_name] parent: [$parent]\n";
 			break;
 		}
 		break;
@@ -1097,7 +1116,7 @@ function rss_element_handler(
 			break;
 		    default:
 			// XXX - Better error-reporting
-			echo "Warning: Unexpected parent: [$parent]\n";
+			echo "Warning: Unexpected [$elt_name] parent: [$parent]\n";
 			break;
 		}
 		break;
@@ -1110,7 +1129,7 @@ function rss_element_handler(
 			break;
 		    default:
 			// XXX - Better error-reporting
-			echo "Warning: Unexpected parent: [$parent]\n";
+			echo "Warning: Unexpected [$elt_name] parent: [$parent]\n";
 			break;
 		}
 		break;
@@ -1123,7 +1142,7 @@ function rss_element_handler(
 			break;
 		    default:
 			// XXX - Better error-reporting
-			echo "Warning: Unexpected parent: [$parent]\n";
+			echo "Warning: Unexpected [$elt_name] parent: [$parent]\n";
 			break;
 		}
 		break;
@@ -1413,7 +1432,7 @@ function atom_element_handler(
 
 		    default:
 			// XXX - Better error-reporting
-			echo "Warning: Unexpected parent: [$parent]\n";
+			echo "Warning: Unexpected [$elt_name] parent: [$parent]\n";
 			break;
 		}
 		break;
@@ -1430,7 +1449,7 @@ function atom_element_handler(
 
 		    default:
 			// XXX - Better error-reporting
-			echo "Warning: Unexpected parent: [$parent]\n";
+			echo "Warning: Unexpected [$elt_name] parent: [$parent]\n";
 			break;
 		}
 		break;
@@ -1446,7 +1465,7 @@ function atom_element_handler(
 
 		    default:
 			// XXX - Better error-reporting
-			echo "Warning: Unexpected parent: [$parent]\n";
+			echo "Warning: Unexpected [$elt_name] parent: [$parent]\n";
 			break;
 		}
 		break;
@@ -1461,7 +1480,7 @@ function atom_element_handler(
 
 		    default:
 			// XXX - Better error-reporting
-			echo "Warning: Unexpected parent: [$parent]\n";
+			echo "Warning: Unexpected [$elt_name] parent: [$parent]\n";
 			break;
 		}
 		break;
@@ -1576,7 +1595,7 @@ function atom_element_handler(
 
 		    default:
 			// XXX - Better error-reporting
-			echo "Warning: Unexpected parent: [$parent]\n";
+			echo "Warning: Unexpected [$elt_name] parent: [$parent]\n";
 			break;
 		}
 		break;
@@ -1591,7 +1610,7 @@ function atom_element_handler(
 
 		    default:
 			// XXX - Better error-reporting
-			echo "Warning: Unexpected parent: [$parent]\n";
+			echo "Warning: Unexpected [$elt_name] parent: [$parent]\n";
 			break;
 		}
 		break;
@@ -1606,7 +1625,7 @@ function atom_element_handler(
 
 		    default:
 			// XXX - Better error-reporting
-			echo "Warning: Unexpected parent: [$parent]\n";
+			echo "Warning: Unexpected [$elt_name] parent: [$parent]\n";
 			break;
 		}
 		break;
@@ -1621,7 +1640,7 @@ function atom_element_handler(
 
 		    default:
 			// XXX - Better error-reporting
-			echo "Warning: Unexpected parent: [$parent]\n";
+			echo "Warning: Unexpected [$elt_name] parent: [$parent]\n";
 			break;
 		}
 		break;
@@ -1638,7 +1657,7 @@ function atom_element_handler(
 
 		    default:
 			// XXX - Better error-reporting
-			echo "Warning: Unexpected parent: [$parent]\n";
+			echo "Warning: Unexpected [$elt_name] parent: [$parent]\n";
 			break;
 		}
 		break;
@@ -1655,7 +1674,7 @@ function atom_element_handler(
 
 		    default:
 			// XXX - Better error-reporting
-			echo "Warning: Unexpected parent: [$parent]\n";
+			echo "Warning: Unexpected [$elt_name] parent: [$parent]\n";
 			break;
 		}
 		break;
@@ -1671,7 +1690,7 @@ function atom_element_handler(
 
 		    default:
 			// XXX - Better error-reporting
-			echo "Warning: Unexpected parent: [$parent]\n";
+			echo "Warning: Unexpected [$elt_name] parent: [$parent]\n";
 			break;
 		}
 		break;
@@ -1688,7 +1707,7 @@ function atom_element_handler(
 
 		    default:
 			// XXX - Better error-reporting
-			echo "Warning: Unexpected parent: [$parent]\n";
+			echo "Warning: Unexpected [$elt_name] parent: [$parent]\n";
 			break;
 		}
 		break;
@@ -1703,7 +1722,7 @@ function atom_element_handler(
 
 		    default:
 			// XXX - Better error-reporting
-			echo "Warning: Unexpected parent: [$parent]\n";
+			echo "Warning: Unexpected [$elt_name] parent: [$parent]\n";
 			break;
 		}
 		break;
@@ -1717,7 +1736,7 @@ function atom_element_handler(
 
 		    default:
 			// XXX - Better error-reporting
-			echo "Warning: Unexpected parent: [$parent]\n";
+			echo "Warning: Unexpected [$elt_name] parent: [$parent]\n";
 			break;
 		}
 		break;
@@ -1731,7 +1750,7 @@ function atom_element_handler(
 
 		    default:
 			// XXX - Better error-reporting
-			echo "Warning: Unexpected parent: [$parent]\n";
+			echo "Warning: Unexpected [$elt_name] parent: [$parent]\n";
 			break;
 		}
 		break;
@@ -1745,7 +1764,7 @@ function atom_element_handler(
 
 		    default:
 			// XXX - Better error-reporting
-			echo "Warning: Unexpected parent: [$parent]\n";
+			echo "Warning: Unexpected [$elt_name] parent: [$parent]\n";
 			break;
 		}
 		break;
@@ -1759,7 +1778,7 @@ function atom_element_handler(
 
 		    default:
 			// XXX - Better error-reporting
-			echo "Warning: Unexpected parent: [$parent]\n";
+			echo "Warning: Unexpected [$elt_name] parent: [$parent]\n";
 			break;
 		}
 		break;
@@ -1816,7 +1835,7 @@ function rdf_element_handler(
 
 		    default:
 			// XXX - Better error-reporting
-			echo "Warning: Unexpected parent: [$parent]\n";
+			echo "Warning: Unexpected [$elt_name] parent: [$parent]\n";
 			break;
 		}
 		break;
@@ -1832,7 +1851,7 @@ function rdf_element_handler(
 
 		    default:
 			// XXX - Better error-reporting
-			echo "Warning: Unexpected parent: [$parent]\n";
+			echo "Warning: Unexpected [$elt_name] parent: [$parent]\n";
 			break;
 		}
 		break;
@@ -1852,7 +1871,7 @@ function rdf_element_handler(
 
 		    default:
 			// XXX - Better error-reporting
-			echo "Warning: Unexpected parent: [$parent]\n";
+			echo "Warning: Unexpected [$elt_name] parent: [$parent]\n";
 			break;
 		}
 		break;
@@ -1867,7 +1886,7 @@ function rdf_element_handler(
 
 		    default:
 			// XXX - Better error-reporting
-			echo "Warning: Unexpected parent: [$parent]\n";
+			echo "Warning: Unexpected [$elt_name] parent: [$parent]\n";
 			break;
 		}
 		break;
@@ -1881,7 +1900,7 @@ function rdf_element_handler(
 
 		    default:
 			// XXX - Better error-reporting
-			echo "Warning: Unexpected parent: [$parent]\n";
+			echo "Warning: Unexpected [$elt_name] parent: [$parent]\n";
 			break;
 		}
 		break;
@@ -1895,7 +1914,7 @@ function rdf_element_handler(
 
 		    default:
 			// XXX - Better error-reporting
-			echo "Warning: Unexpected parent: [$parent]\n";
+			echo "Warning: Unexpected [$elt_name] parent: [$parent]\n";
 			break;
 		}
 		break;
@@ -1909,7 +1928,7 @@ function rdf_element_handler(
 
 		    default:
 			// XXX - Better error-reporting
-			echo "Warning: Unexpected parent: [$parent]\n";
+			echo "Warning: Unexpected [$elt_name] parent: [$parent]\n";
 			break;
 		}
 		break;
@@ -1923,7 +1942,7 @@ function rdf_element_handler(
 
 		    default:
 			// XXX - Better error-reporting
-			echo "Warning: Unexpected parent: [$parent]\n";
+			echo "Warning: Unexpected [$elt_name] parent: [$parent]\n";
 			break;
 		}
 		break;
@@ -1937,7 +1956,7 @@ function rdf_element_handler(
 
 		    default:
 			// XXX - Better error-reporting
-			echo "Warning: Unexpected parent: [$parent]\n";
+			echo "Warning: Unexpected [$elt_name] parent: [$parent]\n";
 			break;
 		}
 		break;
