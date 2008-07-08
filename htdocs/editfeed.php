@@ -48,7 +48,8 @@ function show_form($feed_id)
 		// XXX - Abort if no such feed
 
 	$smarty = new Smarty();
-	$smarty->template_dir	= SMARTY_PATH . "templates";
+	$skin = "default";
+	$smarty->template_dir	= "skins/$skin";
 	$smarty->compile_dir	= SMARTY_PATH . "templates_c";
 	$smarty->cache_dir	= SMARTY_PATH . "cache";
 	$smarty->config_dir	= SMARTY_PATH . "configs";
@@ -132,7 +133,8 @@ echo "feed_info: <pre>["; print_r($feed_info); echo "]</pre>\n";
 		 * error messages.
 		 */
 		$smarty = new Smarty();
-		$smarty->template_dir	= SMARTY_PATH . "templates";
+		$skin = "default";
+		$smarty->template_dir	= "skins/$skin";
 		$smarty->compile_dir	= SMARTY_PATH . "templates_c";
 		$smarty->cache_dir	= SMARTY_PATH . "cache";
 		$smarty->config_dir	= SMARTY_PATH . "configs";

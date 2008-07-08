@@ -297,3 +297,11 @@
 - A bunch of elements in the templates have id="..." identifiers
   (body, forms, etc.) Come up with a good naming scheme for them, to
   keep them all straight.
+- I suspect the Smarty cache isn't really necessary.
+- http://www.smarty.net/manual/en/template.resources.php tells how to
+  get templates from any source. Perhaps can set up "skin" scheme, so can use
+	$smarty->display("skin:item.tpl");
+  and it'll fetch "current-skin/item.tpl" if it exists, or
+  "default-skin/item.tpl" otherwise.
+	In the meantime, just require the "skins/$skin_name" directory
+  to contain every template. (Disk space is cheap, right? :-))
