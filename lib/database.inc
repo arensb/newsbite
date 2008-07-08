@@ -397,9 +397,6 @@ function db_get_some_feed_items(/* varargs */)
 	return $retval;
 }
 
-// XXX - Function to create new feed entry. Takes $fields, returns new
-// ID.
-
 /* db_add_feed
  * Add a new feed entry to the database. $feed is an assoc of
  * key => value mappings, keyed by column name.
@@ -472,6 +469,41 @@ echo "query: [<pre>$query</pre>]\n";
 echo "feed id [$feed_id]<br/>\n";
 	$stmt->close();
 	return $feed_id;
+}
+
+/* db_delete_feed
+ * Delete a feed from the database (both feed entry and articles).
+ * Returns FALSE in case of error, or TRUE otherwise.
+ */
+// XXX - Should probably return something more interesting, like an
+// error code.
+function db_delete_feed($feed_id)
+{
+	$dbh = db_connect();
+
+	// XXX - Call any hooks to be run before the feed is deleted
+
+	/* First, delete all of the articles in the feed */
+	$query = "DELETE FROM items WHERE feed_id = ?";
+	$stmt = $dbh->prepare($query);
+		// XXX - Error-checking
+	$err = $stmt->bind_param("d", $feed_id);
+		// XXX - Error-checking
+	$err = $stmt->execute();
+		// XXX - Error-checking
+	$stmt->close();
+
+	/* Next, delete the entry for the feed itself. */
+	$query = "DELETE FROM feeds WHERE id = ?";
+	$stmt = $dbh->prepare($query);
+		// XXX - Error-checking
+	$err = $stmt->bind_param("d", $feed_id);
+		// XXX - Error-checking
+	$err = $stmt->execute();
+		// XXX - Error-checking
+	$stmt->close();
+
+	return TRUE;
 }
 
 /* db_update_feed_info

@@ -1,0 +1,27 @@
+/* unsubscribe.css
+ * Stylesheet for the "unsubscribe from a feed" page.
+ */
+
+#show-feed {
+	width:			100%;
+	background-color:	yellow;
+}
+
+#show-feed th {
+	text-align:		right;
+	vertical-align:		top;
+	border:			1px solid blue;
+	background-color:	orange;
+}
+
+#show-feed td {
+	border:			1px solid red;
+	background-color:	cyan;
+}
+
+/* XXX - Is there a better way of ensuring that text input fields fill
+ * all available space without overflowing?
+ */
+input[type="text"] {
+	width:			90%;
+}

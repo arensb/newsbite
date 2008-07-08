@@ -54,11 +54,16 @@
       <a href="update.php?id={$feed.id}">update</a>
       &nbsp;
       <a href="editfeed.php?id={$feed.id}">edit</a>
+      &nbsp;
+      <a href="unsubscribe.php?id={$feed.id}">unsub</a>
     </td>
   </tr>
 {/strip}
 {/foreach}
 </table>
+
+{* Link to subscribe to a feed *}
+<p><a href="addfeed.php">Add a feed</a></p>
 
 </body>
 </html>
