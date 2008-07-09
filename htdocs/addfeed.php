@@ -33,7 +33,7 @@ if (isset($feed_url))
 
 /* Display a form for adding a URL */
 $smarty = new Smarty();
-$skin = "default";
+$smarty->compile_id     = "$skin-skin";
 $smarty->template_dir	= "skins/$skin";
 $smarty->compile_dir	= SMARTY_PATH . "templates_c";
 $smarty->cache_dir	= SMARTY_PATH . "cache";

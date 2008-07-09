@@ -1,3 +1,8 @@
+- bug: articles don't stay read.
+	- Refresh a feed
+	- Mark a recent item as read
+	- Refresh the feed again (so that the article gets reread)
+	- The item is once more unread
 - (bug?) Bad HTML in item description/content causes parse errors in
   XMLReader. This is going to crop up a lot, and should be fixed.
 	Worst solution: skip the entire feed, making it unusable until
@@ -292,6 +297,9 @@
   outweigh usefulness. Switch to a more conventional date display.
   Show year.
 - Need to rethink states. Too many of them; code getting out of hand.
+	Aha: the two main states are "read" and "unread". The others
+  are refinements and/or orthogonal flags. So split "state" into a
+  single boolean "read", and several flags.
 - Should it be possible to mark a feed as inactive, for feeds that are
   only interesting from time to time, like electoral-vote.com?
 - A bunch of elements in the templates have id="..." identifiers
