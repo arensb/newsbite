@@ -4,19 +4,19 @@
 <html>
 <head>
 <title>NewsBite: Unsubscribe</title>
-<link rel="stylesheet" type="text/css" href="style.css" media="all" />
-<link rel="stylesheet" type="text/css" href="unsubscribe.css" media="all" />
+<link rel="stylesheet" type="text/css" href="skins/{$skin}/style.css" media="all" />
+<link rel="stylesheet" type="text/css" href="skins/{$skin}/unsubscribe.css" media="all" />
 <!-- If JavaScript is turned on, slurp in the JavaScript-specific
      stylesheet
 -->
 <script type="text/javascript">
-  document.write('<link rel="stylesheet" type="text/css" href="style-js.css" media="all" />\n');
+  document.write('<link rel="stylesheet" type="text/css" href="skins/{$skin}/style-js.css" media="all" />\n');
 </script>
 <!-- If JavaScript is turned off, slurp in the no-JavaScript-specific
      stylesheet
 -->
 <noscript>
-  <link rel="stylesheet" type="text/css" href="style-nojs.css" media="all" />
+  <link rel="stylesheet" type="text/css" href="skins/{$skin}/style-nojs.css" media="all" />
 </noscript>
 <script type="text/javascript" src="view.js"></script>
 </head>

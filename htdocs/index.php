@@ -14,6 +14,7 @@ $smarty->compile_id = "default-skin";
 $dbh = db_connect();
 $feeds = db_get_feeds();
 $counts = db_get_all_feed_counts();
+$smarty->assign('skin', $skin);
 $smarty->assign('feeds', $feeds);
 $smarty->assign('counts', $counts);
 $smarty->display("feeds.tpl");
