@@ -4,8 +4,20 @@
 <html>
 <head>
 <title>NewsBite: Feeds</title>
-<link rel="stylesheet" type="text/css" href="style.css" media="all" />
-<link rel="stylesheet" type="text/css" href="index.css" media="all" />
+<link rel="stylesheet" type="text/css" href="skins/{$skin}/style.css" media="all" />
+<link rel="stylesheet" type="text/css" href="skins/{$skin}/index.css" media="all" />
+<!-- If JavaScript is turned on, slurp in the JavaScript-specific
+     stylesheet
+-->
+<script type="text/javascript">
+  document.write('<link rel="stylesheet" type="text/css" href="skins/{$skin}/style-js.css" media="all" />\n');
+</script>
+<!-- If JavaScript is turned off, slurp in the no-JavaScript-specific
+     stylesheet
+-->
+<noscript>
+  <link rel="stylesheet" type="text/css" href="skins/{$skin}/style-nojs.css" media="all" />
+</noscript>
 </head>
 <body>
 

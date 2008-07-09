@@ -48,6 +48,7 @@ $smarty->compile_dir	= SMARTY_PATH . "templates_c";
 $smarty->cache_dir	= SMARTY_PATH . "cache";
 $smarty->config_dir	= SMARTY_PATH . "configs";
 
+$smarty->assign('skin', $skin);
 $smarty->assign('feed', $feed_info);
 $smarty->display("unsubscribe.tpl");
 ?>

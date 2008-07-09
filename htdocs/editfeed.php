@@ -54,6 +54,7 @@ function show_form($feed_id)
 	$smarty->cache_dir	= SMARTY_PATH . "cache";
 	$smarty->config_dir	= SMARTY_PATH . "configs";
 
+	$smarty->assign('skin', $skin);
 	$smarty->assign('feed', $feed_info);
 	$smarty->assign('command', "update");
 	$smarty->display("editfeed.tpl");
@@ -139,6 +140,7 @@ echo "feed_info: <pre>["; print_r($feed_info); echo "]</pre>\n";
 		$smarty->cache_dir	= SMARTY_PATH . "cache";
 		$smarty->config_dir	= SMARTY_PATH . "configs";
 
+		$smarty->assign('skin', $skin);
 		$smarty->assign('feed', $feed_info);
 		$smarty->assign('errors', $errors);
 		$smarty->assign('command', "update");

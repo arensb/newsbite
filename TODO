@@ -303,5 +303,31 @@
 	$smarty->display("skin:item.tpl");
   and it'll fetch "current-skin/item.tpl" if it exists, or
   "default-skin/item.tpl" otherwise.
+	Or could allow a plugin to specify a feed-specific skin,
+  either as a record in the database, or as a string.
 	In the meantime, just require the "skins/$skin_name" directory
   to contain every template. (Disk space is cheap, right? :-))
+- The example in TFM for php_sapi_name() is useful for determining
+  whether the script is being called from the command line or as a CGI
+  script.
+	This, in turn, can be used to implement dual-mode commands. In
+  particular, 'update.php' can be called from cron to update every
+  hour (or whatever).
+- "Today's feeds" could use multiple criteria to come up with
+  partially-ordered set: say there are a bunch of unread news stories,
+  several unread User Friendly strips, and today's weather report.
+	The user could decree that User Friendly should be presented
+  in chronological order (i.e., when comparing two User Friendly
+  articles, the older one goes on top; when comparing a User Friendly
+  article and anything else, the order is undefined).
+	The news stories, OTOH, should be presented in reverse
+  chronological order (i.e., the newer of two news stories goes on
+  top).
+	And today's weather report is important, but yesterday's is
+  garbage: today's weather report goes above anything else, but
+  anything older than the latest one goes at the bottom.
+	We can multiply such rules ad infinitum (perhaps look at how
+  often a feed is updated, so busy sites don't crowd out the ones that
+  update rarely). The idea is, these rules can define a
+  partially-ordered set. It would be cool to use these to determine
+  the order in which to display articles.
