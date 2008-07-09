@@ -25,4 +25,8 @@ define('FEED_CACHE', "/tmp/feed-cache");
 
 define('SMARTY_DIR', "/folks/arensb/proj/newsbite/trunk/Smarty/Smarty/");
 define('SMARTY_PATH', "smarty/");
+
+/* Default skin */
+define('DEFAULT_SKIN', "default");
+$skin = DEFAULT_SKIN;	// XXX - Should be set in skin.inc
 ?>
