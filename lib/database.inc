@@ -103,29 +103,27 @@ EOT
 }
 
 /* db_get_feed_counts
- * Get the number of new/read/unread articles in a feed.
+ * Get the number of read/unread articles in a feed, as well as the
+ * latest publication time and update time of any article in the feed.
  *
  * Returns an array of the form
  *	array(
- *		'new'	=> 10,
- *		'read'	=> 150,
- *		'unread'=> 12,
+ *		'read'			=> 150,
+ *		'unread'		=> 12,
+ *		'latest_pub_date'	=> <time_t>,
+ *		'latest_update		=> <time_t>
  *	);
  */
 function db_get_feed_counts($feed_id)
 {
 	$dbh = db_connect();
 
-	/* Get the number of items in each state */
+	/* Get the number of read/unread items */
 	$query = sprintf(<<<EOT
-SELECT		SUM(state='new') as `new`,
-		SUM(state='unread') as `unread`,
-		SUM(state='read') `read`,
-		SUM(state='updated') `updated`,
-		SUM(state='deleted') as `deleted`
+SELECT		IFNULL(SUM(is_read), 0) as `read`,
+		IFNULL(SUM(!is_read), 0) as `unread`
 FROM		items
 WHERE		feed_id = %d
-GROUP BY	feed_id
 EOT
 			 ,
 			 $feed_id);
@@ -167,14 +165,16 @@ EOT
 }
 
 /* db_get_all_feed_counts
- * Get the number of new/read/unread articles in all feeds.
+ * Get the number of read/unread articles in all feeds, as well as
+ * the last publication and update time for each feed.
  *
  * Returns an array of the form
  *	array(
  *		190	=> array(		// Feed ID 190
- *			'new'	=> 10,
  *			'read'	=> 150,
  *			'unread'=> 12,
+ *			'latest_pub_date'	=> <time_t>,
+ *			'latest_update'		=> <time_t>
  *			),
  *		191	=> array( ... ),	// Feed ID 191
  *		...
@@ -185,20 +185,17 @@ function db_get_all_feed_counts()
 {
 	$dbh = db_connect();
 
-	/* Get the number of items in each state in each feed */
+	/* Get the number of read/unread items in each feed */
 	// XXX - When a feed doesn't have any items, this returns NULL
 	// for all the counts. We fix this below with a hack, but
 	// there's got to be a better way.
 	$query = <<<EOT
-SELECT		feeds.id as `feed_id`,
-		SUM(items.state='new') as `new`,
-		SUM(items.state='unread') as `unread`,
-		SUM(items.state='read') `read`,
-		SUM(items.state='updated') `updated`,
-		SUM(items.state='deleted') as `deleted`
+SELECT		feeds.id AS `feed_id`,
+		IFNULL(SUM(items.is_read), 0) AS `read`,
+		IFNULL(SUM(!items.is_read), 0) AS `unread`
 FROM		feeds
 LEFT JOIN	items
-  ON		feeds.id=items.feed_id
+  ON		feeds.id = items.feed_id
 GROUP BY	feeds.id
 EOT;
 	$result = $dbh->query($query);
@@ -214,12 +211,6 @@ EOT;
 	while ($row = $result->fetch_assoc())
 	{
 		// XXX - Error-checking
-		// XXX - Hack to make sure that NULL values come out as 0.
-		// I'm sure there's a better way to do this.
-		foreach ($row as $k => $v)
-			if ($v == NULL)
-				$row[$k] = 0;
-
 		$feed_id = $row['feed_id'];
 		unset($row['feed_id']);
 		$retval[$feed_id] = $row;
@@ -232,9 +223,13 @@ EOT;
 	// for all the counts. We fix this below with a hack, but
 	// there's got to be a better way.
 	$query = <<<EOT
-SELECT		feeds.id as `feed_id`,
-		MAX(items.`pub_date`) as `latest_pub_date`,
-		MAX(items.`last_update`) as `latest_update`
+SELECT		feeds.id AS `feed_id`,
+		IFNULL(MAX(items.`pub_date`),
+		       "0000-00-00 00:00:00")
+			AS `latest_pub_date`,
+		IFNULL(MAX(items.`last_update`),
+		       "0000-00-00 00:00:00")
+			AS `latest_update`
 FROM		feeds
 LEFT JOIN	items
   ON		feeds.id=items.feed_id
@@ -252,12 +247,6 @@ EOT;
 	while ($row = $result->fetch_assoc())
 	{
 		// XXX - Error-checking
-		// XXX - Hack to make sure that NULL values come out as 0.
-		// I'm sure there's a better way to do this.
-		foreach ($row as $k => $v)
-			if ($v == NULL)
-				$row[$k] = 0;
-
 		$feed_id = $row['feed_id'];
 		$retval[$feed_id]['latest_pub_date'] =
 			strtotime($row['latest_pub_date']);
@@ -286,12 +275,9 @@ EOT;
  *	How many items to fetch.
  * order => date_desc (default) | date_asc
  *	Order in which to return the items
- * states => string
- *	Comma-separated list of states. We only want to see items in one
- *	of these states. Example:
- *		db_get_some_feed_items(
- *			'states', 'new,unread'
- *			);
+ * read => bool
+ *	If false, returns only unread items. If true, also returns read
+ *	items.
  */
 // XXX - Would it be useful to have a keyword for "just give me the
 // summary, not the content"?
@@ -341,16 +327,12 @@ function db_get_some_feed_items(/* varargs */)
 		array_push($conditions, $c);
 	}
 
-	/* Which states does caller want? */
-	// Presumably we can trust the caller, and don't need to
-	// sanitize input.
-	if (isset($args['states']))
-	{
-		$states = explode(",", $args['states']);
-		$c = sprintf("state IN('%s')\n",
-			     implode("','", $states));
-		array_push($conditions, $c);
-	}
+	/* Do we want read items, or just unread ones? */
+	// Without an explicit condition, SQL will return both read
+	// and unread items, but that's not the default behavior we
+	// want. So we really test for !($args['read'] == true)
+	if (!isset($args['read']) || !$args['read'])
+		array_push($conditions, "!is_read");
 
 	/* Add selection conditions to query */
 	if (count($conditions) > 0)
@@ -647,10 +629,9 @@ EOT;
 		// This query may look long and redundant, but
 		// basically it means:
 
-		// If this entry doesn't exist yet, create one, and set the
-		// state to 'new'. If the entry already exists, update it from
-		// the RSS information, and set the state to 'updated' if
-		// necessary.
+		// If this entry doesn't exist yet, create one. If the
+		// entry already exists, update it from the RSS
+		// information.
 
 		// XXX - Unfortunately, this sends the summary and
 		// content to the database twice, which might be
@@ -660,10 +641,10 @@ EOT;
 INSERT INTO	items
 		(feed_id, url, title, summary, content, author, category,
 		 comment_url, comment_rss, guid, pub_date,
-		 last_update, state)
+		 last_update, is_read)
 VALUES		(?, ?, ?, ?, ?, ?, ?,
 		 ?, ?, ?, FROM_UNIXTIME(?),
-		 FROM_UNIXTIME(?), 'new')
+		 FROM_UNIXTIME(?), false)
 ON DUPLICATE KEY UPDATE
 		url=?,
 		title=?,
@@ -674,9 +655,7 @@ ON DUPLICATE KEY UPDATE
 		comment_url=?,
 		comment_rss=?,
 		pub_date=FROM_UNIXTIME(?),
-		last_update=FROM_UNIXTIME(?),
-		state=IF(state='read' or state='unread',
-			 'updated', state)
+		last_update=FROM_UNIXTIME(?)
 EOT;
 		$stmt = $dbh->prepare($query);
 		$dummy_categories = NULL;	// XXX - Hack until I
@@ -726,7 +705,7 @@ EOT;
 				  $item['guid'],
 				  $pub_time,
 				  $build_time,
-				  // 'state' set automatically
+				  // 'is_read' automatically set to false
 
 				  // Values for updated items
 				  $item['url'],
@@ -739,6 +718,7 @@ EOT;
 				  $item['comment_feed'],
 				  $pub_time,
 				  $build_time
+				  // 'is_read' left unchanged
 			);
 		$err = $stmt->execute();
 		// XXX - Can count number of affected rows. Apparently
@@ -757,12 +737,14 @@ EOT;
 }
 
 /* db_mark_items
- * Change the state of a set of items. $state is one of "new",
- * "unread", or "read" (or potentially any other state that
- * items.state might have in the database), and $items is an array of
- * item IDs to mark.
+ * Mark a set of items as either read or unread.
+ * $is_read is a boolean, either true (mark items as read) or false
+ * (mark items as unread), and $items is an array of item IDs to mark.
  */
-function db_mark_items($state, $items)
+// XXX - Would it be better to take an array of
+//	item_id => is_read
+// values?
+function db_mark_items($is_read, $items)
 {
 	if (count($items) < 1)
 		// Nothing to do
@@ -770,15 +752,17 @@ function db_mark_items($state, $items)
 
 	$dbh = db_connect();
 
-	/* XXX - Ought to check that $state is a valid state */
-
+	// XXX - Would it be better to use a prepared statement, and
+	// use bind_param() repeatedly to set items' is_read-ness one
+	// by one?
+	// Time it and see.
 	$query = sprintf(<<<EOT
 UPDATE	items
-SET	state='%s'
+SET	is_read=%s
 WHERE	id IN(%s)
 EOT
 			 ,
-			 $state,
+			 ($is_read ? "TRUE" : "FALSE"),
 			 implode(",", $items));
 	$result = $dbh->query($query);
 	if (!$result)

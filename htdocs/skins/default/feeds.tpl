@@ -49,11 +49,10 @@
         {/if}
       </a>:
       &nbsp;
-      {* Number of new/unread/read items in the feed *}
-      {* XXX - These should be links, to show only new items,
-       * new and unread items, or all items.
+      {* Number of unread/read items in the feed *}
+      {* XXX - These should be links, to show only read items, or all
+       * items.
        *}
-      {$counts[$feed_id].new} new /
       {$counts[$feed_id].unread || 0} unread /
       {$counts[$feed_id].read} read
       <br/>

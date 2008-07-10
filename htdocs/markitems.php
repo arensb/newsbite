@@ -17,7 +17,6 @@ else
 	// XXX - Abort with an error message
 	exit(0);
 
-$mark_new    = array();
 $mark_unread = array();
 $mark_read   = array();
 
@@ -34,9 +33,6 @@ switch ($cmd)
 		$id = $match[1];
 		switch ($v[0])
 		{
-		    case "n":		// Mark as new
-			$mark_new[] = $id;
-			break;
 		    case "u":		// Mark as unread
 			$mark_unread[] = $id;
 			break;
@@ -69,7 +65,6 @@ switch ($cmd)
 	exit(1);
 }
 
-db_mark_items("new",    $mark_new);
 db_mark_items("read",   $mark_read);
 db_mark_items("unread", $mark_unread);
 
