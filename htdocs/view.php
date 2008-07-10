@@ -48,7 +48,7 @@ $num_items = 25;		// How many items to show
 		// XXX - Should probably be a parameter
 
 $get_feed_args = array(
-	"states"	=> "new,unread,updated",
+	"read"		=> false,
 	"max_items"	=> $num_items,
 	"start_at"	=> $start
 	);
@@ -107,18 +107,6 @@ $smarty->assign('prev_link_text', $prev_link_text);
 $smarty->assign('next_link', $next_link);
 $smarty->assign('next_link_text', $next_link_text);
 $smarty->display("view.tpl");
-
-/* Now that these items have been sent to the browser, mark them as
- * "unread".
- */
-$unread = array();
-foreach ($feed['items'] as $i)
-{
-	if ($i['state'] == "new")
-		$unread[] = $i['id'];
-}
-if (count($unread) > 0)
-	db_mark_items("unread", $unread);
 
 db_disconnect();
 

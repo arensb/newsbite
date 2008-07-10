@@ -75,13 +75,7 @@ CREATE TABLE items (
 	guid		VARCHAR(127) NOT NULL,	# Globally-unique ID.
 	pub_date	DATETIME,	# Publication date
 	last_update	DATETIME,	# Time when item was last updated
-	# State of the item:
-	state		ENUM('new',	# Never seen
-			     'unread',	# Shown once, but unread
-			     'read',	# Seen it, read it
-			     'updated',	# Updated since last read
-			     'deleted')	# Deleted
-				NOT NULL,
+	is_read		BOOLEAN,	# Has the item been read?
 	PRIMARY KEY(id),
 	UNIQUE KEY(feed_id, guid)	# Having (feed_id, guid)
 					# instead of (guid) may be

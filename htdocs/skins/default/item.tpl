@@ -48,16 +48,15 @@
  * at the top, and another at the bottom. These all have the same
  * radio group name: "state_{id}". Otherwise, confusion can arise if
  * the item is marked as read at the top, and unread at the bottom.
- * The values are "na", "ua", "ra" at the top (for new, unread, read)
- * and "nb", "ub", and "rb" at the bottom. The "a" and "b" are just
- * there because w3.org says that all the radio buttons in a group
- * should have different values.
+ * The values are "ua", "ra" at the top (for unread, read) and "ub",
+ * and "rb" at the bottom. The "a" and "b" are just there because
+ * w3.org says that all the radio buttons in a group should have
+ * different values.
  *}
 {* XXX - There should really be one largish button, to mark the item
- * as read. Currently too hard to click on the correct one for the
- * most common action.
+ * as read/unread. Currently too hard to click on the correct one for
+ * the most common action.
  *}
-          <li>New <input type="radio" name="state-{$item.id}" value="na"/></li>
           <li>Unread <input type="radio" name="state-{$item.id}" value="ua"/></li>
           <li>Read <input type="radio" name="state-{$item.id}" value="ra"/></li>
         </ul>
@@ -109,9 +108,6 @@
       {/if}
     {else}
       {* Summary, content *}
-      {* XXX - Perhaps new articles should be expanded by default, and
-       * unread ones should be collapsed by default.
-       *}
       {* XXX - Perhaps a better way to do switching, and which allows
        * switching panes better:
        * <div class="content-panes" which="summary">
@@ -175,8 +171,7 @@
       <br/>
     {/if}
     &nbsp;
-    (New: <input type="radio" name="state-{$item.id}" value="nb" />
-     Unread: <input type="radio" name="state-{$item.id}" value="ub" />
+    (Unread: <input type="radio" name="state-{$item.id}" value="ub" />
      Read:<input type="radio" name="state-{$item.id}" value="rb" />
     )
   </div>

@@ -136,6 +136,10 @@
 - In Ajax mode, marking an item as read should tell the server to
   delete it now, so that if you switch from workstation to laptop,
   your feeds are already up to date.
+	When marking an item as read, collapse it so it doesn't take
+  up much screen real estate, but is still visible in case the user
+  didn't mean to mark it. Have a separate button ("refresh"?) to clear
+  out read items.
 - Perhaps extend Smarty, so don't need to set the paths every time.
 - i18n.
 	Can start by identifying translatable strings and marking
@@ -200,6 +204,7 @@
 - LiveJournal plugin should look at the <description> and parse lj
   tags in the body of the item. E.g., expand '<lj:user="foo">' into
   proper HTML.
+	Apparently <lj-embed id="<int>" /> indicates an embedded item.
 - Security: should probably try to parse the body of any foreign text
   (in particular, summary and body of posts, as well as titles) to
   include only known-good HTML.
@@ -286,8 +291,7 @@
 	The Pain: no good anchors
 	Perry Bible Fellowship: "#topimg"
 	User Friendly: no good anchors
-- Add state "later": article saved for reading later.
-	(Or is this a good idea? Too many states already.)
+- Add a way of marking an item as "saved for later".
 - Try to make a "collapsed" view for long articles that don't have a
   summary: clip to 10em or something.
 - When updating all feeds in Ajax mode: if there's an error, display
@@ -296,10 +300,6 @@
 - Date box in default skin: pretty, but the prettiness doesn't
   outweigh usefulness. Switch to a more conventional date display.
   Show year.
-- Need to rethink states. Too many of them; code getting out of hand.
-	Aha: the two main states are "read" and "unread". The others
-  are refinements and/or orthogonal flags. So split "state" into a
-  single boolean "read", and several flags.
 - Should it be possible to mark a feed as inactive, for feeds that are
   only interesting from time to time, like electoral-vote.com?
 - A bunch of elements in the templates have id="..." identifiers
@@ -339,3 +339,15 @@
   update rarely). The idea is, these rules can define a
   partially-ordered set. It would be cool to use these to determine
   the order in which to display articles.
+- Add a redirect() function to redirect browser to a URL.
+- Rethink how markitems.php works, which arguments it takes. Check
+  whichever template calls it (view.tpl and item.tpl?).
+	The easiest, no-JavaScript case is probably the way FoF does
+  it: if we're displaying unread items, give the option of marking
+  items as read. If we're displaying all items, give the option of
+  marking items as unread.
+	Perhaps do this by adding a hidden "new_state" input field to
+  the form (and of course update markitems.php to check for it).
+
+	With JavaScript, we can toggle the state of each item as the
+  user requests.
