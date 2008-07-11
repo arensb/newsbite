@@ -1,0 +1,10 @@
+- Design principle: things happen on screen because the user did
+  something; things don't happen on their own.
+	Thus, it's not okay to just query the server every 5 minutes,
+  get new articles, and display them: the user isn't expecting new
+  articles to appear on their own.
+	It's okay to fetch new articles in the background, and maybe
+  flash a "new articles" icon. But don't interrup reading the existing
+  articles.
+	It's okay to display new articles after the user presses a
+  "refresh" button or something.
