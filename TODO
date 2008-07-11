@@ -1,8 +1,3 @@
-- bug: articles don't stay read.
-	- Refresh a feed
-	- Mark a recent item as read
-	- Refresh the feed again (so that the article gets reread)
-	- The item is once more unread
 - (bug?) Bad HTML in item description/content causes parse errors in
   XMLReader. This is going to crop up a lot, and should be fixed.
 	Worst solution: skip the entire feed, making it unusable until
@@ -351,3 +346,10 @@
 
 	With JavaScript, we can toggle the state of each item as the
   user requests.
+- Picking which skin to display:
+	- Specified in URL, otherwise
+	- From cookie, otherwise
+	- From option, otherwise
+	- "default".
+- style: in view.css, can items be put closer to the edge? What's the
+  body padding, or whatever?

@@ -10,15 +10,33 @@ $ok = true;	// Error status. If $ok, then we can just redirect to
 if (isset($_REQUEST['doit']))
 	// Mark each item according to its radio buttons
 	$cmd = "mark";
-elseif (isset($_REQUEST['read-all']))
+elseif (isset($_REQUEST['mark-all']))
 	// Mark all items as read
-	$cmd = "read-all";
+	$cmd = "mark-all";
 else
 	// XXX - Abort with an error message
 	exit(0);
 
-$mark_unread = array();
-$mark_read   = array();
+$mark_how = $_REQUEST['mark-how'];
+
+/* Make sure $mark_how has a legal value */
+switch ($mark_how)
+{
+    case "read":
+	$how = TRUE;
+	break;
+
+    case "unread":
+	$how = FALSE;
+	break;
+
+    default:
+	// XXX - Better error-reporting
+	echo "Don't know how to mark items: [$mark_how]<br/>\n";
+	exit(0);
+}
+
+$item_ids = array();		// The IDs of the items to mark
 
 switch ($cmd)
 {
@@ -28,25 +46,13 @@ switch ($cmd)
 		/* Look for POST variables of the form "state-{id}",
 		 * where {id} is the ID of the item to be updated.
 		 */
-		if (!preg_match('/^state-(\d+)$/', $k, $match))
+		if (!preg_match('/^cb[tb]-(\d+)$/', $k, $match))
 			continue;
-		$id = $match[1];
-		switch ($v[0])
-		{
-		    case "u":		// Mark as unread
-			$mark_unread[] = $id;
-			break;
-		    case "r":		// Mark as read
-			$mark_read[] = $id;
-			break;
-		    default:
-			echo "Unknown update status: [$v]<br/>\n";
-			break;
-		}
+		$item_ids[] = $match[1];
 	}
 	break;
 
-    case "read-all":
+    case "mark-all":
 	foreach ($_REQUEST as $k => $v)
 	{
 		/* Look for POST variables of the form "item-{id}",
@@ -54,8 +60,7 @@ switch ($cmd)
 		 */
 		if (!preg_match('/^item-(\d+)$/', $k, $match))
 			continue;
-		$id = $match[1];
-		$mark_read[] = $id;
+		$item_ids[] = $match[1];
 	}
 	break;
 
@@ -65,8 +70,10 @@ switch ($cmd)
 	exit(1);
 }
 
-db_mark_items("read",   $mark_read);
-db_mark_items("unread", $mark_unread);
+//echo "\$item_ids: [<pre>"; print_r($item_ids); echo "</pre>]<br/>\n";
+//echo "Calling db_mark_items($how, $item_ids)<br/>\n";
+db_mark_items($how, $item_ids);
+	// XXX - Error-checking
 
 if ($ok)
 {

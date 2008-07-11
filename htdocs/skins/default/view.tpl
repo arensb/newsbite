@@ -56,8 +56,11 @@
  *}
 <form name="mark-items" method="post" action="markitems.php">
 <input type="reset" name="clearit" value="Clear changes"/>
-<input type="submit" name="read-all" value="Mark all as read"/>
+<input type="submit" name="mark-all" value="Mark all as read"/>
 <input type="submit" name="doit" value="Apply changes"/>
+{* This next field says how to mark checked items *}
+{* XXX - When showing read items, change to value="unread"/> *}
+<input type="hidden" name="mark-how" value="read"/>
 
 {* Navigation bar. *}
 {* XXX - Should probably be a template, since it should be identical to
@@ -80,7 +83,11 @@
 {/foreach}
 
 <input type="reset" name="clearit" value="Clear changes"/>
-<input type="submit" name="read-all" value="Mark all as read"/>
+{* When displaying read items, should this say "Mark all as unread"?
+ * Should there be separate "Mark all as read" and "Mark all as unread"
+ * buttons?
+ *}
+<input type="submit" name="mark-all" value="Mark all as read"/>
 <input type="submit" name="doit" value="Apply changes"/>
 </form>
 
