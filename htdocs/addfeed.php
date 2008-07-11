@@ -6,7 +6,7 @@
 // XXX - There should be a bookmarklet for this
 require_once("config.inc");
 require_once("database.inc");
-require_once(SMARTY_DIR . "Smarty.class.php");
+require_once("skin.inc");
 
 // XXX - Display form asking for URL, (nickname), username, password.
 // XXX - Get completed form.
@@ -32,12 +32,6 @@ if (isset($feed_url))
 // If we get this far, $feed_url is not set.
 
 /* Display a form for adding a URL */
-$smarty = new Smarty();
-$smarty->compile_id     = "$skin-skin";
-$smarty->template_dir	= "skins/$skin";
-$smarty->compile_dir	= SMARTY_PATH . "templates_c";
-$smarty->cache_dir	= SMARTY_PATH . "cache";
-$smarty->config_dir	= SMARTY_PATH . "configs";
-$smarty->assign('skin', $skin);
-$smarty->display("addfeed.tpl");
+$skin = new Skin();
+$skin->display("addfeed.tpl");
 ?>

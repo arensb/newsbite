@@ -4,7 +4,7 @@
  */
 require_once("config.inc");
 require_once("database.inc");
-require_once(SMARTY_DIR . "Smarty.class.php");
+require_once("skin.inc");
 
 $feed_id = $_REQUEST['id'];		// ID of feed to show
 /* Make sure $feed_id is an integer */
@@ -47,17 +47,11 @@ function show_form($feed_id)
 	$feed_info = db_get_feed($feed_id);
 		// XXX - Abort if no such feed
 
-	$smarty = new Smarty();
-	$smarty->compile_id     = "$skin-skin";
-	$smarty->template_dir	= "skins/$skin";
-	$smarty->compile_dir	= SMARTY_PATH . "templates_c";
-	$smarty->cache_dir	= SMARTY_PATH . "cache";
-	$smarty->config_dir	= SMARTY_PATH . "configs";
+	$skin = new Skin();
 
-	$smarty->assign('skin', $skin);
-	$smarty->assign('feed', $feed_info);
-	$smarty->assign('command', "update");
-	$smarty->display("editfeed.tpl");
+	$skin->assign('feed', $feed_info);
+	$skin->assign('command', "update");
+	$skin->display("editfeed.tpl");
 }
 
 function update_feed_info($feed_id)
@@ -133,18 +127,12 @@ echo "feed_info: <pre>["; print_r($feed_info); echo "]</pre>\n";
 		/* There were errors. Redisplay the form, with
 		 * error messages.
 		 */
-		$smarty = new Smarty();
-		$smarty->compile_id     = "$skin-skin";
-		$smarty->template_dir	= "skins/$skin";
-		$smarty->compile_dir	= SMARTY_PATH . "templates_c";
-		$smarty->cache_dir	= SMARTY_PATH . "cache";
-		$smarty->config_dir	= SMARTY_PATH . "configs";
+		$skin = new Skin();
 
-		$smarty->assign('skin', $skin);
-		$smarty->assign('feed', $feed_info);
-		$smarty->assign('errors', $errors);
-		$smarty->assign('command', "update");
-		$smarty->display("editfeed.tpl");
+		$skin->assign('feed', $feed_info);
+		$skin->assign('errors', $errors);
+		$skin->assign('command', "update");
+		$skin->display("editfeed.tpl");
 		return;
 	}
 

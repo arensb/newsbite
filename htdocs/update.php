@@ -2,7 +2,6 @@
 require_once("config.inc");
 require_once("database.inc");
 require_once("feed.inc");
-require_once(SMARTY_DIR . "Smarty.class.php");
 
 $feed_id = $_REQUEST["id"];
 

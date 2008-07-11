@@ -8,7 +8,7 @@
 // during playoffs, that sort of thing.
 require_once("config.inc");
 require_once("database.inc");
-require_once(SMARTY_DIR . "Smarty.class.php");
+require_once("skin.inc");
 
 $feed_id = $_REQUEST['id'];		// ID of feed to show
 /* Make sure $feed_id is an integer */
@@ -41,14 +41,8 @@ echo "All-righty. Unsubscribing.<br/>\n";
 $feed_info = db_get_feed($feed_id);
 	// XXX - Abort if no such feed
 
-$smarty = new Smarty();
-$smarty->compile_id     = "$skin-skin";
-$smarty->template_dir	= "skins/$skin";
-$smarty->compile_dir	= SMARTY_PATH . "templates_c";
-$smarty->cache_dir	= SMARTY_PATH . "cache";
-$smarty->config_dir	= SMARTY_PATH . "configs";
+$skin = new Skin();
 
-$smarty->assign('skin', $skin);
-$smarty->assign('feed', $feed_info);
-$smarty->display("unsubscribe.tpl");
+$skin->assign('feed', $feed_info);
+$skin->display("unsubscribe.tpl");
 ?>
