@@ -7,7 +7,7 @@
  *	$item - The item to display
  *}
 {strip}
-<div class="item" id="item-{$item.guid}" style="border: 1px solid black">
+<div class="item" id="item-{$item.guid}">
   <table class="item-header">
     <tr>
       <td class="date-box">
@@ -43,23 +43,10 @@
       <td class="icon-box">
 {* XXX - Do something with categories *}
 {* category: [{$item.category}]<br/>*}
-        <ul>
-{* Note that there are two groups of radio buttons per item: one group
- * at the top, and another at the bottom. These all have the same
- * radio group name: "state_{id}". Otherwise, confusion can arise if
- * the item is marked as read at the top, and unread at the bottom.
- * The values are "ua", "ra" at the top (for unread, read) and "ub",
- * and "rb" at the bottom. The "a" and "b" are just there because
- * w3.org says that all the radio buttons in a group should have
- * different values.
- *}
-{* XXX - There should really be one largish button, to mark the item
- * as read/unread. Currently too hard to click on the correct one for
- * the most common action.
- *}
-          <li>Unread <input type="radio" name="state-{$item.id}" value="ua"/></li>
-          <li>Read <input type="radio" name="state-{$item.id}" value="ra"/></li>
-        </ul>
+       {* XXX - When showing read items, change this to "mark as unread" *}
+        Mark as read:&nbsp;
+        {* "cbt": checkbox top *}
+        <input class="mark-check" type="checkbox" name="cbt-{$item.id}" value="1"/>
       </td>
     </tr>
   </table>
@@ -171,9 +158,10 @@
       <br/>
     {/if}
     &nbsp;
-    (Unread: <input type="radio" name="state-{$item.id}" value="ub" />
-     Read:<input type="radio" name="state-{$item.id}" value="rb" />
-    )
+    {* XXX - When showing read items, change this to "mark as unread" *}
+    Mark as read:&nbsp;
+    {* "cbb": checkbox bottom *}
+    <input class="mark-check" type="checkbox" name="cbb-{$item.id}" value="1"/>
   </div>
 </div>
 {/strip}

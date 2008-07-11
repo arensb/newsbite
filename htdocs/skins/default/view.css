@@ -3,7 +3,8 @@
  */
 
 body#view-body {
-	padding:		0px;
+	margin-left:		2px;
+	margin-right:		2px;
 }
 
 h1 a {
@@ -72,9 +73,25 @@ h1 a {
 .item-header {
 	width:			100%;
 	background-color:	navy;
+	color:			cyan;
 	padding:		0px;
 	border-collapse:	separate;
 	border-spacing:		0px 0.3em;
+
+	border-top-width:	2px;
+	border-left-width:	2px;
+	border-right-width:	2px;
+	border-bottom-width:	0px;
+	border-left-style:	outset;
+	border-top-style:	outset;
+	border-right-style:	outset;
+	border-color:		navy;
+	/* Mozilla: */
+	-moz-border-radius-topleft:	20px;
+	-moz-border-radius-topright:	20px;
+	/* Safari: */
+	-webkit-border-top-left-radius:		20px;
+	-webkit-border-top-right-radius:	20px;
 }
 
 .item-header td {
@@ -86,7 +103,6 @@ h1 a {
  * Box at the left of the article header, with the publication date.
  */
 .item-header .date-box {
-	background-color:	Navy;
 	width:			3.5em;
 	font-family:		sans-serif;
 	font-variant:		small-caps;
@@ -95,7 +111,6 @@ h1 a {
 }
 
 .item-header .date-box ul {
-	color:			cyan;
 	padding:		0px;
 	display:		inline;
 	margin:			0px;
@@ -175,16 +190,9 @@ h1 a {
 	width:			6em;
 }
 
-.icon-box ul {
-	color:			cyan;
-	padding:		0px;
-	display:		inline;
-	margin:			0px;
-}
-
-.icon-box ul li {
-	list-style-position:	inside;
-	list-style-type:	none;
+input[type="checkbox"].mark-check {
+	width:			1.2em;
+	height:			1.2em;
 }
 
 /* Summary of item */
@@ -221,5 +229,34 @@ h1 a {
 
 /* Control box at bottom of item */
 .item-footer {
-	background-color:	pink;
+	background-color:	navy;
+	color:			cyan;
+	text-align:		right;
+	min-height:		20px;
+
+	border-top-width:	0px;
+	border-left-width:	2px;
+	border-right-width:	2px;
+	border-bottom-width:	2px;
+	border-left-style:	outset;
+	border-top-style:	outset;
+	border-right-style:	outset;
+	border-color:		navy;
+	-webkit-border-bottom-left-radius:	20px;
+	-webkit-border-bottom-right-radius:	20px;
+	/* Mozilla: */
+	-moz-border-radius-bottomleft:	20px;
+	-moz-border-radius-bottomright:	20px;
+	/* Safari: */
+}
+
+.item-header input {
+/*	-moz-appearance:	radio;*/
+}
+
+/***** items ************************************/
+blockquote {
+	border:			1px solid #c0c0c0;
+	margin-left:		1em;
+	padding-left:		0.5em;
 }
