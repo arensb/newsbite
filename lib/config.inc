@@ -28,5 +28,4 @@ define('SMARTY_PATH', "smarty/");
 
 /* Default skin */
 define('DEFAULT_SKIN', "default");
-$skin = DEFAULT_SKIN;	// XXX - Should be set in skin.inc
 ?>

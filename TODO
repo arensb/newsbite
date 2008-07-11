@@ -86,8 +86,7 @@
 	Go with .htaccess for now.
 - Deal with malformed text in the RSS feed, e.g., unescaped or
   poorly-escaped entities, and the like.
-- Smarty(?) PHP templates for different skins: full-featured browser
-  vs. palmtop vs. phone, etc.
+- Different skins: full-featured browser vs. palmtop vs. phone, etc.
 - Killfile: automatically mark as read messages that match certain
   criteria.
 	Perhaps this should have a scoring system or something: I'd
@@ -135,7 +134,6 @@
   up much screen real estate, but is still visible in case the user
   didn't mean to mark it. Have a separate button ("refresh"?) to clear
   out read items.
-- Perhaps extend Smarty, so don't need to set the paths every time.
 - i18n.
 	Can start by identifying translatable strings and marking
   them, so they can be translated later. Define dummy _() and N_()

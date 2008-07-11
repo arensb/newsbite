@@ -4,7 +4,7 @@
  */
 require_once("config.inc");
 require_once("database.inc");
-require_once(SMARTY_DIR . "Smarty.class.php");
+require_once("skin.inc");
 
 $feed_id = $_REQUEST['id'];		// ID of feed to show
 /* Make sure $feed_id is an integer */
@@ -90,23 +90,17 @@ foreach ($feed['items'] as &$i)
 			// next-to-last item.
 }
 
-$smarty = new Smarty();
-$smarty->compile_id     = "$skin-skin";
-$smarty->template_dir	= "skins/$skin";
-$smarty->compile_dir	= SMARTY_PATH . "templates_c";
-$smarty->cache_dir	= SMARTY_PATH . "cache";
-$smarty->config_dir	= SMARTY_PATH . "configs";
+$skin = new Skin();
 
-$smarty->assign('skin', $skin);
-$smarty->assign('feed', $feed);
+$skin->assign('feed', $feed);
 if (isset($feeds))
-	$smarty->assign('feeds', $feeds);
-$smarty->assign('items', $feed['items']);
-$smarty->assign('prev_link', $prev_link);
-$smarty->assign('prev_link_text', $prev_link_text);
-$smarty->assign('next_link', $next_link);
-$smarty->assign('next_link_text', $next_link_text);
-$smarty->display("view.tpl");
+	$skin->assign('feeds', $feeds);
+$skin->assign('items', $feed['items']);
+$skin->assign('prev_link', $prev_link);
+$skin->assign('prev_link_text', $prev_link_text);
+$skin->assign('next_link', $next_link);
+$skin->assign('next_link_text', $next_link_text);
+$skin->display("view.tpl");
 
 db_disconnect();
 

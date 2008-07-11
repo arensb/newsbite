@@ -3,14 +3,6 @@
  * Database-related functions. Nothing else should access the database
  * directly.
  */
-// XXX - Need function to add feed.
-//	- Insert new record
-//	- Call user hooks
-
-// XXX - Need function to delete feed:
-//	- Call user hooks
-//	- delete 'items' entries with items.feed_id == feed.id
-//	- delete the entry from 'feeds'
 require_once("config.inc");
 
 $dbh = NULL;		# Database handle
@@ -450,6 +442,9 @@ echo "query: [<pre>$query</pre>]\n";
 	$feed_id = $dbh->insert_id;
 echo "feed id [$feed_id]<br/>\n";
 	$stmt->close();
+
+	// XXX - Call user hooks
+
 	return $feed_id;
 }
 
@@ -592,6 +587,9 @@ function db_update_feed($feed_id, $feed)
 	//
 	// Then again, what happens if the feed has an article that
 	// was posted 100 days ago, and updated today?
+
+	// XXX - Another problem: what about feeds that don't give
+	// dates (like The Perry Bible Fellowship)?
 	$dbh = db_connect();
 
 	global $AUTODELETE_DAYS;
