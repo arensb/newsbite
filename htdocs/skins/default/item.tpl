@@ -148,20 +148,25 @@
     {/if}
   {/if}{* item.summary == "" *}
 
-  <div class="item-footer">
-    {if (isset($item.comment_url))}
-      <a href="{$item.comment_url}">Comments</a>
-      {if (isset($item.comment_rss))}
-        &nbsp;
-        <a href="{$item.comment_rss}">(feed)</a>
-      {/if}
-      <br/>
-    {/if}
-    &nbsp;
-    {* XXX - When showing read items, change this to "mark as unread" *}
-    Mark as read:&nbsp;
-    {* "cbb": checkbox bottom *}
-    <input class="mark-check" type="checkbox" name="cbb-{$item.id}" value="1"/>
-  </div>
+  {* XXX - Move this to the left *}
+  <table class="item-footer">
+    <tr>
+      <td class="bottom-links">
+        {if (isset($item.comment_url))}
+          <a href="{$item.comment_url}">Comments</a>
+          {if (isset($item.comment_rss))}
+            &nbsp;
+            <a href="{$item.comment_rss}">(feed)</a>
+          {/if}
+        {/if}
+      </td>
+      <td class="mark-td">
+        {* XXX - When showing read items, change this to "mark as unread" *}
+        Mark as read:&nbsp;
+        {* "cbb": checkbox bottom *}
+        <input class="mark-check" type="checkbox" name="cbb-{$item.id}" value="1"/>
+      </td>
+    </tr>
+  </table>
 </div>
 {/strip}
