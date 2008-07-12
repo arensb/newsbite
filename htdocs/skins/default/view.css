@@ -243,6 +243,9 @@ input[type="checkbox"].mark-check {
 	border-right-style:	outset;
 	border-color:		navy;
 
+	padding-left:		10px;
+	padding-right:		10px;
+
 	/* Mozilla: */
 	-moz-border-radius-bottomleft:	20px;
 	-moz-border-radius-bottomright:	20px;

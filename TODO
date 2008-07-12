@@ -1,3 +1,4 @@
+- bug: Expand/Collape tool broken.
 - (bug?) Bad HTML in item description/content causes parse errors in
   XMLReader. This is going to crop up a lot, and should be fixed.
 	Worst solution: skip the entire feed, making it unusable until
@@ -189,7 +190,10 @@
   put a list at the bottom of the message.
 - Plugin for XKCD: copy the alt text underneath the image, so you
   don't have to RTFS or "View Properties" to see it.
-- Bookmarklet to find RSS feed for the current page and subscribe to it.
+- Bookmarklet to find RSS feed for the current page and subscribe to
+  it.
+	This needs to be robust enough to handle sloppy HTML pages. So
+  maybe don't want to use XML parser; rather, use regular expressions.
 - Utilities to import/export OPML. See
   http://www.opml.org/spec2
   Examples of subscription lists:
@@ -351,3 +355,10 @@
 	- "default".
 - style: in view.css, can items be put closer to the edge? What's the
   body padding, or whatever?
+- There are a bunch of times when it's handy to parse XML files:
+  reading RSS feeds, importing OPML, parsing HTML pages to find the
+  feeds, etc.
+	Would it be helpful to have a generic function that parses any
+  kind of HTML/XML/XHTML file into a data structure? That could make
+  it simpler to switch from one back-end XML parser to another, if
+  desired.
