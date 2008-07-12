@@ -59,6 +59,14 @@
 {* XXX - Should <div content-panes> be outside everything, so that we
  * can hide _all_ of the item text (but still show the header, grayed
  * out), when marking an item as read?
+
+ * Or better yet: perhaps should just have:
+ *	<item>
+ *	  <summary>...</>
+ *	  <content>...</>
+ *	</item>
+ * and set an attribute on the <item> itself to determine which pane
+ * is displayed.
  *}
   {if ($item.summary == "")}
     {if ($item.content == "")}
@@ -95,27 +103,6 @@
       {/if}
     {else}
       {* Summary, content *}
-      {* XXX - Perhaps a better way to do switching, and which allows
-       * switching panes better:
-       * <div class="content-panes" which="summary">
-       * or
-       * <div class="content-panes" which="content">
-       *
-       * Then, in "style.css":
-       *
-       * .content-panes[which="summary"] .item-summary,
-       * .content-panes[which="content"] .item-content {
-       * 	display:		block;
-       * }
-       * 
-       * .content-panes[which="summary"] .item-content,
-       * .content-panes[which="content"] .item-summary {
-       * 	display:		none;
-       * }
-       *
-       * and the function that toggles between the two can simply use
-       * getAttribute("which") and setAttribute("which", "summary");
-       *}
       <div class="content-panes">
         <div class="item-summary">
           {$item.summary}
@@ -124,24 +111,26 @@
            * <div> and doesn't go overflowing where we don't want it.
            *}
           <br style="clear: both"/>
-          {* XXX - expand-bar and collapse-bar have the same style.
-           * Come up with a name for both, so as not to duplicate.
+          {* XXX - expand-bar and collapse-bar should probaby go all
+           * the way across the <item>. This means they should be
+           * moved up, outside the <div item-{summary,content}>, to be
+           * direct children of the <item>.
            *}
           <div class="expand-bar"
                onclick="javascript:expand(this)">
-            vvv Expand vvv
+            &#x25bc;{* Downward-pointing triangle *}
           </div>
         </div>
         <div class="item-content">
           <div class="collapse-bar"
                onclick="javascript:collapse(this)">
-            ^^^ Collapse ^^^
+            &#x25b2;{* Upward-pointing triangle *}
           </div>
           {$item.content}
           <br style="clear: both"/>
           <div class="collapse-bar"
                onclick="javascript:collapse(this)">
-            ^^^ Collapse ^^^
+            &#x25b2;{* Upward-pointing triangle *}
           </div>
         </div>
       </div>

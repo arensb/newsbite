@@ -44,21 +44,16 @@ function collapse(node)
 		/* Something's wrong. Abort */
 		return;
 
-	/* Find the sibling <div item-content> */
-	for (var sib = container.firstChild;
-	     sib != null;
-	     sib = sib.nextSibling)
-	{
-		if (sib == my_pane)
-		{
-			sib.style.display = "none";
-			continue;
-		}
-		if (sib.className == sib_class)
-		{
-			sib.style.display = "block";
-		}
-	}
+	/* Set the "which" attribute on the pane container. CSS does
+	 * the rest: there are different rules for displaying expanded
+	 * and collapsed articles.
+	 */
+
+	cont_state = container.getAttribute("which");
+	if (cont_state == "summary")
+		container.setAttribute("which", "content");
+	else
+		container.setAttribute("which", "summary");
 }
 
 expand = collapse;

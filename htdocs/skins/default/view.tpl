@@ -21,7 +21,7 @@
 <noscript>
   <link rel="stylesheet" type="text/css" href="skins/{$skin}/style-nojs.css" media="all" />
 </noscript>
-<script type="text/javascript" src="view.js"></script>
+<script type="text/javascript" src="skins/{$skin}/view.js"></script>
 </head>
 <body id="view-body">
 
