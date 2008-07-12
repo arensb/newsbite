@@ -229,9 +229,9 @@ input[type="checkbox"].mark-check {
 
 /* Control box at bottom of item */
 .item-footer {
+	width:			100%;
 	background-color:	navy;
 	color:			cyan;
-	text-align:		right;
 	min-height:		20px;
 
 	border-top-width:	0px;
@@ -242,12 +242,27 @@ input[type="checkbox"].mark-check {
 	border-top-style:	outset;
 	border-right-style:	outset;
 	border-color:		navy;
-	-webkit-border-bottom-left-radius:	20px;
-	-webkit-border-bottom-right-radius:	20px;
+
 	/* Mozilla: */
 	-moz-border-radius-bottomleft:	20px;
 	-moz-border-radius-bottomright:	20px;
+
 	/* Safari: */
+	-webkit-border-bottom-left-radius:	20px;
+	-webkit-border-bottom-right-radius:	20px;
+}
+
+.item-footer a {
+	/* Want links to show up against navy background */
+	color:			cyan;
+}
+
+.item-footer .bottom-links {
+	text-align:		left;
+}
+
+.item-footer .mark-td {
+	text-align:		right;
 }
 
 .item-header input {
