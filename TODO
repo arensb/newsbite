@@ -1,4 +1,3 @@
-- bug: Expand/Collape tool broken.
 - (bug?) Bad HTML in item description/content causes parse errors in
   XMLReader. This is going to crop up a lot, and should be fixed.
 	Worst solution: skip the entire feed, making it unusable until
@@ -264,7 +263,6 @@
   (<description>). Perhaps add a hook after processing <item>, such
   that if there's a <description> but no <content:encoded> or such,
   then move the description to content.
-- Make the "vvv Expand vvv" and "^^^ Collapse ^^^" bars prettier.
 - Keep statistics: keep track of which feeds/groups user reads, how
   often, etc.
 	Keep track of how often a feed is updated. Perhaps can have
@@ -353,8 +351,6 @@
 	- From cookie, otherwise
 	- From option, otherwise
 	- "default".
-- style: in view.css, can items be put closer to the edge? What's the
-  body padding, or whatever?
 - There are a bunch of times when it's handy to parse XML files:
   reading RSS feeds, importing OPML, parsing HTML pages to find the
   feeds, etc.
@@ -362,3 +358,8 @@
   kind of HTML/XML/XHTML file into a data structure? That could make
   it simpler to switch from one back-end XML parser to another, if
   desired.
+- There are Mozilla- and Safari-specific bits in the CSS files. Is it
+  worth adding yet another CSS file, for browser-specific CSS?
+	Might be worth it: IE doesn't appear to support rounded
+  borders, so the left and right padding on Firefox and Safari makes
+  it look weird.
