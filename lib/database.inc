@@ -621,15 +621,26 @@ EOT;
 
 	foreach ($feed['items'] as $item)
 	{
-//echo "Need to update item: [$item[title]]<br/>\n";
-//echo "<pre>\$item: ["; print_r($item); echo "]\n</pre>\n<br/>\n";
 
 		// This query may look long and redundant, but
 		// basically it means:
-
+		//
 		// If this entry doesn't exist yet, create one. If the
 		// entry already exists, update it from the RSS
 		// information.
+		//
+		// The date fields (look for the IFNULL() calls) work
+		// as follows:
+		// When adding a new item, use the pub_date and
+		// last_update given in the RSS feed. If none was
+		// specified, use the current time for both.
+		// When updating an existing item, then update
+		// pub_date and last_update to what it says in the
+		// feed. If it wasn't specified, leave the existing
+		// field unchanged.
+		// This is useful because a lot of RSS feeds don't
+		// include timestamps. But we don't want articles
+		// bubbling up to the last time the feed was fetched.
 
 		// XXX - Unfortunately, this sends the summary and
 		// content to the database twice, which might be
@@ -641,8 +652,10 @@ INSERT INTO	items
 		 comment_url, comment_rss, guid, pub_date,
 		 last_update, is_read)
 VALUES		(?, ?, ?, ?, ?, ?, ?,
-		 ?, ?, ?, FROM_UNIXTIME(?),
-		 FROM_UNIXTIME(?), false)
+		 ?, ?, ?,
+		 IFNULL(FROM_UNIXTIME(?), NOW()),
+		 IFNULL(FROM_UNIXTIME(?), NOW()),
+		 FALSE)
 ON DUPLICATE KEY UPDATE
 		url=?,
 		title=?,
@@ -652,8 +665,8 @@ ON DUPLICATE KEY UPDATE
 		category=?,
 		comment_url=?,
 		comment_rss=?,
-		pub_date=FROM_UNIXTIME(?),
-		last_update=FROM_UNIXTIME(?)
+		pub_date=IFNULL(FROM_UNIXTIME(?), pub_date),
+		last_update=IFNULL(FROM_UNIXTIME(?), pub_date)
 EOT;
 		$stmt = $dbh->prepare($query);
 		$dummy_categories = NULL;	// XXX - Hack until I
@@ -665,28 +678,6 @@ EOT;
 			// This item doesn't have a GUID, so make one.
 			$item['guid'] = $item['url'];
 		}
-
-		/* Make sure the item has a publication time. If the
-		 * item doesn't have one, try to inherit from the feed
-		 * itself. If that fails, use the current time.
-		 */
-		$pub_time = $item['pub_time'];
-		if ($pub_time == 0)
-		{
-			if ($feed['pub_time'] != 0)
-			{
-				$pub_time = $feed['pub_time'];
-			} else {
-				$pub_time = time();
-			}
-		}
-		/* Make sure the item has a build time (last update time).
-		 * If it doesn't have one, use the publication time.
-		 */
-		if (isset($item['build_time']))
-			$build_time = $item['build_time'];
-		else
-			$build_time = $pub_time;
 
 		$stmt->bind_param("dsssssssssdd" .
 				  "ssssssssdd",
@@ -701,8 +692,8 @@ EOT;
 				  $item['comment_url'],
 				  $item['comment_feed'],
 				  $item['guid'],
-				  $pub_time,
-				  $build_time,
+				  $item['pub_time'],
+				  $item['build_time'],
 				  // 'is_read' automatically set to false
 
 				  // Values for updated items
@@ -714,8 +705,8 @@ EOT;
 				  $dummy_categories,	// XXX - Deal with categories
 				  $item['comment_url'],
 				  $item['comment_feed'],
-				  $pub_time,
-				  $build_time
+				  $item['pub_time'],
+				  $item['build_time']
 				  // 'is_read' left unchanged
 			);
 		$err = $stmt->execute();
