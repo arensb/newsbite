@@ -1,3 +1,14 @@
+- bug?: items without a date (e.g., Greta Christina's) seem to
+  percolate to the top and be given a recent date
+	I think this is because, since there's no date in the RSS
+  file, something (database.inc?) gives it today's date by default.
+  This is fine the first time around, but if the item is updated, I
+  think the date gets reset to the current date.
+	Perhaps this can be fixed by setting the date to NULL if it's
+  not specified. Then, in the SQL, set it to today's date if adding a
+  new record, or leave it alone if updating an existing record. (If
+  updating a record, and the item specifies a date, by all means use
+  the newer date.)
 - (bug?) Bad HTML in item description/content causes parse errors in
   XMLReader. This is going to crop up a lot, and should be fixed.
 	Worst solution: skip the entire feed, making it unusable until
@@ -24,6 +35,7 @@
 	* Can add, remove feeds
 	- Documentation for installing
 	- Proper error pages
+	- OPML
 - Makefile:
 	Run tests:
 		php -l <everything>
