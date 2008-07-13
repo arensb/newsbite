@@ -236,6 +236,7 @@ input[type="checkbox"].mark-check {
 	background-color:	#6060ff;
 	color:			white;
 	text-align:		center;
+	cursor:			pointer;
 }
 
 /* Control box at bottom of item */

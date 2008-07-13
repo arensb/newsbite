@@ -68,12 +68,14 @@ $feed['items'] = $items;
 $prev_link = $_SERVER['PHP_SELF'] . "?id=$feed_id&s=" .
 	($start + $num_items);
 $prev_link_text = "Earlier";
+//$prev_link_text = "Earlier &#x2397;";	// With "previous page" symbol
 
-if ($start > $num_items)
+if ($start >= $num_items)
 {
 	$next_link = $_SERVER['PHP_SELF'] . "?id=$feed_id&s=" .
 		($start - $num_items);
 	$next_link_text = "Later";
+//	$next_link_text = "Later &#x2398;";	// With "next page" symbol
 } else {
 	$next_link = $next_link_text = NULL;
 }

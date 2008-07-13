@@ -364,3 +364,4 @@
 	Might be worth it: IE doesn't appear to support rounded
   borders, so the left and right padding on Firefox and Safari makes
   it look weird.
+- In item.tpl, put "Read more" in item-footer.
