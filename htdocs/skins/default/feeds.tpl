@@ -76,5 +76,8 @@
 {* Link to subscribe to a feed *}
 <p><a href="addfeed.php">Add a feed</a></p>
 
+{* OPML management *}
+<p><a href="opml.php">Subscription list as OPML</a></p>
+
 </body>
 </html>
