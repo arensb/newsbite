@@ -41,9 +41,9 @@
       {* Feed title *}
       <a href="view.php?id={$feed_id}">
         {if $feed.nickname != ""}
-          {$feed.nickname}
+          {$feed.nickname|escape}
         {elseif $feed.title != ""}
-          {$feed.title}
+          {$feed.title|escape}
         {else}
           [no&nbsp;title]
         {/if}
@@ -77,7 +77,10 @@
 <p><a href="addfeed.php">Add a feed</a></p>
 
 {* OPML management *}
-<p><a href="opml.php">Subscription list as OPML</a></p>
+<p>
+  <a href="opml.php">Subscription list as OPML</a> |
+  <a href="loadopml.php">Add OPML file</a>
+</p>
 
 </body>
 </html>

@@ -7,6 +7,9 @@
  *	$item - The item to display
  *}
 {strip}
+{* XXX - Perhaps add a 'feed=<feed_id>', so we can have different colors
+ * for different feeds.
+ *}
 <div class="item" id="item-{$item.guid}">
   <table class="item-header">
     <tr>

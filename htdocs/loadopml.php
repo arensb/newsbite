@@ -1,0 +1,107 @@
+<?php
+/* loadopml.php
+ * Load an OPML subscription list.
+ */
+// XXX - Perhaps add an OPML logo somewhere:
+// <a href="http://validator.opml.org/?url=http%3A%2F%2Fwww.ooblick.com%2F~arensb%2Fnewsbite.opml"><img src="http://images.scripting.com/archiveScriptingCom/2005/10/31/valid3.gif" width="114" height="20" border="0" alt="OPML checked by validator.opml.org."></a>
+
+// XXX - Perhaps add a OPML_MAX_SIZE option to config.inc?
+
+require_once("config.inc");
+require_once("database.inc");
+require_once("skin.inc");
+
+if ($_FILES['opml'] == "")
+{
+	/* No file given. Show the form requesting an OPML file. */
+	$skin = new Skin;
+	$skin->display("opml.tpl");
+	exit(0);
+}
+
+$load = $_FILES['opml'];	// Name of OPML file to load
+
+/* Load the file */
+$text = file_get_contents($load['tmp_name']);
+
+/* Parse the file using XML Parser */
+
+/* Initialize parser */
+$xml_parser = xml_parser_create();
+	// XXX - Error-checking
+xml_parser_set_option($xml_parser, XML_OPTION_CASE_FOLDING, false);
+xml_set_element_handler($xml_parser,
+			_opml_element_start,
+			FALSE);
+
+$opml = array();	// Will hold list of subscriptions
+$opml_urls = array();	// URLs found in the subscription list
+
+/* Parse the OPML file. _opml_element_start() adds each <outline>
+ * entry to the $opml array.
+ */
+$err = xml_parse($xml_parser, $text, true);
+	// XXX - Error-checking
+
+$feeds = db_get_feeds();	// Get a list of all feeds
+
+/* Find the feeds we're not already subscribed to, i.e., the ones we
+ * want to subscribe to now.
+ */
+echo "<pre>\n";
+foreach ($opml as $o)
+{
+echo "Checking opml [$o[xmlurl]]\n";
+	/* See whether we're already subscribed to this feed */
+	foreach ($feeds as $f)
+	{
+//		echo "    Comparing against [$f[feed_url]]\n";
+		if ($o['xmlurl'] == $f['feed_url'])
+		{
+echo "    <b>Already subscribed</b>\n";
+			continue 2;
+		}
+	}
+echo "  <i>Subscribing</i>\n";
+
+	/* Add the feed */
+	$err = db_add_feed(array("title"	=> $o['text'],
+				 "feed_url"	=> $o['xmlurl']));
+		// XXX - Error-checking
+}
+echo "</pre>\n";
+
+function _opml_element_start($parser, $fullname, $attrs)
+{
+	global $opml;
+	global $opml_urls;
+
+	// XXX - Would be nice to handle categories at some point.
+	if ($fullname != "outline")
+		// We only care about <outline> elements.
+		return;
+	// Can't skip entries that don't have a type="rss" attribute,
+	// because LJ exports its OPML files with only 'text' and
+	// 'xmlURL'.
+
+	// $entry will be appended to $opml. It's basically $attrs,
+	// but with every attribute normalilzed to lower case, since
+	// different OPML generators use different capitalization
+	$entry = array();
+
+	/* Lowercase all of the attributes */
+	foreach ($attrs as $k => $v)
+	{
+		$entry[strtolower($k)] = $v;
+	}
+
+	/* Make sure there's a feed URL */
+	if ($entry['xmlurl'] == "")
+		// This entry doesn't have a URL. Ignore it.
+		return;
+
+	/* Append the entry and the URL to our lists */
+	$opml[] = $entry;
+	$opml_urls[] = $entry['xmlurl'];
+}
+?>
