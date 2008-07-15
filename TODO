@@ -52,6 +52,8 @@
 - Should be able to specify password for all of livejournal.com, not
   have to specify it separately for every LJ feed.
 	Use parse_url() to get hostname.
+	LJ friends feeds in OPML format:
+  http://www.livejournal.com/tools/opml.bml?user=arensb
 - Tool to import feeds and items from existing Feed on
   Feeds/Monkeychow database.
 - SQL schema should support folders, i.e., user can group feeds into

@@ -427,7 +427,7 @@ echo "Unknown field [$k]<br/>\n";
 		") VALUES (" .
 		implode(",", $values) .
 		")";
-echo "query: [<pre>$query</pre>]\n";
+//echo "query: [<pre>$query</pre>]\n";
 	$stmt = $dbh->prepare($query);
 		// XXX - Error-checking
 	$err = $stmt->execute();
@@ -440,7 +440,7 @@ echo "query: [<pre>$query</pre>]\n";
 		return false;
 	}
 	$feed_id = $dbh->insert_id;
-echo "feed id [$feed_id]<br/>\n";
+//echo "feed id [$feed_id]<br/>\n";
 	$stmt->close();
 
 	// XXX - Call user hooks
