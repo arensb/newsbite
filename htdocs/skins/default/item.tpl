@@ -140,7 +140,6 @@
     {/if}
   {/if}{* item.summary == "" *}
 
-  {* XXX - Move this to the left *}
   <table class="item-footer">
     <tr>
       <td class="bottom-links">
