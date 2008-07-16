@@ -24,7 +24,10 @@
 	* Can add, remove feeds
 	- Documentation for installing
 	- Proper error pages
-	- OPML
+	* OPML
+	- Don't print trace messages
+	- editfeed.php: return to someplace useful
+	- Makefile: build distro
 - Makefile:
 	Run tests:
 		php -l <everything>
@@ -196,10 +199,6 @@
   it.
 	This needs to be robust enough to handle sloppy HTML pages. So
   maybe don't want to use XML parser; rather, use regular expressions.
-- Utilities to import/export OPML. See
-  http://www.opml.org/spec2
-  Examples of subscription lists:
-  http://www.opml.org/guidelinesForValidation
 - LiveJournal plugin should look at the <description> and parse lj
   tags in the body of the item. E.g., expand '<lj:user="foo">' into
   proper HTML.
@@ -337,7 +336,6 @@
   update rarely). The idea is, these rules can define a
   partially-ordered set. It would be cool to use these to determine
   the order in which to display articles.
-- Add a redirect() function to redirect browser to a URL.
 - Rethink how markitems.php works, which arguments it takes. Check
   whichever template calls it (view.tpl and item.tpl?).
 	The easiest, no-JavaScript case is probably the way FoF does
@@ -367,3 +365,21 @@
   borders, so the left and right padding on Firefox and Safari makes
   it look weird.
 - In item.tpl, put "Read more" in item-footer.
+- For nonstandard HTML attributes like which="collapsed", should
+  probably use xmlns:nb="..." and nb:which="collapsed", just to try to
+  be standards-compliant.
+- Name: in "2001", Clarke described a tablet PC that served as a
+  customized newspaper. Did he give it a name?
+	Yes: Newspad
+- Add author to item.tpl (U+2709 == envelope; U+270d == writing hand)
+- Add redirect to unsub.
+- Jira generates wonky RSS.
+	- https://issues.apache.org/
+	- Select 'Jira'
+	- Select a project (e.g., 'mod_python')
+	- Get a list of open bugs
+  The page has "RSS (Issues | Comments)". There's also a
+  '<link rel="alternate"' in the header that points to an RSS 0.92
+  feed. But the two are not identical.
+	The feed from <head> is non-conforming: it contains
+  nonstandard elements.

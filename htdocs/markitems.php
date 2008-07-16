@@ -1,5 +1,6 @@
 <?php
 require_once("config.inc");
+require_once("common.inc");
 require_once("database.inc");
 
 $ok = true;	// Error status. If $ok, then we can just redirect to
@@ -78,7 +79,7 @@ db_mark_items($how, $item_ids);
 if ($ok)
 {
 	/* Redirect back to where we came from */
-	header('Location: ' . $_SERVER['HTTP_REFERER']);
+	redirect_to($_SERVER['HTTP_REFERER']);
 	exit(0);
 }
 ?>

@@ -31,7 +31,7 @@ else {
  */
 function update_feed($feed_id)
 {
-echo "Inside update_feed($feed_id)<br/>\n";
+//echo "Inside update_feed($feed_id)<br/>\n";
 	/* Get the feed from the database */
 	$feed = db_get_feed($feed_id);
 	if (!$feed)
@@ -41,7 +41,7 @@ echo "Inside update_feed($feed_id)<br/>\n";
 		exit(1);
 	}
 echo "<h3>Updating feed [$feed[title]]</h3>\n";
-#print_r($feed);
+//echo "feed: <pre>["; var_dump($feed); echo "]</pre>\n";
 
 	/* Initialize Curl */
 	// XXX - This seems to duplicate _open_curl_handle().
@@ -50,11 +50,11 @@ echo "<h3>Updating feed [$feed[title]]</h3>\n";
 	curl_setopt($ch, CURLOPT_URL, $feed['feed_url']);
 		// Set the URL
 	curl_setopt($ch, CURLOPT_HEADER, FALSE);
-		// Don't give me the header
+		// Give me the header
 	curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
 		// Give me the result; don't print it.
 	curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
-		// Follow redirects, up to 2. Beyond that isbeing
+		// Follow redirects, up to 2. Beyond that is being
 		// unreasonable.
 	curl_setopt($ch, CURLOPT_MAXREDIRS, 2);
 
@@ -63,10 +63,14 @@ echo "<h3>Updating feed [$feed[title]]</h3>\n";
 	// password might have been set to the empty string.
 	if ($feed['username'] != "" || $feed['passwd'] != "")
 	{
+//echo "Using authentication: [$feed[username]:$feed[passwd]]<br/>\n";
 		curl_setopt($ch, CURLOPT_HTTPAUTH, CURLAUTH_ANYSAFE);
 			// Use reasonable security
 		curl_setopt($ch, CURLOPT_USERPWD, "$feed[username]:$feed[passwd]");
 	}
+
+	// Some sites insist on a non-empty user agent
+	curl_setopt($ch, CURLOPT_USERAGENT, "dummy agent");
 
 	/* Fetch the RSS feed */
 	$feed_text = curl_exec($ch);
@@ -324,6 +328,7 @@ echo "Finished (", $pipeline[$i]['feed']['id'], ") [", $pipeline[$i]['feed']['ti
  */
 function _open_curl_handle($url, $username = NULL, $passwd = NULL)
 {
+echo "Opening [$url] [$username] [$passwd]<br/>\n";
 	$ch = curl_init();
 
 	$err = curl_setopt_array(
@@ -345,8 +350,11 @@ function _open_curl_handle($url, $username = NULL, $passwd = NULL)
 	{
 		curl_setopt($ch, CURLOPT_HTTPAUTH, CURLAUTH_ANYSAFE);
 			// Use reasonable security
-		curl_setopt($ch, CURLOPT_USERPWD, "$feed[username]:$feed[passwd]");
+		curl_setopt($ch, CURLOPT_USERPWD, "$username:$passwd");
 	}
+
+	// Some sites insist on a non-empty user agent
+	curl_setopt($ch, CURLOPT_USERAGENT, "dummy agent");
 
 	return $ch;
 }
