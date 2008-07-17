@@ -23,8 +23,13 @@ $PARALLEL_UPDATES = 10;
  */
 define('FEED_CACHE', "/tmp/feed-cache");
 
+/* SMARTY_DIR: where the Smarty classes are. Must end in slash. */
 define('SMARTY_DIR', "/folks/arensb/proj/newsbite/trunk/Smarty/Smarty/");
-define('SMARTY_PATH', "smarty/");
+
+/* SMARTY_PATH: where to find smarty directories: cache and compiled
+ * templates. Must end with slash.
+ */
+define('SMARTY_PATH', "smarty/");	// Relative to htdocs/
 
 /* Default skin */
 define('DEFAULT_SKIN', "default");
