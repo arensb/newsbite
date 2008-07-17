@@ -47,6 +47,27 @@
 <div class="feed-description">{$feed.description}</div>
 {/if}
 
+{* Navigation bar. *}
+{* XXX - Should probably be a template, since it should be identical to
+ * the one below.
+ *}
+<div class="navbar">
+  <span class="earlier">
+    <a href="{$prev_link}">{$prev_link_text}</a>
+  </span>
+  <span class="later">
+    <a href="{$next_link}">{$next_link_text}</a>
+  </span>
+  {* If the only things inside the navbar span are the links, Firefox
+   * and Safari render the navbar as a box of height 0, with the links
+   * dangling underneath. But if we put something, inside it, it will
+   * have the height of the contents.
+   * One problem: if the links are taller than expected, they'll still
+   * overflow the navbar div. CSS positioning sucks.
+   *}
+  &nbsp;
+</div>
+
 <!-- List of items -->
 {if (count($items) > 0)}
 {* XXX - Should have navigation strip:
@@ -61,19 +82,6 @@
 {* This next field says how to mark checked items *}
 {* XXX - When showing read items, change to value="unread"/> *}
 <input type="hidden" name="mark-how" value="read"/>
-
-{* Navigation bar. *}
-{* XXX - Should probably be a template, since it should be identical to
- * the one below.
- *}
-<div class="navbar">
-  <span class="earlier">
-    <a href="{$prev_link}">{$prev_link_text}</a>
-  </span>
-  <span class="later">
-    <a href="{$next_link}">{$next_link_text}</a>
-  </span>
-</div>
 
 {* List of items. Items are displayed using the separate "item.tpl"
  * template

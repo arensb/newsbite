@@ -55,7 +55,6 @@
        *}
       {$counts[$feed_id].unread || 0} unread /
       {$counts[$feed_id].read} read
-      <br/>
       {* Links to places related to the feed *}
       &nbsp;(<a href="{$feed.url}">site</a>)
       &nbsp;(<a href="{$feed.feed_url}">RSS</a>)
