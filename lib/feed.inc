@@ -209,7 +209,7 @@ $feed_errmsg = "";	// Error message
  *				...
  *			),
  *			array( ... ),	// Second post
- *			array( ... ),	// Thir post
+ *			array( ... ),	// Third post
  *			...
  *		),
  * );
@@ -238,6 +238,8 @@ function parse_feed($feed_text)
 {
 	global $feed_err, $feed_errmsg;
 	global $_context;
+
+	$feed_err = 0;		// No error yet
 
 	// This preg_replace_callback is a butt-ugly hack to deal with
 	// the top10 feed: it has constructs of the form
@@ -298,9 +300,11 @@ function parse_feed($feed_text)
 		// XML Parser found an error.
 		$feed_err = 1;
 		$feed_errmsg = xml_error_string(xml_get_error_code($xml_parser));
+echo "<b>XML Parser found an error: [$feed_errmsg]</b><br/>\n";
 		return FALSE;
 	} else	if ($feed_err)
 	{
+echo "<b>Handler found an error</b><br/>\n";
 		// The handlers have found an error.
 		return FALSE;
 	}
@@ -1148,7 +1152,7 @@ function rss_element_handler(
 		break;
 
 	    default:
-		echo "Warning: unknown RSS element: [$elt_name]\n";
+//		echo "Warning: unknown RSS element: [$elt_name]\n";
 		break;
 	}
 

@@ -415,7 +415,6 @@ function _save_handle($handle)
 
 	/* Parse the feed */
 	$feed_id = $handle['feed']['id'];
-//echo "Parsing feed [$feed_id] from [", $handle['feed']['feed_url'], "]<br/>\n";
 
 	/* Save a copy of the feed text for debugging */
 	if (defined("FEED_CACHE") && is_dir(FEED_CACHE))
@@ -428,10 +427,18 @@ function _save_handle($handle)
 		fclose($fh);
 	}
 
+//echo "Parsing feed [$feed_id] from [", $handle['feed']['feed_url'], "]<br/>\n";
 	$feed = parse_feed($feed_text);
 	if (!$feed)
+	{
+echo "parse_feed returned [$feed] ";
+if ($feed === false) echo "(false)";
+if ($feed === null) echo "(null)";
+if ($feed === "") echo "(empty string)";
+echo "<br/>\n";
 		// XXX - Better error-handling
 		return;
+	}
 
 	/* Add the feed to the database */
 	db_update_feed($feed_id, $feed);

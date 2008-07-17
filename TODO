@@ -1,18 +1,7 @@
-- Article with Russian title in Pharyngula. Shows up as ????? in
-  Safari and Firefox. And N810.
-	But only on downspout. Probably an artifact of dumping the
-  database.
-	Looks wrong in Firefox at home. Okay in Safari.
+- bug: "(site)" links from LJ are broken.
 - bug: when on the last page (earliest items) and use "mark all as
   read", get blank page.
-- bug: page is displayed in UTF-8, but may contain ISO-8859 articles
-  (e.g., mcoletti's journal). Ought to convert summary/content before
-  displaying. Or preferably when adding to database.
-	Wait. Or is this an artifact of mysqldump | mysql?
-- bug:
-  - View a feed
-  - go back 25 posts ("Earlier")
-  - If there are no feeds, should show a "Later" link, but doesn't.
+- editfeed.php: return to someplace useful
 - Would be nice to have either "new" flag or a "saved for later" flag.
   The latter is probably more useful.
 	That way, can go through today's stuff fairly quickly, without
@@ -416,6 +405,3 @@
 	- Some feeds don't include publishing or update times.
 	- Some feeds lie and give the current time for every item.
 	  (examples?)
-- Is it necessary/desirable to
-	set character_set_results='utf8';
-  ?

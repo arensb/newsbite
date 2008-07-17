@@ -111,6 +111,7 @@ EOT
  *		'latest_update		=> <time_t>
  *	);
  */
+// XXX - Should accept $feed_id == NULL, to count all items.
 function db_get_feed_counts($feed_id)
 {
 	$dbh = db_connect();
@@ -672,7 +673,7 @@ ON DUPLICATE KEY UPDATE
 		comment_url=?,
 		comment_rss=?,
 		pub_date=IFNULL(FROM_UNIXTIME(?), pub_date),
-		last_update=IFNULL(FROM_UNIXTIME(?), pub_date)
+		last_update=IFNULL(FROM_UNIXTIME(?), last_update)
 EOT;
 		$stmt = $dbh->prepare($query);
 		$dummy_categories = NULL;	// XXX - Hack until I
@@ -720,8 +721,8 @@ EOT;
 		//	0-> duplicate entry (no change)
 		//	1-> new entry
 		//	2-> updated entry
-//if ($err != 11)
-//echo "<b>stmt-&gt;execute returned [$err]</b><br/>\n";
+$nrows = $stmt->affected_rows;
+echo "[$nrows] [$item[title]]<br/>\n";
 		// XXX - Error-checking
 		if ($err)
 			;// echo "OK (", print_r($err), ") errno ", $dbh->errno, ", error [", $dbh->error, "]<br/>\n";
