@@ -5,7 +5,7 @@
  */
 require_once("config.inc");
 
-$dbh = NULL;		# Database handle
+$dbh = NULL;		// Database handle
 
 /* db_connect
  * Connect to the database if necessary. Return a handle to the
@@ -16,17 +16,22 @@ function db_connect()
 	global $dbh;
 	global $DB_HOST, $DB_USER, $DB_PASS, $DB_NAME;
 
-	# If there's already a database handle, use that.
+	// If there's already a database handle, use that.
 	if (isset($dbh))
 		return $dbh;
 
-	# Create a new connection
+	// Create a new connection
 	$dbh = new mysqli($DB_HOST, $DB_USER, $DB_PASS, $DB_NAME);
 	if (mysqli_connect_errno())
 	{
 		printf("Connect failed: %s<br/>\n", mysqli_connect_error());
 		exit();
 	}
+
+	/* Explicitly set the character set */
+	// XXX - There's probably a better way to do this.
+	$dbh->set_charset('utf8');
+
 	return $dbh;
 }
 
@@ -38,7 +43,7 @@ function db_disconnect()
 	global $dbh;
 
 	if (!isset($dbh))
-		# Already disconnected.
+		// Already disconnected.
 		return;
 
 	$dbh->close();
@@ -333,17 +338,18 @@ function db_get_some_feed_items(/* varargs */)
 	}
 
 	/* Specify order in query */
+	// XXX - How should this work with last_update?
 	switch ($args['order'])
 	{
 	    case "date_asc":
-		$query .= "ORDER BY last_update ASC\n";
+		$query .= "ORDER BY pub_date ASC\n";
 		break;
 	    case "date_desc":
 	    default:
 		// XXX - This fall-through means we don't notice bogus
 		// values. Then again, we can probably trust the
 		// caller.
-		$query .= "ORDER BY last_update DESC\n";
+		$query .= "ORDER BY pub_date DESC\n";
 		break;
 	}
 

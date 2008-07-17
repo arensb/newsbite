@@ -1,7 +1,7 @@
 - Install the required software and modules:
 	- PHP 5.x (might work with earlier versions)
-	- PHP Curl
-	- PHP SimpleXML
+	- PHP Curl module
+	- PHP XML Reader module
 	- MySQL (tested with 5.0)
 	- Smarty (bundled with this package)
 	- Web server (tested with Apache 2.2)
@@ -18,6 +18,24 @@
 	% mysql -uDBA newsbite < schema.sql
 	(Replace "DBA" with whatever your DBA account is.)
 
+- Unpack the newsbite tarball
+- Unpack the Smarty tarball.
+
+- Copy the "htdocs" directory to someplace under DocumentRoot.
+
+- Copy the "lib" directory to someplace. Preferably outside of
+  DocumentRoot. But if you're lazy, it can be "htdocs/lib".
+
+- Install Smarty somewhere, preferably outside of DocumentRoot.
+  - Can move "htdocs/smarty/" someplace else. In that case, edit
+  SMARTY_DIR in "lib/config.inc".
+
 - Edit "config.inc":
 	- Fill in database access parameters.
 	- Set $SMARTY_DIR to the directory containing "Smarty.class.php".
+
+- Edit htdocs/.htaccess, and change "./lib" to wherever you put the
+  "lib" directory.
+
+- Make sure "htdocs/smarty/cache" and "htdocs/smarty/templates_c" are
+  writable by the user that Apache runs as.
