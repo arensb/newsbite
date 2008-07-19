@@ -25,18 +25,10 @@
 </head>
 <body id="view-body">
 
-{if (isset($feed.image))}
+{if ($feed.image != "")}
 <img class="feed-icon" src="{$feed.image}"/>
 {/if}
 
-{* XXX - Make this prettier *}
-<ul class="feed-tools">
-  <li><a href="index.php">Feed index</a></li>
-  <li><a href="editfeed.php?id={$feed.id}">Edit feed</a></li>
-  <li><a href="unsubscribe.php?id={$feed.id}">Unsubscribe from feed</a></li>
-</ul>
-
-{* XXX - Link to edit feed/feed options *}
 {strip}
 <h1>
   {if ($feed.url == "")}
@@ -53,6 +45,14 @@
 {if $feed.description != ""}
 <div class="feed-description">{$feed.description}</div>
 {/if}
+
+{strip}
+<ul class="feed-tools">
+  <li><a href="index.php">Feed index</a></li>
+  <li><a href="editfeed.php?id={$feed.id}">Edit feed</a></li>
+  <li><a href="unsubscribe.php?id={$feed.id}">Unsubscribe from feed</a></li>
+</ul>
+{/strip}
 
 {* Navigation bar. *}
 {* XXX - Should probably be a template, since it should be identical to

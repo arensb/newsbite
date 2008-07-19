@@ -27,11 +27,47 @@ h1 a {
 
 /* Descriptive blurb about the feed */
 .feed-description {
+	margin:			1em;
+	padding:		0.5em;
 	border:			1px solid orange;
 	background-color:	yellow;
 }
 
 /***** view ************************************/
+
+.feed-tools {
+	margin-top:		1em;
+	margin-bottom:		1em;
+	padding-left:		1em;
+	padding-top:		0px;;
+	padding-bottom:		0.2em;
+}
+
+.feed-tools li {
+	display:		inline;
+	background-color:	#e0e0e0;
+}
+
+.feed-tools a {
+	text-decoration:	none;
+}
+
+.feed-tools li:before {
+	content:		" | ";
+}
+
+.feed-tools li:first-child {
+	padding-left:		0.3em;
+}
+
+.feed-tools li:first-child:before {
+	content:		"";
+}
+
+.feed-tools li:last-child {
+	padding-right:		0.3em;
+}
+
 /* navbar
  * Navigation bar, for going to earlier, later items.
  */
