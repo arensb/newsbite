@@ -258,7 +258,7 @@ function parse_feed($feed_text)
 	// XXX - Come up with a better way of dealing with this.
 	$feed_text = preg_replace_callback('{<description>(.*?)</description>}s',
 					   create_function('$matches',
-							   'if (substr($matches[1], 0, 9) == "<![CDATA[")
+							   'if (preg_match("/^\s*<!\[CDATA\[.*\]\]>\s*$/s", $matches[1]))
 					// Properly escpaed
 					return $matches[0];
 			       if (strpbrk($matches[1], "<>"))
