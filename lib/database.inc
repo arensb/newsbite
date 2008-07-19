@@ -542,18 +542,18 @@ function db_update_feed_info($feed_id, $fields)
 	    $fields['image']['url'] != $old['image'])
 		// Image associated with the site
 		$updates[] = "image = '" .
-			$dbh->real_escape_string($feed['image']['url']) .
+			$dbh->real_escape_string($fields['image']['url']) .
 			"'";
 
 	if (array_key_exists('last_update', $fields) &&
 	    $fields['last_update'] != $old['last_update'])
 		// Last update (time_t)
-		$updates[] = sprintf("last_update = %ld", $feed['last_update']);
+		$updates[] = sprintf("last_update = %ld", $fields['last_update']);
 
 	if (array_key_exists('ttl', $fields) &&
 	    $fields['ttl'] != $old['ttl'])
 		// Time to live (seconds)
-		$updates[] = sprintf("ttl = %ld", $feed['ttl']);
+		$updates[] = sprintf("ttl = %ld", $fields['ttl']);
 
 	/* Update the database, if necessary */
 	if (count($updates) > 0)
