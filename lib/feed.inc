@@ -881,6 +881,7 @@ function rss_element_handler(
 		switch ($parent)
 		{
 		    case "image":
+echo "Found image url [$children]<br/>\n";
 			$retval[$elt_name] = $children;
 			break;
 		    default:

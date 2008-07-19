@@ -15,11 +15,8 @@ $feed_id = $_REQUEST['id'];		// ID of feed to show
 /* Make sure $feed_id is an integer */
 if (is_numeric($feed_id) && is_integer($feed_id+0))
 	$feed_id = (int) $feed_id;
-else {
-	// XXX - Abort more gracefully
-	echo "<p>Error: invalid feed ID.</p>\n";
-	exit(0);
-}
+else
+	abort("Invalid feed ID: $feed_id");
 
 /* Has confirmation been given? */
 $confirm = $_REQUEST['confirm'];
@@ -41,12 +38,8 @@ if ($confirm == "yes")
 // We've already established above that $feed_id is numeric
 $feed_info = db_get_feed($feed_id);
 if ($feed_info === NULL)
-{
 	/* No such feed. Abort */
-	// XXX - Better error-reporting
-	echo "<p>No such feed</p>\n";
-	exit(0);
-}
+	abort("No such feed: $feed_id.");
 
 $skin = new Skin();
 

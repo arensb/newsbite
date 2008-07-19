@@ -1,6 +1,7 @@
 # Variables
 PROJECT =	newsbite
-VERSION =	0.1.3
+VERSION =	0.1.4
+DISTNAME =	${PROJECT}-${VERSION}
 
 # Commands
 TAR =	tar
@@ -12,13 +13,17 @@ all:
 
 dist:
 	if [ ! -d dist ]; then mkdir dist; fi
-	if [ ! -d dist/"${PROJECT}-${VERSION}" ]; then \
-		mkdir dist/"${PROJECT}-${VERSION}"; \
+	if [ ! -d dist/"${DISTNAME}" ]; then \
+		mkdir dist/"${DISTNAME}"; \
 	fi
 	${TAR} cnf - `cat MANIFEST` | \
-		(cd dist/"${PROJECT}-${VERSION}"; tar xBpf -)
-	(cd dist; tar cvf - "${PROJECT}-${VERSION}") | \
-		${GZIP} --best > "${PROJECT}-${VERSION}.tar.gz"
+		(cd dist/"${DISTNAME}"; tar xBpf -)
+	chgrp www "dist/${DISTNAME}/htdocs/smarty/cache" \
+		"dist/${DISTNAME}/htdocs/smarty/templates_c"
+	chmod g+w "dist/${DISTNAME}/htdocs/smarty/cache" \
+		"dist/${DISTNAME}/htdocs/smarty/templates_c"
+	(cd dist; tar cvf - "${DISTNAME}") | \
+		${GZIP} --best > "${DISTNAME}.tar.gz"
 
 clean::
 	rm -r dist

@@ -5,6 +5,7 @@
 // XXX - Move the guts of this file to a separate .inc file, so that a
 // newly-added feed can be automatically updated.
 require_once("config.inc");
+require_once("common.inc");
 require_once("database.inc");
 require_once("feed.inc");
 
@@ -19,8 +20,8 @@ echo "<p><a href=\"view.php?id=$feed_id\">Read feed</a></p>\n";
 	update_all_feeds();
 echo "<p><a href=\"view.php?id=$feed_id\">Read feeds</a></p>\n";
 } else {
-	// XXX - Abort with an error message.
-	echo "Invalid feed id: [$feed_id]\n";
+	/* Abort with an error message */
+	abort("Invalid feed ID: $feed_id");
 }
 
 // XXX - Move the HTTP-fetching stuff to a separate function, so that
@@ -44,11 +45,8 @@ function update_feed($feed_id)
 	/* Get the feed from the database */
 	$feed = db_get_feed($feed_id);
 	if (!$feed)
-	{
-		// XXX - Better error-reporting
-		echo "No such feed: $feed_id<br/>\n";
-		exit(1);
-	}
+		abort("No such feed: $feed_id.");
+
 echo "<h3>Updating feed [$feed[title]]</h3>\n";
 //echo "feed: <pre>["; var_dump($feed); echo "]</pre>\n";
 
