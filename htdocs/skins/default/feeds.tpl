@@ -23,12 +23,15 @@
 
 <h1>Feeds</h1>
 
-<div class="tools">
-  <a href="update.php?id=all">Update all feeds</a>
-</div>
-
-{* Link to show all feeds *}
-<p><a href="view.php?id=all">View all feeds</a></p>
+{strip}
+<ul class="tools">
+  <li><a href="update.php?id=all">Update all feeds</a></li>
+  <li><a href="view.php?id=all">View all feeds</a></li>
+  <li><a href="addfeed.php">Add a feed</a></li>
+  <li><a href="opml.php">Subscription list as OPML</a></li>
+  <li><a href="loadopml.php">Add OPML file</a></li>
+</ul>
+{/strip}
 
 <table id="feeds">
 {foreach from=$feeds item=feed}
@@ -71,15 +74,6 @@
 {/strip}
 {/foreach}
 </table>
-
-{* Link to subscribe to a feed *}
-<p><a href="addfeed.php">Add a feed</a></p>
-
-{* OPML management *}
-<p>
-  <a href="opml.php">Subscription list as OPML</a> |
-  <a href="loadopml.php">Add OPML file</a>
-</p>
 
 </body>
 </html>

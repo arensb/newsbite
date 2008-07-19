@@ -32,9 +32,9 @@
 {strip}
 <h1>
   {if ($feed.url == "")}
-    {$feed.title}
+    {$feed.title|escape}
   {else}
-    <a href="{$feed.url}">{$feed.title}</a>
+    <a href="{$feed.url}">{$feed.title|escape}</a>
   {/if}
 </h1>
 {if $feed.subtitle != ""}
