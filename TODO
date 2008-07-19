@@ -1,19 +1,18 @@
-- bug: "(site)" links from LJ are broken.
+- bug: When updates take too long, PHP terminates. 30 sec. max.
 - bug: when on the last page (earliest items) and use "mark all as
-  read", get blank page.
+  read", sometimes get blank page.
+	Is this just the N810 browser being wonky?
+- Should be able to read read and unread articles.
 - editfeed.php: return to someplace useful
-- Would be nice to have either "new" flag or a "saved for later" flag.
-  The latter is probably more useful.
-	That way, can go through today's stuff fairly quickly, without
-  having to scroll through messages you've already seen.
 - item.tpl: Show both pub_time and last_update, at least for debugging.
 - Date box in default skin: pretty, but the prettiness doesn't
   outweigh usefulness. Switch to a more conventional date display.
   Show year.
 - Limit size of articles (to one N810 screenful?)
-- view.tpl: should have link to index.php
-- feeds.tpl: put one feed per line. More compact, easier N810
-  navigation.
+- Would be nice to have either "new" flag or a "saved for later" flag.
+  The latter is probably more useful.
+	That way, can go through today's stuff fairly quickly, without
+  having to scroll through messages you've already seen.
 - (bug?) Bad HTML in item description/content causes parse errors in
   XMLReader. This is going to crop up a lot, and should be fixed.
 	Worst solution: skip the entire feed, making it unusable until
@@ -385,7 +384,6 @@
   customized newspaper. Did he give it a name?
 	Yes: Newspad
 - Add author to item.tpl (U+2709 == envelope; U+270d == writing hand)
-- Add redirect to unsub.
 - Jira generates wonky RSS.
 	- https://issues.apache.org/
 	- Select 'Jira'

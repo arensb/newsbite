@@ -47,6 +47,16 @@
   {/if}
 
   <tr>
+    <th>Site URL</th>
+    <td><span class="url"><a href="{$feed.url}">{$feed.url}</a></span></td>
+  </tr>
+
+  <tr>
+    <th>Feed URL</th>
+    <td><span class="url"><a href="{$feed.feed_url}">{$feed.feed_url}</a></span></td>
+  </tr>
+
+  <tr>
     <td colspan="2">
       Check here if you really want to unsubscribe:&nbsp;
       <input type="checkbox" name="confirm" value="yes"/>

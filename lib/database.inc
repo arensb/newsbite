@@ -82,6 +82,7 @@ EOT;
 
 /* db_get_feed
  * Fetch the database record for a single feed, specified by its ID.
+ * Returns NULL in case of error.
  */
 function db_get_feed($id)
 {

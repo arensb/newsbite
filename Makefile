@@ -1,6 +1,6 @@
 # Variables
 PROJECT =	newsbite
-VERSION =	0.1.1
+VERSION =	0.1.3
 
 # Commands
 TAR =	tar

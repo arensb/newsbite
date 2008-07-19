@@ -3,6 +3,7 @@
  * Edit the user-settable parameters on a feed.
  */
 require_once("config.inc");
+require_once("common.inc");
 require_once("database.inc");
 require_once("skin.inc");
 
@@ -56,13 +57,6 @@ function show_form($feed_id)
 
 function update_feed_info($feed_id)
 {
-//	echo "<p>I ought to update this feed</p>\n";
-	// XXX - Get values that can be updated:
-	// - nickname
-	// - url
-	// - feed_url
-	// - username
-	// - passwd
 	// XXX - Check values
 
 	/* Build an assoc of new values */
@@ -74,15 +68,15 @@ function update_feed_info($feed_id)
 	$new['feed_url'] = stripcslashes($_REQUEST['feed_url']);
 	$new['username'] = stripcslashes($_REQUEST['username']);
 	$new['passwd']   = stripcslashes($_REQUEST['password']);
-echo "new: [<pre>"; print_r($new); echo "</pre>]<br/>\n";
 
 	// XXX - Perhaps try to fetch the feed if the feed URL,
 	// username, or password has changed?
 
-	// XXX - For testing, don't allow "xxx" in any of these
-	// values.
 	$ok = true;
 	$errors = array();
+/*
+	// XXX - For testing, don't allow "xxx" in any of these
+	// values.
 	if (strstr($new['nickname'], "xxx"))
 	{
 		$ok = false;
@@ -108,11 +102,11 @@ echo "new: [<pre>"; print_r($new); echo "</pre>]<br/>\n";
 		$ok = false;
 		$errors['passwd'] = "Can't have xxx in password.";
 	}
+*/
 
 	if (!$ok)
 	{
 		$feed_info = db_get_feed($feed_id);
-echo "feed_info: <pre>["; print_r($feed_info); echo "]</pre>\n";
 			// XXX - Abort if no such feed
 
 		/* Insert the supplied values into $feed_info, so
@@ -142,5 +136,6 @@ echo "feed_info: <pre>["; print_r($feed_info); echo "]</pre>\n";
 
 	// XXX - Redirect to someplace interesting. Like maybe
 	// view.php?id=$feed_id, or index.php
+	redirect_to("view.php?id=$feed_id");
 }
 ?>
