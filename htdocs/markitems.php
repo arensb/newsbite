@@ -15,8 +15,7 @@ elseif (isset($_REQUEST['mark-all']))
 	// Mark all items as read
 	$cmd = "mark-all";
 else
-	// XXX - Abort with an error message
-	exit(0);
+	abort("Bad command: \"$cmd\"");
 
 $mark_how = $_REQUEST['mark-how'];
 

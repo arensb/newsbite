@@ -3,6 +3,7 @@
  * Display a feed.
  */
 require_once("config.inc");
+require_once("common.inc");
 require_once("database.inc");
 require_once("skin.inc");
 
@@ -12,11 +13,8 @@ if (is_numeric($feed_id) && is_integer($feed_id+0))
 	$feed_id = (int) $feed_id;
 elseif ($feed_id == "all")
 	;
-else {
-	// XXX - Abort more gracefully
-	echo "<p>Error: invalid feed ID.</p>\n";
-	exit(0);
-}
+else
+	abort("Invalid feed ID: \"$feed_id\".");
 
 $start = $_REQUEST['s'];		// Skip first $start items
 /* Make sure $feed_id is an integer */
@@ -36,12 +34,8 @@ if ($feed_id == "all")
 	$feeds = db_get_feeds();
 } else {
 	$feed = db_get_feed($feed_id);
-	if (!$feed)
-	{
-		// XXX - Abort more gracefully
-		echo "No such feed: $feed_id<br/>\n";
-		exit(0);
-	}
+	if ($feed === NULL)
+		abort("No such feed: $feed_id.");
 }
 
 $num_items = 25;		// How many items to show
