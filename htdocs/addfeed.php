@@ -5,6 +5,7 @@
 // XXX - Should accept OPML file.
 // XXX - There should be a bookmarklet for this
 require_once("config.inc");
+require_once("common.inc");
 require_once("database.inc");
 require_once("skin.inc");
 
@@ -16,7 +17,6 @@ require_once("skin.inc");
 
 $feed_url = $_REQUEST['feed_url'];
 	// XXX - Probably needs to be escaped. Can there be quotes in URLs?
-echo "feed_url == [$feed_url]<br/>\n";
 
 if (isset($feed_url))
 {
@@ -26,6 +26,10 @@ if (isset($feed_url))
 		);
 		// XXX - Error-checking
 	// XXX - Refresh the new feed, to get info and new articles
+
+	/* Redirect to the index page */
+	// XXX - Is there a better place to redirect to? */
+	redirect_to("index.php");
 	exit(0);
 }
 

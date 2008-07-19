@@ -3,8 +3,10 @@
  */
 
 body#view-body {
-	margin-left:		2px;
-	margin-right:		2px;
+	margin-top:		0px;
+	margin-left:		0px;
+	margin-right:		0px;
+	margin-bottom:		0px;
 }
 
 h1 a {
@@ -65,7 +67,8 @@ h1 a {
 /* Overall box containing an item */
 .item {
 	margin-top:		2em;
-	margin-left:		0px;
+	margin-left:		2px;
+	margin-right:		2px;
 	clear:			both;
 }
 

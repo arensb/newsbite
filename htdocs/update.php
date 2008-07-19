@@ -1,4 +1,9 @@
 <?
+/* update.php
+ * Update one feed, or all feeds.
+ */
+// XXX - Move the guts of this file to a separate .inc file, so that a
+// newly-added feed can be automatically updated.
 require_once("config.inc");
 require_once("database.inc");
 require_once("feed.inc");
@@ -6,10 +11,14 @@ require_once("feed.inc");
 $feed_id = $_REQUEST["id"];
 
 if (is_numeric($feed_id) && is_int($feed_id+0))
+{
 	update_feed($feed_id);
-elseif ($feed_id == "all")
+echo "<p><a href=\"view.php?id=$feed_id\">Read feed</a></p>\n";
+} elseif ($feed_id == "all")
+{
 	update_all_feeds();
-else {
+echo "<p><a href=\"view.php?id=$feed_id\">Read feeds</a></p>\n";
+} else {
 	// XXX - Abort with an error message.
 	echo "Invalid feed id: [$feed_id]\n";
 }

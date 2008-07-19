@@ -29,6 +29,13 @@
 <img class="feed-icon" src="{$feed.image}"/>
 {/if}
 
+{* XXX - Make this prettier *}
+<ul class="feed-tools">
+  <li><a href="index.php">Feed index</a></li>
+  <li><a href="editfeed.php?id={$feed.id}">Edit feed</a></li>
+  <li><a href="unsubscribe.php?id={$feed.id}">Unsubscribe from feed</a></li>
+</ul>
+
 {* XXX - Link to edit feed/feed options *}
 {strip}
 <h1>
