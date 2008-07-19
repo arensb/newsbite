@@ -3,7 +3,6 @@
   read", sometimes get blank page.
 	Is this just the N810 browser being wonky?
 - Should be able to read read and unread articles.
-- editfeed.php: return to someplace useful
 - item.tpl: Show both pub_time and last_update, at least for debugging.
 - Date box in default skin: pretty, but the prettiness doesn't
   outweigh usefulness. Switch to a more conventional date display.
@@ -41,8 +40,8 @@
 	- Proper error pages
 	* OPML
 	- Don't print trace messages
-	- editfeed.php: return to someplace useful
-	- Makefile: build distro
+	* editfeed.php: return to someplace useful
+	* Makefile: build distro
 	- Remove private values from config.inc
 - Makefile:
 	Run tests:
@@ -403,3 +402,4 @@
 	- Some feeds don't include publishing or update times.
 	- Some feeds lie and give the current time for every item.
 	  (examples?)
+- Should probably combine "edit feed" and "unsubscribe from feed".

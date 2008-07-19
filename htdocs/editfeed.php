@@ -30,9 +30,7 @@ switch ($cmd)
 	break;
 
     default:
-	// XXX - Better error-reporting
-	echo "<p>Error: invalid action [$cmd]</p>\n";
-	exit(0);
+	abort("Invalid action.");
 }
 exit(0);
 
@@ -55,8 +53,6 @@ function show_form($feed_id)
 
 function update_feed_info($feed_id)
 {
-	// XXX - Check values
-
 	/* Build an assoc of new values */
 	$new = array();
 	// I'm not sure why or how $_REQUEST values acquire
@@ -133,8 +129,7 @@ function update_feed_info($feed_id)
 	db_update_feed_info($feed_id, $new);
 		// XXX - Error-checking
 
-	// XXX - Redirect to someplace interesting. Like maybe
-	// view.php?id=$feed_id, or index.php
+	/* Redirect to the feed view page */
 	redirect_to("view.php?id=$feed_id");
 }
 ?>

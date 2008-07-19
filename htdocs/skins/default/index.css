@@ -12,12 +12,6 @@ table#feeds .icon-col {
 	width:			32px;
 }
 
-.tools {
-	background-color:	yellow;
-	border:			1px solid orange;
-	margin-bottom:		1em;
-}
-
 table#feeds tr {
 	border:		1px dotted black;
 }
@@ -33,4 +27,40 @@ table#feeds tr.even-row {
 
 table#feeds tr td {
 /*	border:		1px dashed red;*/
+}
+
+
+.tools {
+outline:	1px solid orange;
+	margin-top:		1em;
+	margin-bottom:		1em;
+	margin-left:		1em;
+	padding-left:		0em;
+	padding-top:		0px;
+	padding-bottom:		0.2em;
+}
+
+.tools li {
+	display:		inline;
+	background-color:	#e0e0e0;
+}
+
+.tools a {
+	text-decoration:	none;
+}
+
+.tools li:before {
+	content:		" | ";
+}
+
+.tools li:first-child {
+	padding-left:		0.3em;
+}
+
+.tools li:first-child:before {
+	content:		"";
+}
+
+.tools li:last-child {
+	padding-right:		0.3em;
 }
