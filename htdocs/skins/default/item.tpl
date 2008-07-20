@@ -107,14 +107,18 @@
 
   <table class="item-footer">
     <tr>
-      <td class="bottom-links">
-        {if (isset($item.comment_url))}
-          <a href="{$item.comment_url}">Comments</a>
-          {if (isset($item.comment_rss))}
-            &nbsp;
-            <a href="{$item.comment_rss}">(feed)</a>
+      <td class="bottom-link-box">
+        <ul class="bottom-links">
+          {if $item.summary != "" && $item.content == "" && $item.url != ""}
+            <li><a href="{$item.url}">Read more</a></li>
           {/if}
-        {/if}
+          {if (isset($item.comment_url))}
+            <li><a href="{$item.comment_url}">Comments</a></li>
+          {/if}
+          {if (isset($item.comment_rss))}
+            <li><a href="{$item.comment_rss}">(feed)</a></li>
+          {/if}
+        </ul>
       </td>
       <td class="mark-td">
         {* XXX - When showing read items, change this to "mark as unread" *}

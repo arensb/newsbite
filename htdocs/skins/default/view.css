@@ -311,8 +311,34 @@ input[type="checkbox"].mark-check {
 	color:			cyan;
 }
 
-.item-footer .bottom-links {
+/* .bottom-link box: <td> that contains .bottom-links (see below) */
+.item-footer .bottom-link-box {
 	text-align:		left;
+}
+
+/* .bottom-links: the <li> containing the links at the bottom of each
+ * item.
+ */
+.item-footer .bottom-links {
+	padding:		0px;
+	list-style-position:	inside;
+	list-style-type:	none;
+	margin-top:	0px;
+	margin-bottom:	0px;
+}
+
+.item-footer .bottom-links li {
+	display:		inline;
+margin-top:	0px;
+margin-bottom:	0px;
+}
+
+.item-footer .bottom-links li:first-child:before {
+	content:		"";
+}
+
+.item-footer .bottom-links li:before {
+	content:		" | "
 }
 
 .item-footer .mark-td {
