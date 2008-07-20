@@ -11,6 +11,11 @@
  * for different feeds.
  *}
 <div class="item" id="item-{$item.guid}">
+  {* This hidden field just lists the ID of an item that was displayed,
+   * so that we can mark it with the "Mark all read" button.
+   *}
+  <input type="hidden" name="item-{$item.id}" value=""/>
+
   <table class="item-header">
     <tr>
       <td class="info">
