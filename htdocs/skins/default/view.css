@@ -2,7 +2,7 @@
  * Feed view
  */
 
-body#view-body {
+body {
 	margin-top:		0px;
 	margin-left:		0px;
 	margin-right:		0px;
@@ -134,9 +134,11 @@ h1 a {
 	border-top-style:	outset;
 	border-right-style:	outset;
 	border-color:		navy;
+
 	/* Mozilla: */
 	-moz-border-radius-topleft:	20px;
 	-moz-border-radius-topright:	20px;
+
 	/* Safari: */
 	-webkit-border-top-left-radius:		20px;
 	-webkit-border-top-right-radius:	20px;
@@ -184,7 +186,6 @@ h1 a {
 .item-header .info {
 	padding-left:		0.5em;
 	padding-right:		0.5em;
-/*	border-left:		2px solid LightBlue;*/
 	border-right:		2px solid LightBlue;
 }
 
@@ -207,19 +208,34 @@ input[type="checkbox"].mark-check {
 	height:			1.2em;
 }
 
-/* The next two rules are for toggling between expanded and collapsed
+/* The next few rules are for toggling between expanded and collapsed
  * articles: the "item.tpl" and "item.js" set the <item which="...">
  * attribute to either "summary" or "content". This CSS determines
  * what to display in each case.
  */
+.content-panes[collapsible="no"] .expand-bar,
+.content-panes[collapsible="no"] .collapse-bar {
+	display:		none ! important;
+}
+
 .content-panes[which="summary"] .item-summary,
-.content-panes[which="content"] .item-content {
+.content-panes[which="summary"] .expand-bar {
 	display:		block;
 }
 
 .content-panes[which="summary"] .item-content,
-.content-panes[which="content"] .item-summary {
+.content-panes[which="summary"] .collapse-bar {
 	display:		none;
+}
+
+.content-panes[which="content"] .item-summary,
+.content-panes[which="content"] .expand-bar {
+	display:		none;
+}
+
+.content-panes[which="content"] .item-content,
+.content-panes[which="content"] .collapse-bar {
+	display:		block;
 }
 
 /* Summary of item */
@@ -243,12 +259,23 @@ input[type="checkbox"].mark-check {
  */
 .expand-bar,
 .collapse-bar {
-	width:			100%;
-	height:			1.0em;
+	padding:		0px;
+	line-height:		1.1em;
 	background-color:	#6060ff;
 	color:			white;
 	text-align:		center;
 	cursor:			pointer;
+	margin-top:		0px;
+	margin-bottom:		0px;
+
+	border-top-width:	0px;
+	border-left-width:	2px;
+	border-right-width:	2px;
+	border-bottom-width:	2px;
+	border-left-style:	outset;
+	border-top-style:	outset;
+	border-right-style:	outset;
+	border-color:		navy;
 }
 
 /* Control box at bottom of item */
@@ -290,10 +317,6 @@ input[type="checkbox"].mark-check {
 
 .item-footer .mark-td {
 	text-align:		right;
-}
-
-.item-header input {
-/*	-moz-appearance:	radio;*/
 }
 
 /***** items ************************************/
