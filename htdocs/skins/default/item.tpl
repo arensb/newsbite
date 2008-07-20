@@ -34,6 +34,12 @@
             </a>
           </h3>
         {/if}
+        {if $item.author != ""}
+          {* XXX - If ever add email address:
+           * U+2709 == envelope; U+270d == writing hand
+           *}
+          <p class="item-author">by {$item.author|escape}</p>
+        {/if}
       </td>
       <td class="icon-box">
 {* XXX - Do something with categories *}

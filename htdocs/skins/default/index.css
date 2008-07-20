@@ -21,17 +21,10 @@ table#feeds tr.odd-row {
 }
 
 table#feeds tr.even-row {
-/*	background-color:	white;*/
 	background-color:	inherit;
 }
 
-table#feeds tr td {
-/*	border:		1px dashed red;*/
-}
-
-
 .tools {
-outline:	1px solid orange;
 	margin-top:		1em;
 	margin-bottom:		1em;
 	margin-left:		1em;
