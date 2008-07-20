@@ -323,14 +323,12 @@ input[type="checkbox"].mark-check {
 	padding:		0px;
 	list-style-position:	inside;
 	list-style-type:	none;
-	margin-top:	0px;
-	margin-bottom:	0px;
+	margin-top:		0px;
+	margin-bottom:		0px;
 }
 
 .item-footer .bottom-links li {
 	display:		inline;
-margin-top:	0px;
-margin-bottom:	0px;
 }
 
 .item-footer .bottom-links li:first-child:before {
