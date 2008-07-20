@@ -13,18 +13,6 @@
 <div class="item" id="item-{$item.guid}">
   <table class="item-header">
     <tr>
-      <td class="date-box">
-      {* This hidden field just lists the ID of an item that was displayed,
-       * so that we can mark it with the "Mark all read" button.
-       *}
-      <input type="hidden" name="item-{$item.id}" value=""/>
-      {* XXX - This should probably include the year somewhere *}
-        <ul>
-          <li class="day">{$item.pub_date|date_format:"%e"}</li>
-          <li class="mon">{$item.pub_date|date_format:"%b"}</li>
-          <li class="time">{$item.pub_date|date_format:"%H:%M:%S"}</li>
-        </ul>
-      </td>
       <td class="info">
         <h3 class="item-title">
           <a href="{$item.url}">

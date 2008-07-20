@@ -94,7 +94,12 @@
  * template
  *}
 {foreach from=$items item=i}
+  {assign var="date" value=$i.pub_date|date_format:"%d %b, %Y"}
+  {if $date != $olddate}
+    <h3 class="date-header">{$date}</h3>
+  {/if}
   {include file='item.tpl' item=$i}
+  {assign var="olddate" value=$date}
 {/foreach}
 
 <input type="reset" name="clearit" value="Clear changes"/>

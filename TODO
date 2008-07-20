@@ -403,3 +403,7 @@
 	- Some feeds lie and give the current time for every item.
 	  (examples?)
 - Should probably combine "edit feed" and "unsubscribe from feed".
+- Navigation arrows ("Earlier"/"Later") should be based on the number
+  of posts that match the display criteria. It is absurd to have an
+  "Earlier" link on a page that also says "There are no items to
+  display". Check numbers from db_get_feed_counts().
