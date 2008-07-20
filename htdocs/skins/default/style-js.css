@@ -5,10 +5,3 @@
 /* If both the summary and content are present, they're put inside a
  * <div class="content-panes">
  */
-.content-panes .item-summary {
-	display:		none;
-}
-
-.content-panes .item-content {
-	display:		block;
-}

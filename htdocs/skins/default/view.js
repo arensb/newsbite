@@ -1,17 +1,15 @@
-/* collapse
+/* toggle-pane
  * Intended to be called from within
  * <div content-panes>
- *   <div {item-summary|item-content}>
- *     <div {expand-bar|collapse-bar}>
+ *   <div {expand-bar|collapse-bar}>
  * The <div content-panes> is expected to have one <div item-summary>
  * and one <div item-content>.
  *
- * This function makes the current pane invisible, and the other one
- * visible.
+ * This function toggles the state of the <div content-panes>: if it
+ * used to display the summary, it should now display the content, and
+ * vice-versa.
  */
-// XXX - Actually, this is misnamed, since it implements both collapse()
-// and expand(). Perhaps it should be toggle_pane() or some such.
-function collapse(node)
+function toggle_pane(node)
 {
 	var my_pane;		// Pane containing the calling element
 	var sib_class;	 	// Class of sibling we're looking for
@@ -22,24 +20,7 @@ function collapse(node)
 	 * both the <div item-summary> and the <div item-content>.
 	 */
 	while (container && (container.className != "content-panes"))
-	{
-		/* On the way down, see what kind of node we're inside:
-		 * "item-summary" or "item-content".
-		 */
-		if (my_pane == null &&
-		    (container.className == "item-summary"))
-		{
-			my_pane = container;
-			sib_class = "item-content";
-		} else if (my_pane == null && 
-			   (container.className == "item-content"))
-		{
-			my_pane = container;
-			sib_class = "item-summary";
-		}
-
-		container = container.parentNode;
-	}
+		;
 	if (container == null)
 		/* Something's wrong. Abort */
 		return;
@@ -56,4 +37,5 @@ function collapse(node)
 		container.setAttribute("which", "summary");
 }
 
-expand = collapse;
+collapse = toggle_pane;
+expand   = toggle_pane;
