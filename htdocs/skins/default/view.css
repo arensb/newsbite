@@ -100,9 +100,18 @@ h1 a {
 	right:			0px;
 }
 
+.date-header {
+	font-family:		Arial, sans-serif;
+	font-size:		200%;
+	color:			#c0c0c0;
+	margin-top:		0.5em;
+	margin-bottom:		0.1em;
+	margin-left:		1em;
+}
+
 /* Overall box containing an item */
 .item {
-	margin-top:		2em;
+	margin-top:		1em;
 	margin-left:		2px;
 	margin-right:		2px;
 	clear:			both;
@@ -136,42 +145,6 @@ h1 a {
 .item-header td {
 	vertical-align:		top;
 	margin:			1em;
-}
-
-/* .date-box:
- * Box at the left of the article header, with the publication date.
- */
-.item-header .date-box {
-	width:			3.5em;
-	font-family:		sans-serif;
-	font-variant:		small-caps;
-	text-align:		center;
-	padding:		0px;
-}
-
-.item-header .date-box ul {
-	padding:		0px;
-	display:		inline;
-	margin:			0px;
-	list-style-position:	inside;
-	list-style-type:	none;
-}
-
-.date-box .day {
-	font-size:		130%;
-	font-weight:		bold;
-	margin-bottom:		0px;
-}
-
-.date-box .mon {
-	font-weight:		normal;
-	margin-top:		0.0em;
-}
-
-.date-box .time {
-	font-size:		60%;
-	font-weight:		normal;
-	margin-top:		0.4em;
 }
 
 /* Title of item */
@@ -211,7 +184,7 @@ h1 a {
 .item-header .info {
 	padding-left:		0.5em;
 	padding-right:		0.5em;
-	border-left:		2px solid LightBlue;
+/*	border-left:		2px solid LightBlue;*/
 	border-right:		2px solid LightBlue;
 }
 
