@@ -54,32 +54,9 @@ function update_feed($feed_id)
 	echo "<h3>Updating feed [$feed[title]]</h3>\n";
 
 	/* Initialize Curl */
-	// XXX - This seems to duplicate _open_curl_handle().
-	// Consolidate if possible.
-	$ch = curl_init();
-	curl_setopt($ch, CURLOPT_URL, $feed['feed_url']);
-		// Set the URL
-	curl_setopt($ch, CURLOPT_HEADER, FALSE);
-		// Give me the header
-	curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-		// Give me the result; don't print it.
-	curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
-		// Follow redirects, up to 2. Beyond that is being
-		// unreasonable.
-	curl_setopt($ch, CURLOPT_MAXREDIRS, 2);
-
-	/* Use authentication if required */
-	// We use '== ""' instead of 'isset()' because the uesrname or
-	// password might have been set to the empty string.
-	if ($feed['username'] != "" || $feed['passwd'] != "")
-	{
-		curl_setopt($ch, CURLOPT_HTTPAUTH, CURLAUTH_ANYSAFE);
-			// Use reasonable security
-		curl_setopt($ch, CURLOPT_USERPWD, "$feed[username]:$feed[passwd]");
-	}
-
-	// Some sites insist on a non-empty user agent
-	curl_setopt($ch, CURLOPT_USERAGENT, "dummy agent");
+	$ch = _open_curl_handle($feed['feed_url'],
+				$feed['username'],
+				$feed['passwd']);
 
 	/* Fetch the RSS feed */
 	$feed_text = curl_exec($ch);
@@ -94,45 +71,20 @@ function update_feed($feed_id)
 		return false;
 	}
 
-	// Check the HTTP return code
-	$http_code = curl_getinfo($ch, CURLINFO_HTTP_CODE);
-	if ($http_code != 200)
-	{
-		// XXX - Better error-reporting
-		echo "<b>HTTP error [$http_code], feed_text [[$feed_text]]</b><br/>\n";
-		curl_close($ch);
-		exit(2);
-	}
+	/* Check the HTTP error code, save a cached copy of the feed,
+	 * parse it, and add it to the database.
+	 */
+	_save_handle($feed_id, $feed_text);
 
 	curl_close($ch);
 
-	/* Save a copy of the feed text for debugging */
-	if (defined("FEED_CACHE") && is_dir(FEED_CACHE))
-	{
-		// This will fail if permissions aren't right. Deal
-		// with it. It's a debugging feature, so you should be
-		// paying attention to error messages anyway.
-		$fh = fopen(FEED_CACHE . "/$feed_id", "w");
-		fwrite($fh, $feed_text);
-		fclose($fh);
-	}
-
-	/* Parse the feed */
-	$feed = parse_feed($feed_text);
-	if (!$feed)
-		// XXX - Better error-handling
-		return;
-
-	db_update_feed($feed_id, $feed);
-		// XXX - Error-checking
+	// XXX - Return something intelligent
 }
 
 /* update_all_feeds
  * As the name implies, this updates all the feeds listed in the
  * database.
  */
-// XXX - This ought to use curl_multi_* to update multiple feeds in
-// parallel.
 // XXX - Ought to try to avoid refreshing feeds too often. Add a bool
 // $force argument to force an update.
 function update_all_feeds()
@@ -267,7 +219,9 @@ function update_all_feeds()
 				 */
 				// XXX - Better error-reporting
 				echo "Finished (", $handle['feed']['id'], ") [", $handle['feed']['title'], "]<br/>\n"; flush();
-				_save_handle($handle);
+				$feed_text = curl_multi_getcontent($handle['ch']);
+				_save_handle($handle['feed']['id'],
+					      $feed_text);
 
 				/* We're done with this handle. */
 				curl_multi_remove_handle(
@@ -331,11 +285,15 @@ function update_all_feeds()
 		{
 			// XXX - Prettier output
 			echo "Finished (", $pipeline[$i]['feed']['id'], ") [", $pipeline[$i]['feed']['title'], "]<br/>\n"; flush();
-			_save_handle($pipeline[$i]);
+			$feed_text = curl_multi_getcontent($pipeline[$i]['ch']);
+			_save_handle($pipeline[$i]['feed']['id'],
+				      $feed_text);
 		}
 	}
 
 	curl_multi_close($mh);
+
+	// XXX - Return something intelligent
 }
 
 /* _open_curl_handle
@@ -374,11 +332,8 @@ function _open_curl_handle($url, $username = NULL, $passwd = NULL)
 	return $ch;
 }
 
-function _save_handle($handle)
+function _save_handle($feed_id, &$feed_text)
 {
-	// Get the feed text from the curl handle
-	$feed_text = curl_multi_getcontent($handle['ch']);
-
 	/* XXX - Get the HTTP header(s), for the status code, so we
 	 * can find out whether something went wrong.
 	 * A header is a set of CR-LF-terminated lines of the form
@@ -425,11 +380,9 @@ function _save_handle($handle)
 	{
 		// XXX - Better error-reporting
 		echo "<b>Error: $http_status - $http_error. Aborting.</b><br/>\n";
-		return;
+		return FALSE;
 	}
 
-	/* Parse the feed */
-	$feed_id = $handle['feed']['id'];
 
 	/* Save a copy of the feed text for debugging */
 	if (defined("FEED_CACHE") && is_dir(FEED_CACHE))
@@ -442,14 +395,15 @@ function _save_handle($handle)
 		fclose($fh);
 	}
 
+	/* Parse the feed */
 	$feed = parse_feed($feed_text);
 	if (!$feed)
 	{
 		// XXX - Better error-handling
-		return;
+		return FALSE;
 	}
 
 	/* Add the feed to the database */
-	db_update_feed($feed_id, $feed);
+	return db_update_feed($feed_id, $feed);
 }
 ?>
