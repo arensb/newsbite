@@ -33,12 +33,12 @@
 - Make a list of conditions for calling it version 1.0
 	* Can add, remove feeds
 	* Documentation for installing
-	- Proper error pages
+	* Proper error pages
 	* OPML
 	* Don't print trace messages
 	* editfeed.php: return to someplace useful
 	* Makefile: build distro
-	- Remove private values from config.inc
+	* Remove private values from config.inc
 - Makefile:
 	Run tests:
 		php -l <everything>
