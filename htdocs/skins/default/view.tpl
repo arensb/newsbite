@@ -88,9 +88,11 @@
  * template for it.
  *}
 <form name="mark-items" method="post" action="markitems.php">
-<input type="reset" name="clearit" value="Clear changes"/>
-<input type="submit" name="mark-all" value="Mark all as read"/>
-<input type="submit" name="doit" value="Apply changes"/>
+<div class="button-box">
+  <input type="reset" name="clearit" value="Clear changes"/>
+  <input type="submit" name="mark-all" value="Mark all as read"/>
+  <input type="submit" name="doit" value="Apply changes"/>
+</div>
 {* This next field says how to mark checked items *}
 {* XXX - When showing read items, change to value="unread"/> *}
 <input type="hidden" name="mark-how" value="read"/>
@@ -107,13 +109,15 @@
   {assign var="olddate" value=$date}
 {/foreach}
 
-<input type="reset" name="clearit" value="Clear changes"/>
-{* When displaying read items, should this say "Mark all as unread"?
- * Should there be separate "Mark all as read" and "Mark all as unread"
- * buttons?
- *}
-<input type="submit" name="mark-all" value="Mark all as read"/>
-<input type="submit" name="doit" value="Apply changes"/>
+<div class="button-box">
+  <input type="reset" name="clearit" value="Clear changes"/>
+  {* When displaying read items, should this say "Mark all as unread"?
+   * Should there be separate "Mark all as read" and "Mark all as
+   * unread" buttons?
+   *}
+  <input type="submit" name="mark-all" value="Mark all as read"/>
+  <input type="submit" name="doit" value="Apply changes"/>
+</div>
 </form>
 
 {* Navigation bar. *}

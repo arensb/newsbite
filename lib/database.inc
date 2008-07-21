@@ -66,6 +66,8 @@ EOT;
 	$result = $dbh->query($query);
 	if (!$result)
 	{
+		// XXX - Should set error message, and allow caller to
+		// do error-reporting.
 		echo "Error ", $dbh->errno, ": \"",
 			$dbh->error, "\"<br/>\n";
 		return NULL;
@@ -129,6 +131,8 @@ EOT
 	$result = $dbh->query($query);
 	if (!$result)
 	{
+		// XXX - Should just set error message, and allow
+		// caller to do error-reporting.
 		echo "Error ", $dbh->errno, ": \"",
 			$dbh->error, "\"<br/>\n";
 		return NULL;
@@ -150,6 +154,8 @@ EOT
 	$result = $dbh->query($query);
 	if (!$result)
 	{
+		// XXX - Should just set error message, and allow
+		// caller to do error-reporting.
 		echo "Error ", $dbh->errno, ": \"",
 			$dbh->error, "\"<br/>\n";
 		return NULL;
@@ -200,7 +206,8 @@ EOT;
 	$result = $dbh->query($query);
 	if (!$result)
 	{
-		// XXX - Better error-reporting
+		// XXX - Should just set error message, and allow
+		// caller to do error-reporting.
 		echo "Error ", $dbh->errno, ": \"",
 			$dbh->error, "\"<br/>\n";
 		return NULL;
@@ -237,7 +244,8 @@ EOT;
 	$result = $dbh->query($query);
 	if (!$result)
 	{
-		// XXX - Better error-reporting
+		// XXX - Should just set error message, and allow
+		// caller to do error-reporting.
 		echo "Error ", $dbh->errno, ": \"",
 			$dbh->error, "\"<br/>\n";
 		return NULL;
@@ -425,7 +433,7 @@ function db_add_feed($feed)
 
 		    default:
 			// XXX - Complain about unknown field
-echo "Unknown field [$k]<br/>\n";
+//echo "Unknown field [$k]<br/>\n";
 			break;
 		}
 	}
@@ -435,20 +443,19 @@ echo "Unknown field [$k]<br/>\n";
 		") VALUES (" .
 		implode(",", $values) .
 		")";
-//echo "query: [<pre>$query</pre>]\n";
 	$stmt = $dbh->prepare($query);
 		// XXX - Error-checking
 	$err = $stmt->execute();
 	if (!$err)
 	{
-		// XXX - Better error-reporting
+		// XXX - Should just set error message, and allow
+		// caller to do error-reporting.
 		echo "<b>Error ", $dbh->errno,
 			", \"", $dbh->error, "\"</b><br/>\n";
 		$stmt->close();
 		return false;
 	}
 	$feed_id = $dbh->insert_id;
-//echo "feed id [$feed_id]<br/>\n";
 	$stmt->close();
 
 	// XXX - Call user hooks
@@ -564,7 +571,8 @@ function db_update_feed_info($feed_id, $fields)
 		$result = $dbh->query($query);
 		if (!$result)
 		{
-			// XXX - Better error-reporting
+			// XXX - Should just set error message, and
+			// allow caller to do error-reporting.
 			echo "<b>Error updating feed information: ",
 				$dbh->errno, ": \"",
 				$dbh->error, "\"</b><br/>\n";
@@ -626,6 +634,10 @@ EOT;
 		/* Nothing to do */
 		// XXX - Return something sensible?
 		return;
+
+	$update_counts = array();
+		// Assoc saying how many items were updated, how many
+		// are new, how many were already in the database.
 
 	foreach ($feed['items'] as $item)
 	{
@@ -722,15 +734,36 @@ EOT;
 		//	0-> duplicate entry (no change)
 		//	1-> new entry
 		//	2-> updated entry
-$nrows = $stmt->affected_rows;
-echo "[$nrows] [$item[title]]<br/>\n";
-		// XXX - Error-checking
+
+		$nrows = $stmt->affected_rows;
+		switch ($nrows)
+		{
+		    case 0:
+			$update_counts['old']++;
+			break;
+		    case 1:
+			$update_counts['new']++;
+			break;
+		    case 2:
+			$update_counts['updated']++;
+			break;
+		    default:
+			// This should never happen
+			// XXX - Check for this?
+			break;
+		}
+
+		// XXX - Better error-checking
 		if ($err)
 			;// echo "OK (", print_r($err), ") errno ", $dbh->errno, ", error [", $dbh->error, "]<br/>\n";
 		else
 			;// echo "<b>Error: ", $dbh->errno, ": \"", $dbh->error, "\"</b><br/>\n";
 //echo "Affected rows: [", $stmt->affected_rows, "]<br/>\n";
 	}
+
+	echo (int) $update_counts['old'], " old, ",
+		(int) $update_counts['new'], " new, ",
+		(int) $update_counts['updated'], " updated items.<br/>\n";
 }
 
 /* db_mark_items
@@ -764,6 +797,8 @@ EOT
 	$result = $dbh->query($query);
 	if (!$result)
 	{
+		// XXX - Should just set error message, and allow
+		// caller to do error-reporting.
 		echo "Error updating feed information: ",
 			$dbh->errno, ": \"",
 			$dbh->error, "\"<br/>\n";

@@ -13,6 +13,8 @@ htdocs/index.php
 htdocs/loadopml.php
 htdocs/markitems.php
 htdocs/opml.php
+htdocs/skins/default/abort.css
+htdocs/skins/default/abort.tpl
 htdocs/skins/default/addfeed.css
 htdocs/skins/default/addfeed.tpl
 htdocs/skins/default/editfeed.css

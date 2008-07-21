@@ -27,3 +27,9 @@ dist:
 
 clean::
 	rm -r dist
+
+# Look for files missing from the manifest
+missing:
+	@svn status -qv | \
+		perl -lane '$$f=$$F[-1]; print $$f if -f $$f' | \
+		fgrep -vf MANIFEST || true
