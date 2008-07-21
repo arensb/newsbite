@@ -1,41 +1,142 @@
-- Install the required software and modules:
-	- PHP 5.x (might work with earlier versions)
-	- PHP Curl module
-	- PHP XML Reader module
-	- MySQL (tested with 5.0)
-	- Smarty (bundled with this package)
-	- Web server (tested with Apache 2.2)
-- Create the database:
-	In MySQL, as the DBA:
+REQUIRED SOFTWARE:
+
+Make sure you have the following sofware packages installed:
+
+- Web server (tested with Apache 2.2)
+- PHP 5.x
+- PHP modules:
+	- Curl
+	- XML Reader
+- MySQL 5.x
+- Smarty template engine (included with this distribution)
+
+
+INSTALLATION:
+
+- Create the database
+
+	You'll need administrative rights to create the database.
+
 	> create database newsbite character set 'utf8';
+
+	In the shell, create the database tables:
+
+	# mysql -u<DBA> -p newsbite < schema.sql
+
+	where "<DBA>" is the name of a user with administrative
+	privileges on the database (i.e., a user who can alter the
+	"newsbite" database).
+
+	With the "-p" flag, MySQL will prompt you for the password for
+	"<DBA>".
+
+- Create a database user for the PHP scripts to access the database:
+
+	Pick a username and password for the PHP scripts to access the
+	database. Remember these, because you'll need them further
+	down.
+
+	In the example below, the database name is "newsbite", the
+	user is "newsbiteuser", and the password is
+	"newsbitepassword". Make substitutions as appropriate.
+
+	In MySQL, run:
+
 	> grant delete, insert, select, update
 	  on newsbite.*
-	  to `newsbite`@`localhost`
-	  identified by "password";
-	(Obviously, substitute values as appropriate.)
+	  to `newsbiteuser`@`localhost`
+	  identified by "newsbitepassword";
 
-	In shell, create the database tables:
-	% mysql -uDBA newsbite < schema.sql
-	(Replace "DBA" with whatever your DBA account is.)
+- Unpack the Newsbite distribution
 
-- Unpack the newsbite tarball
-- Unpack the Smarty tarball.
+	If you're reading this, you've probably unpacked the source tarball.
+	If not, do so now.
 
-- Copy the "htdocs" directory to someplace under DocumentRoot.
+- Unpack the Smarty distribution
 
-- Copy the "lib" directory to someplace. Preferably outside of
-  DocumentRoot. But if you're lazy, it can be "htdocs/lib".
+	If you already have Smarty installed, you can use that. If
+	not, there's a copy of it in the "Smarty" subdirectory of the
+	Newsbite distribution.
 
-- Install Smarty somewhere, preferably outside of DocumentRoot.
-  - Can move "htdocs/smarty/" someplace else. In that case, edit
-  SMARTY_DIR in "lib/config.inc".
+- Quick directory overview
 
-- Edit "config.inc":
-	- Fill in database access parameters.
-	- Set $SMARTY_DIR to the directory containing "Smarty.class.php".
+	The main directories in the distribution include:
 
-- Edit htdocs/.htaccess, and change "./lib" to wherever you put the
-  "lib" directory.
+	- htdocs: PHP scripts that will be accessed by the user's
+	  browser. These need to be in the web server's DocumentRoot.
 
-- Make sure "htdocs/smarty/cache" and "htdocs/smarty/templates_c" are
-  writable by the user that Apache runs as.
+	- htdocs/smarty: this contains directories used by Smarty.
+	  Some of these need to be writable by the user that will be
+	  running the Newsbite PHP scripts (usually the user running
+	  httpd).
+	  "htdocs/smarty" does not need to be in the DocumentRoot, and
+	  it's probably a good idea to install it someplace else.
+
+	- lib: PHP files used by the scripts in "htdocs", but not
+	  accessed directly by the browser. These do not need to be in
+	  the DocumentRoot.
+
+	- Smarty: Newsbite uses the Smarty template engine, and needs
+	  to be able to find it. Smarty does not need to be installed
+	  in the DocumentRoot.
+
+- Install "htdocs"
+
+	Copy the "htdocs" directory from the distribution to where you
+	want it in the DocumentRoot.
+
+- Install "htdocs/smarty"
+
+	The directory "htdocs/smarty" does not really need to be in
+	the DocumentRoot. You can move it elsewhere if you like.
+
+	"htdocs/smarty/cache" and "htdocs/smarty/templates_c" need to
+	be writable by the user that will be running the Newsbite PHP
+	scripts (usually the user that Apache runs as, e.g. "httpd").
+
+	In the shell, as root, run:
+
+	# chown httpd /path/to/smarty/cache /path/to/smarty/templates_c
+	# chmod 755 /path/to/smarty/cache /path/to/smarty/templates_c
+
+- Install "lib"
+
+	Copy the "lib" directory to where you want it. This does not
+	need to be in the DocumentRoot.
+
+	If you're not concerned with security, you can install it
+	underneath the "htdocs" directory.
+
+- Install Smarty
+
+	If you already have Smarty installed, find the directory that
+	contains the file "Smarty.class.php". You'll need it later.
+
+	If you don't already have Smarty installed, then unpack the
+	copy that came with Newsbite (if you haven't already done so).
+
+	Find the directory that contains the file "Smarty.class.php",
+	and copy it somewhere. This does not need to be in the
+	DocumentRoot. If you're not concerned with security, you can
+	put it underneath "htdocs".
+
+	Remember where you put it. You'll need it later.
+
+- Edit the config file
+
+	"lib/config.inc" in the distribution contains configuration
+	options for Newsbite. Edit it (wherever you installed it).
+	Read the comments to see what each option does.
+
+- Make sure the PHP files can find the "lib" files.
+
+	The distribution contains a "htdocs/.htaccess" file that tells
+	PHP to look for auxiliary files in "./lib". Change "./lib" to
+	the full pathname to wherever you put the "lib" directory.
+	That is, if "config.inc" is in /foo/bar/config.inc, then the
+	.htaccess file should contain
+
+	php_value include_path ".:/foo/bar"
+
+	If you're not running Apache, you'll have to do this some
+	other way.

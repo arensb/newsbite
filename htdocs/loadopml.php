@@ -48,28 +48,29 @@ $feeds = db_get_feeds();	// Get a list of all feeds
 /* Find the feeds we're not already subscribed to, i.e., the ones we
  * want to subscribe to now.
  */
-echo "<pre>\n";
 foreach ($opml as $o)
 {
-echo "Checking opml [$o[xmlurl]]\n";
+	// XXX - Prettier output
+	echo "Checking <tt>$o[xmlurl]</tt><br/>\n";
+
 	/* See whether we're already subscribed to this feed */
 	foreach ($feeds as $f)
 	{
-//		echo "    Comparing against [$f[feed_url]]\n";
 		if ($o['xmlurl'] == $f['feed_url'])
 		{
-echo "    <b>Already subscribed</b>\n";
+			// XXX - Prettier output
+			echo "    <b>Already subscribed</b><br/>\n";
 			continue 2;
 		}
 	}
-echo "  <i>Subscribing</i>\n";
+	// XXX - Prettier output
+	echo "  <i>Subscribing</i><br/>\n";
 
 	/* Add the feed */
 	$err = db_add_feed(array("title"	=> $o['text'],
 				 "feed_url"	=> $o['xmlurl']));
 		// XXX - Error-checking
 }
-echo "</pre>\n";
 
 function _opml_element_start($parser, $fullname, $attrs)
 {

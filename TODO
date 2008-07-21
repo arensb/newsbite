@@ -32,10 +32,10 @@
   really anal about syntax.
 - Make a list of conditions for calling it version 1.0
 	* Can add, remove feeds
-	- Documentation for installing
+	* Documentation for installing
 	- Proper error pages
 	* OPML
-	- Don't print trace messages
+	* Don't print trace messages
 	* editfeed.php: return to someplace useful
 	* Makefile: build distro
 	- Remove private values from config.inc
@@ -373,7 +373,6 @@
   feed. But the two are not identical.
 	The feed from <head> is non-conforming: it contains
   nonstandard elements.
-- Combine the two instances of curl initialization code in update.php
 - How should items.pub_time and items.last_update work together?
 	The intent is that if an article is first written on Jan. 1,
   then updated on Jan. 5, then it'll show up at the top of "today's
@@ -387,3 +386,4 @@
   of posts that match the display criteria. It is absurd to have an
   "Earlier" link on a page that also says "There are no items to
   display". Check numbers from db_get_feed_counts().
+- Try to unite update_feed() and update_all_feeds()
