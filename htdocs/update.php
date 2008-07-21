@@ -14,11 +14,15 @@ $feed_id = $_REQUEST["id"];
 if (is_numeric($feed_id) && is_int($feed_id+0))
 {
 	update_feed($feed_id);
-echo "<p><a href=\"view.php?id=$feed_id\">Read feed</a></p>\n";
+
+	// XXX - Prettier output
+	echo "<p><a href=\"view.php?id=$feed_id\">Read feed</a></p>\n";
 } elseif ($feed_id == "all")
 {
 	update_all_feeds();
-echo "<p><a href=\"view.php?id=$feed_id\">Read feeds</a></p>\n";
+
+	// XXX - Prettier output
+	echo "<p><a href=\"view.php?id=$feed_id\">Read feeds</a></p>\n";
 } else {
 	/* Abort with an error message */
 	abort("Invalid feed ID: $feed_id");
@@ -41,14 +45,13 @@ echo "<p><a href=\"view.php?id=$feed_id\">Read feeds</a></p>\n";
  */
 function update_feed($feed_id)
 {
-//echo "Inside update_feed($feed_id)<br/>\n";
 	/* Get the feed from the database */
 	$feed = db_get_feed($feed_id);
 	if (!$feed)
 		abort("No such feed: $feed_id.");
 
-echo "<h3>Updating feed [$feed[title]]</h3>\n";
-//echo "feed: <pre>["; var_dump($feed); echo "]</pre>\n";
+	// XXX - Prettier output
+	echo "<h3>Updating feed [$feed[title]]</h3>\n";
 
 	/* Initialize Curl */
 	// XXX - This seems to duplicate _open_curl_handle().
@@ -70,7 +73,6 @@ echo "<h3>Updating feed [$feed[title]]</h3>\n";
 	// password might have been set to the empty string.
 	if ($feed['username'] != "" || $feed['passwd'] != "")
 	{
-//echo "Using authentication: [$feed[username]:$feed[passwd]]<br/>\n";
 		curl_setopt($ch, CURLOPT_HTTPAUTH, CURLAUTH_ANYSAFE);
 			// Use reasonable security
 		curl_setopt($ch, CURLOPT_USERPWD, "$feed[username]:$feed[passwd]");
@@ -105,7 +107,7 @@ echo "<h3>Updating feed [$feed[title]]</h3>\n";
 	curl_close($ch);
 
 	/* Save a copy of the feed text for debugging */
-	if (defined(FEED_CACHE) && is_dir(FEED_CACHE))
+	if (defined("FEED_CACHE") && is_dir(FEED_CACHE))
 	{
 		// This will fail if permissions aren't right. Deal
 		// with it. It's a debugging feature, so you should be
@@ -165,7 +167,9 @@ function update_all_feeds()
 			break;
 
 		$url = $feed['feed_url'];
-echo "Starting ($feed[id]) [", $feed['title'], "]<br/>\n"; flush();
+
+		// XXX - Prettier output
+		echo "Starting ($feed[id]) [", $feed['title'], "]<br/>\n"; flush();
 		$ch = _open_curl_handle(	// Curl handle for this URL
 			$url,
 			$feed['username'],
@@ -221,6 +225,7 @@ echo "Starting ($feed[id]) [", $feed['title'], "]<br/>\n"; flush();
 			// status that curl_multi_info_read() returns.
 			if ($err['msg'] != CURLMSG_DONE)
 			{
+				// XXX - Better error-reporting
 				echo "    Warning: curl_multi_info_read() returned [";
 				print_r($err);
 				echo "], and I don't know how to handle that.\n";
@@ -244,6 +249,7 @@ echo "Starting ($feed[id]) [", $feed['title'], "]<br/>\n"; flush();
 			if (!isset($handle))
 			{
 				// Hopefully this will never happen
+				// XXX - Better error-reporting
 				echo "<b>Error: couldn't find curl handle ",
 					$err['handle'], " in pipeline</b><br/>\n";
 				continue;
@@ -256,10 +262,11 @@ echo "Starting ($feed[id]) [", $feed['title'], "]<br/>\n"; flush();
 			 */
 			if ($err['result'] == CURLE_OK)
 			{
-				/* We've found the handle we
-				 * want. Get its contents.
+				/* We've found the handle we want. Get
+				 * its contents.
 				 */
-echo "Finished (", $handle['feed']['id'], ") [", $handle['feed']['title'], "]<br/>\n"; flush();
+				// XXX - Better error-reporting
+				echo "Finished (", $handle['feed']['id'], ") [", $handle['feed']['title'], "]<br/>\n"; flush();
 				_save_handle($handle);
 
 				/* We're done with this handle. */
@@ -282,7 +289,8 @@ echo "Finished (", $handle['feed']['id'], ") [", $handle['feed']['title'], "]<br
 			{
 				// Yes. Open a Curl handle, and add it
 				// to the multi-handle
-echo "Starting ($feed[id]) [", $feed['title'], "]<br/>\n"; flush();
+				// XXX - Prettier output
+				echo "Starting ($feed[id]) [", $feed['title'], "]<br/>\n"; flush();
 				$url = $feed['feed_url'];
 				$ch = _open_curl_handle(
 					$url,
@@ -321,7 +329,8 @@ echo "Starting ($feed[id]) [", $feed['title'], "]<br/>\n"; flush();
 	{
 		if (isset($pipeline[$i]))
 		{
-echo "Finished (", $pipeline[$i]['feed']['id'], ") [", $pipeline[$i]['feed']['title'], "]<br/>\n"; flush();
+			// XXX - Prettier output
+			echo "Finished (", $pipeline[$i]['feed']['id'], ") [", $pipeline[$i]['feed']['title'], "]<br/>\n"; flush();
 			_save_handle($pipeline[$i]);
 		}
 	}
@@ -335,7 +344,6 @@ echo "Finished (", $pipeline[$i]['feed']['id'], ") [", $pipeline[$i]['feed']['ti
  */
 function _open_curl_handle($url, $username = NULL, $passwd = NULL)
 {
-echo "Opening [$url] [$username] [$passwd]<br/>\n";
 	$ch = curl_init();
 
 	$err = curl_setopt_array(
@@ -434,15 +442,9 @@ function _save_handle($handle)
 		fclose($fh);
 	}
 
-//echo "Parsing feed [$feed_id] from [", $handle['feed']['feed_url'], "]<br/>\n";
 	$feed = parse_feed($feed_text);
 	if (!$feed)
 	{
-echo "parse_feed returned [$feed] ";
-if ($feed === false) echo "(false)";
-if ($feed === null) echo "(null)";
-if ($feed === "") echo "(empty string)";
-echo "<br/>\n";
 		// XXX - Better error-handling
 		return;
 	}
