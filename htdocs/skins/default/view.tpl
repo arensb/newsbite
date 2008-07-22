@@ -54,8 +54,10 @@
   {else}
     <li><a href="update.php?id={$feed.id}">Update feed</a></li>
   {/if}
-  <li><a href="editfeed.php?id={$feed.id}">Edit feed</a></li>
-  <li><a href="unsubscribe.php?id={$feed.id}">Unsubscribe from feed</a></li>
+  {if $feed.id != ""}
+    <li><a href="editfeed.php?id={$feed.id}">Edit feed</a></li>
+    <li><a href="unsubscribe.php?id={$feed.id}">Unsubscribe from feed</a></li>
+  {/if}
 </ul>
 {/strip}
 
