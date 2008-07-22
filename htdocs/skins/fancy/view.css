@@ -1,0 +1,373 @@
+/*
+ * Feed view
+ */
+
+body {
+	margin-top:		0px;
+	margin-left:		0px;
+	margin-right:		0px;
+	margin-bottom:		0px;
+}
+
+h1 {
+	margin-left:		1em;
+}
+
+h1 a {
+	text-decoration:	none;	/* I know it's a link. Don't
+					 * underline it. */
+}
+
+p {
+	margin:			1em;
+}
+
+/* Icon or image for the feed */
+.feed-icon {
+	float:			right;
+	margin:			1em;
+}
+
+/* Feed subtitle */
+.feed-subtitle {
+	border:			1px dashed orange;
+	background-color:	yellow;
+}
+
+/* Descriptive blurb about the feed */
+.feed-description {
+	margin:			1em;
+	padding:		0.5em;
+	border:			1px solid orange;
+	background-color:	yellow;
+}
+
+/***** view ************************************/
+
+.feed-tools {
+	margin-top:		1em;
+	margin-bottom:		1em;
+	padding-left:		1em;
+	padding-top:		0px;
+	padding-bottom:		0.2em;
+}
+
+.feed-tools li {
+	display:		inline;
+	background-color:	#e0e0e0;
+}
+
+.feed-tools a {
+	text-decoration:	none;
+}
+
+.feed-tools li:before {
+	content:		" | ";
+}
+
+.feed-tools li:first-child {
+	padding-left:		0.3em;
+}
+
+.feed-tools li:first-child:before {
+	content:		"";
+}
+
+.feed-tools li:last-child {
+	padding-right:		0.3em;
+}
+
+/* navbar
+ * Navigation bar, for going to earlier, later items.
+ */
+.navbar {
+	margin-left:		1em;
+	margin-right:		1em;
+	/* For some reason, the parent block has to have a "position"
+	 * property in order for its children to be positioned.
+	 * {relative, 0, 0}, of course, means "position this block
+	 * exactly where you normally would". Go fig.
+	 */
+	position:		relative;
+	top:			0px;
+	left:			0px;
+	outline:		1px solid red;
+}
+
+.navbar .earlier {
+	text-align:		left;
+	outline:		1px dotted blue;
+	position:		absolute;
+	top:			0px;
+	left:			0px;
+}
+
+.navbar .later {
+	text-align:		right;
+	outline:		1px dotted blue;
+	position:		absolute;
+	top:			0px;
+	right:			0px;
+}
+
+.button-box {
+	margin-left:		1em;
+	margin-right:		1em;
+	margin-top:		0.5em;
+	margin-bottom:		0.5em;
+}
+
+.date-header {
+	font-family:		Arial, sans-serif;
+	font-size:		200%;
+	color:			#c0c0c0;
+	margin-top:		0.5em;
+	margin-bottom:		0.1em;
+	margin-left:		1em;
+}
+
+/* Overall box containing an item */
+.item {
+	margin-top:		1em;
+	margin-left:		2px;
+	margin-right:		2px;
+	clear:			both;
+}
+
+/* Header box at top of item */
+.item-header {
+	width:			100%;
+	background-color:	navy;
+	color:			cyan;
+	padding:		0px;
+	border-collapse:	separate;
+	border-spacing:		0px 0.3em;
+
+	border-top-width:	2px;
+	border-left-width:	2px;
+	border-right-width:	2px;
+	border-bottom-width:	0px;
+	border-left-style:	outset;
+	border-top-style:	outset;
+	border-right-style:	outset;
+	border-color:		navy;
+
+	/* Mozilla: */
+	-moz-border-radius-topleft:	20px;
+	-moz-border-radius-topright:	20px;
+
+	/* Safari: */
+	-webkit-border-top-left-radius:		20px;
+	-webkit-border-top-right-radius:	20px;
+}
+
+.item-header td {
+	vertical-align:		top;
+	margin:			1em;
+}
+
+/* Title of item */
+.item-header .item-title {
+	font-family:		Arial, sans-serif;
+	font-size:		144%;
+	font-weight:		bold;
+	text-decoration:	none;	/* I know it's a link. Don't
+					 * underline it. */
+	color:			LightBlue;
+	display:		block;
+	margin-top:		0px;
+	margin-bottom:		0.2em;
+}
+
+.item-header .feed-title {
+	font-family:		Arial, sans-serif;
+	font-size:		120%;
+	font-weight:		bold;
+	text-decoration:	none;	/* I know it's a link. Don't
+					 * underline it. */
+	color:			LightBlue;
+	display:		block;
+	margin-top:		0.2em;
+	margin-bottom:		0px;
+}
+
+.item-header .feed-title a {
+	text-decoration:	none;	/* I know it's a link. Don't
+					 * underline it. */
+	color:			LightBlue;
+}
+
+/* .info: the box in the middle of the article header, with useful info
+ * like the title.
+ */
+.item-header .info {
+	padding-left:		0.5em;
+	padding-right:		0.5em;
+	border-right:		2px solid LightBlue;
+}
+
+.item-header .info .item-title a {
+	color:			LightBlue;
+	text-decoration:	none;
+}
+
+.item-header .info .item-author {
+	margin-top:		0.1em;
+	margin-bottom:		0.1em;
+}
+
+/* .icon-box: box for control/status icons on the right of the article
+ * header.
+ */
+.item-header .icon-box {
+	text-align:		right;
+	font-size:		66%;
+	width:			6em;
+}
+
+input[type="checkbox"].mark-check {
+	width:			1.2em;
+	height:			1.2em;
+}
+
+/* The next few rules are for toggling between expanded and collapsed
+ * articles: the "item.tpl" and "item.js" set the <item which="...">
+ * attribute to either "summary" or "content". This CSS determines
+ * what to display in each case.
+ */
+.content-panes[collapsible="no"] .expand-bar,
+.content-panes[collapsible="no"] .collapse-bar {
+	display:		none ! important;
+}
+
+.content-panes[which="summary"] .item-summary,
+.content-panes[which="summary"] .expand-bar {
+	display:		block;
+}
+
+.content-panes[which="summary"] .item-content,
+.content-panes[which="summary"] .collapse-bar {
+	display:		none;
+}
+
+.content-panes[which="content"] .item-summary,
+.content-panes[which="content"] .expand-bar {
+	display:		none;
+}
+
+.content-panes[which="content"] .item-content,
+.content-panes[which="content"] .collapse-bar {
+	display:		block;
+}
+
+/* Summary of item */
+.item-summary,
+.item-content {
+	border-top-width:	0px;
+	border-left-width:	2px;
+	border-right-width:	2px;
+	border-bottom-width:	0px;
+	border-left-style:	outset;
+	border-right-style:	outset;
+	border-color:		navy;
+
+	font-family:		Times, serif;
+	padding:		0.5em;
+}
+
+/* expand-bar, collapse-bar
+ * Bars at top and bottom of article, for expanding summary, or collapsing
+ * content.
+ */
+.expand-bar,
+.collapse-bar {
+	padding:		0px;
+	line-height:		1.1em;
+	background-color:	#6060ff;
+	color:			white;
+	text-align:		center;
+	cursor:			pointer;
+	margin-top:		0px;
+	margin-bottom:		0px;
+
+	border-top-width:	0px;
+	border-left-width:	2px;
+	border-right-width:	2px;
+	border-bottom-width:	2px;
+	border-left-style:	outset;
+	border-top-style:	outset;
+	border-right-style:	outset;
+	border-color:		navy;
+}
+
+/* Control box at bottom of item */
+.item-footer {
+	width:			100%;
+	background-color:	navy;
+	color:			cyan;
+	min-height:		20px;
+
+	border-top-width:	0px;
+	border-left-width:	2px;
+	border-right-width:	2px;
+	border-bottom-width:	2px;
+	border-left-style:	outset;
+	border-top-style:	outset;
+	border-right-style:	outset;
+	border-color:		navy;
+
+	padding-left:		10px;
+	padding-right:		10px;
+
+	/* Mozilla: */
+	-moz-border-radius-bottomleft:	20px;
+	-moz-border-radius-bottomright:	20px;
+
+	/* Safari: */
+	-webkit-border-bottom-left-radius:	20px;
+	-webkit-border-bottom-right-radius:	20px;
+}
+
+.item-footer a {
+	/* Want links to show up against navy background */
+	color:			cyan;
+}
+
+/* .bottom-link box: <td> that contains .bottom-links (see below) */
+.item-footer .bottom-link-box {
+	text-align:		left;
+}
+
+/* .bottom-links: the <li> containing the links at the bottom of each
+ * item.
+ */
+.item-footer .bottom-links {
+	padding:		0px;
+	list-style-position:	inside;
+	list-style-type:	none;
+	margin-top:		0px;
+	margin-bottom:		0px;
+}
+
+.item-footer .bottom-links li {
+	display:		inline;
+}
+
+.item-footer .bottom-links li:first-child:before {
+	content:		"";
+}
+
+.item-footer .bottom-links li:before {
+	content:		" | "
+}
+
+.item-footer .mark-td {
+	text-align:		right;
+}
+
+/***** items ************************************/
+blockquote {
+	border:			1px solid #c0c0c0;
+	margin-left:		1em;
+	padding-left:		0.5em;
+}

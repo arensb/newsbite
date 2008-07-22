@@ -2,6 +2,8 @@
 - bug: when on the last page (earliest items) and use "mark all as
   read", sometimes get blank page.
 	Is this just the N810 browser being wonky?
+- I suspect the Smarty cache isn't really necessary. Try turning it
+  off, see what happens.
 - Should be able to read both read and unread articles.
 - Limit size of articles (to one N810 screenful?)
 - Would be nice to have either "new" flag or a "saved for later" flag.
@@ -296,7 +298,6 @@
 - A bunch of elements in the templates have id="..." identifiers
   (body, forms, etc.) Come up with a good naming scheme for them, to
   keep them all straight.
-- I suspect the Smarty cache isn't really necessary.
 - http://www.smarty.net/manual/en/template.resources.php tells how to
   get templates from any source. Perhaps can set up "skin" scheme, so can use
 	$smarty->display("skin:item.tpl");
@@ -387,3 +388,24 @@
   "Earlier" link on a page that also says "There are no items to
   display". Check numbers from db_get_feed_counts().
 - Try to unite update_feed() and update_all_feeds()
+- LJ feeds give the same URL for "read more" and comments. Does it
+  make sense to combine the two in item.tpl?
+- Ought to support categories. WaPo feeds, in particular, have lots of
+  them.
+	Presumably should add another table, with {item-id, scheme,
+  category} tuples. The scheme is for particular setups (like the
+  "media:" RSS extension, or Slashdot's categories). That way, can
+  show all posts in a given {scheme, category}, or all posts in a
+  given {category}.
+	Can also create category cloud, to see which keywords are most
+  active ATM.
+- INSTALL: say to make backup of: db, .htaccess, config.inc.
+- Perhaps should have something in the database (in global options?)
+  that gives the version number of the database schema. That way, can
+  detect whether database is out of date wrt PHP scripts.
+- Remove the smarty/{cache,config,templates_c} out of the distro.
+  Probably should remove them altogether.
+- Run timing tests with different numbers of feeds. See if there's a
+  way to estimate a good number of parallel connections.
+	If there is, allow user to set $PARALLEL_UPDATES to "auto",
+  and have it be computed automatically.
