@@ -409,3 +409,6 @@
   way to estimate a good number of parallel connections.
 	If there is, allow user to set $PARALLEL_UPDATES to "auto",
   and have it be computed automatically.
+- Skin: function to validate proposed skin:
+	- Should match /^\w+$/ or some such
+	- Make sure it's a directory in "skins"

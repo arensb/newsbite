@@ -57,7 +57,6 @@
   {if $feed.id != ""}
     <li><a href="editfeed.php?id={$feed.id}">Edit feed</a></li>
     <li><a href="unsubscribe.php?id={$feed.id}">Unsubscribe from feed</a></li>
-    <li><a href="setskin.php">Change skin</a></li>
   {/if}
 </ul>
 {/strip}

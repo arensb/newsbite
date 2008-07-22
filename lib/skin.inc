@@ -30,19 +30,5 @@ class Skin extends Smarty
 		$this->cache_dir	= SMARTY_PATH . "cache";
 		$this->config_dir	= SMARTY_PATH . "configs";
 	}
-
-//	function display($template, $cache_id = null, $compile_id = null)
-//	{
-//		$this->assign('skin', $this->skin);
-//		return parent::display($template, $cache_id, $template_id);
-//	}
-//
-//	function fetch($template, $cache_id = null, $compile_id = null,
-//		       $display = false)
-//	{
-//		$this->assign('skin', $this->skin);
-//		return parent::fetch($template, $cache_id, $compile_id,
-//				     $display);
-//	}
 }
 ?>
