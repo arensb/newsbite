@@ -4,7 +4,6 @@ require_once("database.inc");
 require_once("skin.inc");
 
 
-//setcookie("skin", "fancy");
 echo "Cookies: [<pre>"; print_r($_COOKIE); echo "</pre>]<br/>\n";
 
 $dbh = db_connect();

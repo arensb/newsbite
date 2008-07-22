@@ -30,6 +30,7 @@
   <li><a href="addfeed.php">Add a feed</a></li>
   <li><a href="opml.php">Subscription list as OPML</a></li>
   <li><a href="loadopml.php">Add OPML file</a></li>
+  <li><a href="setskin.php">Change skin</a></li>
 </ul>
 {/strip}
 
