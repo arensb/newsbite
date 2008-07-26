@@ -1,4 +1,11 @@
+- bug: markitems somehow gave me
+	Bad command: ""
+	Last time, got it when authenticating via UMD. $_REQUEST is
+  empty, hence no command. Is there a better way to handle the error
+  than to put up an explanatory message?
 - bug: When updates take too long, PHP terminates. 30 sec. max.
+	This is a curl error, and should be caught. Error at
+                $err = curl_multi_select($mh);
 - bug: when on the last page (earliest items) and use "mark all as
   read", sometimes get blank page.
 	Is this just the N810 browser being wonky?
@@ -412,3 +419,15 @@
 - Skin: function to validate proposed skin:
 	- Should match /^\w+$/ or some such
 	- Make sure it's a directory in "skins"
+- How should abort() deal with JSON/XML/whatever non-HTML output?
+- Ajax/Firefox: use client-side storage (DOM::Storage) to cache
+  articles.
+- Should there be a function that takes a <mixed> and converts it to
+  JSON?
+- Is there a way to normalize HTML? If the <![CDATA[...]]> section in
+  a feed contains mismatched tags, e.g.
+	<p><a ...><img/></p>
+  is there a way to keep the badness contained within the <div item>
+  when it's displayed, and not contaminate the rest of the page?
+	Iframes seem ugly. Perhaps one of the XML parsers can parse
+  HTML and deal with errors?

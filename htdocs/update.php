@@ -9,6 +9,19 @@ require_once("common.inc");
 require_once("database.inc");
 require_once("feed.inc");
 
+/* See what kind of output the user wants */
+switch ($_REQUEST['o'])
+{
+    case "json":
+	$out_fmt = "json";
+	header("Content-type: text/plain");
+	break;
+    default:
+	header("Content-type: text/html");
+	$out_fmt = "html";
+	break;
+}
+
 $feed_id = $_REQUEST["id"];
 
 if (is_numeric($feed_id) && is_int($feed_id+0))
@@ -16,13 +29,15 @@ if (is_numeric($feed_id) && is_int($feed_id+0))
 	update_feed($feed_id);
 
 	// XXX - Prettier output
-	echo "<p><a href=\"view.php?id=$feed_id\">Read feed</a></p>\n";
+	if ($out_fmt == "html")
+		echo "<p><a href=\"view.php?id=$feed_id\">Read feed</a></p>\n";
 } elseif ($feed_id == "all")
 {
 	update_all_feeds();
 
 	// XXX - Prettier output
-	echo "<p><a href=\"view.php?id=$feed_id\">Read feeds</a></p>\n";
+	if ($out_fmt == "html")
+		echo "<p><a href=\"view.php?id=$feed_id\">Read feeds</a></p>\n";
 } else {
 	/* Abort with an error message */
 	abort("Invalid feed ID: $feed_id");
@@ -45,13 +60,27 @@ if (is_numeric($feed_id) && is_int($feed_id+0))
  */
 function update_feed($feed_id)
 {
+	global $out_fmt;
+
+echo "Inside update_feed($feed_id)\n";
 	/* Get the feed from the database */
 	$feed = db_get_feed($feed_id);
 	if (!$feed)
 		abort("No such feed: $feed_id.");
 
 	// XXX - Prettier output
-	echo "<h3>Updating feed [$feed[title]]</h3>\n";
+	switch ($out_fmt)
+	{
+	    case "html":
+		echo "<h3>Updating feed [$feed[title]]</h3>\n";
+		break;
+	    case "json":
+		echo "{state: 'start', feed_id: $feed_id, title: '",
+			addslashes($feed['title']),
+			"'}\n";
+		flush();
+		break;
+	}
 
 	/* Initialize Curl */
 	$ch = _open_curl_handle($feed['feed_url'],
@@ -66,7 +95,18 @@ function update_feed($feed_id)
 	if ($feed_text === false)
 	{
 		// XXX - Better error-reporting
-		echo "<b>Curl error [", curl_errno($ch), "]: ", htmlspecialchars(curl_error($ch)), "</b><br/>\n";
+		switch ($out_fmt)
+		{
+		    case "html":
+			echo "<b>Curl error [", curl_errno($ch), "]: ", htmlspecialchars(curl_error($ch)), "</b><br/>\n";
+			break;
+		    case "json":
+			echo "{state: 'error', feed_id: $feed_id, error: '",
+				addslashes(curl_error($ch)),
+				"'}\n";
+			flush();
+			break;
+		}
 		curl_close($ch);
 		return false;
 	}
@@ -90,6 +130,7 @@ function update_feed($feed_id)
 function update_all_feeds()
 {
 	global $PARALLEL_UPDATES;
+	global $out_fmt;
 
 	$feeds = db_get_feeds();
 		// XXX - Error-checking
@@ -121,7 +162,18 @@ function update_all_feeds()
 		$url = $feed['feed_url'];
 
 		// XXX - Prettier output
-		echo "Starting ($feed[id]) [", $feed['title'], "]<br/>\n"; flush();
+		switch ($out_fmt)
+		{
+		    case "html":
+			echo "Starting ($feed[id]) [", $feed['title'], "]<br/>\n"; flush();
+			break;
+		    case "json":
+			echo "{state: 'start', feed_id: $feed[id], title: '",
+				addslashes($feed['title']),
+				"'}\n";
+			flush();
+			break;
+		}
 		$ch = _open_curl_handle(	// Curl handle for this URL
 			$url,
 			$feed['username'],
@@ -178,9 +230,21 @@ function update_all_feeds()
 			if ($err['msg'] != CURLMSG_DONE)
 			{
 				// XXX - Better error-reporting
-				echo "    Warning: curl_multi_info_read() returned [";
-				print_r($err);
-				echo "], and I don't know how to handle that.\n";
+				switch ($out_fmt)
+				{
+				    case "html":
+					echo "    Warning: curl_multi_info_read() returned [";
+					print_r($err);
+					echo "], and I don't know how to handle that.\n";
+					break;
+				    case "json":
+					// XXX - Better error-reporting
+					echo "{state: 'error', curl_err: '",
+						addslashes(var_export($err)),
+						"'}\n";
+					flush();
+					break;
+				}
 				break;
 			}
 
@@ -202,8 +266,20 @@ function update_all_feeds()
 			{
 				// Hopefully this will never happen
 				// XXX - Better error-reporting
-				echo "<b>Error: couldn't find curl handle ",
-					$err['handle'], " in pipeline</b><br/>\n";
+				switch ($out_fmt)
+				{
+				    case "html":
+					echo "<b>Error: couldn't find curl handle ",
+						$err['handle'], " in pipeline</b><br/>\n";
+					break;
+				    case "json":
+					// XXX - Better error-reporting
+					echo "{state: 'error', msg: '" ,
+						addslashes("Error: couldn't find curl handle " . $err['handle'], " in pipeline"),
+						"'}\n";
+					flush();
+					break;
+				}
 				continue;
 			}
 
@@ -218,7 +294,18 @@ function update_all_feeds()
 				 * its contents.
 				 */
 				// XXX - Better error-reporting
-				echo "Finished (", $handle['feed']['id'], ") [", $handle['feed']['title'], "]<br/>\n"; flush();
+				switch ($out_fmt)
+				{
+				    case "html":
+					echo "Finished (", $handle['feed']['id'], ") [", $handle['feed']['title'], "]<br/>\n"; flush();
+					break;
+				    case "json":
+					echo "{state: 'end', feed_id: ",
+						$handle['feed']['id'],
+						"}\n";
+					flush();
+					break;
+				}
 				$feed_text = curl_multi_getcontent($handle['ch']);
 				_save_handle($handle['feed']['id'],
 					      $feed_text);
@@ -230,12 +317,23 @@ function update_all_feeds()
 				curl_close($handle['ch']);
 			} else {
 				// XXX - Better error-reporting
-				echo "<b>Error in [", $handle['feed']['title'],
-					"]: ",
-					curl_errno($handle['ch']),
-					": [",
-					curl_error($handle['ch']),
-					"]</b><br/>\n";
+				switch ($out_fmt)
+				{
+				    case "html":
+					echo "<b>Error in [", $handle['feed']['title'],
+						"]: ",
+						curl_errno($handle['ch']),
+						": [",
+						curl_error($handle['ch']),
+						"]</b><br/>\n";
+					break;
+				    case "json":
+					echo "{state: 'error', feed_id: ",
+						$handle['feed']['id'],
+						"}\n";
+					flush();
+					break;
+				}
 			}
 
 			/* See if there's another URL to fetch */
@@ -244,7 +342,20 @@ function update_all_feeds()
 				// Yes. Open a Curl handle, and add it
 				// to the multi-handle
 				// XXX - Prettier output
-				echo "Starting ($feed[id]) [", $feed['title'], "]<br/>\n"; flush();
+				switch ($out_fmt)
+				{
+				    case "html":
+					echo "Starting ($feed[id]) [", $feed['title'], "]<br/>\n"; flush();
+					break;
+				    case "json":
+					echo "{state: 'start', feed_id: ",
+						$feed['id'],
+						", title: '",
+						addslashes($feed['title']),
+						"'}\n";
+					flush();
+					break;
+				}
 				$url = $feed['feed_url'];
 				$ch = _open_curl_handle(
 					$url,
@@ -284,7 +395,17 @@ function update_all_feeds()
 		if (isset($pipeline[$i]))
 		{
 			// XXX - Prettier output
-			echo "Finished (", $pipeline[$i]['feed']['id'], ") [", $pipeline[$i]['feed']['title'], "]<br/>\n"; flush();
+			switch ($out_fmt)
+			{
+			    case "html":
+				echo "Finished (", $pipeline[$i]['feed']['id'], ") [", $pipeline[$i]['feed']['title'], "]<br/>\n"; flush();
+			    case "json":
+				echo "{state: 'end', feed_id: ",
+					$pipeline[$i]['feed']['id'],
+					"}\n";
+				flush();
+				break;
+			}
 			$feed_text = curl_multi_getcontent($pipeline[$i]['ch']);
 			_save_handle($pipeline[$i]['feed']['id'],
 				      $feed_text);
@@ -379,7 +500,16 @@ function _save_handle($feed_id, &$feed_text)
 	if ($http_status != "200")
 	{
 		// XXX - Better error-reporting
-		echo "<b>Error: $http_status - $http_error. Aborting.</b><br/>\n";
+		switch ($GLOBALS['out_fmt'])
+		{
+		  case "json":
+		      // XXX - What's the Right Thing to do?
+		      break;
+		  case "html":
+		  default:
+			echo "<b>Error: $http_status - $http_error. Aborting.</b><br/>\n";
+			break;
+		}
 		return FALSE;
 	}
 
