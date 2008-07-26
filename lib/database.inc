@@ -761,9 +761,17 @@ EOT;
 //echo "Affected rows: [", $stmt->affected_rows, "]<br/>\n";
 	}
 
-	echo (int) $update_counts['old'], " old, ",
-		(int) $update_counts['new'], " new, ",
-		(int) $update_counts['updated'], " updated items.<br/>\n";
+	switch ($GLOBALS['out_fmt'])
+	{
+	    case "json":
+		break;
+	    case "html":
+	    default:
+		echo (int) $update_counts['old'], " old, ",
+			(int) $update_counts['new'], " new, ",
+			(int) $update_counts['updated'], " updated items.<br/>\n";
+		break;
+	}
 }
 
 /* db_mark_items

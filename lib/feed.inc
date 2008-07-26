@@ -297,17 +297,16 @@ function parse_feed($feed_text)
 	{
 		// XML Parser found an error.
 		$feed_err = 1;
-		$feed_errmsg = xml_error_string(xml_get_error_code($xml_parser));
+		$feed_errmsg = "XML Parser found an error: " .
+			xml_error_string(xml_get_error_code($xml_parser));
 
-		// XXX - Should just set error message, and allow
-		// caller to do error-reporting.
-		echo "<b>XML Parser found an error: [$feed_errmsg]</b><br/>\n";
 		return FALSE;
 	} else	if ($feed_err)
 	{
 		// XXX - Should just set error message, and allow
 		// caller to do error-reporting.
-		echo "<b>Handler found an error</b><br/>\n";
+//		echo "<b>Handler found an error</b><br/>\n";
+		$feed_errmsg = "Handler error: $feed_errmsg";
 
 		// The handlers have found an error.
 		return FALSE;

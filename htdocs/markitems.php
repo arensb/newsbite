@@ -15,7 +15,9 @@ elseif (isset($_REQUEST['mark-all']))
 	// Mark all items as read
 	$cmd = "mark-all";
 else
-	abort("Bad command: \"$cmd\"");
+	abort("Bad command: \"$cmd\"; \$_REQUEST == [" .
+	      var_export($_REQUEST) .
+	      "]");
 
 $mark_how = $_REQUEST['mark-how'];
 
