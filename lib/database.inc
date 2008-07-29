@@ -631,9 +631,21 @@ EOT;
 
 	/* Add/replace the items in the database. */
 	if (count($feed['items']) == 0)
+	{
 		/* Nothing to do */
 		// XXX - Return something sensible?
+		// XXX - Return count of new/updated items
+		switch ($GLOBALS['out_fmt'])
+		{
+		    case "json":
+			break;
+		    case "html":
+		    default:
+			echo "0 old, 0 new, 0 updated items.<br/>\n";
+			break;
+		}
 		return;
+	}
 
 	$update_counts = array();
 		// Assoc saying how many items were updated, how many
@@ -761,6 +773,7 @@ EOT;
 //echo "Affected rows: [", $stmt->affected_rows, "]<br/>\n";
 	}
 
+	// XXX - Return count of new/updated items
 	switch ($GLOBALS['out_fmt'])
 	{
 	    case "json":

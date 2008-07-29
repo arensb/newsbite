@@ -17,7 +17,7 @@ switch ($_REQUEST['o'])
 	header("Content-type: text/plain");
 	break;
     default:
-	header("Content-type: text/html");
+	header("Content-type: text/html; charset=UTF-8");
 	$out_fmt = "html";
 	break;
 }
@@ -62,7 +62,6 @@ function update_feed($feed_id)
 {
 	global $out_fmt;
 
-echo "Inside update_feed($feed_id)\n";
 	/* Get the feed from the database */
 	$feed = db_get_feed($feed_id);
 	if (!$feed)
@@ -82,23 +81,18 @@ echo "Inside update_feed($feed_id)\n";
 		break;
 	}
 
-	/* Initialize Curl */
-	$ch = _open_curl_handle($feed['feed_url'],
-				$feed['username'],
-				$feed['passwd']);
-
-	/* Fetch the RSS feed */
-	$feed_text = curl_exec($ch);
-
-	// Check for curl errors
-	$err = curl_error($ch);
+	/* Fetch the feed */
+	$feed_text = fetch_url($feed['feed_url'],
+			       $feed['username'],
+			       $feed['passwd']);
 	if ($feed_text === false)
 	{
-		// XXX - Better error-reporting
 		switch ($out_fmt)
 		{
 		    case "html":
-			echo "<b>Curl error [", curl_errno($ch), "]: ", htmlspecialchars(curl_error($ch)), "</b><br/>\n";
+			echo "<b>Curl error [", curl_errno($ch), "]: ",
+				htmlspecialchars(curl_error($ch)),
+				"</b><br/>\n";
 			break;
 		    case "json":
 			echo "{state: 'error', feed_id: $feed_id, error: '",
@@ -107,8 +101,6 @@ echo "Inside update_feed($feed_id)\n";
 			flush();
 			break;
 		}
-		curl_close($ch);
-		return false;
 	}
 
 	/* Check the HTTP error code, save a cached copy of the feed,
@@ -116,7 +108,18 @@ echo "Inside update_feed($feed_id)\n";
 	 */
 	_save_handle($feed_id, $feed_text);
 
-	curl_close($ch);
+
+	// XXX - Prettier output
+	switch ($out_fmt)
+	{
+	    case "html":
+		echo "Finsihed [$feed[title]]<br/>\n";
+		break;
+	    case "json":
+		echo "{state: 'end', feed_id: $feed_id}\n";
+		flush();
+		break;
+	}
 
 	// XXX - Return something intelligent
 }
@@ -129,6 +132,7 @@ echo "Inside update_feed($feed_id)\n";
 // $force argument to force an update.
 function update_all_feeds()
 {
+echo "Inside update_all_feeds()\n";
 	global $PARALLEL_UPDATES;
 	global $out_fmt;
 
@@ -245,7 +249,7 @@ function update_all_feeds()
 					flush();
 					break;
 				}
-				break;
+				break;	// End of enclosing while loop
 			}
 
 			// Find the appropriate handle, and set $handle as a
@@ -294,10 +298,18 @@ function update_all_feeds()
 				 * its contents.
 				 */
 				// XXX - Better error-reporting
+				// XXX - Move this to later, in case
+				// things fail, so we can report
+				// properly.
 				switch ($out_fmt)
 				{
 				    case "html":
-					echo "Finished (", $handle['feed']['id'], ") [", $handle['feed']['title'], "]<br/>\n"; flush();
+					echo "Finished (",
+						$handle['feed']['id'],
+						") [",
+						$handle['feed']['title'],
+						"]<br/>\n";
+					flush();
 					break;
 				    case "json":
 					echo "{state: 'end', feed_id: ",
@@ -307,13 +319,39 @@ function update_all_feeds()
 					break;
 				}
 				$feed_text = curl_multi_getcontent($handle['ch']);
-				_save_handle($handle['feed']['id'],
-					      $feed_text);
+				if ($feed_text === false)
+				{
+					// XXX - Error-handling
+					echo "<b>Couldn't get content.</b><br/>\n";
+				} else {
+					list($fetch_http_status,
+					     $fetch_http_error) =
+						_http_status($feed_text);
+						// XXX - Error-checking
+					if ($fetch_http_status != "200")
+					{
+						switch ($out_fmt)
+						{
+						    case "json":
+							// XXX -
+							// What's the
+							// Right Thing
+							// to do?
+							break;
+						    case "html":
+						    default:
+							echo "<b>HTTP Error ($fetch_http_status): $fetch_http_error</b><br/>\n";
+							break;
+						}
+					} else
+						_save_handle($handle['feed']['id'],
+							     $feed_text);
+				}
 
 				/* We're done with this handle. */
 				curl_multi_remove_handle(
 					$mh,
-					$handle['ch']);
+						$handle['ch']);
 				curl_close($handle['ch']);
 			} else {
 				// XXX - Better error-reporting
@@ -399,6 +437,7 @@ function update_all_feeds()
 			{
 			    case "html":
 				echo "Finished (", $pipeline[$i]['feed']['id'], ") [", $pipeline[$i]['feed']['title'], "]<br/>\n"; flush();
+				break;
 			    case "json":
 				echo "{state: 'end', feed_id: ",
 					$pipeline[$i]['feed']['id'],
@@ -455,8 +494,82 @@ function _open_curl_handle($url, $username = NULL, $passwd = NULL)
 
 function _save_handle($feed_id, &$feed_text)
 {
-	/* XXX - Get the HTTP header(s), for the status code, so we
-	 * can find out whether something went wrong.
+echo "Inside _save_handle($feed_id, \"", substr($feed_text, 0, 64), "...\")\n";
+	/* Save a copy of the feed text for debugging */
+	if (defined("FEED_CACHE") && is_dir(FEED_CACHE))
+	{
+		// This will fail if permissions aren't right. Deal
+		// with it. It's a debugging feature, so you should be
+		// paying attention to error messages anyway.
+		$fh = fopen(FEED_CACHE . "/$feed_id", "w");
+		fwrite($fh, $feed_text);
+		fclose($fh);
+	}
+
+	/* Parse the feed */
+	$feed = parse_feed($feed_text);
+	if (!$feed)
+	{
+		// XXX - Better error-handling
+		echo "<b>parse_feed() returned ";
+		if ($feed === false) echo "FALSE";
+		if ($feed === null) echo "NULL";
+		if ($feed === "") echo "(empty string)";
+		echo "</b><br/>\n";
+
+		return FALSE;
+	}
+
+	/* Add the feed to the database */
+	return db_update_feed($feed_id, $feed);
+}
+
+/* fetch_url
+ * Fetch the contents of the given URL, and return the page as a
+ * string. As a side effect, strips off the HTTP header(s) from the
+ * beginning of the string.
+ * In case of error, returns FALSE and sets $fetch_error to an error
+ * message.
+ */
+function fetch_url($url, $username = NULL, $passwd = NULL)
+{
+	global $fetch_error;
+	global $fetch_http_status, $fetch_http_error;
+
+	/* Initialize Curl */
+	$ch = _open_curl_handle($url, $username, $passwd);
+
+	/* Fetch the RSS feed */
+	$feed_text = curl_exec($ch);
+
+	// Check for curl errors
+	if ($feed_text === false)
+	{
+		$fetch_error = "Curl error (" .
+			curl_errno($ch) .
+			"): " .
+			curl_error($ch);
+		curl_close($ch);
+		return false;
+	}
+
+	list($fetch_http_status, $fetch_http_error) = _http_status($feed_text);
+	if ($fetch_http_status != "200")
+	{
+		$fetch_error = "HTTP error $fetch_http_status: $fetch_http_error";
+		curl_close($ch);
+		return false;
+	}
+
+	curl_close($ch);
+	return $feed_text;
+}
+
+function _http_status(&$text)
+{
+echo "Inside http_status(...)\n";
+	/* Get the HTTP header(s), for the status code, so we can find
+	 * out whether something went wrong.
 	 * A header is a set of CR-LF-terminated lines of the form
 	 *	HTTP/<version> <code> <msg>
 	 *	another line
@@ -478,9 +591,9 @@ function _save_handle($feed_id, &$feed_text)
 	$http_error = "This error message intentionally left blank.";
 	do {
 		list($new_header, $new_text) =
-			explode("\r\n\r\n", $feed_text, 2);
+			explode("\r\n\r\n", $text, 2);
 		$header = $new_header;
-		$feed_text = $new_text;
+		$text = $new_text;
 
 		/* Dig the HTTP status code out of the header */
 		if (preg_match('{^HTTP/\S+\s+(\d+)\s+(.*?)\r}',
@@ -495,45 +608,8 @@ function _save_handle($feed_id, &$feed_text)
 			// 302 Moved temporarily (followed by another header)
 			// 401 Authentication required (followed by another header)
 		}
-	} while (substr($feed_text, 0, 5) == "HTTP/");
+	} while (substr($text, 0, 5) == "HTTP/");
 
-	if ($http_status != "200")
-	{
-		// XXX - Better error-reporting
-		switch ($GLOBALS['out_fmt'])
-		{
-		  case "json":
-		      // XXX - What's the Right Thing to do?
-		      break;
-		  case "html":
-		  default:
-			echo "<b>Error: $http_status - $http_error. Aborting.</b><br/>\n";
-			break;
-		}
-		return FALSE;
-	}
-
-
-	/* Save a copy of the feed text for debugging */
-	if (defined("FEED_CACHE") && is_dir(FEED_CACHE))
-	{
-		// This will fail if permissions aren't right. Deal
-		// with it. It's a debugging feature, so you should be
-		// paying attention to error messages anyway.
-		$fh = fopen(FEED_CACHE . "/$feed_id", "w");
-		fwrite($fh, $feed_text);
-		fclose($fh);
-	}
-
-	/* Parse the feed */
-	$feed = parse_feed($feed_text);
-	if (!$feed)
-	{
-		// XXX - Better error-handling
-		return FALSE;
-	}
-
-	/* Add the feed to the database */
-	return db_update_feed($feed_id, $feed);
+	return array($http_status, $http_error);
 }
 ?>

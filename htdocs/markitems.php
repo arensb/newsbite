@@ -14,8 +14,14 @@ if (isset($_REQUEST['doit']))
 elseif (isset($_REQUEST['mark-all']))
 	// Mark all items as read
 	$cmd = "mark-all";
+elseif (count($_REQUEST) == 0)
+	abort(<<<EOT
+No command given. Perhaps the POST variables were dropped by your web proxy.
+Please go back and resubmit.
+EOT
+		);
 else
-	abort("Bad command: \"$cmd\"; \$_REQUEST == [" .
+	abort("No command found; \$_REQUEST == [" .
 	      var_export($_REQUEST) .
 	      "]");
 
@@ -33,9 +39,9 @@ switch ($mark_how)
 	break;
 
     default:
-	// XXX - Better error-reporting
-	echo "Don't know how to mark items: [$mark_how]<br/>\n";
-	exit(0);
+	// This is the result either of programmer error, or illegal
+	// input.
+	abort("Don't know how to mark items: \"$mark_how\"");
 }
 
 $item_ids = array();		// The IDs of the items to mark
