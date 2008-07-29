@@ -3,9 +3,12 @@
 	Last time, got it when authenticating via UMD. $_REQUEST is
   empty, hence no command. Is there a better way to handle the error
   than to put up an explanatory message?
+	Probably not.
 - bug: When updates take too long, PHP terminates. 30 sec. max.
 	This is a curl error, and should be caught. Error at
                 $err = curl_multi_select($mh);
+  This doesn't seem to be a simple case of an operation exceeding a
+  timeout.
 - bug: when on the last page (earliest items) and use "mark all as
   read", sometimes get blank page.
 	Is this just the N810 browser being wonky?
