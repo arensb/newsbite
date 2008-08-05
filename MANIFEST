@@ -35,12 +35,15 @@ htdocs/skins/default/unsubscribe.tpl
 htdocs/skins/default/view.css
 htdocs/skins/default/view.js
 htdocs/skins/default/view.tpl
+htdocs/skins/fancy/Attention_niels_epting.png
+htdocs/skins/fancy/Loading.gif
 htdocs/skins/fancy/abort.css
 htdocs/skins/fancy/abort.tpl
 htdocs/skins/fancy/addfeed.css
 htdocs/skins/fancy/addfeed.tpl
 htdocs/skins/fancy/editfeed.css
 htdocs/skins/fancy/editfeed.tpl
+htdocs/skins/fancy/feeds.js
 htdocs/skins/fancy/feeds.tpl
 htdocs/skins/fancy/index.css
 htdocs/skins/fancy/item.tpl
