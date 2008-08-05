@@ -10,10 +10,15 @@ table#feeds {
 
 table#feeds .icon-col {
 	width:			32px;
+	/* Height is crucial: 22px appears to be the smallest height
+	 * that'll accommodate the update icon without ugly resizing.
+	 */
+	height:			22px;
+	padding:		0px;
+	text-align:		center;
 }
 
 table#feeds tr {
-	border:		1px dotted black;
 }
 
 table#feeds tr.odd-row {

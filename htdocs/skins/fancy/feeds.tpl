@@ -18,6 +18,10 @@
 <noscript>
   <link rel="stylesheet" type="text/css" href="skins/{$skin}/style-nojs.css" media="all" />
 </noscript>
+<script type="text/javascript">
+  var skin_dir="skins/{$skin}";
+</script>
+<script type="text/javascript" src="skins/{$skin}/feeds.js"></script>
 </head>
 <body>
 
@@ -25,7 +29,7 @@
 
 {strip}
 <ul class="tools">
-  <li><a href="update.php?id=all">Update all feeds</a></li>
+  <li><a href="update.php?id=all" onclick="return update_feed('all')">Update all feeds</a></li>
   <li><a href="view.php?id=all">View all feeds</a></li>
   <li><a href="addfeed.php">Add a feed</a></li>
   <li><a href="opml.php">Subscription list as OPML</a></li>
@@ -65,7 +69,7 @@
     </td>
     <td>
       {* Tools *}
-      <a href="update.php?id={$feed.id}">update</a>
+      <a href="update.php?id={$feed.id}" onclick="return update_feed({$feed.id})">update</a>
       &nbsp;
       <a href="editfeed.php?id={$feed.id}">edit</a>
       &nbsp;

@@ -65,4 +65,81 @@ function bare_abort($msg)
 <?
 	 exit(0);
 }
+
+/* jsonify
+ * Convert the arguments to a JSON string, and return it.
+ * If there's one argument, and it's a string, then it is assumed to
+ * already be in JSON format, and it just needs to have characters
+ * escaped.
+ * If there are multiple arguments, or one argument that's an array,
+ * it's assumed to be an assoc of key -> value pairs that will be
+ * converted to a JavaScript object.
+ * Returns FALSE in case of error.
+ * The returned string is all on one line.
+ * In the case of assocs (which return JavaScript objects), we assume
+ * that the keys are valid JavaScript identifiers.
+ */
+// XXX - How to distinguish between assoc and array with an even
+// number of elements? The way we have it now, with an even number of
+// arguments indicating an assoc, is a hack. Perhaps change to
+//	jsonify($is_assoc, $arg = NULL)
+function jsonify($arg)
+{
+	/* See how many arguments there are, and assign $it to
+	 * whatever it is we're converting.
+	 */
+	$argc = func_num_args();
+
+	if ($argc == 1)
+		$it =& $arg;
+	elseif ($argv % 2 == 0)
+	{
+		// Convert array of arguments to an assoc.
+		$it = array();
+		for ($i = 0; $i < $argc; $i += 2)
+			$it[func_get_arg($i)] = func_get_arg($i+1);
+	} else
+		$it = func_get_args();
+
+	/* At this point, $it is the thing we're converting. Decide
+	 * how to handle it, depending on whether $it is a string, an
+	 * assoc, or an array.
+	 */
+	// XXX - Handle NULL?
+	$retval = "";
+	if (is_bool($it))
+		$retval = ($it ? "true" : "false");
+	elseif (is_string($it))
+		/* Escape chars in $it */
+		$retval = "'" .
+			addcslashes($it, "\\\'\n\r\"") .
+			"'";
+	elseif (is_numeric($it))
+		$retval = &$it;
+	elseif (is_array($it))
+	{
+		if (array_key_exists("0", $it))
+		{
+			/* Output a JavaScript array */
+			// We need to do the silly dance with $it[0]
+			// to avoid having an extra comma in the
+			// output.
+			$retval = '[' . jsonify($it[0]);
+			for ($i = 1; $i < count($it); $i++)
+				$retval .= ',' . jsonify($it[$i]);
+			$retval .= ']';
+		} else {
+			/* Output a JavaScript object */
+			$keys = array();
+			$retval = '{';
+			foreach ($it as $key => $value)
+				$keys[] = $key . ':' . jsonify($value);
+			$retval .= implode(',', $keys);
+			$retval .= '}';
+		}
+	} else
+		return FALSE;
+
+	return $retval;
+}
 ?>
