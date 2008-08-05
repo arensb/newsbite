@@ -14,10 +14,10 @@ switch ($_REQUEST['o'])
 {
     case "json":
 	$out_fmt = "json";
-	header("Content-type: text/plain");
+	header("Content-type: text/plain; charset=utf-8");
 	break;
     default:
-	header("Content-type: text/html; charset=UTF-8");
+	header("Content-type: text/html; charset=utf-8");
 	$out_fmt = "html";
 	break;
 }
@@ -61,6 +61,7 @@ if (is_numeric($feed_id) && is_int($feed_id+0))
 function update_feed($feed_id)
 {
 	global $out_fmt;
+	global $fetch_error;
 
 	/* Get the feed from the database */
 	$feed = db_get_feed($feed_id);
@@ -74,9 +75,10 @@ function update_feed($feed_id)
 		echo "<h3>Updating feed [$feed[title]]</h3>\n";
 		break;
 	    case "json":
-		echo "{state: 'start', feed_id: $feed_id, title: '",
-			addslashes($feed['title']),
-			"'}\n";
+		echo jsonify('state',	"start",
+			     'feed_id',	$feed_id,
+			     'title',	$feed['title']),
+			"\n";
 		flush();
 		break;
 	}
@@ -90,14 +92,13 @@ function update_feed($feed_id)
 		switch ($out_fmt)
 		{
 		    case "html":
-			echo "<b>Curl error [", curl_errno($ch), "]: ",
-				htmlspecialchars(curl_error($ch)),
-				"</b><br/>\n";
+			echo "<b>$fetch_error</b><br/>\n";
 			break;
 		    case "json":
-			echo "{state: 'error', feed_id: $feed_id, error: '",
-				addslashes(curl_error($ch)),
-				"'}\n";
+			echo jsonify('state',	"error",
+				     'feed_id',	$feed_id,
+				     'error',	$fetch_error),
+				"\n";
 			flush();
 			break;
 		}
@@ -107,17 +108,21 @@ function update_feed($feed_id)
 	 * parse it, and add it to the database.
 	 */
 	_save_handle($feed_id, $feed_text);
-
+		// XXX - Error-handling
+		// XXX - Get item counts returned by _save_handle
 
 	// XXX - Prettier output
 	switch ($out_fmt)
 	{
-	    case "html":
-		echo "Finsihed [$feed[title]]<br/>\n";
-		break;
 	    case "json":
-		echo "{state: 'end', feed_id: $feed_id}\n";
+		echo jsonify('state',	"end",
+			     'feed_id',	$feed_id),
+			"\n";
 		flush();
+		break;
+	    case "html":
+	    default:
+		echo "Finished [$feed[title]]<br/>\n";
 		break;
 	}
 
@@ -132,7 +137,6 @@ function update_feed($feed_id)
 // $force argument to force an update.
 function update_all_feeds()
 {
-echo "Inside update_all_feeds()\n";
 	global $PARALLEL_UPDATES;
 	global $out_fmt;
 
@@ -169,12 +173,14 @@ echo "Inside update_all_feeds()\n";
 		switch ($out_fmt)
 		{
 		    case "html":
-			echo "Starting ($feed[id]) [", $feed['title'], "]<br/>\n"; flush();
+			echo "Starting ($feed[id]) [", $feed['title'], "]<br/>\n";
+			flush();
 			break;
 		    case "json":
-			echo "{state: 'start', feed_id: $feed[id], title: '",
-				addslashes($feed['title']),
-				"'}\n";
+			echo jsonify('state',	"start",
+				     'feed_id',	$feed['id'],
+				     'title',	$feed['title']),
+				"\n";
 			flush();
 			break;
 		}
@@ -243,9 +249,11 @@ echo "Inside update_all_feeds()\n";
 					break;
 				    case "json":
 					// XXX - Better error-reporting
-					echo "{state: 'error', curl_err: '",
-						addslashes(var_export($err)),
-						"'}\n";
+					echo jsonify('state',	"error",
+//						     'curl_err',var_export($err)),
+						     'error_type', "curl",
+						     'error',var_export($err)),
+						"\n";
 					flush();
 					break;
 				}
@@ -278,9 +286,9 @@ echo "Inside update_all_feeds()\n";
 					break;
 				    case "json":
 					// XXX - Better error-reporting
-					echo "{state: 'error', msg: '" ,
-						addslashes("Error: couldn't find curl handle " . $err['handle'], " in pipeline"),
-						"'}\n";
+					echo jsonify('state',	"error",
+						     'error',	"Error: couldn't find curl handle " . $err['handle'], " in pipeline"),
+						"\n";
 					flush();
 					break;
 				}
@@ -312,9 +320,9 @@ echo "Inside update_all_feeds()\n";
 					flush();
 					break;
 				    case "json":
-					echo "{state: 'end', feed_id: ",
-						$handle['feed']['id'],
-						"}\n";
+					echo jsonify('state',	"end",
+						     'feed_id',	$handle['feed']['id']),
+						"\n";
 					flush();
 					break;
 				}
@@ -346,6 +354,11 @@ echo "Inside update_all_feeds()\n";
 					} else
 						_save_handle($handle['feed']['id'],
 							     $feed_text);
+							// XXX - Error-handling
+							// XXX - Get
+							// item counts
+							// returned by
+							// _save_handle
 				}
 
 				/* We're done with this handle. */
@@ -366,9 +379,10 @@ echo "Inside update_all_feeds()\n";
 						"]</b><br/>\n";
 					break;
 				    case "json":
-					echo "{state: 'error', feed_id: ",
-						$handle['feed']['id'],
-						"}\n";
+					echo jsonify('state',	"error",
+						     'feed_id',	$handle['feed']['id'],
+						     'error',	"XXX - Insert error message here"),
+						"\n";
 					flush();
 					break;
 				}
@@ -383,14 +397,14 @@ echo "Inside update_all_feeds()\n";
 				switch ($out_fmt)
 				{
 				    case "html":
-					echo "Starting ($feed[id]) [", $feed['title'], "]<br/>\n"; flush();
+					echo "Starting ($feed[id]) [", $feed['title'], "]<br/>\n";
+					flush();
 					break;
 				    case "json":
-					echo "{state: 'start', feed_id: ",
-						$feed['id'],
-						", title: '",
-						addslashes($feed['title']),
-						"'}\n";
+					echo jsonify('state',	"start",
+						     'feed_id',	$feed['id'],
+						     'title',	$feed['title']),
+						"\n";
 					flush();
 					break;
 				}
@@ -439,15 +453,18 @@ echo "Inside update_all_feeds()\n";
 				echo "Finished (", $pipeline[$i]['feed']['id'], ") [", $pipeline[$i]['feed']['title'], "]<br/>\n"; flush();
 				break;
 			    case "json":
-				echo "{state: 'end', feed_id: ",
-					$pipeline[$i]['feed']['id'],
-					"}\n";
+				echo jsonify('state',	"end",
+					     'feed_id',	$pipeline[$i]['feed']['id']),
+					"\n";
 				flush();
 				break;
 			}
 			$feed_text = curl_multi_getcontent($pipeline[$i]['ch']);
 			_save_handle($pipeline[$i]['feed']['id'],
 				      $feed_text);
+				// XXX - Error-handling
+				// XXX - Get item counts returned by
+				// _save_handle
 		}
 	}
 
@@ -494,7 +511,8 @@ function _open_curl_handle($url, $username = NULL, $passwd = NULL)
 
 function _save_handle($feed_id, &$feed_text)
 {
-echo "Inside _save_handle($feed_id, \"", substr($feed_text, 0, 64), "...\")\n";
+	global $out_fmt;
+
 	/* Save a copy of the feed text for debugging */
 	if (defined("FEED_CACHE") && is_dir(FEED_CACHE))
 	{
@@ -510,12 +528,21 @@ echo "Inside _save_handle($feed_id, \"", substr($feed_text, 0, 64), "...\")\n";
 	$feed = parse_feed($feed_text);
 	if (!$feed)
 	{
-		// XXX - Better error-handling
-		echo "<b>parse_feed() returned ";
-		if ($feed === false) echo "FALSE";
-		if ($feed === null) echo "NULL";
-		if ($feed === "") echo "(empty string)";
-		echo "</b><br/>\n";
+		switch ($out_fmt)
+		{
+		    case "json":
+			// XXX - What to do?
+			break;
+		    case "html":
+		    default:
+			// XXX - Better error-handling
+			echo "<b>feed $feed_id: parse_feed() returned ";
+			if ($feed === false) echo "FALSE";
+			if ($feed === null) echo "NULL";
+			if ($feed === "") echo "(empty string)";
+			echo "</b><br/>\n";
+			break;
+		}
 
 		return FALSE;
 	}
@@ -567,7 +594,6 @@ function fetch_url($url, $username = NULL, $passwd = NULL)
 
 function _http_status(&$text)
 {
-echo "Inside http_status(...)\n";
 	/* Get the HTTP header(s), for the status code, so we can find
 	 * out whether something went wrong.
 	 * A header is a set of CR-LF-terminated lines of the form

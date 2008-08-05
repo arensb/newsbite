@@ -587,6 +587,9 @@ function db_update_feed_info($feed_id, $fields)
  * Update a feed. $feed_id is the ID of the feed to update, and $feed
  * is a structure containing all the known information and articles in
  * the feed.
+ * Returns an assoc with keys "old", "new", and "updated", giving the
+ * number of old, new, and updated items, respectively.
+ * In case of error, returns FALSE.
  */
 function db_update_feed($feed_id, $feed)
 {
@@ -632,19 +635,12 @@ EOT;
 	/* Add/replace the items in the database. */
 	if (count($feed['items']) == 0)
 	{
-		/* Nothing to do */
-		// XXX - Return something sensible?
-		// XXX - Return count of new/updated items
-		switch ($GLOBALS['out_fmt'])
-		{
-		    case "json":
-			break;
-		    case "html":
-		    default:
-			echo "0 old, 0 new, 0 updated items.<br/>\n";
-			break;
-		}
-		return;
+		/* Nothing to do. Return count of old/new/updated
+		 * items (all zero)
+		 */
+		return array("old" => 0,
+			     "new" => 0,
+			     "updated" => 0);
 	}
 
 	$update_counts = array();
@@ -773,18 +769,8 @@ EOT;
 //echo "Affected rows: [", $stmt->affected_rows, "]<br/>\n";
 	}
 
-	// XXX - Return count of new/updated items
-	switch ($GLOBALS['out_fmt'])
-	{
-	    case "json":
-		break;
-	    case "html":
-	    default:
-		echo (int) $update_counts['old'], " old, ",
-			(int) $update_counts['new'], " new, ",
-			(int) $update_counts['updated'], " updated items.<br/>\n";
-		break;
-	}
+	/* Return count of new/updated items */
+	return $update_counts;
 }
 
 /* db_mark_items
