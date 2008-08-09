@@ -20,7 +20,7 @@ if (isset($_REQUEST['set-skin']))
 		// XXX - Should set domain and path
 		// domain: $_SERVER['SERVER_NAME'] ?
 		// path: dirname($_SERVER['PHP_SELF']) ?
-		setcookie("skin", $new_skin);
+		setcookie("skin", $new_skin, 9999999999);
 	}
 }
 
