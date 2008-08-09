@@ -15,6 +15,13 @@
 - bug: when on the last page (earliest items) and use "mark all as
   read", sometimes get blank page.
 	Is this just the N810 browser being wonky?
+- Ajax feed update: use regular expressions to find lines in JSON
+  text. Text is sometimes truncated in the middle of a line, resulting
+  in parse errors.
+- Ajax "Update feed"/"Update all feeds" should update article count
+  (and feed title, if it's changed). So presumably the Right Thing is
+  to send the new status line as part of JSON status message.
+	Should there be a separate template for this?
 - I suspect the Smarty cache isn't really necessary. Try turning it
   off, see what happens.
 - Should be able to read both read and unread articles.
@@ -437,3 +444,10 @@
   when it's displayed, and not contaminate the rest of the page?
 	Iframes seem ugly. Perhaps one of the XML parsers can parse
   HTML and deal with errors?
+- Perhaps class Skin can try to be a singleton: that way, if multiple
+  files call 'new Skin', they'll both refer to the same object. OTOH,
+  that should never happen.
+- "When designing an interface, imagine that your program is all that
+  stands between the user and hot, sweaty,
+  tangled-bedsheets-fingertips-digging-into-the-back sex."
+	-- http://xkcd.com/196/

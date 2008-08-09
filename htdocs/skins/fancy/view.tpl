@@ -22,8 +22,25 @@
   <link rel="stylesheet" type="text/css" href="skins/{$skin}/style-nojs.css" media="all" />
 </noscript>
 <script type="text/javascript" src="skins/{$skin}/view.js"></script>
+<script type="text/javascript">
+  // Which articles are we displaying?
+  var feed_id = {strip}
+    {if is_numeric($feed.id)}
+      {$feed.id};
+    {else}
+      '{$feed.id}';
+    {/if}
+    {/strip}
+  {strip}
+  var items = [
+    {foreach from=$items item=i}
+      {$i.id},
+    {/foreach}
+    ];
+  {/strip}
+</script>
 </head>
-<body id="view-body">
+<body id="view-body" onload="load_articles()">
 
 {if ($feed.image != "")}
 <img class="feed-icon" src="{$feed.image}"/>

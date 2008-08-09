@@ -1,3 +1,61 @@
+debug_window = null;
+
+function debug(str)
+{
+//return;
+	if (debug_window == null)
+	{
+		debug_window = window.open("",
+					"Debugging Window",
+					"height=400,width=600,scrollbars,menubar");
+	}
+	var body = debug_window.document.childNodes[1].childNodes[1];
+	body.innerHTML += str + "<br/>\n";
+}
+
+function clrdebug()
+{
+	if (debug_window == null)
+		return;
+	var body = debug_window.document.childNodes[1].childNodes[1];
+	body.innerHTML = "";
+}
+
+// XXX - This function shouldn't be replicated. Consolidate.
+/* createXMLHttpRequest
+ * Create a new XMLHttpRequest object, hopefully in a
+ * browser-independent manner.
+ */
+function createXMLHttpRequest()
+{
+	var request = false;
+
+	/* Firefox, Safari, etc. */
+	if (window.XMLHttpRequest)
+	{
+		if (typeof XMLHttpRequest != 'undefined')
+		{
+			try {
+				request = new XMLHttpRequest();
+			} catch (e) {
+				request = false;
+				debug("Error allocating new XMLHttpRequest\n");
+			}
+		}
+	} else if (window.ActiveXObject)
+	{
+		/* IE */
+		/* Create a new ActiveX XMLHTTP object */
+		try {
+			request = new ActiveXObject('Msxml2.XMLHTTP');
+		} catch (e) {
+			request = false;
+			debug("Error allocating ActiveX XMLHTTP\n");
+		}
+	}
+	return request;
+}
+
 /* toggle-pane
  * Intended to be called from within
  * <div content-panes>
@@ -37,5 +95,61 @@ function toggle_pane(node)
 		container.setAttribute("which", "summary");
 }
 
-collapse = toggle_pane;
-expand   = toggle_pane;
+/* load_articles
+ * Load the articles that will be seen in this view.
+ */
+function load_articles()
+{
+debug(items.length + " items");
+for (var i = 0; i < items.length; i++)
+{
+	debug("item " + i + ": [" + items[i] + "]");
+}
+//var item = document.getElementById("item-" + items[0]);
+
+// XXX - Initialize cache: get the next 25, 50, 100, whatever items.
+// Don't display until another is marked as read.
+
+return;
+	var request = createXMLHttpRequest();
+	if (!request)
+	{
+		debug("Can't allocate XMLHttpRequest");
+	}
+
+	var err;
+
+	// reqobj: an object encapsulating everything we want to keep
+	// track of during this operation
+	var reqobj = {
+		request:	request,
+		last_off:	0
+		};
+
+	request.open('GET',
+		'view.php?id=' + feed_id + '&o=json',
+		true);
+	request.onreadystatechange = function() { parse_response(reqobj) };
+	request.send('');
+
+	return false;
+}
+
+function parse_response(req)
+{
+	debug("parse_response readyState: " + req.request.readyState);
+	switch (req.request.readyState)
+	{
+	    case 0:		// Uninitialized
+	    case 1:		// Loading
+	    case 2:		// Loaded
+		return;
+	    case 3:		// Got partial text
+		debug("Got some text. Len " + req.request.responseText.length);
+		return;
+	    case 4:		// Got all text
+		break;
+	}
+
+	// XXX - Do something intelligent with the response text.
+}

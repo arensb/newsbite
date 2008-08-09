@@ -89,7 +89,7 @@
   {/if}
   <div class="content-panes" collapsible="{$collapsible}" which="{$which}">
     <div class="collapse-bar"
-         onclick="javascript:collapse(this)">
+         onclick="javascript:toggle_pane(this)">
       &#x25b2;{* Upward-pointing triangle *}
     </div>
 
@@ -107,11 +107,11 @@
       <br style="clear: both"/>
     </div>
     <div class="collapse-bar"
-         onclick="javascript:collapse(this)">
+         onclick="javascript:toggle_pane(this)">
       &#x25b2;{* Upward-pointing triangle *}
     </div>
     <div class="expand-bar"
-         onclick="javascript:expand(this)">
+         onclick="javascript:toggle_pane(this)">
       &#x25bc;{* Downward-pointing triangle *}
     </div>
   </div>
