@@ -593,41 +593,7 @@ function db_update_feed_info($feed_id, $fields)
  */
 function db_update_feed($feed_id, $feed)
 {
-	/* Delete old items from database */
-	// XXX - This should probably go at the end: otherwise, with
-	// feeds that have items older than 90 days, you can have:
-	// Monday, 9:00: refresh, get new and old items.
-	// Monday, 10:00: mark old items as read.
-	// Tuesday, 9:00: refresh:
-	//	Old items deleted
-	//	Items added from feed
-	// As a result, messages that were posted > 90 days ago, but
-	// are still in the feed, show up as new.
-	//
-	// Then again, what happens if the feed has an article that
-	// was posted 100 days ago, and updated today?
-
-	// XXX - Another problem: what about feeds that don't give
-	// dates (like The Perry Bible Fellowship)?
 	$dbh = db_connect();
-
-	global $AUTODELETE_DAYS;
-	if ($AUTODELETE_DAYS != 0)
-	{
-		$query = <<<EOT
-DELETE FROM	items
-WHERE		feed_id = ?
-  AND		last_update < NOW() - INTERVAL ? DAY
-EOT;
-		$stmt = $dbh->prepare($query);
-			// XXX - Error-checking
-		$err = $stmt->bind_param("dd",
-				  $feed_id,
-				  $AUTODELETE_DAYS);
-			// XXX - Error-checking
-		$err = $stmt->execute();
-			// XXX - Error-checking
-	}
 
 	/* Update information about the feed itself */
 	db_update_feed_info($feed_id, $feed);
@@ -635,6 +601,8 @@ EOT;
 	/* Add/replace the items in the database. */
 	if (count($feed['items']) == 0)
 	{
+		// XXX - Should delete old items here. But I don't
+		// want to duplicate code.
 		/* Nothing to do. Return count of old/new/updated
 		 * items (all zero)
 		 */
@@ -767,6 +735,32 @@ EOT;
 		else
 			;// echo "<b>Error: ", $dbh->errno, ": \"", $dbh->error, "\"</b><br/>\n";
 //echo "Affected rows: [", $stmt->affected_rows, "]<br/>\n";
+	}
+
+	/* Delete old items from database */
+	// XXX - This is potentially a problem with
+	// a) An article that has gone unread n+1 days, and was just
+	// updated. In this case, you had n days to read it. Cope.
+	// b) Feeds that don't give dates, such as Perry Bible
+	// Fellowship. In this case, the feed parser should insert an
+	// artificial date.
+	global $AUTODELETE_DAYS;
+
+	if ($AUTODELETE_DAYS != 0)
+	{
+		$query = <<<EOT
+DELETE FROM	items
+WHERE		feed_id = ?
+  AND		last_update < NOW() - INTERVAL ? DAY
+EOT;
+		$stmt = $dbh->prepare($query);
+			// XXX - Error-checking
+		$err = $stmt->bind_param("dd",
+				  $feed_id,
+				  $AUTODELETE_DAYS);
+			// XXX - Error-checking
+		$err = $stmt->execute();
+			// XXX - Error-checking
 	}
 
 	/* Return count of new/updated items */
