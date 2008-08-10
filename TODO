@@ -1,14 +1,6 @@
-- bug: Catholic League RSS feed claims to be ISO8859-1, but doesn't
-  get properly converted to UTF-8 somewhere.
 - bug: JavaScript debug window gets _blackjack_'s LJ title wrong: it's
   getting UTF-8 text, but apparently it thinks it's getting ISO8859-1,
   and is converting it to UTF-8 (again).
-- bug: markitems somehow gave me
-	Bad command: ""
-	Last time, got it when authenticating via UMD. $_REQUEST is
-  empty, hence no command. Is there a better way to handle the error
-  than to put up an explanatory message?
-	Probably not.
 - bug: When updates take too long, PHP terminates. 30 sec. max.
 	This is a curl error, and should be caught. Error at
                 $err = curl_multi_select($mh);

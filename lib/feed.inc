@@ -274,6 +274,9 @@ function parse_feed($feed_text)
 	/* Initialize parser */
 	$xml_parser = xml_parser_create_ns();
 	xml_parser_set_option($xml_parser, XML_OPTION_CASE_FOLDING, false);
+	xml_parser_set_option($xml_parser, XML_OPTION_TARGET_ENCODING, "UTF-8");
+			// I think UTF-8 might already be the default, but
+			// let's set it explicitly anyway
 	xml_set_element_handler($xml_parser,
 				_element_start_handler,
 				_element_end_handler);
