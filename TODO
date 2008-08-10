@@ -1,3 +1,5 @@
+- bug: Catholic League RSS feed claims to be ISO8859-1, but doesn't
+  get properly converted to UTF-8 somewhere.
 - bug: JavaScript debug window gets _blackjack_'s LJ title wrong: it's
   getting UTF-8 text, but apparently it thinks it's getting ISO8859-1,
   and is converting it to UTF-8 (again).
