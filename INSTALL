@@ -90,14 +90,14 @@ INSTALLATION:
 	The directory "htdocs/smarty" does not really need to be in
 	the DocumentRoot. You can move it elsewhere if you like.
 
-	"htdocs/smarty/cache" and "htdocs/smarty/templates_c" need to
-	be writable by the user that will be running the Newsbite PHP
-	scripts (usually the user that Apache runs as, e.g. "httpd").
+	"htdocs/smarty/templates_c" needs to be writable by the user
+	that will be running the Newsbite PHP scripts (usually the
+	user that Apache runs as, e.g. "httpd").
 
 	In the shell, as root, run:
 
-	# chown httpd /path/to/smarty/cache /path/to/smarty/templates_c
-	# chmod 755 /path/to/smarty/cache /path/to/smarty/templates_c
+	# chown httpd /path/to/smarty/templates_c
+	# chmod 755 /path/to/smarty/templates_c
 
 - Install "lib"
 

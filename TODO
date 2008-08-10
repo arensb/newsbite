@@ -16,8 +16,6 @@
   (and feed title, if it's changed). So presumably the Right Thing is
   to send the new status line as part of JSON status message.
 	Should there be a separate template for this?
-- I suspect the Smarty cache isn't really necessary. Try turning it
-  off, see what happens.
 - Should be able to read both read and unread articles.
 - Limit size of articles (to one N810 screenful?)
 - Would be nice to have either "new" flag or a "saved for later" flag.
@@ -46,25 +44,17 @@
   gracefully? OTOH, is it a good idea to be too liberal in what we
   accept? Isn't that an invitation to XSS? XML is supposed to be
   really anal about syntax.
-- Make a list of conditions for calling it version 1.0
-	* Can add, remove feeds
-	* Documentation for installing
-	* Proper error pages
-	* OPML
-	* Don't print trace messages
-	* editfeed.php: return to someplace useful
-	* Makefile: build distro
-	* Remove private values from config.inc
+- Make a list of conditions for calling it version 2.0
+	- Fully-functional Ajax skin
+		- XXX - Meaning what, exactly?
 - Makefile:
 	Run tests:
 		php -l <everything>
 		Try to call various functions and make sure they return
 		correct results
 		php-cgi -c php.ini <script>
-	Build distro
 - Installation:
 	htdocs/smarty/templates_c must be writable by httpd.
-	htdocs/smarty/cache must be writable by httpd.
 - Documentation for how the plugins for feed.inc work.
 	Texinfo? Add code to Makefile to generate HTML documentation.
 - More fine-grained function to select items from a feed:
@@ -417,7 +407,7 @@
 - Perhaps should have something in the database (in global options?)
   that gives the version number of the database schema. That way, can
   detect whether database is out of date wrt PHP scripts.
-- Remove the smarty/{cache,config,templates_c} out of the distro.
+- Remove the smarty/{config,templates_c} out of the distro.
   Probably should remove them altogether.
 - Run timing tests with different numbers of feeds. See if there's a
   way to estimate a good number of parallel connections.
