@@ -27,7 +27,6 @@ class Skin extends Smarty
 		$this->compile_id	= "{$this->skin}-skin";
 		$this->template_dir	= "skins/{$this->skin}";
 		$this->compile_dir	= SMARTY_PATH . "templates_c";
-		$this->cache_dir	= SMARTY_PATH . "cache";
 		$this->config_dir	= SMARTY_PATH . "configs";
 	}
 }
