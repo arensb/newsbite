@@ -8,13 +8,18 @@ require_once("config.inc");
 require_once("common.inc");
 require_once("database.inc");
 require_once("feed.inc");
+require_once("skin.inc");
 
 /* See what kind of output the user wants */
 switch ($_REQUEST['o'])
 {
     case "json":
 	$out_fmt = "json";
-	header("Content-type: text/plain; charset=utf-8");
+	// The "+xml" here is bogus: apparently there's a bug in
+	// Firefox (2.x) such that if the response is "text/plain", it
+	// apparently assumes that it's ISO8859-1 or US-ASCII or some
+	// such nonsense.
+	header("Content-type: text/plain+xml; charset=utf-8");
 	break;
     default:
 	header("Content-type: text/html; charset=utf-8");
@@ -75,6 +80,7 @@ function update_feed($feed_id)
 		echo "<h3>Updating feed [$feed[title]]</h3>\n";
 		break;
 	    case "json":
+		$skin = new Skin();
 		echo jsonify('state',	"start",
 			     'feed_id',	$feed_id,
 			     'title',	$feed['title']),
@@ -102,21 +108,31 @@ function update_feed($feed_id)
 			flush();
 			break;
 		}
+
+		// XXX - What should this return?
+		return FALSE;
 	}
 
 	/* Check the HTTP error code, save a cached copy of the feed,
 	 * parse it, and add it to the database.
 	 */
-	_save_handle($feed_id, $feed_text);
+	$err = _save_handle($feed_id, $feed_text);
 		// XXX - Error-handling
 		// XXX - Get item counts returned by _save_handle
+	$counts = db_get_feed_counts($feed_id);
 
 	// XXX - Prettier output
 	switch ($out_fmt)
 	{
 	    case "json":
+		$skin->assign('feed', $feed);
+		$skin->assign('feed_id', $feed_id);
+		$skin->assign('counts', $counts);
+		$count_display = $skin->fetch("feed-title.tpl");
 		echo jsonify('state',	"end",
-			     'feed_id',	$feed_id),
+			     'feed_id',	$feed_id,
+			     'count_display',	$count_display
+			     ),
 			"\n";
 		flush();
 		break;
@@ -158,6 +174,9 @@ function update_all_feeds()
 	/* Initialize curl_multi and some variables */
 	$mh = curl_multi_init();	// Curl multi handle
 	$pipeline = array();		// What's currently being fetched
+
+	if ($out_fmt == "json")
+		$skin = new Skin();
 
 	/* Seed the pipeline with the first $PARALLEL_UPDATES feeds */
 	reset($feeds);			// So each() will work
@@ -305,60 +324,77 @@ function update_all_feeds()
 				/* We've found the handle we want. Get
 				 * its contents.
 				 */
-				// XXX - Better error-reporting
-				// XXX - Move this to later, in case
-				// things fail, so we can report
-				// properly.
-				switch ($out_fmt)
-				{
-				    case "html":
-					echo "Finished (",
-						$handle['feed']['id'],
-						") [",
-						$handle['feed']['title'],
-						"]<br/>\n";
-					flush();
-					break;
-				    case "json":
-					echo jsonify('state',	"end",
-						     'feed_id',	$handle['feed']['id']),
-						"\n";
-					flush();
-					break;
-				}
 				$feed_text = curl_multi_getcontent($handle['ch']);
 				if ($feed_text === false)
 				{
 					// XXX - Error-handling
-					echo "<b>Couldn't get content.</b><br/>\n";
+					switch ($out_fmt)
+					{
+					    case "json":
+						echo jsonify('state',	"error",
+							     'feed_id',	$handle['feed']['id'],
+							     'error',	"Couldn't get content."),
+							"\n";
+						break;
+					    case "html":
+					    default:
+						echo "<b>Couldn't get content.</b><br/>\n";
+						break;
+					}
 				} else {
 					list($fetch_http_status,
 					     $fetch_http_error) =
 						_http_status($feed_text);
 						// XXX - Error-checking
+					// XXX - Better error-reporting?
 					if ($fetch_http_status != "200")
 					{
 						switch ($out_fmt)
 						{
 						    case "json":
-							// XXX -
-							// What's the
-							// Right Thing
-							// to do?
+							echo jsonify('state',	"error",
+								     'feed_id',	$handle['feed']['id'],
+								     'error',	"HTTP Error ($fetch_http_status): $fetch_http_error"),
+								"\n";
 							break;
 						    case "html":
 						    default:
 							echo "<b>HTTP Error ($fetch_http_status): $fetch_http_error</b><br/>\n";
 							break;
 						}
-					} else
-						_save_handle($handle['feed']['id'],
-							     $feed_text);
+					} else {
+						$err = _save_handle(
+							$handle['feed']['id'],
+							$feed_text);
 							// XXX - Error-handling
-							// XXX - Get
-							// item counts
-							// returned by
-							// _save_handle
+						$counts = db_get_feed_counts($handle['feed']['id']);
+						// XXX - Better error-reporting?
+						switch ($out_fmt)
+						{
+						    case "json":
+							$skin = new Skin();
+							$skin->assign('feed', $handle['feed']);
+							$skin->assign('feed_id', $handle['feed']['id']);
+							$skin->assign('counts', $counts);
+							$count_display = $skin->fetch("feed-title.tpl");
+							echo jsonify('state',	"end",
+								     'feed_id',	$handle['feed']['id'],
+								     'count_display',	$count_display
+								),
+								"\n";
+							flush();
+							break;
+						    case "html":
+						    default:
+							echo "Finished (",
+								$handle['feed']['id'],
+								") [",
+								$handle['feed']['title'],
+								"]<br/>\n";
+							flush();
+							break;
+						}
+					}
 				}
 
 				/* We're done with this handle. */
@@ -379,6 +415,7 @@ function update_all_feeds()
 						"]</b><br/>\n";
 					break;
 				    case "json":
+					// XXX - Fill in error message
 					echo jsonify('state',	"error",
 						     'feed_id',	$handle['feed']['id'],
 						     'error',	"XXX - Insert error message here"),
@@ -446,25 +483,47 @@ function update_all_feeds()
 	{
 		if (isset($pipeline[$i]))
 		{
-			// XXX - Prettier output
+			$feed_text = curl_multi_getcontent($pipeline[$i]['ch']);
+			if ($feed_text === false)
+			{
+				// XXX - Error-handling
+				switch ($out_fmt)
+				{
+				    case "json":
+					echo jsonify('state',	"error",
+						     'feed_id',	$pipeline[$i]['feed']['id'],
+						     'error',	"Couldn't get content."),
+						"\n";
+					break;
+				    case "html":
+				    default:
+					echo "<b>Couldn't get content.</b><br/>\n";
+					break;
+				}
+			}
+			$err = _save_handle($pipeline[$i]['feed']['id'],
+					    $feed_text);
+				// XXX - Error-handling
+			$counts = db_get_feed_counts($pipeline[$i]['feed']['id']);
+			// XXX - Prettier output?
 			switch ($out_fmt)
 			{
 			    case "html":
 				echo "Finished (", $pipeline[$i]['feed']['id'], ") [", $pipeline[$i]['feed']['title'], "]<br/>\n"; flush();
 				break;
 			    case "json":
+				$skin = new Skin();
+				$skin->assign('feed', $pipeline[$i]['feed']);
+				$skin->assign('feed_id', $pipeline[$i]['feed']['id']);
+				$skin->assign('counts', $counts);
+				$count_display = $skin->fetch("feed-title.tpl");
 				echo jsonify('state',	"end",
-					     'feed_id',	$pipeline[$i]['feed']['id']),
+					     'feed_id',	$pipeline[$i]['feed']['id'],
+					     'count_display',	$count_display),
 					"\n";
 				flush();
 				break;
 			}
-			$feed_text = curl_multi_getcontent($pipeline[$i]['ch']);
-			_save_handle($pipeline[$i]['feed']['id'],
-				      $feed_text);
-				// XXX - Error-handling
-				// XXX - Get item counts returned by
-				// _save_handle
 		}
 	}
 

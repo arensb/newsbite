@@ -69,6 +69,7 @@ function createXMLHttpRequest()
 function update_feed(id)
 {
 clrdebug();
+	// XXX - If updating one feed, ought to only clear that line
 	clear_status();
 debug("done clearing");
 
@@ -89,7 +90,7 @@ debug("done clearing");
 		"update.php?id="+id+"&o=json",
 		true);
 	request.onreadystatechange = function(){ parse_response(reqobj) };
-	request.send('');
+	request.send(null);
 
 	return false;
 }
@@ -167,6 +168,7 @@ debug("line " + i + ": [" + lines[i] + "]");
 			}
 
 			var status_cell = feed_row.firstChild;
+			var title_cell = status_cell.nextSibling;
 
 debug("feed id "+l.feed_id+", state "+l.state);
 			// XXX - Paths to images / skin name shouldn't
@@ -181,10 +183,14 @@ debug("feed id "+l.feed_id+", state "+l.state);
 			    case "end":
 				status_cell.innerHTML = '&nbsp;';
 				status_cell.style.backgroundColor = null;
+				title_cell.innerHTML = l.count_display;
 				break;
 			    case "error":
-				// XXX - Perhaps add tooltip giving the
-				// error message.
+				// XXX - The 'alt=' and/or 'title='
+				// means you can get error message by
+				// hovering pointer over the error
+				// icon, but it'd probably be better
+				// to use a CSS-based tooltip.
 				status_cell.innerHTML =
 					'<img src="' +
 					skin_dir + 

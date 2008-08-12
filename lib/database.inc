@@ -145,7 +145,7 @@ EOT
 	 */
 	$query = sprintf(<<<EOT
 SELECT		MAX(`pub_date`) as `latest_pub_date`,
-		MAX(`last_update`) as `latest_update`,
+		MAX(`last_update`) as `latest_update`
 FROM		items
 WHERE		feed_id = %d
 EOT

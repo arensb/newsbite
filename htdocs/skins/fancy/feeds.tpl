@@ -44,29 +44,8 @@
 {assign var="feed_id" value=$feed.id}
 {strip}
   <tr class="{cycle values="odd-row,even-row"}" id="feed-{$feed_id}">
-    <td class="icon-col">&nbsp;</td>{* XXX - Put refresh/status icons here *}
-    <td>
-      {* Feed title *}
-      <a href="view.php?id={$feed_id}">
-        {if $feed.nickname != ""}
-          {$feed.nickname|escape}
-        {elseif $feed.title != ""}
-          {$feed.title|escape}
-        {else}
-          [no&nbsp;title]
-        {/if}
-      </a>:
-      &nbsp;
-      {* Number of unread/read items in the feed *}
-      {* XXX - These should be links, to show only read items, or all
-       * items.
-       *}
-      {$counts[$feed_id].unread || 0} unread /
-      {$counts[$feed_id].read} read
-      {* Links to places related to the feed *}
-      &nbsp;(<a href="{$feed.url}">site</a>)
-      &nbsp;(<a href="{$feed.feed_url}">RSS</a>)
-    </td>
+    <td class="icon-col">&nbsp;</td>{* Refresh/status icons go here *}
+    <td>{include file='feed-title.tpl' feed=$feed counts=$counts[$feed_id]}</td>
     <td>
       {* Tools *}
       <a href="update.php?id={$feed.id}" onclick="return update_feed({$feed.id})">update</a>
