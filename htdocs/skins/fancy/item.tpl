@@ -10,7 +10,10 @@
 {* XXX - Perhaps add a 'feed=<feed_id>', so we can have different colors
  * for different feeds.
  *}
-<div class="item" id="item-{$item.guid}">
+{* XXX - state="unread" in the next line will have to change when it's
+ * possible to show read items.
+ *}
+<div class="item" id="item-{$item.guid}" state="unread">
   {* This hidden field just lists the ID of an item that was displayed,
    * so that we can mark it with the "Mark all read" button.
    *}
@@ -45,6 +48,7 @@
            *}
           <p class="item-author">by {$item.author|escape}</p>
         {/if}
+        <span>{$item.pub_date|date_format:"%e %b, %Y"}</span>
       </td>
       <td class="icon-box">
 {* XXX - Do something with categories *}
@@ -52,7 +56,7 @@
        {* XXX - When showing read items, change this to "mark as unread" *}
         Mark as read:&nbsp;
         {* "cbt": checkbox top *}
-        <input class="mark-check" type="checkbox" name="cbt-{$item.id}" value="1"/>
+        <input class="mark-check" type="checkbox" name="cbt-{$item.id}" value="1" onclick="javascript:mark_item(this)"/>
       </td>
     </tr>
   </table>
@@ -135,7 +139,7 @@
         {* XXX - When showing read items, change this to "mark as unread" *}
         Mark as read:&nbsp;
         {* "cbb": checkbox bottom *}
-        <input class="mark-check" type="checkbox" name="cbb-{$item.id}" value="1"/>
+        <input class="mark-check" type="checkbox" name="cbb-{$item.id}" value="1" onclick="javascript:mark_item(this)"/>
       </td>
     </tr>
   </table>

@@ -134,6 +134,22 @@ p {
 	clear:			both;
 }
 
+.item[state="read"] .item-header {
+	/* Mozilla: */
+	-moz-border-radius-bottomleft:	20px;
+	-moz-border-radius-bottomright:	20px;
+
+	/* Safari: */
+	-webkit-border-bottom-left-radius:	20px;
+	-webkit-border-bottom-right-radius:	20px;
+}
+
+/* If an item has been marked as read, collapse it to just a header */
+.item[state="read"] .content-panes,
+.item[state="read"] .item-footer {
+	display:		none;
+}
+
 /* Header box at top of item */
 .item-header {
 	width:			100%;
