@@ -1,6 +1,5 @@
-- bug: JavaScript debug window gets _blackjack_'s LJ title wrong: it's
-  getting UTF-8 text, but apparently it thinks it's getting ISO8859-1,
-  and is converting it to UTF-8 (again).
+- bug: When Ajax updates feeds, it doesn't notice updates to the list
+  of feeds.
 - bug: When updates take too long, PHP terminates. 30 sec. max.
 	This is a curl error, and should be caught. Error at
                 $err = curl_multi_select($mh);
@@ -53,8 +52,6 @@
 		Try to call various functions and make sure they return
 		correct results
 		php-cgi -c php.ini <script>
-- Installation:
-	htdocs/smarty/templates_c must be writable by httpd.
 - Documentation for how the plugins for feed.inc work.
 	Texinfo? Add code to Makefile to generate HTML documentation.
 - More fine-grained function to select items from a feed:
@@ -294,9 +291,6 @@
 - Add a way of marking an item as "saved for later".
 - Try to make a "collapsed" view for long articles that don't have a
   summary: clip to 10em or something.
-- When updating all feeds in Ajax mode: if there's an error, display
-  an error icon, perhaps with a tooltip with the error. Or make the
-  icon a link that'll pop up the error message.
 - Would be nice to mark a feed as inactive, for feeds that are only
   interesting from time to time, like electoral-vote.com.
 - A bunch of elements in the templates have id="..." identifiers
@@ -419,8 +413,6 @@
 - How should abort() deal with JSON/XML/whatever non-HTML output?
 - Ajax/Firefox: use client-side storage (DOM::Storage) to cache
   articles.
-- Should there be a function that takes a <mixed> and converts it to
-  JSON?
 - Is there a way to normalize HTML? If the <![CDATA[...]]> section in
   a feed contains mismatched tags, e.g.
 	<p><a ...><img/></p>
@@ -431,7 +423,9 @@
 - Perhaps class Skin can try to be a singleton: that way, if multiple
   files call 'new Skin', they'll both refer to the same object. OTOH,
   that should never happen.
-- "When designing an interface, imagine that your program is all that
-  stands between the user and hot, sweaty,
-  tangled-bedsheets-fingertips-digging-into-the-back sex."
-	-- http://xkcd.com/196/
+- Perhaps expand the notion of "feed": could show email, current
+  weather conditions, Nagios alerts, etc.
+- Class Skin should automatically set $skin_dir variable to the
+  (relative) subdirectory where skin files are found.
+- Perhaps add a "collapse all" button in view.tpl that'll collapse all
+  displayed items.

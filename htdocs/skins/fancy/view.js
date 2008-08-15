@@ -2,7 +2,7 @@ debug_window = null;
 
 function debug(str)
 {
-//return;
+return;
 	if (debug_window == null)
 	{
 		debug_window = window.open("",

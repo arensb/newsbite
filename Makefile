@@ -1,6 +1,6 @@
 # Variables
 PROJECT =	newsbite
-VERSION =	1.1.2
+VERSION =	1.1.3
 DISTNAME =	${PROJECT}-${VERSION}
 
 # Commands
