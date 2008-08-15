@@ -1,3 +1,8 @@
+	"When designing an interface, imagine that your program is all
+	that stands between the user and hot, sweaty,
+	tangled-bedsheets-fingertips-digging-into-the-back sex."
+		-- http://xkcd.com/196/
+
 - Design principle: things happen on screen because the user did
   something; things don't happen on their own.
 	Thus, it's not okay to just query the server every 5 minutes,

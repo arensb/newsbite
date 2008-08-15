@@ -43,6 +43,7 @@ htdocs/skins/fancy/addfeed.css
 htdocs/skins/fancy/addfeed.tpl
 htdocs/skins/fancy/editfeed.css
 htdocs/skins/fancy/editfeed.tpl
+htdocs/skins/fancy/feed-title.tpl
 htdocs/skins/fancy/feeds.js
 htdocs/skins/fancy/feeds.tpl
 htdocs/skins/fancy/index.css
