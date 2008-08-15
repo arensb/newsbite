@@ -78,7 +78,7 @@ function toggle_pane(node)
 	 * both the <div item-summary> and the <div item-content>.
 	 */
 	while (container && (container.className != "content-panes"))
-		;
+		container = container.parentNode;
 	if (container == null)
 		/* Something's wrong. Abort */
 		return;
@@ -152,4 +152,47 @@ function parse_response(req)
 	}
 
 	// XXX - Do something intelligent with the response text.
+}
+
+/* mark_item
+ * Called when user changes the checkbox on an item, to toggle it from
+ * read to unread or vice-versa.
+ */
+function mark_item(elt)
+{
+	/* Find the enclosing <div class="item"> */
+	var item_div = elt.parentNode;
+	while (item_div && (item_div.className != "item"))
+		item_div = item_div.parentNode;
+	if (item_div == null)
+		/* Something's wrong. Abort */
+		return;
+
+	/* Set the "state" attribute to either "read" or "unread" so
+	 * that the CSS rules can change the appearance appropriately.
+	 */
+	if (elt.checked)
+		item_div.setAttribute("state", "read");
+	else
+		item_div.setAttribute("state", "unread");
+
+	// XXX - Scroll so that the (collapsed) item is visible.
+
+	/* There are two checkboxes for each item. Find the matching
+	 * one, and make sure it's checked/unchecked as well.
+	 * The two checkboxes are named "cbt-12345" and "cbb-12345",
+	 * so given the name of the box the user clicked on, we can
+	 * easily construct the name of the other one. And since
+	 * they're both fields in the same form, we can save a lot of
+	 * searching.
+	 */
+	var other_cb_name;
+	if (elt.name[2] == "t")
+		other_cb_name = "cbb-" + elt.name.slice(4);
+	else
+		other_cb_name = "cbt-" + elt.name.slice(4);
+	elt.form[other_cb_name].checked = elt.checked;
+
+	// XXX - Add the item ID to the queue of items to mark as read/unread
+	// XXX - Flush the queue if necessary
 }

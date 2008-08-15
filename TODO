@@ -8,6 +8,8 @@
 - bug: when on the last page (earliest items) and use "mark all as
   read", sometimes get blank page.
 	Is this just the N810 browser being wonky?
+- Ajax: "Clear changes" should go through list of items and uncheck
+  them.
 - Ajax feed update: use regular expressions to find lines in JSON
   text. Text is sometimes truncated in the middle of a line, resulting
   in parse errors.
