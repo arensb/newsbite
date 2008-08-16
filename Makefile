@@ -24,7 +24,7 @@ dist:
 		${GZIP} --best > "${DISTNAME}.tar.gz"
 
 clean::
-	rm -r dist
+	rm -rf dist
 
 # Look for files missing from the manifest
 missing:

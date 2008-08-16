@@ -160,7 +160,9 @@ function parse_response(req)
  */
 function mark_item(elt)
 {
-	/* Find the enclosing <div class="item"> */
+	/* Find the enclosing <div class="item"> by going up the parent
+	 * chain.
+	 */
 	var item_div = elt.parentNode;
 	while (item_div && (item_div.className != "item"))
 		item_div = item_div.parentNode;
