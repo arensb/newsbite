@@ -1,5 +1,7 @@
 - bug: When Ajax updates feeds, it doesn't notice updates to the list
   of feeds.
+	Perhaps when updating all, update.php should append a list of
+  known feeds. If it's out of date, JS can request a full list.
 - bug: When updates take too long, PHP terminates. 30 sec. max.
 	This is a curl error, and should be caught. Error at
                 $err = curl_multi_select($mh);
@@ -8,6 +10,8 @@
 - bug: when on the last page (earliest items) and use "mark all as
   read", sometimes get blank page.
 	Is this just the N810 browser being wonky?
+- Try to put weblog name, author, date on one line. Too much wasted
+  space otherwise.
 - Ajax: "Clear changes" should go through list of items and uncheck
   them.
 - Ajax feed update: use regular expressions to find lines in JSON

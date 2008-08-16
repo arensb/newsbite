@@ -60,7 +60,6 @@ htdocs/skins/fancy/unsubscribe.tpl
 htdocs/skins/fancy/view.css
 htdocs/skins/fancy/view.js
 htdocs/skins/fancy/view.tpl
-htdocs/smarty/cache
 htdocs/smarty/configs
 htdocs/smarty/templates_c
 htdocs/unsubscribe.php

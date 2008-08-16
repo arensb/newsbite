@@ -117,15 +117,6 @@ p {
 	margin-bottom:		0.5em;
 }
 
-.date-header {
-	font-family:		Arial, sans-serif;
-	font-size:		200%;
-	color:			#c0c0c0;
-	margin-top:		0.5em;
-	margin-bottom:		0.1em;
-	margin-left:		1em;
-}
-
 /* Overall box containing an item */
 .item {
 	margin-top:		1em;

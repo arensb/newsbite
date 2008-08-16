@@ -176,8 +176,6 @@ function mark_item(elt)
 	else
 		item_div.setAttribute("state", "unread");
 
-	// XXX - Scroll so that the (collapsed) item is visible.
-
 	/* There are two checkboxes for each item. Find the matching
 	 * one, and make sure it's checked/unchecked as well.
 	 * The two checkboxes are named "cbt-12345" and "cbb-12345",
@@ -192,6 +190,31 @@ function mark_item(elt)
 	else
 		other_cb_name = "cbt-" + elt.name.slice(4);
 	elt.form[other_cb_name].checked = elt.checked;
+
+	/* Scroll so that the (collapsed) item is visible.
+	 * Let's say the item is long; the user has read the item, and
+	 * has clicked on the bottom checkbox to mark the item as
+	 * read. By this time, the top of the item has scrolled past
+	 * the top of the window. If we just collapse the item, the
+	 * viewport will jump to a random position lower down on the
+	 * window.
+	 * To avoid this, we scroll the window so that the top of the
+	 * item is at the top of the window, and the user can see the
+	 * next item on the page.
+	 * We don't want to do this if the top of the element is
+	 * already visible, because unnecessary scrolling is jarring.
+	 * We also don't want to do this when unchecking items,
+	 * because collapsed items are already small enough that the
+	 * whole thing is visible, so the problem described above
+	 * doesn't occur.
+	 */
+	if (elt.checked &&
+	    item_div.offsetTop < window.pageYOffset)
+	{
+		// Window has been scrolled so that top of item is no
+		// longer visible.
+		window.scrollTo(0, item_div.offsetTop);
+	}
 
 	// XXX - Add the item ID to the queue of items to mark as read/unread
 	// XXX - Flush the queue if necessary
