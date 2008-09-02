@@ -1,3 +1,7 @@
+- Need tool to fix database schema.
+	ALTER TABLE items CHANGE COLUMN url url VARCHAR(255);
+	ALTER TABLE items CHANGE COLUMN comment_url comment_url VARCHAR(255);
+	ALTER TABLE items CHANGE COLUMN comment_rss comment_rss VARCHAR(255);
 - bug: When Ajax updates feeds, it doesn't notice updates to the list
   of feeds.
 	Perhaps when updating all, update.php should append a list of
@@ -435,3 +439,8 @@
   (relative) subdirectory where skin files are found.
 - Perhaps add a "collapse all" button in view.tpl that'll collapse all
   displayed items.
+- Thankfully, JavaScript is non-preemptive, which simplifies a lot of
+  the code: no need to worry about dining philosophers and such.
+- In main view: have a button to toggle displaying feeds with no
+  unread items. This could be difficult, since the color of rows is
+  set by their class, which in turn is in the .tpl file.

@@ -129,6 +129,7 @@ p {
 	/* Mozilla: */
 	-moz-border-radius-bottomleft:	20px;
 	-moz-border-radius-bottomright:	20px;
+	-moz-opacity:	.40;
 
 	/* Safari: */
 	-webkit-border-bottom-left-radius:	20px;
