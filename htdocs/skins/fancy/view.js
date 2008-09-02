@@ -1,24 +1,30 @@
-debug_window = null;
+var debug_window = undefined;
+var mark_read = {};		// Hash of item_id -> is_read? values
+var mark_request = null;	// Data for marking items as read/unread
+
+/* Item queues.
+ * Arrays of item IDs to mark read or unread.
+ */
+//var mark_read_queue = new Array;
+//var mark_unread_queue = new Array;
 
 function debug(str)
 {
-return;
+/*return;*/
+	if (debug_window == undefined)
+		debug_window = document.getElementById("debug");
 	if (debug_window == null)
-	{
-		debug_window = window.open("",
-					"Debugging Window",
-					"height=400,width=600,scrollbars,menubar");
-	}
-	var body = debug_window.document.childNodes[1].childNodes[1];
-	body.innerHTML += str + "<br/>\n";
+		return;
+
+	debug_window.innerHTML += /*new Date().getTime() + ": " +*/
+		str + "<br/>\n";
 }
 
 function clrdebug()
 {
 	if (debug_window == null)
 		return;
-	var body = debug_window.document.childNodes[1].childNodes[1];
-	body.innerHTML = "";
+	debug_window.innerHTML = "";
 }
 
 // XXX - This function shouldn't be replicated. Consolidate.
@@ -95,48 +101,74 @@ function toggle_pane(node)
 		container.setAttribute("which", "summary");
 }
 
-/* load_articles
- * Load the articles that will be seen in this view.
+/* flush_queues
+ * Send the contents of the queues to markitems.php
  */
-function load_articles()
+function flush_queues()
 {
-debug(items.length + " items");
-for (var i = 0; i < items.length; i++)
-{
-	debug("item " + i + ": [" + items[i] + "]");
-}
-//var item = document.getElementById("item-" + items[0]);
+	// XXX - If another flush_queues() request is running, do
+	// nothing; return.
+//	if (mark_request == null)
+//		return;
 
-// XXX - Initialize cache: get the next 25, 50, 100, whatever items.
-// Don't display until another is marked as read.
+	// mark_request: an object encapsulating everything we want to keep
+	// track of during this operation
+	mark_request = {};
+	mark_request.read = new Array();
+	mark_request.unread = new Array();
 
-return;
+	/* Assign each element of mark_read to either mark_request.read
+	 * or mark_request.unread.
+	 */
+	for (i in mark_read)
+	{
+		if (mark_read[i])
+			mark_request.read.push(i);
+		else
+			mark_request.unread.push(i);
+		delete(mark_read[i]);
+	}
+
+	/* Start a new request to send the queues (mark_request.read and
+	 * mark_request.unread) to the server.
+	 */
+defaultStatus = "Flushing queues";
 	var request = createXMLHttpRequest();
 	if (!request)
 	{
-		debug("Can't allocate XMLHttpRequest");
+		// XXX - Better error-reporting
+		defaultStatus = "Error: can't create XMLHttpRequest";
 	}
 
 	var err;
 
-	// reqobj: an object encapsulating everything we want to keep
-	// track of during this operation
-	var reqobj = {
-		request:	request,
-		last_off:	0
-		};
+	mark_request.request = request;
 
-	request.open('GET',
-		'view.php?id=' + feed_id + '&o=json',
+	request.open('POST',
+		'markitems.php?o=json',
 		true);
-	request.onreadystatechange = function() { parse_response(reqobj) };
-	request.send('');
+	request.setRequestHeader('Content-Type',
+		'application/x-www-form-urlencoded');
+	request.onreadystatechange =
+		function() { parse_flush_response(mark_request) };
+	// Encode lists of items to mark as read/unread
+	var req_data = "mark-read=" +
+			encodeURIComponent(mark_request.read.join(",")) +
+			"&mark-unread=" +
+			encodeURIComponent(mark_request.unread.join(","));
+//debug("req_data == [" + req_data + "]");
+	request.send(req_data);
 
 	return false;
 }
 
-function parse_response(req)
+function parse_flush_response(req)
 {
+	// XXX
+//	mark_request = null;
+// XXX - If there's an error, take all the items in req and put them
+// back in mark_read (bearing in mind that they may have been marked
+// again by the user, so don't overwrite those).
 	debug("parse_response readyState: " + req.request.readyState);
 	switch (req.request.readyState)
 	{
@@ -148,10 +180,9 @@ function parse_response(req)
 		debug("Got some text. Len " + req.request.responseText.length);
 		return;
 	    case 4:		// Got all text
+		debug("Got all text. Len " + req.request.responseText.length +", \"" + req.request.responseText, "\"");
 		break;
 	}
-
-	// XXX - Do something intelligent with the response text.
 }
 
 /* mark_item
@@ -173,10 +204,7 @@ function mark_item(elt)
 	/* Set the "state" attribute to either "read" or "unread" so
 	 * that the CSS rules can change the appearance appropriately.
 	 */
-	if (elt.checked)
-		item_div.setAttribute("state", "read");
-	else
-		item_div.setAttribute("state", "unread");
+	item_div.setAttribute("state", (elt.checked ? "read" : "unread"));
 
 	/* There are two checkboxes for each item. Find the matching
 	 * one, and make sure it's checked/unchecked as well.
@@ -218,6 +246,13 @@ function mark_item(elt)
 		window.scrollTo(0, item_div.offsetTop);
 	}
 
-	// XXX - Add the item ID to the queue of items to mark as read/unread
-	// XXX - Flush the queue if necessary
+	var item_id = elt.name.slice(4);
+		// The name of the checkbox is either "cbt-12345" or
+		// "cbb-12345". Get the item ID from that.
+
+	/* Add the item ID to the queue of items to mark as read/unread */
+	mark_read[item_id] = elt.checked;
+
+	/* Flush the queue if necessary */
+	flush_queues();
 }

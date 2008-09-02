@@ -14,6 +14,9 @@ if (isset($_REQUEST['doit']))
 elseif (isset($_REQUEST['mark-all']))
 	// Mark all items as read
 	$cmd = "mark-all";
+elseif (isset($_REQUEST['mark-read']) && isset($_REQUEST['mark-unread']))
+	// Lists of items to mark.
+	$cmd = "mark-lists";
 elseif (count($_REQUEST) == 0)
 	abort(<<<EOT
 No command given. Perhaps the POST variables were dropped by your web proxy.
@@ -23,9 +26,46 @@ EOT
 else
 	abort("No command found; \$_REQUEST == [" .
 	      var_export($_REQUEST) .
+	      "]\n\$_POST == [" .
+	      var_export($_POST) .
 	      "]");
 
-$mark_how = $_REQUEST['mark-how'];
+/* Ajax code submits lists of items */
+if ($cmd == "mark-lists")
+{
+	header("Content-type: text/plain+xml; charset=utf-8");
+		// Assume JSON
+
+	/* Check syntax of $_REQUEST[mark-read] and [mark-unread] */
+	if (!preg_match('/^(\d+,)*\d*$/', $_REQUEST['mark-read']))
+		abort("mark-read: invalid value");
+	if (!preg_match('/^(\d+,)*\d*$/', $_REQUEST['mark-unread']))
+		abort("mark-unread: invalid value");
+
+	/* Construct list of items to mark read and unread */
+	// XXX - There's some inefficiency here: $_REQUEST[mark-read]
+	// is a comma-separated string of numbers. We split it into an
+	// array. But then, db_mark_items is going to join them back
+	// together into a string. Is this worth fixing?
+	$mark_read = explode(",", $_REQUEST['mark-read']);
+	$mark_unread = explode(",", $_REQUEST['mark-unread']);
+
+	/* Mark items */
+	// The is_numeric() test is there because explode(",", "")
+	// gives array(0 => "") instead of an empty array. Feh.
+	if (is_numeric($mark_read[0]))
+		db_mark_items(true, $mark_read);
+		// XXX - Error-checking
+	if (is_numeric($mark_unread[0]))
+		db_mark_items(false, $mark_unread);
+		// XXX - Error-checking
+
+	// XXX - Ought to return status to caller. Ideally, should
+	// tell caller the status of each item marked: it's possible
+	// that 
+	echo jsonify('state',	"ok");
+	exit(0);
+}
 
 /* Make sure $mark_how has a legal value */
 switch ($mark_how)

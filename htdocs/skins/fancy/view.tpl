@@ -40,7 +40,7 @@
   {/strip}
 </script>
 </head>
-<body id="view-body" onload="load_articles()">
+<body id="view-body">
 
 {if ($feed.image != "")}
 <img class="feed-icon" src="{$feed.image}"/>

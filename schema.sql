@@ -62,7 +62,7 @@ CREATE TABLE items (
 					# the same article shows up in two
 					# different feeds?
 	feed_id		INT NOT NULL,	# ID of feed
-	url		VARCHAR(127),	# Link to the full item
+	url		VARCHAR(255),	# Link to the full item
 	title		TINYTEXT,	# Title of the item
 	summary		TEXT,		# Summary of the item
 	content		TEXT,		# Full content of the item
@@ -70,8 +70,8 @@ CREATE TABLE items (
 			# XXX - Should this be broken down into author name,
 			# URL, and email? Probably yes.
 	category	VARCHAR(255),	# Categories the story goes in
-	comment_url	VARCHAR(127),	# URL for page with comments
-	comment_rss	VARCHAR(127),	# URL for RSS feed for comments
+	comment_url	VARCHAR(255),	# URL for page with comments
+	comment_rss	VARCHAR(255),	# URL for RSS feed for comments
 	guid		VARCHAR(127) NOT NULL,	# Globally-unique ID.
 	pub_date	DATETIME,	# Publication date
 	last_update	DATETIME,	# Time when item was last updated
