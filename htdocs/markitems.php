@@ -67,6 +67,8 @@ if ($cmd == "mark-lists")
 	exit(0);
 }
 
+$mark_how = $_REQUEST['mark-how'];
+
 /* Make sure $mark_how has a legal value */
 switch ($mark_how)
 {
