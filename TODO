@@ -1,3 +1,9 @@
+- Bug: error in JavaScript error console when marking item as read:
+	Error: not well-formed
+	Source File: http://www.ooblick.com/newsbite/markitems.php?o=json
+	Line: 1, Column: 1
+	Source Code:
+	{state:'ok'}^
 - Need tool to fix database schema.
 	ALTER TABLE items CHANGE COLUMN url url VARCHAR(255);
 	ALTER TABLE items CHANGE COLUMN comment_url comment_url VARCHAR(255);
