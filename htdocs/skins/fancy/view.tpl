@@ -153,5 +153,7 @@
 <p>There are no articles to display.</p>
 {/if}
 
+<div id="debug" style="clear:both"></div>
+
 </body>
 </html>
