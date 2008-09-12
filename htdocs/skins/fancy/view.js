@@ -8,6 +8,7 @@ var mark_request = null;	// Data for marking items as read/unread
 //var mark_read_queue = new Array;
 //var mark_unread_queue = new Array;
 
+var last_time = null;
 function debug(str)
 {
 /*return;*/
@@ -16,7 +17,11 @@ function debug(str)
 	if (debug_window == null)
 		return;
 
-	debug_window.innerHTML += /*new Date().getTime() + ": " +*/
+	var t = new Date().getTime();
+//	var delta = (last_time == null ? "" : t - last_time);
+//	last_time = t;
+//	debug_window.innerHTML += t + "(" + delta + "): " +
+	debug_window.innerHTML += t + ": " +
 		str + "<br/>\n";
 }
 
@@ -132,12 +137,13 @@ function flush_queues()
 	/* Start a new request to send the queues (mark_request.read and
 	 * mark_request.unread) to the server.
 	 */
-defaultStatus = "Flushing queues";
+debug("Flushing queues");
 	var request = createXMLHttpRequest();
 	if (!request)
 	{
 		// XXX - Better error-reporting
-		defaultStatus = "Error: can't create XMLHttpRequest";
+//		defaultStatus = "Error: can't create XMLHttpRequest";
+debug("Error: can't create XMLHttpRequest");
 	}
 
 	var err;
@@ -158,6 +164,7 @@ defaultStatus = "Flushing queues";
 			encodeURIComponent(mark_request.unread.join(","));
 //debug("req_data == [" + req_data + "]");
 	request.send(req_data);
+debug("Sent request");
 
 	return false;
 }
@@ -180,7 +187,10 @@ function parse_flush_response(req)
 		debug("Got some text. Len " + req.request.responseText.length);
 		return;
 	    case 4:		// Got all text
-		debug("Got all text. Len " + req.request.responseText.length +", \"" + req.request.responseText, "\"");
+//		debug("Got all text. Len " + req.request.responseText.length +", \"" + req.request.responseText, "\"");
+		debug("Got all text. Len " + req.request.responseText.length);
+//defaultStatus = "Done";
+debug("Done");
 		break;
 	}
 }
