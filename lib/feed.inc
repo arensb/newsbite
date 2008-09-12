@@ -538,7 +538,7 @@ function _element_end_handler($parser, $fullname)
 			$h($node['name'],
 			   $node['retval'],
 			   $context);
-echo "In _element_end_handler, now retval == [<pre>"; print_r($node['retval']); echo "</pre>]<br/>\n";
+//echo "In _element_end_handler, now retval == [<pre>"; print_r($node['retval']); echo "</pre>]<br/>\n";
 		}
 	}
 
