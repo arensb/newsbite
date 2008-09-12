@@ -12,7 +12,7 @@ require_once("skin.inc");
 if (isset($_REQUEST['set-skin']))
 {
 	// We've been given a skin by the form.
-	$new_skin = $_REQUEST['skin'];
+	$new_skin = $_REQUEST['newskin'];
 		// XXX - Security: make sure skin is valid
 
 	if (is_dir("skins/$new_skin"))

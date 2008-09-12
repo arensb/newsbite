@@ -18,12 +18,14 @@ Cookies must be turned on for skins to work.
 
 <form method="post" action="setskin.php">
   Choose a skin:
-  <select name="skin">
+  <select name="newskin">
     {foreach from=$skins item=s}
+      {strip}
       <option value="{$s.dir}"
         {if $s.dir == $current_skin}selected{/if}
         >
         {$s.name|escape}</option>
+      {/strip}
     {/foreach}
   </select>
   <br/>
