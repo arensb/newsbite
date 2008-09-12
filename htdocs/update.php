@@ -20,6 +20,13 @@ switch ($_REQUEST['o'])
 	// apparently assumes that it's ISO8859-1 or US-ASCII or some
 	// such nonsense.
 	header("Content-type: text/plain+xml; charset=utf-8");
+
+	// The stupid "+xml" hack above means that Firefox will try to
+	// interpret what it sees as XML. And since JSON isn't
+	// well-formed XML, we need to wrap the JSON in very minimal
+	// XML: < ?xml ? ><![CDATA[ {json} ]]>
+	echo "<", '?xml version="1.0" encoding="UTF-8"?', ">\n";
+	echo "<![CDATA[\n";
 	break;
     default:
 	header("Content-type: text/html; charset=utf-8");
@@ -47,6 +54,9 @@ if (is_numeric($feed_id) && is_int($feed_id+0))
 	/* Abort with an error message */
 	abort("Invalid feed ID: $feed_id");
 }
+
+if ($out_fmt == "json")
+	echo "]]>\n";
 
 // XXX - Move the HTTP-fetching stuff to a separate function, so that
 // we can retrieve URLs separately.
