@@ -84,7 +84,7 @@
 // <textInput>					-
 // <skipHours>					-
 // <skipDays>					-
-//			<guid>			guid
+//			<id>			guid
 //			<rights>		rights
 
 // RSS item:		Atom entry		field
@@ -99,7 +99,7 @@
 // <comments>		<link rel=replies type=html>	comment_url
 //			<link rel=replies type=xml>	comment_feed
 // <enclosure>		<link {other}>?		enclosure{}
-// <guid>		<guid>			guid
+// <guid>		<id>			guid
 // <pubDate>		<published>		pub_time
 //			<updated>		build_time
 // <source>		<source>		-
@@ -1437,8 +1437,8 @@ function atom_element_handler(
 		{
 		    case "feed":
 		    case "entry":
-			// Entry ID, in a not-terribly-useful format.
-			// Ignore it.
+			// GUID
+			$retval['guid'] = $children;
 			break;
 
 		    default:
