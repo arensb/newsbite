@@ -1,9 +1,4 @@
-- Bug: error in JavaScript error console when marking item as read:
-	Error: not well-formed
-	Source File: http://www.ooblick.com/newsbite/markitems.php?o=json
-	Line: 1, Column: 1
-	Source Code:
-	{state:'ok'}^
+- bug: Atom uses <id>, not <guid>
 - Need tool to fix database schema.
 	ALTER TABLE items CHANGE COLUMN url url VARCHAR(255);
 	ALTER TABLE items CHANGE COLUMN comment_url comment_url VARCHAR(255);
@@ -450,3 +445,6 @@
 - In main view: have a button to toggle displaying feeds with no
   unread items. This could be difficult, since the color of rows is
   set by their class, which in turn is in the .tpl file.
+- Plug-in for Atheist Nexus (and others): the body of the item is
+  presented as HTML, but is actually plain text, using \n\n as
+  paragraph separators. Add <p>...</p> tags.
