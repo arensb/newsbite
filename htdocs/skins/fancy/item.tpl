@@ -13,7 +13,7 @@
 {* XXX - state="unread" in the next line will have to change when it's
  * possible to show read items.
  *}
-<div class="item" id="item-{$item.guid}" state="unread">
+<div class="item" id="item-{$item.id}" state="unread">
   {* This hidden field just lists the ID of an item that was displayed,
    * so that we can mark it with the "Mark all read" button.
    *}

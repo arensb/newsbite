@@ -189,6 +189,22 @@ function parse_flush_response(req)
 	    case 4:		// Got all text
 //		debug("Got all text. Len " + req.request.responseText.length +", \"" + req.request.responseText, "\"");
 		debug("Got all text. Len " + req.request.responseText.length);
+		for (i in req.read)
+		{
+//debug("marking "+req.read[i]+" as read");
+			var item = document.getElementById("item-"+req.read[i]);
+			if (item == null)
+				continue;
+			item.setAttribute("deleted", "yes");
+		}
+		for (i in req.unread)
+		{
+//debug("marking "+req.read[i]+" as unread");
+			var item = document.getElementById("item-"+req.unread[i]);
+			if (item == null)
+				continue;
+			item.setAttribute("deleted", "no");
+		}
 //defaultStatus = "Done";
 debug("Done");
 		break;

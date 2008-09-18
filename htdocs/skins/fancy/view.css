@@ -142,6 +142,10 @@ p {
 	display:		none;
 }
 
+.item[deleted="yes"] {
+	-moz-opacity:	.40;
+}
+
 /* Header box at top of item */
 .item-header {
 	width:			100%;
