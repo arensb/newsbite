@@ -9,19 +9,22 @@ require_once("config.inc");
 require_once("common.inc");
 require_once("skin.inc");
 
+$skin = new Skin;
+
 if (isset($_REQUEST['set-skin']))
 {
 	// We've been given a skin by the form.
 	$new_skin = $_REQUEST['newskin'];
 		// XXX - Security: make sure skin is valid
 
-	if (is_dir("skins/$new_skin"))
+	if ($skin->setskin($new_skin))
 	{
 		// XXX - Should set domain and path
 		// domain: $_SERVER['SERVER_NAME'] ?
 		// path: dirname($_SERVER['PHP_SELF']) ?
 		setcookie("skin", $new_skin, 9999999999);
 	}
+	// XXX - Otherwise, should fail somehow.
 }
 
 $skins = array();		// Array of available skins
@@ -46,8 +49,7 @@ while (($fname = readdir($dh)) !== FALSE)
 		);
 }
 
-$skin = new Skin;
 $skin->assign('skins', $skins);
-$skin->assign('current_skin', $_COOKIE['skin']);
+$skin->assign('current_skin', $new_skin);
 $skin->display("setskin.tpl");
 ?>

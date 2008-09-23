@@ -1,4 +1,3 @@
-- bug: Atom uses <id>, not <guid>
 - Need tool to fix database schema.
 	ALTER TABLE items CHANGE COLUMN url url VARCHAR(255);
 	ALTER TABLE items CHANGE COLUMN comment_url comment_url VARCHAR(255);
@@ -15,6 +14,9 @@
 - bug: when on the last page (earliest items) and use "mark all as
   read", sometimes get blank page.
 	Is this just the N810 browser being wonky?
+- Perhaps best to go with svn revision number when creating dist file.
+  Can get this with
+	svn status -uq | grep "Status against revision:"|awk '{print $4}
 - Try to put weblog name, author, date on one line. Too much wasted
   space otherwise.
 - Ajax: "Clear changes" should go through list of items and uncheck
@@ -418,9 +420,6 @@
   way to estimate a good number of parallel connections.
 	If there is, allow user to set $PARALLEL_UPDATES to "auto",
   and have it be computed automatically.
-- Skin: function to validate proposed skin:
-	- Should match /^\w+$/ or some such
-	- Make sure it's a directory in "skins"
 - How should abort() deal with JSON/XML/whatever non-HTML output?
 - Ajax/Firefox: use client-side storage (DOM::Storage) to cache
   articles.
@@ -448,3 +447,13 @@
 - Plug-in for Atheist Nexus (and others): the body of the item is
   presented as HTML, but is actually plain text, using \n\n as
   paragraph separators. Add <p>...</p> tags.
+- Make things prettier:
+	- Background image
+	- Perhaps translucent elements/backgrounds
+	- Button bars with gradient backgrounds
+- Possible backgrounds:
+	http://www.imageabstraction.com/gallery/index.php?action=showpic&cat=11&pic=64
+	http://www.imageabstraction.com/gallery/index.php?action=showpic&cat=11&pic=57
+	http://www.imageabstraction.com/gallery/index.php?action=showpic&cat=11&pic=58
+	http://www.imageabstraction.com/gallery/index.php?action=showpic&cat=11&pic=59
+	http://www.imageabstraction.com/gallery/index.php?action=showpic&cat=10&pic=90
