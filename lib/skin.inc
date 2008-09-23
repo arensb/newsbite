@@ -13,22 +13,37 @@ class Skin extends Smarty
 	{
 		parent::__construct();
 
-		/* Pick skin */
-		// XXX - Input checking: the cookie is untrusted user
-		// input. Make sure it matches /^\w+$/ (or something
-		// like that). In particular, since it's used as a
-		// pathname, don't want it to get out of 'skins'
-		// directory.
-		if (isset($_COOKIE['skin']) &&
-		    preg_match('/^\w+$/', $_COOKIE['skin']) &&
-		    is_dir("skins/$_COOKIE[skin]"))
-			$this->skin = $_COOKIE['skin'];
-		$this->assign('skin', $this->skin);
+		/* Pick skin.
+		 * For security, make sure the value of the cookie is
+		 * sensible (/^\w+$/) and that it's a directory
+		 * underneath "skins".
+		 */
+		if (isset($_COOKIE['skin']))
+			$this->setskin($_COOKIE['skin']);
+		else
+			$this->setskin($this->skin);
 
-		$this->compile_id	= "{$this->skin}-skin";
-		$this->template_dir	= "skins/{$this->skin}";
 		$this->compile_dir	= SMARTY_PATH . "templates_c";
 		$this->config_dir	= SMARTY_PATH . "configs";
+	}
+
+	/* setskin
+	 * Set the skin value. This identifies a directory underneath
+	 * "skins/" which contains the templates for the skin.
+	 */
+	function setskin($newskin)
+	{
+		if(preg_match('/^\w+$/', $newskin) &&
+		   is_dir("skins/$newskin"))
+		{
+			$this->skin = $newskin;
+			$this->compile_id	= "{$this->skin}-skin";
+			$this->template_dir	= "skins/{$this->skin}";
+		} else
+			return false;	// Failure
+
+		$this->assign('skin', $this->skin);
+		return true;		// Success
 	}
 }
 ?>
