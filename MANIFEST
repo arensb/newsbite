@@ -20,6 +20,7 @@ htdocs/skins/default/addfeed.css
 htdocs/skins/default/addfeed.tpl
 htdocs/skins/default/editfeed.css
 htdocs/skins/default/editfeed.tpl
+htdocs/skins/default/feed-title.tpl
 htdocs/skins/default/feeds.tpl
 htdocs/skins/default/index.css
 htdocs/skins/default/item.tpl
