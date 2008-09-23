@@ -20,6 +20,7 @@ class Skin extends Smarty
 		// pathname, don't want it to get out of 'skins'
 		// directory.
 		if (isset($_COOKIE['skin']) &&
+		    preg_match('/^\w+$/', $_COOKIE['skin']) &&
 		    is_dir("skins/$_COOKIE[skin]"))
 			$this->skin = $_COOKIE['skin'];
 		$this->assign('skin', $this->skin);
