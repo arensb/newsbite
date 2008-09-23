@@ -425,10 +425,9 @@ function update_all_feeds()
 						"]</b><br/>\n";
 					break;
 				    case "json":
-					// XXX - Fill in error message
 					echo jsonify('state',	"error",
 						     'feed_id',	$handle['feed']['id'],
-						     'error',	"XXX - Insert error message here"),
+						     'error',	curl_error($handle['ch'])),
 						"\n";
 					flush();
 					break;
