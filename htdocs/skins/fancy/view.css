@@ -117,6 +117,18 @@ p {
 	margin-bottom:		0.5em;
 }
 
+/* XXX - Attempt at prettier form buttons
+input[type="reset"],
+input[type="submit"] {
+	-moz-border-radius-topleft:	10px;
+	-moz-border-radius-topright:	10px;
+	-moz-border-radius-bottomleft:	10px;
+	-moz-border-radius-bottomright:	10px;
+	color:	white;
+	background-image:	url(purple-gradient.png);
+}
+*/
+
 /* Overall box containing an item */
 .item {
 	margin-top:		1em;
