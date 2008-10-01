@@ -1,3 +1,5 @@
+- bug: why do old posts keep cropping up, even though they're older
+  than 90 days?
 - Need tool to fix database schema.
 	ALTER TABLE items CHANGE COLUMN url url VARCHAR(255);
 	ALTER TABLE items CHANGE COLUMN comment_url comment_url VARCHAR(255);
