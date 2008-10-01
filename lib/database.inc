@@ -627,21 +627,39 @@ function db_update_feed($feed_id, $feed)
 		//
 		// The date fields (look for the IFNULL() calls) work
 		// as follows:
-		// When adding a new item, use the pub_date and
-		// last_update given in the RSS feed. If none was
-		// specified, use the current time for both.
-		// When updating an existing item, then update
-		// pub_date and last_update to what it says in the
-		// feed. If it wasn't specified, leave the existing
-		// field unchanged.
+		//
+		// When adding a new item:
+		// If a publication time was given, use that;
+		// otherwise, use the current time.
+		// If an update time was given, use that; otherwise,
+		// use the publication time.
+		//
+		// When updating an existing item: update pub_date and
+		// last_update to what it says in the feed. If it
+		// wasn't specified, leave the existing field
+		// unchanged.
 		// This is useful because a lot of RSS feeds don't
 		// include timestamps. But we don't want articles
 		// bubbling up to the last time the feed was fetched.
+
+		// NB: This code does something that may not be
+		// kosher: the line that sets the last_update field
+		// uses the previously-set value for 'pub_date'. I
+		// don't know whether this is portable or robust; it
+		// just seems to work.
 
 		// XXX - Unfortunately, this sends the summary and
 		// content to the database twice, which might be
 		// undesirable for feeds that typically have long
 		// posts. Is there a way around this?
+
+		// XXX - The following might happen:
+		// - article is published; pub_date = last_update = t0
+		// - user marks it read at t1
+		// - article is updated; pub_date = t0, last_update = t2
+		// There's now new information that the user might
+		// want to see; ought to mark the article as unread.
+
 		$query = <<<EOT
 INSERT INTO	items
 		(feed_id, url, title, summary, content, author, category,
@@ -650,7 +668,7 @@ INSERT INTO	items
 VALUES		(?, ?, ?, ?, ?, ?, ?,
 		 ?, ?, ?,
 		 IFNULL(FROM_UNIXTIME(?), NOW()),
-		 IFNULL(FROM_UNIXTIME(?), NOW()),
+		 IFNULL(FROM_UNIXTIME(?), pub_date),
 		 FALSE)
 ON DUPLICATE KEY UPDATE
 		url=?,
