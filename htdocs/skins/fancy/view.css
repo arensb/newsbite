@@ -7,6 +7,7 @@ body {
 	margin-left:		0px;
 	margin-right:		0px;
 	margin-bottom:		0px;
+	background-image:	url(gray-bg.jpg);
 }
 
 h1 {
@@ -91,12 +92,10 @@ p {
 	position:		relative;
 	top:			0px;
 	left:			0px;
-	outline:		1px solid red;
 }
 
 .navbar .earlier {
 	text-align:		left;
-	outline:		1px dotted blue;
 	position:		absolute;
 	top:			0px;
 	left:			0px;
@@ -104,7 +103,6 @@ p {
 
 .navbar .later {
 	text-align:		right;
-	outline:		1px dotted blue;
 	position:		absolute;
 	top:			0px;
 	right:			0px;
@@ -155,7 +153,7 @@ input[type="submit"] {
 }
 
 .item[deleted="yes"] {
-	-moz-opacity:	.40;
+	opacity:	.40;
 }
 
 /* Header box at top of item */
@@ -297,6 +295,11 @@ input[type="checkbox"].mark-check {
 
 	font-family:		Times, serif;
 	padding:		0.5em;
+	background-color:	white;
+}
+
+.content-panes a img {
+	border:			none;	/* No border around image links */
 }
 
 /* expand-bar, collapse-bar
