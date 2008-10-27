@@ -2,12 +2,6 @@ var debug_window = undefined;
 var mark_read = {};		// Hash of item_id -> is_read? values
 var mark_request = null;	// Data for marking items as read/unread
 
-/* Item queues.
- * Arrays of item IDs to mark read or unread.
- */
-//var mark_read_queue = new Array;
-//var mark_unread_queue = new Array;
-
 var last_time = null;
 function debug(str)
 {
@@ -111,6 +105,7 @@ function toggle_pane(node)
  */
 function flush_queues()
 {
+clrdebug();
 	// XXX - If another flush_queues() request is running, do
 	// nothing; return.
 //	if (mark_request == null)
@@ -133,6 +128,7 @@ function flush_queues()
 			mark_request.unread.push(i);
 		delete(mark_read[i]);
 	}
+debug("Marking [" + mark_request.read + "] as read, and [" + mark_request.unread + "] as unread");
 
 	/* Start a new request to send the queues (mark_request.read and
 	 * mark_request.unread) to the server.
@@ -162,7 +158,7 @@ debug("Error: can't create XMLHttpRequest");
 			encodeURIComponent(mark_request.read.join(",")) +
 			"&mark-unread=" +
 			encodeURIComponent(mark_request.unread.join(","));
-//debug("req_data == [" + req_data + "]");
+debug("req_data == [" + req_data + "]");
 	request.send(req_data);
 debug("Sent request");
 
@@ -171,8 +167,8 @@ debug("Sent request");
 
 function parse_flush_response(req)
 {
-	// XXX
-//	mark_request = null;
+	var err = 0;
+	var errmsg = undefined;
 // XXX - If there's an error, take all the items in req and put them
 // back in mark_read (bearing in mind that they may have been marked
 // again by the user, so don't overwrite those).
@@ -181,7 +177,44 @@ function parse_flush_response(req)
 	{
 	    case 0:		// Uninitialized
 	    case 1:		// Loading
+		return
 	    case 2:		// Loaded
+		/* Get request status */
+		debug("We get signal");
+		// XXX - Get HTTP headers and/or status
+		try {
+			err = req.request.status;
+			errmsg = req.request.statusText;
+			debug("request status: [" + err + "]");
+			debug("request status text: [" + errmsg + "]");
+		} catch (e) {
+			debug("Failed to get status: " + e);
+			err = 1;
+		}
+		// XXX - If status != 200, should probably abort() the
+		// request and put the items back on the to-do list.
+		if (err != 200)
+		{
+			debug("Aborting");
+			req.request.abort();
+			req.aborted = true;
+
+			/* Put the items to be marked back on mark_read */
+			for (i in req.read)
+			{
+				var id = req.read[i];
+//debug("Putting back " + id + " as read");
+				if (mark_read[id] == undefined)
+					mark_read[id] = true;
+			}
+			for (i in req.unread)
+			{
+				var id = req.unread[i];
+//debug("Putting back " + id + " as unread");
+				if (mark_read[id] == undefined)
+					mark_read[id] = false;
+			}
+		}
 		return;
 	    case 3:		// Got partial text
 		debug("Got some text. Len " + req.request.responseText.length);
@@ -189,6 +222,14 @@ function parse_flush_response(req)
 	    case 4:		// Got all text
 //		debug("Got all text. Len " + req.request.responseText.length +", \"" + req.request.responseText, "\"");
 		debug("Got all text. Len " + req.request.responseText.length);
+
+		// XXX - Check response text: if it's not a status
+		// message from our server saying that the messages
+		// were deleted, then consider it failed: an HTTP
+		// status code of 200 could have come from a proxy
+		// popping up a login box or something.
+		if (req.aborted)
+			return;
 		for (i in req.read)
 		{
 //debug("marking "+req.read[i]+" as read");

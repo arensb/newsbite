@@ -1,3 +1,13 @@
+- bug: The Ajax code to mark items as read only examines the HTTP
+  return status; if it's 200, it assumes everything went well.
+	This breaks when there's an (uninitialized) web proxy: the
+  machine gets an address with DHCP, sends the request to the Newsbite
+  server, and gets a proper (code 200) response from the proxy, asking
+  to enter a username and password before being allowed out onto the
+  Intertubes.
+	markitems.php needs to return {status: 'ok'}, and the client
+  needs to make sure it got that status before it concludes that items
+  were marked properly.
 - bug: why do old posts keep cropping up, even though they're older
   than 90 days?
 - Need tool to fix database schema.
@@ -160,13 +170,6 @@
 	Also, if plugins add stuff to the bottom of the article text,
   want to give the user some control over the order in which they get
   called.
-- In Ajax mode, marking an item as read should tell the server to
-  delete it now, so that if you switch from workstation to laptop,
-  your feeds are already up to date.
-	When marking an item as read, collapse it so it doesn't take
-  up much screen real estate, but is still visible in case the user
-  didn't mean to mark it. Have a separate button ("refresh"?) to clear
-  out read items.
 - i18n.
 	Can start by identifying translatable strings and marking
   them, so they can be translated later. Define dummy _() and N_()
@@ -441,8 +444,6 @@
   (relative) subdirectory where skin files are found.
 - Perhaps add a "collapse all" button in view.tpl that'll collapse all
   displayed items.
-- Thankfully, JavaScript is non-preemptive, which simplifies a lot of
-  the code: no need to worry about dining philosophers and such.
 - In main view: have a button to toggle displaying feeds with no
   unread items. This could be difficult, since the color of rows is
   set by their class, which in turn is in the .tpl file.
@@ -459,3 +460,15 @@
 	http://www.imageabstraction.com/gallery/index.php?action=showpic&cat=11&pic=58
 	http://www.imageabstraction.com/gallery/index.php?action=showpic&cat=11&pic=59
 	http://www.imageabstraction.com/gallery/index.php?action=showpic&cat=10&pic=90
+- Add feed handler to Firefox:
+	http://kb.mozillazine.org/Browser.contentHandlers.types.*.uri
+  See also "browser.contentHandlers" in about:config
+  See also
+  http://labnol.blogspot.com/2006/07/firefox-20-tutorial-add-new-rss.html
+  on how to add new feed handlers.
+  See http://developer.mozilla.org/en/Adding_feed_readers_to_Firefox
+  for how to add them automatically.
+- When collapsing an item to just show the summary, scroll the window
+  so that the article doesn't move: if clicking the bottom collapse
+  bar, scroll so that the bottom of the item remains at the same
+  position in the window.

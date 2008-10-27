@@ -8,6 +8,7 @@ body {
 	margin-right:		0px;
 	margin-bottom:		0px;
 	background-image:	url(gray-bg.jpg);
+	scrollbar-arrow-color:	blue;
 }
 
 h1 {
@@ -296,6 +297,8 @@ input[type="checkbox"].mark-check {
 	font-family:		Times, serif;
 	padding:		0.5em;
 	background-color:	white;
+
+	overflow:		auto;
 }
 
 .content-panes a img {
