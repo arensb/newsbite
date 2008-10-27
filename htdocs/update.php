@@ -56,6 +56,7 @@ if (is_numeric($feed_id) && is_int($feed_id+0))
 }
 
 if ($out_fmt == "json")
+	/* Close the "<![CDATA[" from above */
 	echo "]]>\n";
 
 // XXX - Move the HTTP-fetching stuff to a separate function, so that
