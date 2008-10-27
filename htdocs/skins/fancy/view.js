@@ -181,7 +181,8 @@ function parse_flush_response(req)
 	    case 2:		// Loaded
 		/* Get request status */
 		debug("We get signal");
-		// XXX - Get HTTP headers and/or status
+
+		/* Get HTTP status */
 		try {
 			err = req.request.status;
 			errmsg = req.request.statusText;
@@ -191,8 +192,10 @@ function parse_flush_response(req)
 			debug("Failed to get status: " + e);
 			err = 1;
 		}
-		// XXX - If status != 200, should probably abort() the
-		// request and put the items back on the to-do list.
+
+		/* If the HTTP status isn't 200, abort the request and
+		 * put the items back on the to-do list.
+		 */
 		if (err != 200)
 		{
 			debug("Aborting");
@@ -223,11 +226,55 @@ function parse_flush_response(req)
 //		debug("Got all text. Len " + req.request.responseText.length +", \"" + req.request.responseText, "\"");
 		debug("Got all text. Len " + req.request.responseText.length);
 
-		// XXX - Check response text: if it's not a status
-		// message from our server saying that the messages
-		// were deleted, then consider it failed: an HTTP
-		// status code of 200 could have come from a proxy
-		// popping up a login box or something.
+		/* Check response text: if it's not a status message
+		 * from our server saying that the messages were
+		 * deleted, then consider it failed: an HTTP status
+		 * code of 200 could have come from a proxy popping up
+		 * a login box or something.
+		 */
+		// XXX - The following code is duplicated in feeds.js.
+		// Ought to consolidate into a library or something.
+		var lines = req.request.responseText.split("\n");
+		var l;
+		for (var i = 0; i < lines.length; i++)
+		{
+			var line = lines[i];
+
+			if (line[0] != '{')
+				// There might be non-JSON lines in there.
+				// Ignore them. For that matter, ignore
+				// any JSON lines that aren't objects.
+				continue;
+			try {
+				eval("l = " + line);
+			} catch (e) {
+				debug("Caught error " + e);
+				continue;
+			}
+		}
+		if (l.status != "ok")
+		{
+			debug("Didn't get ok status from server.");
+			/* Put the items to be marked back on mark_read */
+			// XXX - This code is duplicated above. Consolidate
+			// into a function.
+			for (i in req.read)
+			{
+				var id = req.read[i];
+//debug("Putting back " + id + " as read");
+				if (mark_read[id] == undefined)
+					mark_read[id] = true;
+			}
+			for (i in req.unread)
+			{
+				var id = req.unread[i];
+//debug("Putting back " + id + " as unread");
+				if (mark_read[id] == undefined)
+					mark_read[id] = false;
+			}
+			return;
+		}
+
 		if (req.aborted)
 			return;
 		for (i in req.read)
