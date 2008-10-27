@@ -167,6 +167,9 @@ $url2handler = array(		// Handlers for specific URLs
 		"element"	=> content_element_handler,
 		),
 // dc		http://purl.org/dc/elements/1.1/
+	"http://purl.org/dc/elements/1.1/"	=> array(
+		"element"	=> dc_element_handler,
+		),
 // feedburner	http://rssnamespace.org/feedburner/ext/1.0
 // flickr	http://flickr.com/services/feeds/
 // itunes	http://www.itunes.com/dtds/podcast-1.0.dtd
@@ -2031,6 +2034,42 @@ function content_element_handler(
 
 	    default:
 //		echo "Warning: unknown \"content:\" element: [$elt_name]\n";
+		break;
+		
+	}
+
+	return true;
+}
+
+/********** dc *********************************************/
+// XXX - This belongs in a plugin
+/* dc_element_handler
+ * Handle the RSS Dublin Core extension:
+ * http://purl.org/dc/elements/1.1/
+ * http://dublincore.org/documents/dces/
+ *
+ * <dc:creator>name</dc:creator>
+ *	The author of the post
+ */
+function dc_element_handler(
+	$ns_url,	// URL of this element's namespace
+	$prefix,	// Namespace of this element
+	$elt_name,	// Name of this element, without prefix
+	&$attrs,	// Attributes
+	&$children,	// Contents of this element
+	&$retval,	// Fill in the blanks here
+	&$context)	// Where we are at the moment
+{
+	$parent = $context[count($context)-1]['name'];
+	switch ($elt_name)
+	{
+	    case "creator":
+		// XXX - Make sure $chldren is a string?
+		$retval['author_name'] = $children;
+		break;
+
+	    default:
+//		echo "Warning: unknown \"dc:\" element: [$elt_name]\n";
 		break;
 		
 	}
