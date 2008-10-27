@@ -687,6 +687,26 @@ EOT;
 						// figure out how to
 						// deal with
 						// categories
+
+		// XXX - Possible XSS: URLs and email addresses not
+		// sanitized
+		if (isset($item['author_name']))
+		{
+			if (isset($item['author_url']))
+			{
+				$author = "<a href=\"$item[author_url]\">$item[author_name]</a>";
+
+				if (isset($item['author_email']))
+					$author .= " <a href=\"mailto:$item[author_email]\">&lt;$item[author_email]&gt;</a>";
+			} elseif (isset($item['author_email']))
+				$author = "<a href=\"mailto:$item[author_email]\">$item[author_name]</a>";
+			else
+				$author = $item['author_name'];
+		} elseif (isset($item['author_email']))
+			  $author = " <a href=\"mailto:$item[author_email]\">&lt;$item[author_email]&gt;</a>";
+
+echo "<pre>\$author [$author]</pre>\n";
+
 		if (!isset($item['guid']))
 		{
 			// This item doesn't have a GUID, so make one.
@@ -701,7 +721,7 @@ EOT;
 				  $item['title'],
 				  $item['description'],
 				  $item['content'],
-				  $item['author_email'],	// XXX - Can do better?
+				  $author,
 				  $dummy_categories,	// XXX - Deal with categories
 				  $item['comment_url'],
 				  $item['comment_feed'],
@@ -715,7 +735,7 @@ EOT;
 				  $item['title'],
 				  $item['description'],
 				  $item['content'],
-				  $item['author_email'],	// XXX - Can do better?
+				  $author,
 				  $dummy_categories,	// XXX - Deal with categories
 				  $item['comment_url'],
 				  $item['comment_feed'],
