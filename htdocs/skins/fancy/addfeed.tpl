@@ -18,10 +18,36 @@
 <noscript>
   <link rel="stylesheet" type="text/css" href="skins/{$skin}/style-nojs.css" media="all" />
 </noscript>
+
+<script type="text/javascript">
+// Function to add NewsBite as an RSS subscriber in Firefox
+var subscribe_url = "{$subscribe_url}";	// Subscription URL
+{literal}
+// register_feed_reader
+// Function to add 'subscribe_url' as a subscription URL in Firefox
+function register_feed_reader()
+{
+	navigator.registerContentHandler(
+		"application/vnd.mozilla.maybe.feed",
+		subscribe_url,
+		"NewsBite");
+}
+</script>
+{/literal}
 </head>
 <body id="add-feed">
 
 <h1>Adding feed</h1>
+
+{literal}
+<script type="text/javascript">
+// If this is Firefox, put in a link to add NewsBite as an RSS subscriber.
+if (navigator.registerContentHandler)
+{
+	document.write('<a href="" onclick="javascript:register_feed_reader()">Add one-click subscription</a>');
+}
+</script>
+{/literal}
 
 <form name="add-feed-form" method="post" action="addfeed.php">
 
@@ -67,6 +93,5 @@
 <input type="reset" value="Clear changes"/>
 <input type="submit" name="change" value="Apply changes"/>
 </form>
-
 </body>
 </html>

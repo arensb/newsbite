@@ -1,3 +1,5 @@
+- bug: Sometimes, Firefox error console complains of "not well formed"
+  JSON output. Add the stupid <![CDATA[...]]> wrapper.
 - bug: When Ajax updates feeds, it doesn't notice updates to the list
   of feeds.
 	Perhaps when updating all, update.php should append a list of
@@ -445,14 +447,6 @@
 	http://www.imageabstraction.com/gallery/index.php?action=showpic&cat=11&pic=58
 	http://www.imageabstraction.com/gallery/index.php?action=showpic&cat=11&pic=59
 	http://www.imageabstraction.com/gallery/index.php?action=showpic&cat=10&pic=90
-- Add feed handler to Firefox:
-	http://kb.mozillazine.org/Browser.contentHandlers.types.*.uri
-  See also "browser.contentHandlers" in about:config
-  See also
-  http://labnol.blogspot.com/2006/07/firefox-20-tutorial-add-new-rss.html
-  on how to add new feed handlers.
-  See http://developer.mozilla.org/en/Adding_feed_readers_to_Firefox
-  for how to add them automatically.
 - When collapsing an item to just show the summary, scroll the window
   so that the article doesn't move: if clicking the bottom collapse
   bar, scroll so that the bottom of the item remains at the same

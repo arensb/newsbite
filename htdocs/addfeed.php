@@ -35,7 +35,20 @@ if (isset($feed_url))
 
 // If we get this far, $feed_url is not set.
 
+/* Construct the URL for subscribing to a feed, so we can pass it to
+ * JavaScript magic.
+ */
+$subscribe_url = "http://";
+if ($_SERVER['SERVER_NAME'] != "")
+	$subscribe_url .= $_SERVER['SERVER_NAME'];
+else
+	$subscribe_url .= $_SERVER['SERVER_ADDR'];
+if ($_SERVER['SERVER_PORT'] != "" && $_SERVER['SERVER_PORT'] != 80)
+	$subscribe_url .= ":$_SERVER[SERVER_PORT]";
+$subscribe_url .= $_SERVER['REQUEST_URI'] . '?feed=%s';
+
 /* Display a form for adding a URL */
 $skin = new Skin();
+$skin->assign("subscribe_url", $subscribe_url);
 $skin->display("addfeed.tpl");
 ?>
