@@ -1,7 +1,12 @@
 # Variables
 PROJECT =	newsbite
-VERSION =	1.1.9
-DISTNAME =	${PROJECT}-${VERSION}
+#VERSION =	1.1.9
+# XXX - The "!=" is a BSDmake-ism.
+REV !=		svn status -uq | grep "Status against revision:"|awk '{print $$4}'
+# In GNU make, one would write:
+#REV :=		$(shell svn status -uq | grep "Status against revision:"|awk '{print $$4}')
+#DISTNAME =	${PROJECT}-${VERSION}
+DISTNAME =	${PROJECT}-r${REV}
 
 # Commands
 TAR =	tar
