@@ -688,24 +688,19 @@ EOT;
 						// deal with
 						// categories
 
-		// XXX - Possible XSS: URLs and email addresses not
-		// sanitized
+		/* Construct author to store in database */
 		if (isset($item['author_name']))
 		{
-			if (isset($item['author_url']))
+			$author = $item['author_name'];
+
+			if (isset($item['author_email']))
 			{
-				$author = "<a href=\"$item[author_url]\">$item[author_name]</a>";
-
-				if (isset($item['author_email']))
-					$author .= " <a href=\"mailto:$item[author_email]\">&lt;$item[author_email]&gt;</a>";
-			} elseif (isset($item['author_email']))
-				$author = "<a href=\"mailto:$item[author_email]\">$item[author_name]</a>";
-			else
-				$author = $item['author_name'];
+				$author .= " <$item[author_email]>";
+			}
 		} elseif (isset($item['author_email']))
-			  $author = " <a href=\"mailto:$item[author_email]\">&lt;$item[author_email]&gt;</a>";
+			$author = "<$item[author_email]>";
 
-echo "<pre>\$author [$author]</pre>\n";
+//echo "<pre>\$author [$author]</pre>\n";
 
 		if (!isset($item['guid']))
 		{

@@ -918,7 +918,11 @@ function rss_element_handler(
 		{
 		    case "item":
 			// XXX - Make sure $children is a string
-			$retval['author_email'] = $children;
+			// XXX - All we have is "author". We don't
+			// know whether that's a name, address, or
+			// URL. Assume it's a name and hope for the
+			// best.
+			$retval['author_name'] = $children;
 			break;
 		    default:
 			// XXX - Better error-reporting
@@ -932,7 +936,11 @@ function rss_element_handler(
 		{
 		    case "channel":
 			// XXX - Make sure $children is a string
-			$retval['author_email'] = $children;
+			// XXX - All we have is "author". We don't
+			// know whether that's a name, address, or
+			// URL. Assume it's a name and hope for the
+			// best.
+			$retval['author_name'] = $children;
 			break;
 		    default:
 			// XXX - Better error-reporting
