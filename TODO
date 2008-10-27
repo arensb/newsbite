@@ -1,19 +1,3 @@
-- bug: The Ajax code to mark items as read only examines the HTTP
-  return status; if it's 200, it assumes everything went well.
-	This breaks when there's an (uninitialized) web proxy: the
-  machine gets an address with DHCP, sends the request to the Newsbite
-  server, and gets a proper (code 200) response from the proxy, asking
-  to enter a username and password before being allowed out onto the
-  Intertubes.
-	markitems.php needs to return {status: 'ok'}, and the client
-  needs to make sure it got that status before it concludes that items
-  were marked properly.
-- bug: why do old posts keep cropping up, even though they're older
-  than 90 days?
-- Need tool to fix database schema.
-	ALTER TABLE items CHANGE COLUMN url url VARCHAR(255);
-	ALTER TABLE items CHANGE COLUMN comment_url comment_url VARCHAR(255);
-	ALTER TABLE items CHANGE COLUMN comment_rss comment_rss VARCHAR(255);
 - bug: When Ajax updates feeds, it doesn't notice updates to the list
   of feeds.
 	Perhaps when updating all, update.php should append a list of
@@ -26,9 +10,10 @@
 - bug: when on the last page (earliest items) and use "mark all as
   read", sometimes get blank page.
 	Is this just the N810 browser being wonky?
-- Perhaps best to go with svn revision number when creating dist file.
-  Can get this with
-	svn status -uq | grep "Status against revision:"|awk '{print $4}
+- Need tool to fix database schema.
+	ALTER TABLE items CHANGE COLUMN url url VARCHAR(255);
+	ALTER TABLE items CHANGE COLUMN comment_url comment_url VARCHAR(255);
+	ALTER TABLE items CHANGE COLUMN comment_rss comment_rss VARCHAR(255);
 - Try to put weblog name, author, date on one line. Too much wasted
   space otherwise.
 - Ajax: "Clear changes" should go through list of items and uncheck
