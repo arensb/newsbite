@@ -235,7 +235,7 @@ function parse_flush_response(req)
 		// XXX - The following code is duplicated in feeds.js.
 		// Ought to consolidate into a library or something.
 		var lines = req.request.responseText.split("\n");
-		var l;
+		var l = {};
 		for (var i = 0; i < lines.length; i++)
 		{
 			var line = lines[i];
@@ -247,12 +247,13 @@ function parse_flush_response(req)
 				continue;
 			try {
 				eval("l = " + line);
+				break;
 			} catch (e) {
 				debug("Caught error " + e);
 				continue;
 			}
 		}
-		if (l.status != "ok")
+		if (l.state != "ok")
 		{
 			debug("Didn't get ok status from server.");
 			/* Put the items to be marked back on mark_read */
