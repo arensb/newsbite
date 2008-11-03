@@ -45,7 +45,7 @@ else
 	$subscribe_url .= $_SERVER['SERVER_ADDR'];
 if ($_SERVER['SERVER_PORT'] != "" && $_SERVER['SERVER_PORT'] != 80)
 	$subscribe_url .= ":$_SERVER[SERVER_PORT]";
-$subscribe_url .= $_SERVER['REQUEST_URI'] . '?feed=%s';
+$subscribe_url .= $_SERVER['REQUEST_URI'] . '?feed_url=%s';
 
 /* Display a form for adding a URL */
 $skin = new Skin();
