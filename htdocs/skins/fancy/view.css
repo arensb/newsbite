@@ -147,6 +147,24 @@ input[type="submit"] {
 	-webkit-border-bottom-right-radius:	20px;
 }
 
+.item[state="read"] .item-header .item-title {
+	font-size:		100%;
+	display:		inline;
+}
+
+.item[state="read"] .item-header .item-title:after {
+	content:		" — ";		/* Em-dash, u2014 */
+}
+
+.item[state="read"] .item-header .feed-title {
+	font-size:		100%;
+	display:		inline;
+}
+
+.item[state="read"] .item-header .feed-title:after {
+	content:		" ";
+}
+
 /* If an item has been marked as read, collapse it to just a header */
 .item[state="read"] .content-panes,
 .item[state="read"] .item-footer {

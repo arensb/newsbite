@@ -46,7 +46,8 @@
           {* XXX - If ever add email address:
            * U+2709 == envelope; U+270d == writing hand
            *}
-          <p class="item-author">by {$item.author|escape}</p>
+          <span class="item-author">by {$item.author|escape}</span>
+          ,&nbsp;
         {/if}
         <span>{$item.pub_date|date_format:"%e %b, %Y"}</span>
       </td>
