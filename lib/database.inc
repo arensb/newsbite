@@ -53,8 +53,9 @@ function db_disconnect()
 
 /* db_get_feeds
  * Return a list of all feeds.
+ * If $inactive is true, fetch inactive feeds as well.
  */
-function db_get_feeds()
+function db_get_feeds($inactive = FALSE)
 {
 	$dbh = db_connect();
 
@@ -62,6 +63,8 @@ function db_get_feeds()
 SELECT	*
 FROM	feeds
 EOT;
+	if (!$inactive)
+		$query .= "\nWHERE active";
 
 	$result = $dbh->query($query);
 	if (!$result)
