@@ -546,6 +546,12 @@ function db_update_feed_info($feed_id, $fields)
 				"'";
 	}
 
+	/* Boolean fields */
+	if ((bool) $fields['active'] != (bool) $old['active'])
+		// Is this feed active?
+		$updates[] = "active = " .
+			($fields['active'] ? "TRUE" : "FALSE");
+
 	/* Other fields that require special processing */
 	if (is_array($fields['image']) &&
 	    array_key_exists('url', $fields['image']) &&

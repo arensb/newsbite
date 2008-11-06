@@ -2,7 +2,6 @@
   interesting from time to time, like electoral-vote.com.
 - Link on feeds page (in both skins) to show inactive feeds, with
   option to reactivate them.
-- Link on feeds page (in both skins) to deactivate feeds.
 - bug: When updating feeds, sometimes spinner keeps going forever. Why?
 - bug: When adding a new feed, it takes two "update" clicks for it to
   take: the first time, the number of posts shows up. The second time,

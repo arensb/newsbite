@@ -113,6 +113,17 @@
     </td>
   </tr>
 
+  <tr>
+    <th>Active</th>
+    <td>
+      <input type="checkbox" name="active"
+        {if $feed.active}
+          checked
+        {/if}
+      />
+    </td>
+  </tr>
+
   {* XXX - Ought to manage passwords separately, so can have one
    * username/password for all of livejournal.com.
    *
