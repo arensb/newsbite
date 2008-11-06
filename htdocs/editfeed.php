@@ -60,6 +60,7 @@ function update_feed_info($feed_id)
 	$new['nickname'] = stripcslashes($_REQUEST['nickname']);
 	$new['url']      = stripcslashes($_REQUEST['url']);
 	$new['feed_url'] = stripcslashes($_REQUEST['feed_url']);
+	$new['active']   = $_REQUEST['active'] != "";	# Boolean
 	$new['username'] = stripcslashes($_REQUEST['username']);
 	$new['passwd']   = stripcslashes($_REQUEST['password']);
 
