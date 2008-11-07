@@ -6,6 +6,8 @@ README
 README.hacking
 Smarty/Smarty-2.6.19.tar.gz
 TODO
+fix-schema-r110.sql
+fix-schema-r206.sql
 htdocs/.htaccess
 htdocs/addfeed.php
 htdocs/editfeed.php

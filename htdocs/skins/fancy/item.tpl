@@ -35,7 +35,7 @@
             </a>
           {/if}
         </h3>
-        {if ($items != "")}
+        {if ($feeds != "")}
           <h3 class="feed-title">
             <a href="{$feeds[$item.feed_id].url}">
               {$feeds[$item.feed_id].title}
