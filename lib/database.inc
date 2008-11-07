@@ -547,7 +547,8 @@ function db_update_feed_info($feed_id, $fields)
 	}
 
 	/* Boolean fields */
-	if ((bool) $fields['active'] != (bool) $old['active'])
+	if (array_key_exists('active', $fields) &&
+	    ((bool) $fields['active'] != (bool) $old['active']))
 		// Is this feed active?
 		$updates[] = "active = " .
 			($fields['active'] ? "TRUE" : "FALSE");
