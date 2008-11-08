@@ -76,7 +76,6 @@ function update_feed($feed_id)
 	 */
 	$err = _save_handle($feed_id, $feed_text);
 		// XXX - Error-handling
-		// XXX - Get item counts returned by _save_handle
 	$counts = db_get_feed_counts($feed_id);
 
 	// XXX - Prettier output
@@ -101,6 +100,7 @@ function update_feed($feed_id)
 	}
 
 	// XXX - Return something intelligent
+	return $counts;
 }
 
 /* update_all_feeds
