@@ -1,0 +1,3 @@
+ALTER TABLE	feeds
+ALTER COLUMN	active
+  SET DEFAULT	1;
