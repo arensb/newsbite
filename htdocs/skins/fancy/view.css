@@ -315,8 +315,6 @@ input[type="checkbox"].mark-check {
 	font-family:		Times, serif;
 	padding:		0.5em;
 	background-color:	white;
-
-	overflow:		auto;
 }
 
 .content-panes a img {
