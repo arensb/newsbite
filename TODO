@@ -1,5 +1,3 @@
-- Would be nice to mark a feed as inactive, for feeds that are only
-  interesting from time to time, like electoral-vote.com.
 - Link on feeds page (in both skins) to show inactive feeds, with
   option to reactivate them.
 - bug: When updating feeds, sometimes spinner keeps going forever. Why?
@@ -23,14 +21,14 @@
 	ALTER TABLE items CHANGE COLUMN url url VARCHAR(255);
 	ALTER TABLE items CHANGE COLUMN comment_url comment_url VARCHAR(255);
 	ALTER TABLE items CHANGE COLUMN comment_rss comment_rss VARCHAR(255);
+- bug-ish: when marking a feed as inactive, get redirected back to it.
+  This is bogus.
 - When subscribing to a new feed, addfeed.php sends you back to the
   index. Is this a good idea? Perhaps should go back to whichever site
   you just subscribed to?
 	This doesn't seem to show up in the referer, though. Might
   need to extract the site URL from the RSS feed. (Except for feeds
   added manually from the index page.)
-- Try to put weblog name, author, date on one line. Too much wasted
-  space otherwise.
 - Ajax: "Clear changes" should go through list of items and uncheck
   them.
 - Ajax feed update: use regular expressions to find lines in JSON
@@ -417,6 +415,12 @@
 - Perhaps should have something in the database (in global options?)
   that gives the version number of the database schema. That way, can
   detect whether database is out of date wrt PHP scripts.
+	Another possibility would be to add an 'upgrade.php' script to
+  the distro: 'common.inc' includes that, upgrades the installation,
+  then deletes itself.
+	In order to be allowed to delete itself, the script should be
+  put in a directory that the httpd user can write to: the Smarty
+  compile directory. Yes, this is a hack.
 - Remove the smarty/{config,templates_c} out of the distro.
   Probably should remove them altogether.
 - Run timing tests with different numbers of feeds. See if there's a

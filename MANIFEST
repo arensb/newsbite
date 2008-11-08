@@ -72,7 +72,8 @@ htdocs/view.php
 lib/common.inc
 lib/config.inc
 lib/database.inc
-lib/feed.inc
+lib/net.inc
+lib/parse-feed.inc
 lib/skin.inc
 php.ini
 schema.sql
