@@ -43,12 +43,13 @@ CREATE TABLE feeds (
 	last_update	DATETIME,	# When this feed was last updated
 	ttl		TIME,		# Time to live
 	image		VARCHAR(255),	# URL to image to use
-	active		BOOLEAN,	# Is this feed active? Inactive feeds
+	active		BOOLEAN		# Is this feed active? Inactive feeds
 					# are usually seasonal ones, e.g.
 					# political ones that we only care about
 					# at certain times, and want to ignore
 					# the rest of the time, without
 					# deleting it entirely.
+		DEFAULT	1		# Feeds are active by default
 #	skip_hours	SET('0','1', ..., '23'),	# Hours when not to refresh
 #	skip_days	SET('Sunday', 'Monday',	# Days when not to refresh
 #			'Tuesday', 'Wednesday', Thursday', 'Friday',
