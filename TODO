@@ -1,10 +1,8 @@
+- Bug: update_feed() prints to stdout, which is only appropriate some
+  of the time. Add callbacks for starting/ending update.
 - Link on feeds page (in both skins) to show inactive feeds, with
   option to reactivate them.
 - bug: When updating feeds, sometimes spinner keeps going forever. Why?
-- bug: When adding a new feed, it takes two "update" clicks for it to
-  take: the first time, the number of posts shows up. The second time,
-  the title shows up.
-	Ideally, both should show up immediately.
 - bug: When Ajax updates feeds, it doesn't notice updates to the list
   of feeds.
 	Perhaps when updating all, update.php should append a list of
@@ -23,12 +21,6 @@
 	ALTER TABLE items CHANGE COLUMN comment_rss comment_rss VARCHAR(255);
 - bug-ish: when marking a feed as inactive, get redirected back to it.
   This is bogus.
-- When subscribing to a new feed, addfeed.php sends you back to the
-  index. Is this a good idea? Perhaps should go back to whichever site
-  you just subscribed to?
-	This doesn't seem to show up in the referer, though. Might
-  need to extract the site URL from the RSS feed. (Except for feeds
-  added manually from the index page.)
 - Ajax: "Clear changes" should go through list of items and uncheck
   them.
 - Ajax feed update: use regular expressions to find lines in JSON
