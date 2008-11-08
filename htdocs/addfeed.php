@@ -7,6 +7,7 @@
 require_once("config.inc");
 require_once("common.inc");
 require_once("database.inc");
+require_once("net.inc");
 require_once("skin.inc");
 
 $feed_url = $_REQUEST['feed_url'];
@@ -20,12 +21,15 @@ if (isset($feed_url))
 	$feed_id = db_add_feed(array(
 			"feed_url" => $feed_url)
 		);
-		// XXX - Error-checking
-	// XXX - Refresh the new feed, to get info and new articles
+	if ($feed_id === false)
+		abort("Error adding feed");
 
-	/* Redirect to the index page */
-	// XXX - Is there a better place to redirect to? */
-	redirect_to("index.php");
+	/* Refresh the new feed, to get info and new articles */
+	$err = update_feed($feed_id);
+		// XXX - Error-checking
+
+	/* Redirect to the feed's page */
+	redirect_to("view.php?id=$feed_id");
 	exit(0);
 }
 
