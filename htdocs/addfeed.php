@@ -9,20 +9,16 @@ require_once("common.inc");
 require_once("database.inc");
 require_once("skin.inc");
 
-// XXX - Display form asking for URL, (nickname), username, password.
-// XXX - Get completed form.
-// XXX - First pass: just add the supplied URL.
-
-// XXX - Check whether we're already subscribed to that URL?
-
 $feed_url = $_REQUEST['feed_url'];
 	// XXX - Probably needs to be escaped. Can there be quotes in URLs?
 
 if (isset($feed_url))
 {
-	// XXX
-	db_add_feed(array(
-			    "feed_url" => $feed_url)
+
+	// XXX - Check whether we're already subscribed to that URL
+
+	$feed_id = db_add_feed(array(
+			"feed_url" => $feed_url)
 		);
 		// XXX - Error-checking
 	// XXX - Refresh the new feed, to get info and new articles
