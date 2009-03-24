@@ -22,11 +22,15 @@ if (isset($feed_url))
 			"feed_url" => $feed_url)
 		);
 	if ($feed_id === false)
-		abort("Error adding feed");
+		abort("Error adding feed.");
 
 	/* Refresh the new feed, to get info and new articles */
 	$err = update_feed($feed_id);
-		// XXX - Error-checking
+	if (!$err)
+		// XXX - Better error reporting: include error message
+		abort("Error updating new feed.");
+	if (isset($err['status']) && $err['status'] != 0)
+		abort($err['errmsg']);
 
 	/* Redirect to the feed's page */
 	redirect_to("view.php?id=$feed_id");
