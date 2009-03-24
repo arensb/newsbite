@@ -9,7 +9,7 @@ require_once("common.inc");
 //require_once("database.inc");
 require_once("net.inc");
 //require_once("parse-feed.inc");
-//require_once("skin.inc");
+require_once("skin.inc");
 
 /* See what kind of output the user wants */
 switch ($_REQUEST['o'])
@@ -39,7 +39,68 @@ $feed_id = $_REQUEST["id"];
 
 if (is_numeric($feed_id) && is_int($feed_id+0))
 {
-	update_feed($feed_id);
+	$feed = db_get_feed($feed_id);
+
+	switch ($out_fmt)
+	{
+	    case "html":
+		echo "<h3>Updating feed [$feed[title]]</h3>\n";
+		break;
+	    case "json":
+		$skin = new Skin();
+		echo jsonify('state',	"start",
+			     'feed_id',	$feed_id,
+			     'title',	$feed['title']),
+			"\n";
+		flush();
+		break;
+	}
+	$err = update_feed($feed_id, $feed);
+
+	if (!$err)
+	{
+		switch ($out_fmt)
+		{
+		    case "json":
+			// XXX - What to do?
+			break;
+		    case "html":
+		    default:
+			// XXX - Better error-handling
+			$err_msg = "feed $feed_id: parse_feed() returned ";
+			if ($feed === false) $err_msg .= "FALSE";
+			if ($feed === null)  $err_msg .= "NULL";
+			if ($feed === "")    $err_msg .= "(empty string)";
+			abort($err_msg);
+		}
+	}
+
+	if (isset($err['status']) && $err['status'] != 0)
+		abort($err['errmsg']);
+
+	/* Update feed to get its title, new article count, etc. */
+	$feed = db_get_feed($feed_id);
+
+	switch ($out_fmt)
+	{
+	    case "json":
+		// XXX - This should go in calling function.
+		$skin->assign('feed', $feed);
+		$skin->assign('feed_id', $feed_id);
+		$skin->assign('counts', $counts);
+		$count_display = $skin->fetch("feed-title.tpl");
+		echo jsonify('state',	"end",
+			     'feed_id',	$feed_id,
+			     'count_display',	$count_display
+			     ),
+			"\n";
+		flush();
+		break;
+	    case "html":
+	    default:
+		echo "Finished [$feed[title]]<br/>\n";
+		break;
+	}
 
 	// XXX - Prettier output
 	if ($out_fmt == "html")
