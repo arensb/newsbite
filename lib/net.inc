@@ -21,86 +21,108 @@ require_once("parse-feed.inc");
  * Update a feed: fetch the RSS, parse it, and add/update items in the
  * database.
  */
-function update_feed($feed_id)
+function update_feed($feed_id, $feed = NULL)
 {
 	global $out_fmt;
 	global $fetch_error;
 
 	/* Get the feed from the database */
-	$feed = db_get_feed($feed_id);
-	if (!$feed)
-		abort("No such feed: $feed_id.");
+	if ($feed == NULL)
+	{
+		$feed = db_get_feed($feed_id);
+		if (!$feed)
+			// XXX - Should note what went wrong: no such feed
+			return FALSE;
+	}
 
 	// XXX - Prettier output
-	switch ($out_fmt)
-	{
-	    case "html":
-		echo "<h3>Updating feed [$feed[title]]</h3>\n";
-		break;
-	    case "json":
-		$skin = new Skin();
-		echo jsonify('state',	"start",
-			     'feed_id',	$feed_id,
-			     'title',	$feed['title']),
-			"\n";
-		flush();
-		break;
-	}
+	// XXX- This should go in caller
+//	switch ($out_fmt)
+//	{
+//	    case "html":
+//		echo "<h3>Updating feed [$feed[title]]</h3>\n";
+//		break;
+//	    case "json":
+//		$skin = new Skin();
+//		echo jsonify('state',	"start",
+//			     'feed_id',	$feed_id,
+//			     'title',	$feed['title']),
+//			"\n";
+//		flush();
+//		break;
+//	}
 
 	/* Fetch the feed */
 	$feed_text = fetch_url($feed['feed_url'],
 			       $feed['username'],
 			       $feed['passwd']);
-	if ($feed_text === false)
-	{
-		switch ($out_fmt)
-		{
-		    case "html":
-			echo "<b>$fetch_error</b><br/>\n";
-			break;
-		    case "json":
-			echo jsonify('state',	"error",
-				     'feed_id',	$feed_id,
-				     'error',	$fetch_error),
-				"\n";
-			flush();
-			break;
-		}
-
-		// XXX - What should this return?
-		return FALSE;
-	}
+	// XXX - Don't print anything. Should return an error message
+	// and/or status code or something.
+	if ($feed_text === FALSE)
+		return array('status'	=> -1,
+			     'errmsg'	=> $fetch_error);
+//	{
+//		switch ($out_fmt)
+//		{
+//		    case "html":
+//			echo "<b>$fetch_error</b><br/>\n";
+//			break;
+//		    case "json":
+//			echo jsonify('state',	"error",
+//				     'feed_id',	$feed_id,
+//				     'error',	$fetch_error),
+//				"\n";
+//			flush();
+//			break;
+//		}
+//
+//		// XXX - What should this return?
+//		return FALSE;
+//	}
 
 	/* Check the HTTP error code, save a cached copy of the feed,
 	 * parse it, and add it to the database.
 	 */
 	$err = _save_handle($feed_id, $feed_text);
-		// XXX - Error-handling
+		// XXX - Error-handling: returns FALSE on error, or
+		// array on success
 	$counts = db_get_feed_counts($feed_id);
 
-	// XXX - Prettier output
-	switch ($out_fmt)
+	// XXX - Shouldn't print anything. Just return error message
+	// and/or status code.
+//	switch ($out_fmt)
+//	{
+//	    case "json":
+//		// XXX - This should go in calling function.
+//		$skin->assign('feed', $feed);
+//		$skin->assign('feed_id', $feed_id);
+//		$skin->assign('counts', $counts);
+//		$count_display = $skin->fetch("feed-title.tpl");
+//		echo jsonify('state',	"end",
+//			     'feed_id',	$feed_id,
+//			     'count_display',	$count_display
+//			     ),
+//			"\n";
+//		flush();
+//		break;
+//	    case "html":
+//	    default:
+//		echo "Finished [$feed[title]]<br/>\n";
+//		break;
+//	}
+
+	foreach ($counts as $key => $value)
 	{
-	    case "json":
-		$skin->assign('feed', $feed);
-		$skin->assign('feed_id', $feed_id);
-		$skin->assign('counts', $counts);
-		$count_display = $skin->fetch("feed-title.tpl");
-		echo jsonify('state',	"end",
-			     'feed_id',	$feed_id,
-			     'count_display',	$count_display
-			     ),
-			"\n";
-		flush();
-		break;
-	    case "html":
-	    default:
-		echo "Finished [$feed[title]]<br/>\n";
-		break;
+		$feed[$key] = $value;
 	}
 
-	// XXX - Return something intelligent
-	return $counts;
+	// XXX - Return something intelligent:
+	// - read/unread article counts
+	// - update status
+	// - HTTP error message, if any
+	// - feed title, if it has changed
+//	return $counts;
+	return $feed;
 }
 
 /* update_all_feeds
@@ -324,7 +346,8 @@ function update_all_feeds()
 						$err = _save_handle(
 							$handle['feed']['id'],
 							$feed_text);
-							// XXX - Error-handling
+							// XXX - Error-handling: returns FALSE
+							// on error, array on success.
 						$counts = db_get_feed_counts($handle['feed']['id']);
 						// XXX - Better error-reporting?
 						switch ($out_fmt)
@@ -460,7 +483,8 @@ function update_all_feeds()
 			}
 			$err = _save_handle($pipeline[$i]['feed']['id'],
 					    $feed_text);
-				// XXX - Error-handling
+				// XXX - Error-handling: returns FALSE
+				// on error, array on success.
 			$counts = db_get_feed_counts($pipeline[$i]['feed']['id']);
 			// XXX - Prettier output?
 			switch ($out_fmt)
@@ -527,7 +551,8 @@ function _open_curl_handle($url, $username = NULL, $passwd = NULL)
 
 function _save_handle($feed_id, &$feed_text)
 {
-	global $out_fmt;
+//	global $out_fmt;
+	$retval = array();
 
 	/* Save a copy of the feed text for debugging */
 	if (defined("FEED_CACHE") && is_dir(FEED_CACHE))
@@ -535,6 +560,9 @@ function _save_handle($feed_id, &$feed_text)
 		// This will fail if permissions aren't right. Deal
 		// with it. It's a debugging feature, so you should be
 		// paying attention to error messages anyway.
+		// XXX - OTOH, the error messages arguably mess up
+		// JSON output. Should this be inside a try {} block
+		// or something?
 		$fh = fopen(FEED_CACHE . "/$feed_id", "w");
 		fwrite($fh, $feed_text);
 		fclose($fh);
@@ -544,27 +572,36 @@ function _save_handle($feed_id, &$feed_text)
 	$feed = parse_feed($feed_text);
 	if (!$feed)
 	{
-		switch ($out_fmt)
-		{
-		    case "json":
-			// XXX - What to do?
-			break;
-		    case "html":
-		    default:
-			// XXX - Better error-handling
-			echo "<b>feed $feed_id: parse_feed() returned ";
-			if ($feed === false) echo "FALSE";
-			if ($feed === null) echo "NULL";
-			if ($feed === "") echo "(empty string)";
-			echo "</b><br/>\n";
-			break;
-		}
-
+//		switch ($out_fmt)
+//		{
+//		    case "json":
+//			// XXX - What to do?
+//			break;
+//		    case "html":
+//		    default:
+//			// XXX - Better error-handling
+//			echo "<b>feed $feed_id: parse_feed() returned ";
+//			if ($feed === false) echo "FALSE";
+//			if ($feed === null) echo "NULL";
+//			if ($feed === "") echo "(empty string)";
+//			echo "</b><br/>\n";
+//			break;
+//		}
+//
 		return FALSE;
 	}
 
 	/* Add the feed to the database */
-	return db_update_feed($feed_id, $feed);
+	$counts = db_update_feed($feed_id, $feed);
+
+	/* Add feed counts to the return value */
+	foreach ($counts as $key => $value)
+	{
+		$feed[$key] = $value;
+	}
+
+//	return db_update_feed($feed_id, $feed);
+	return $feed;
 }
 
 /* fetch_url
