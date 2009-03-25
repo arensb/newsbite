@@ -98,19 +98,28 @@
       &#x25b2;{* Upward-pointing triangle *}
     </div>
 
-    <div class="item-summary">
+    {* Here (and in "item-content", below), we use <object> instead of
+     * <div> to try to insulate neighbors from HTML errors.
+     * That is, if the author of a post forgets to close a tag, as in:
+     * <div id="article-1">Unclosed <i>italic tag</div>
+     * <div id="article-2">Unrelated post.</div>
+     * the error tends to affect what comes later. In this example,
+     * article-2 is in italics because article-1 has an unclosed tag.
+     * Using <object> seems to help with this.
+     *}
+    <object class="item-summary">
       {$item.summary}
       {* This is for items with floating elements in them (such as
        * tall images): make sure the image is contained within the
        * <div> and doesn't go overflowing where we don't want it.
        *}
       <br style="clear: both"/>
-    </div>
+    </object>
 
-    <div class="item-content">
+    <object class="item-content">
       {$item.content}
       <br style="clear: both"/>
-    </div>
+    </object>
     <div class="collapse-bar"
          onclick="javascript:toggle_pane(this)">
       &#x25b2;{* Upward-pointing triangle *}

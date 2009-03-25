@@ -121,6 +121,11 @@ $element_hooks = array();
 
 // XXX - This should go in a separate plugin file.
 $element_hooks[""]["channel"][] = gocomics_hook;
+$element_hooks[""]["description"][] = googleads_hook;
+$element_hooks[""]["description"][] = feedburner_hook;
+$element_hooks[""]["item"][] = feedburner_origlink_hook;
+$element_hooks["http://purl.org/rss/1.0/modules/content/"]["encoded"][] = googleads_hook;
+$element_hooks["http://purl.org/rss/1.0/modules/content/"]["encoded"][] = wordpress_noise_hook;
 
 /* url2handler
  * Maps the URL for a given namespace to its handler.
@@ -148,6 +153,12 @@ $url2handler = array(		// Handlers for specific URLs
 		"element"	=> atom_element_handler,
 		"attribute"	=> atom_attribute_handler,
 		),
+// XXX - Used by atheistcartoons.com
+"http://purl.org/atom/ns#" => array(
+	"init"		=> atom_init,
+	"element"	=> atom_element_handler,
+	"attribute"	=> atom_attribute_handler,
+	),
 
 	// RDF
 	"http://purl.org/rss/1.0/" => array(
@@ -172,6 +183,7 @@ $url2handler = array(		// Handlers for specific URLs
 		),
 // feedburner	http://rssnamespace.org/feedburner/ext/1.0
 // flickr	http://flickr.com/services/feeds/
+// feedburner	http://rssnamespace.org/feedburner/ext/1.0
 // itunes	http://www.itunes.com/dtds/podcast-1.0.dtd
 // lj		http://www.livejournal.org/rss/lj/1.0/
 	"http://www.livejournal.org/rss/lj/1.0/" => array(
@@ -2085,6 +2097,11 @@ function dc_element_handler(
 	return true;
 }
 
+/********** Hooks *********************************************
+ * These functions (and the bits that set them up as hooks, abuve)
+ * should really go into separate functions.
+ */
+
 // XXX - This should go in a separate plugin
 /* gocomics_hook
  * GoComics.com feeds don't include the comic image. This hook guesses
@@ -2149,5 +2166,77 @@ function gocomics_hook($nodename, &$retval, &$context)
 		 */
 		$item['content'] .= "<div><img src=\"$img_url\"/></div>";
 	}
+}
+
+/* googleads_hook
+ * Remove Google Ads ads at bottom of postings.
+ */
+/* XXX - This should go in a separate file, as a plug-in */
+function googleads_hook($nodename, &$retval, &$context)
+{
+	if (!isset($retval['#text']))
+		return;
+	$retval['#text'] = preg_replace('{\r?\n<p><a href="http://feedads.googleadservices.com/[^\"]*"><img src="http://feedads.googleadservices.com/[^\"]*" border="0" ismap="true"></img></a></p>}',
+					'',
+					$retval['#text']);
+}
+
+/* feedburner_hook
+ * Remove Feedburner link and bug at bottom of postings.
+ */
+/* XXX - This should go in a separate file, as a plug-in */
+function feedburner_hook($nodename, &$retval, &$context)
+{
+	if (!isset($retval['#text']))
+		return;
+	/* There are two separate lines that can appear: an ad/survey
+	 * link, and a web bug.
+	 */
+#echo "(feedburner) before: <pre>["; print_r($retval); echo "]</pre>\n";
+	$retval['#text'] = preg_replace('{<div class="feedflare">\r?\n<a href="http://feeds2.feedburner.com/[^\"]*"><img src="http://feeds\d*.feedburner.com/[^\"]*" border="0"></img></a>\r?\n</div>}',
+					'',
+					$retval['#text']);
+#echo "(feedburner) after 1: <pre>["; print_r($retval); echo "]</pre>\n";
+	$retval['#text'] = preg_replace('{<img src="http://feeds\d*.feedburner.com/[^\"]*" height="1" width="1"/>\r?\n?}',
+					'',
+					$retval['#text']);
+#echo "(feedburner) after 2: <pre>["; print_r($retval); echo "]</pre>\n";
+}
+
+/* feedburner_origlink_hook
+ * Feedburner replaces the URL to a story with its own URL, presumably
+ * in order to collect statistics, or something. Thankfully, it leaves
+ * a "<feedburner:origLink>" element. This allows us to replace the
+ * story's URL with the original, so we don't have to leapfrog through
+ * feedproxy.google.com.
+ */
+/* XXX - This ought to be a separate plugin */
+function feedburner_origlink_hook($nodename, &$retval, &$context)
+{
+	if (isset($retval['feedburner:origLink']))
+	{
+		if (isset($retval['url']))
+			$retval['oldurl'] = $retval['url'];
+		$retval['url'] = $retval['feedburner:origLink'];
+	}
+}
+
+/* wordpress_noise_hook
+ * Like googleads_hook, removes the image links and web bug that
+ * wordpress adds to the bottom of postings.
+ */
+/* XXX - This ought to be a separate plugin */
+function wordpress_noise_hook($nodename, &$retval, &$context)
+{
+	if (!isset($retval['#text']))
+		return;
+	# Image links
+	$retval['#text'] = preg_replace('{\s*<a rel="nofollow" href="http://feeds.wordpress.com/1.0/[^\"]*"><img alt="" border="0" src="http://feeds.wordpress.com/1.0/[^\"]*" /></a>}',
+					'',
+					$retval['#text']);
+	# Stats-tracking bug
+	$retval['#text'] = preg_replace('{\s*<img alt="" border="0" src="http://stats.wordpress.com/b.gif[^\"]*" />}',
+					'',
+					$retval['#text']);
 }
 ?>

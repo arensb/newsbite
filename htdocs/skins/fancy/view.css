@@ -312,7 +312,8 @@ input[type="checkbox"].mark-check {
 	border-right-style:	outset;
 	border-color:		navy;
 
-	font-family:		Times, serif;
+/*	font-family:		Times, serif;*/
+	font-family:		serif;
 	padding:		0.5em;
 	background-color:	white;
 }

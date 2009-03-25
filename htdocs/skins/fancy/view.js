@@ -370,4 +370,10 @@ function mark_item(elt)
 
 	/* Flush the queue if necessary */
 	flush_queues();
+
+	/* Remove keyboard focus from the item. That way, can
+	 * immediately hit space to scroll down, and it won't mark the
+	 * item as read/unread again.
+	 */
+	elt.blur();
 }
