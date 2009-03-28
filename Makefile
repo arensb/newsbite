@@ -1,10 +1,18 @@
 # Variables
 PROJECT =	newsbite
 #VERSION =	1.1.9
-# XXX - The "!=" is a BSDmake-ism.
-REV !=		svn status -uq | grep "Status against revision:"|awk '{print $$4}'
-# In GNU make, one would write:
-#REV :=		$(shell svn status -uq | grep "Status against revision:"|awk '{print $$4}')
+
+# REV_CMD: command to figure out which svn revision we're using.
+REV_CMD =	svn status -uq | grep "Status against revision:"|awk '{print $$4}'
+
+# Hack: BSD make uses "VAR != cmd" to assign $VAR the output of `cmd',
+# while GNU make uses "VAR = $(shell cmd)". Having things in this
+# order makes it work. I think it's because GNU make doesn't recognize
+# "!=", so it doesn't see the second assignment, while BSD make does,
+# so it ignores the first assignment.
+REV =		$(shell ${REV_CMD})
+REV !=		${REV_CMD}
+
 #DISTNAME =	${PROJECT}-${VERSION}
 DISTNAME =	${PROJECT}-r${REV}
 
