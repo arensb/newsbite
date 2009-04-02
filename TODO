@@ -1,5 +1,34 @@
 - Bug: update_feed() prints to stdout, which is only appropriate some
   of the time. Add callbacks for starting/ending update.
+- Might be useful to add gestures, for portable devices. See
+  http://depts.washington.edu/aimgroup/proj/dollar/
+	On the N810, one can scroll the display by drawing on it. So
+  adding gesture recognition is likely to play havoc with that.
+  Perhaps hard-code straight-line templates, and implement scrolling
+  manually.
+	That implementation is rotation-independent: "v" can be
+  drawn as ">" and still be recognized as "v". To fix this, can divide
+  space into quadrants (or octants) centered on centroid, and classify
+  shapes based on where the starting point is WRT the starting point.
+  This way, "v" would have the starting point in the NW quadrant,
+  while ">" would have it in the SW quadrant, so they'd be seen as
+  different.
+	This is particularly important because it would be desirable
+  to have straight lines at different angles (e.g., stroke up to go to
+  previous article, stroke down to go to next article), while the $1
+  gesture algorithm would see those as the same shape.
+	To have straight lines, it would be necessary to add the hacks
+  they suuggest in the paper: check to see whether one of the
+  dimensions is "too small".
+	The distance calculation has a square root. This seems
+  expensive and unnecessary, since we're only trying to find the
+  closest match. Might save some CPU cycles.
+	Which gestures would we want?
+	- Go to previous article
+	- Go to next article
+	- Mark as read and move to next article
+	- Mark as unread?
+	- Refresh list of articles
 - Link on feeds page (in both skins) to show inactive feeds, with
   option to reactivate them.
 - bug: When updating feeds, sometimes spinner keeps going forever. Why?
