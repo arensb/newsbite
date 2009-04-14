@@ -120,11 +120,17 @@
 $element_hooks = array();
 
 // XXX - This should go in a separate plugin file.
+// XXX - There should be pseudo-tags, to say "I want to apply this
+// hook to the body of the post", regardless of which specific tag is
+// used in any given XML variant.
 $element_hooks[""]["channel"][] = gocomics_hook;
 $element_hooks[""]["description"][] = googleads_hook;
 $element_hooks[""]["description"][] = feedburner_hook;
+$element_hooks["http://purl.org/rss/1.0/"]["description"][] = feedburner_hook;
 $element_hooks[""]["item"][] = feedburner_origlink_hook;
 $element_hooks["http://purl.org/rss/1.0/modules/content/"]["encoded"][] = googleads_hook;
+$element_hooks["http://purl.org/rss/1.0/"]["description"][] = googleads_hook;
+$element_hooks["http://purl.org/rss/1.0/"]["description"][] = slashdot_noise_hook;
 $element_hooks["http://purl.org/rss/1.0/modules/content/"]["encoded"][] = wordpress_noise_hook;
 
 /* url2handler
@@ -183,7 +189,6 @@ $url2handler = array(		// Handlers for specific URLs
 		),
 // feedburner	http://rssnamespace.org/feedburner/ext/1.0
 // flickr	http://flickr.com/services/feeds/
-// feedburner	http://rssnamespace.org/feedburner/ext/1.0
 // itunes	http://www.itunes.com/dtds/podcast-1.0.dtd
 // lj		http://www.livejournal.org/rss/lj/1.0/
 	"http://www.livejournal.org/rss/lj/1.0/" => array(
@@ -2176,9 +2181,11 @@ function googleads_hook($nodename, &$retval, &$context)
 {
 	if (!isset($retval['#text']))
 		return;
+#echo "(googleads) before: <pre>["; print_r($retval); echo "]</pre>\n";
 	$retval['#text'] = preg_replace('{\r?\n<p><a href="http://feedads.googleadservices.com/[^\"]*"><img src="http://feedads.googleadservices.com/[^\"]*" border="0" ismap="true"></img></a></p>}',
 					'',
 					$retval['#text']);
+#echo "(googleads) after 1: <pre>["; print_r($retval); echo "]</pre>\n";
 }
 
 /* feedburner_hook
@@ -2238,5 +2245,28 @@ function wordpress_noise_hook($nodename, &$retval, &$context)
 	$retval['#text'] = preg_replace('{\s*<img alt="" border="0" src="http://stats.wordpress.com/b.gif[^\"]*" />}',
 					'',
 					$retval['#text']);
+}
+
+/* slashdot_noise_hook
+ * Like googleads_hook, removes the image links and web bug that
+ * Slashdot adds to the bottom of postings.
+ */
+/* XXX - This ought to be a separate plugin */
+function slashdot_noise_hook($nodename, &$retval, &$context)
+{
+	if (!isset($retval['#text']))
+		return;
+#echo "(slashdot_noise) before: <pre>["; print_r($retval); echo "]</pre>\n";
+	# Image link
+	$retval['#text'] = preg_replace('{\s*<p><a href="http://\w+.slashdot.org/article.pl[^\"]*"><img src="http://slashdot.org/[^\"]*"></a></p>}',
+					'',
+					$retval['#text']);
+#echo "(slashdot_noise) after 1: <pre>["; print_r($retval); echo "]</pre>\n";
+	# Unnecessary link to story
+	# XXX - Should this check to see whether the link is the same as in the "header"?
+	$retval['#text'] = preg_replace('{\s*<p><a href="http://\w+.slashdot.org/article.pl[^\"]*">Read more of this story</a> at Slashdot.</p>}',
+					'',
+					$retval['#text']);
+#echo "(slashdot_noise) after 2: <pre>["; print_r($retval); echo "]</pre>\n";
 }
 ?>
