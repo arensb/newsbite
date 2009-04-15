@@ -670,6 +670,12 @@ function db_update_feed($feed_id, $feed)
 		// There's now new information that the user might
 		// want to see; ought to mark the article as unread.
 
+		// XXX - Currently, all new articles are marked as
+		// is_read == FALSE. It might be useful for a hook to
+		// mark an article as read as soon as it comes in
+		// (e.g., ignoring articles in the newspaper's sports
+		// section).
+
 		$query = <<<EOT
 INSERT INTO	items
 		(feed_id, url, title, summary, content, author, category,

@@ -1,5 +1,12 @@
 - Bug: update_feed() prints to stdout, which is only appropriate some
   of the time. Add callbacks for starting/ending update.
+- WaPo duplicates: "Today's Highlights" can duplicate stories from
+  other feeds. Would be nice to detect these and delete duplicates.
+- Would be useful on the feed list page to be able to toggle empty
+  feeds on and off. Also stale feeds (those that haven't been updated
+  in 30 days (or whatever)).
+	Can't just toggle visibility in JS: that would break coloring
+  alternating rows.
 - Might be useful to add gestures, for portable devices. See
   http://depts.washington.edu/aimgroup/proj/dollar/
 	On the N810, one can scroll the display by drawing on it. So
@@ -178,6 +185,8 @@
 	  threads.
 	- After adding or updating an item in the database. Perhaps to
 	  add fields to a custom table.
+	- Mark items as read as they come in, based on subject or
+	  category or whatever.
 	- Before marking an item as read.
 	- Before deleting an item in the database. Perhaps to clean up
 	  custom tables.
