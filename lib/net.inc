@@ -670,12 +670,13 @@ function _http_status(&$text)
 	$http_error = "This error message intentionally left blank.";
 	do {
 		list($new_header, $new_text) =
-			explode("\r\n\r\n", $text, 2);
+			# At least one site uses LF instead of CR-LF
+			preg_split("/\r?\n\r?\n/", $text, 2);
 		$header = $new_header;
 		$text = $new_text;
 
 		/* Dig the HTTP status code out of the header */
-		if (preg_match('{^HTTP/\S+\s+(\d+)\s+(.*?)\r}',
+		if (preg_match('{^HTTP/\S+\s+(\d+)\s+(.*?)\r?\n}',
 			       $header,
 			       $match))
 		{
