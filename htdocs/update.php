@@ -80,6 +80,7 @@ if (is_numeric($feed_id) && is_int($feed_id+0))
 
 	/* Update feed to get its title, new article count, etc. */
 	$feed = db_get_feed($feed_id);
+	$counts = db_get_feed_counts($feed_id);
 
 	switch ($out_fmt)
 	{
