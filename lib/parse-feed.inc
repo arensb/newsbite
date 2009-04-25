@@ -1590,6 +1590,16 @@ function atom_element_handler(
 			break;
 
 		    case "entry":
+			if (!isset($attrs['rel']))
+			{
+				// White House blog feed just has
+				// <link href="link-to-post" />
+				if (isset($attrs['href']))
+				{
+					$retval['url'] = $attrs['href'];
+					break;
+				}
+			}
 			switch ($attrs['rel'])
 			{
 			    case "alternate":
