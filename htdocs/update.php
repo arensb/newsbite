@@ -78,12 +78,6 @@ if (is_numeric($feed_id) && is_int($feed_id+0))
 	if (isset($err['status']) && $err['status'] != 0)
 		abort($err['errmsg']);
 
-	/* Update feed to get its title, new article count, etc. */
-	$feed = db_get_feed($feed_id);
-		// XXX - Error-checking
-	$counts = db_get_feed_counts($feed_id);
-		// XXX - Error-checking
-
 	switch ($out_fmt)
 	{
 	    case "json":

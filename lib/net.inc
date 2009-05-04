@@ -35,23 +35,6 @@ function update_feed($feed_id, $feed = NULL)
 			return FALSE;
 	}
 
-	// XXX - Prettier output
-	// XXX- This should go in caller
-//	switch ($out_fmt)
-//	{
-//	    case "html":
-//		echo "<h3>Updating feed [$feed[title]]</h3>\n";
-//		break;
-//	    case "json":
-//		$skin = new Skin();
-//		echo jsonify('state',	"start",
-//			     'feed_id',	$feed_id,
-//			     'title',	$feed['title']),
-//			"\n";
-//		flush();
-//		break;
-//	}
-
 	/* Fetch the feed */
 	$feed_text = fetch_url($feed['feed_url'],
 			       $feed['username'],
@@ -66,6 +49,8 @@ function update_feed($feed_id, $feed = NULL)
 	$err = _save_handle($feed_id, $feed_text);
 		// XXX - Error-handling: returns FALSE on error, or
 		// array on success
+	// Get updated version of feed, to return to caller.
+	$feed = db_get_feed($feed_id);
 	$counts = db_get_feed_counts($feed_id);
 		// XXX - Error-checking
 
