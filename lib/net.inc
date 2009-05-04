@@ -56,29 +56,9 @@ function update_feed($feed_id, $feed = NULL)
 	$feed_text = fetch_url($feed['feed_url'],
 			       $feed['username'],
 			       $feed['passwd']);
-	// XXX - Don't print anything. Should return an error message
-	// and/or status code or something.
 	if ($feed_text === FALSE)
 		return array('status'	=> -1,
 			     'errmsg'	=> $fetch_error);
-//	{
-//		switch ($out_fmt)
-//		{
-//		    case "html":
-//			echo "<b>$fetch_error</b><br/>\n";
-//			break;
-//		    case "json":
-//			echo jsonify('state',	"error",
-//				     'feed_id',	$feed_id,
-//				     'error',	$fetch_error),
-//				"\n";
-//			flush();
-//			break;
-//		}
-//
-//		// XXX - What should this return?
-//		return FALSE;
-//	}
 
 	/* Check the HTTP error code, save a cached copy of the feed,
 	 * parse it, and add it to the database.
@@ -87,41 +67,14 @@ function update_feed($feed_id, $feed = NULL)
 		// XXX - Error-handling: returns FALSE on error, or
 		// array on success
 	$counts = db_get_feed_counts($feed_id);
+		// XXX - Error-checking
 
-	// XXX - Shouldn't print anything. Just return error message
-	// and/or status code.
-//	switch ($out_fmt)
-//	{
-//	    case "json":
-//		// XXX - This should go in calling function.
-//		$skin->assign('feed', $feed);
-//		$skin->assign('feed_id', $feed_id);
-//		$skin->assign('counts', $counts);
-//		$count_display = $skin->fetch("feed-title.tpl");
-//		echo jsonify('state',	"end",
-//			     'feed_id',	$feed_id,
-//			     'count_display',	$count_display
-//			     ),
-//			"\n";
-//		flush();
-//		break;
-//	    case "html":
-//	    default:
-//		echo "Finished [$feed[title]]<br/>\n";
-//		break;
-//	}
-
-	foreach ($counts as $key => $value)
-	{
-		$feed[$key] = $value;
-	}
+	$feed['counts'] = $counts;
 
 	// XXX - Return something intelligent:
-	// - read/unread article counts
 	// - update status
 	// - HTTP error message, if any
 	// - feed title, if it has changed
-//	return $counts;
 	return $feed;
 }
 
