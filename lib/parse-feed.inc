@@ -2192,7 +2192,7 @@ function googleads_hook($nodename, &$retval, &$context)
 	if (!isset($retval['#text']))
 		return;
 #echo "(googleads) before: <pre>["; print_r($retval); echo "]</pre>\n";
-	$retval['#text'] = preg_replace('{\r?\n<p><a href="http://feedads.googleadservices.com/[^\"]*"><img src="http://feedads.googleadservices.com/[^\"]*" border="0" ismap="true"></img></a></p>}',
+	$retval['#text'] = preg_replace('{\r?\n<p><a href="http://feedads.(googleadservices.com|g\.doubleclick\.net)/[^\"]*"><img src="http://feedads.(googleadservices.com|g\.doubleclick\.net)/[^\"]*" border="0" ismap="true"></img></a></p>}',
 					'',
 					$retval['#text']);
 #echo "(googleads) after 1: <pre>["; print_r($retval); echo "]</pre>\n";
