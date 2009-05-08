@@ -1,5 +1,20 @@
-- Bug: update_feed() prints to stdout, which is only appropriate some
-  of the time. Add callbacks for starting/ending update.
+- Bug : When updating feeds, sometimes spinner keeps going forever. Why?
+- Bug: When Ajax updates feeds, it doesn't notice updates to the list
+  of feeds.
+	Perhaps when updating all, update.php should append a list of
+  known feeds. If it's out of date, JS can request a full list.
+- Bug: When updates take too long, PHP terminates. 30 sec. max.
+	This is a curl error, and should be caught. Error at
+                $err = curl_multi_select($mh);
+  This doesn't seem to be a simple case of an operation exceeding a
+  timeout.
+- Bug: when on the last page (earliest items) and use "mark all as
+  read", sometimes get blank page.
+	Is this just the N810 browser being wonky?
+- Bug-ish: when marking a feed as inactive, get redirected back to it.
+  This is bogus.
+- Ads: perhaps should generalize: look for
+  <a href="$some_ad_url">...</a>, optionally wrapped in <p>...</p>.
 - WaPo duplicates: "Today's Highlights" can duplicate stories from
   other feeds. Would be nice to detect these and delete duplicates.
 - Would be useful on the feed list page to be able to toggle empty
@@ -38,25 +53,10 @@
 	- Refresh list of articles
 - Link on feeds page (in both skins) to show inactive feeds, with
   option to reactivate them.
-- bug: When updating feeds, sometimes spinner keeps going forever. Why?
-- bug: When Ajax updates feeds, it doesn't notice updates to the list
-  of feeds.
-	Perhaps when updating all, update.php should append a list of
-  known feeds. If it's out of date, JS can request a full list.
-- bug: When updates take too long, PHP terminates. 30 sec. max.
-	This is a curl error, and should be caught. Error at
-                $err = curl_multi_select($mh);
-  This doesn't seem to be a simple case of an operation exceeding a
-  timeout.
-- bug: when on the last page (earliest items) and use "mark all as
-  read", sometimes get blank page.
-	Is this just the N810 browser being wonky?
 - Need tool to fix database schema.
 	ALTER TABLE items CHANGE COLUMN url url VARCHAR(255);
 	ALTER TABLE items CHANGE COLUMN comment_url comment_url VARCHAR(255);
 	ALTER TABLE items CHANGE COLUMN comment_rss comment_rss VARCHAR(255);
-- bug-ish: when marking a feed as inactive, get redirected back to it.
-  This is bogus.
 - Ajax: "Clear changes" should go through list of items and uncheck
   them.
 - Ajax feed update: use regular expressions to find lines in JSON
