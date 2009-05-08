@@ -78,13 +78,14 @@ if (is_numeric($feed_id) && is_int($feed_id+0))
 	if (isset($err['status']) && $err['status'] != 0)
 		abort($err['errmsg']);
 
+	$feed = $err;
 	switch ($out_fmt)
 	{
 	    case "json":
 		// XXX - This should go in calling function.
 		$skin->assign('feed', $feed);
 		$skin->assign('feed_id', $feed_id);
-		$skin->assign('counts', $counts);
+		$skin->assign('counts', $feed['counts']);
 		$count_display = $skin->fetch("feed-title.tpl");
 		echo jsonify('state',	"end",
 			     'feed_id',	$feed_id,

@@ -289,8 +289,6 @@ EOT;
  *	If false, returns only unread items. If true, also returns read
  *	items.
  */
-// XXX - Would it be useful to have a keyword for "just give me the
-// summary, not the content"?
 function db_get_some_feed_items(/* varargs */)
 {
 	$argc = func_num_args();

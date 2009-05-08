@@ -59,7 +59,6 @@ function update_feed($feed_id, $feed = NULL)
 	// XXX - Return something intelligent:
 	// - update status
 	// - HTTP error message, if any
-	// - feed title, if it has changed
 	return $feed;
 }
 
