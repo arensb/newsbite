@@ -178,7 +178,7 @@ debug("line " + i + ": [" + lines[i] + "]");
 
 debug("feed id "+l.feed_id+", state "+l.state);
 			// XXX - Paths to images / skin name shouldn't
-			// be hardcoded.
+			// be hardcoded. Perhaps add a class to the cell.
 			switch (l.state)
 			{
 			    case 'start':
