@@ -1,6 +1,14 @@
 {* XXX - Should probably have separate template for page top (and
  * possibly page bottom). Should include all the CSS magic.
  *}
+{* XXX - Main template should just have a container for the items; and
+ * at the end, a JS list with the articles themselves. An onload
+ * function can then insert the items into the template.
+ * For one thing, we need to keep track of items currently displayed,
+ * and this is easier and more reliable than digging them out of an
+ * HTML list (what if a feed includes an article with an id= that uses
+ * the same numbering scheme as we do?)
+ *}
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
 	"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
