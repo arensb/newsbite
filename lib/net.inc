@@ -105,9 +105,6 @@ function update_all_feeds($handler)
 	$mh = curl_multi_init();	// Curl multi handle
 	$pipeline = array();		// What's currently being fetched
 
-	if ($out_fmt == "json")
-		$skin = new Skin();
-
 	/* Seed the pipeline with the first $PARALLEL_UPDATES feeds */
 	reset($feeds);			// So each() will work
 	for ($i = 0; $i < $PARALLEL_UPDATES; $i++)
