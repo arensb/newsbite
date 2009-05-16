@@ -1,0 +1,11 @@
+/* style-nojs.css
+ * This file is included only when the browser has JavaScript turned off.
+ */
+.collapse-bar,
+.expand-bar {
+	display:	none !important;
+}
+
+/* If both the summary and content are present, they're put inside a
+ * <div class="content-panes">
+ */

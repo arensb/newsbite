@@ -1,0 +1,8 @@
+/* abort.css
+ * Style for the abort message page.
+ */
+h1 {
+	background-color:	#c0c0c0;
+	color:			red;
+}
+
