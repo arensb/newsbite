@@ -9,13 +9,8 @@ require_once("parse-feed.inc");
 // XXX - Move the HTTP-fetching stuff to a separate function, so that
 // we can retrieve URLs separately.
 //
-// Need some sort of callback mechanism, so that caller can decide
-// what to do when status changes:
-//	- Start fetching a feed
-//	- Finished fetching a feed
-//
-// In fact, the calls to parse_feed() and db_update_feed() should be
-// moved out into the callback function.
+// The calls to parse_feed() and db_update_feed() should be moved out
+// into the callback function.
 
 /* update_feed
  * Update a feed: fetch the RSS, parse it, and add/update items in the
@@ -62,13 +57,31 @@ function update_feed($feed_id, $feed = NULL)
 	return $feed;
 }
 
+/* feed_update_handler
+
+ * An abstract class for dealing with updating multiple feeds. When
+ * something happens, like starting to update a feed, or an error, one
+ * of the handler's methods is called.
+ */
+abstract class feed_update_handler
+{
+	/* start_feed: we're about to start updating the given feed */
+	abstract function start_feed($feed_id, $feed_title);
+
+	/* end_feed: we've finished updating the given feed */
+	abstract function end_feed(&$feed);
+
+	/* error: an error has occurred */
+	abstract function error($feed_id, $feed_title, $msg);
+}
+
 /* update_all_feeds
  * As the name implies, this updates all the feeds listed in the
  * database.
  */
 // XXX - Ought to try to avoid refreshing feeds too often. Add a bool
 // $force argument to force an update.
-function update_all_feeds()
+function update_all_feeds($handler)
 {
 	global $PARALLEL_UPDATES;
 	global $out_fmt;
@@ -105,21 +118,7 @@ function update_all_feeds()
 
 		$url = $feed['feed_url'];
 
-		// XXX - Prettier output
-		switch ($out_fmt)
-		{
-		    case "html":
-			echo "Starting ($feed[id]) [", $feed['title'], "]<br/>\n";
-			flush();
-			break;
-		    case "json":
-			echo jsonify('state',	"start",
-				     'feed_id',	$feed['id'],
-				     'title',	$feed['title']),
-				"\n";
-			flush();
-			break;
-		}
+		$handler->start_feed($feed['id'], $feed['title']);
 		$ch = _open_curl_handle(	// Curl handle for this URL
 			$url,
 			$feed['username'],
@@ -175,24 +174,8 @@ function update_all_feeds()
 			// status that curl_multi_info_read() returns.
 			if ($err['msg'] != CURLMSG_DONE)
 			{
-				// XXX - Better error-reporting
-				switch ($out_fmt)
-				{
-				    case "html":
-					echo "    Warning: curl_multi_info_read() returned [";
-					print_r($err);
-					echo "], and I don't know how to handle that.\n";
-					break;
-				    case "json":
-					// XXX - Better error-reporting
-					echo jsonify('state',	"error",
-//						     'curl_err',var_export($err)),
-						     'error_type', "curl",
-						     'error',var_export($err)),
-						"\n";
-					flush();
-					break;
-				}
+				$handler->error(NULL, NULL,
+						"curl_multi_info_read() returned $err[msg]");
 				break;	// End of enclosing while loop
 			}
 
@@ -213,21 +196,8 @@ function update_all_feeds()
 			if (!isset($handle))
 			{
 				// Hopefully this will never happen
-				// XXX - Better error-reporting
-				switch ($out_fmt)
-				{
-				    case "html":
-					echo "<b>Error: couldn't find curl handle ",
-						$err['handle'], " in pipeline</b><br/>\n";
-					break;
-				    case "json":
-					// XXX - Better error-reporting
-					echo jsonify('state',	"error",
-						     'error',	"Error: couldn't find curl handle " . $err['handle'], " in pipeline"),
-						"\n";
-					flush();
-					break;
-				}
+				$handler->error(NULL, NULL,
+						"couldn't find curl handle $err[handle] in pipeline");
 				continue;
 			}
 
@@ -245,73 +215,30 @@ function update_all_feeds()
 				if ($feed_text === false)
 				{
 					// XXX - Error-handling
-					switch ($out_fmt)
-					{
-					    case "json":
-						echo jsonify('state',	"error",
-							     'feed_id',	$handle['feed']['id'],
-							     'error',	"Couldn't get content."),
-							"\n";
-						break;
-					    case "html":
-					    default:
-						echo "<b>Couldn't get content.</b><br/>\n";
-						break;
-					}
+					$handler->error($handle['feed']['id'],
+							$handle['feed']['title'],
+							"Couldn't get content");
 				} else {
 					list($fetch_http_status,
 					     $fetch_http_error) =
 						_http_status($feed_text);
 						// XXX - Error-checking
-					// XXX - Better error-reporting?
 					if ($fetch_http_status != "200")
 					{
-						switch ($out_fmt)
-						{
-						    case "json":
-							echo jsonify('state',	"error",
-								     'feed_id',	$handle['feed']['id'],
-								     'error',	"HTTP Error ($fetch_http_status): $fetch_http_error"),
-								"\n";
-							break;
-						    case "html":
-						    default:
-							echo "<b>HTTP Error ($fetch_http_status): $fetch_http_error</b><br/>\n";
-							break;
-						}
+						$handler->error($handle['feed']['id'],
+								$handle['feed']['title'],
+								"HTTP Error $fetch_http_status: $fetch_http_error");
 					} else {
 						$err = _save_handle(
 							$handle['feed']['id'],
 							$feed_text);
 							// XXX - Error-handling: returns FALSE
 							// on error, array on success.
+						// Refresh feed from database, and get article counts
+						$handle['feed'] = db_get_feed($handle['feed']['id']);
 						$counts = db_get_feed_counts($handle['feed']['id']);
-						// XXX - Better error-reporting?
-						switch ($out_fmt)
-						{
-						    case "json":
-							$skin = new Skin();
-							$skin->assign('feed', $handle['feed']);
-							$skin->assign('feed_id', $handle['feed']['id']);
-							$skin->assign('counts', $counts);
-							$count_display = $skin->fetch("feed-title.tpl");
-							echo jsonify('state',	"end",
-								     'feed_id',	$handle['feed']['id'],
-								     'count_display',	$count_display
-								),
-								"\n";
-							flush();
-							break;
-						    case "html":
-						    default:
-							echo "Finished (",
-								$handle['feed']['id'],
-								") [",
-								$handle['feed']['title'],
-								"]<br/>\n";
-							flush();
-							break;
-						}
+						$handle['feed']['counts'] = $counts;
+						$handler->end_feed($handle['feed']);
 					}
 				}
 
@@ -321,25 +248,12 @@ function update_all_feeds()
 						$handle['ch']);
 				curl_close($handle['ch']);
 			} else {
-				// XXX - Better error-reporting
-				switch ($out_fmt)
-				{
-				    case "html":
-					echo "<b>Error in [", $handle['feed']['title'],
-						"]: ",
-						curl_errno($handle['ch']),
-						": [",
-						curl_error($handle['ch']),
-						"]</b><br/>\n";
-					break;
-				    case "json":
-					echo jsonify('state',	"error",
-						     'feed_id',	$handle['feed']['id'],
-						     'error',	curl_error($handle['ch'])),
-						"\n";
-					flush();
-					break;
-				}
+				$handler->error($handle['feed']['id'],
+						$handle['feed']['title'],
+						"curl error " .
+						curl_errno($handle['ch']) .
+						": " .
+						curl_error($handle['ch']));
 			}
 
 			/* See if there's another URL to fetch */
@@ -348,20 +262,7 @@ function update_all_feeds()
 				// Yes. Open a Curl handle, and add it
 				// to the multi-handle
 				// XXX - Prettier output
-				switch ($out_fmt)
-				{
-				    case "html":
-					echo "Starting ($feed[id]) [", $feed['title'], "]<br/>\n";
-					flush();
-					break;
-				    case "json":
-					echo jsonify('state',	"start",
-						     'feed_id',	$feed['id'],
-						     'title',	$feed['title']),
-						"\n";
-					flush();
-					break;
-				}
+				$handler->start_feed($feed['id'], $feed['title']);
 				$url = $feed['feed_url'];
 				$ch = _open_curl_handle(
 					$url,
@@ -404,44 +305,20 @@ function update_all_feeds()
 			if ($feed_text === false)
 			{
 				// XXX - Error-handling
-				switch ($out_fmt)
-				{
-				    case "json":
-					echo jsonify('state',	"error",
-						     'feed_id',	$pipeline[$i]['feed']['id'],
-						     'error',	"Couldn't get content."),
-						"\n";
-					break;
-				    case "html":
-				    default:
-					echo "<b>Couldn't get content.</b><br/>\n";
-					break;
-				}
+				$handler->error($pipeline[$i]['feed']['id'],
+						$pipeline[$i]['feed']['title'],
+						"Couldn't get content");
 			}
 			$err = _save_handle($pipeline[$i]['feed']['id'],
 					    $feed_text);
 				// XXX - Error-handling: returns FALSE
 				// on error, array on success.
+			// Refresh feed from database, and get article
+			// counts
+			$pipeline[$i]['feed'] = db_get_feed($pipeline[$i]['feed']['id']);
 			$counts = db_get_feed_counts($pipeline[$i]['feed']['id']);
-			// XXX - Prettier output?
-			switch ($out_fmt)
-			{
-			    case "html":
-				echo "Finished (", $pipeline[$i]['feed']['id'], ") [", $pipeline[$i]['feed']['title'], "]<br/>\n"; flush();
-				break;
-			    case "json":
-				$skin = new Skin();
-				$skin->assign('feed', $pipeline[$i]['feed']);
-				$skin->assign('feed_id', $pipeline[$i]['feed']['id']);
-				$skin->assign('counts', $counts);
-				$count_display = $skin->fetch("feed-title.tpl");
-				echo jsonify('state',	"end",
-					     'feed_id',	$pipeline[$i]['feed']['id'],
-					     'count_display',	$count_display),
-					"\n";
-				flush();
-				break;
-			}
+			$pipeline[$i]['feed']['counts'] = $counts;
+			$handler->end_feed($pipeline[$i]['feed']);
 		}
 	}
 
@@ -488,7 +365,6 @@ function _open_curl_handle($url, $username = NULL, $passwd = NULL)
 
 function _save_handle($feed_id, &$feed_text)
 {
-//	global $out_fmt;
 	$retval = array();
 
 	/* Save a copy of the feed text for debugging */
@@ -508,34 +384,23 @@ function _save_handle($feed_id, &$feed_text)
 	/* Parse the feed */
 	$feed = parse_feed($feed_text);
 	if (!$feed)
-	{
-//		switch ($out_fmt)
-//		{
-//		    case "json":
-//			// XXX - What to do?
-//			break;
-//		    case "html":
-//		    default:
-//			// XXX - Better error-handling
-//			echo "<b>feed $feed_id: parse_feed() returned ";
-//			if ($feed === false) echo "FALSE";
-//			if ($feed === null) echo "NULL";
-//			if ($feed === "") echo "(empty string)";
-//			echo "</b><br/>\n";
-//			break;
-//		}
-//
 		return FALSE;
-	}
 
 	/* Add the feed to the database */
+	// XXX - What does this do? Is it redundant?
+	// XXX - The callers call db_get_feed() to get a fresh copy of
+	// the feed info. Presumably this should be done here. Or
+	// db_update_feed() should be changed to a) take $feed by
+	// reference, and b) update it with the latest info. Then the
+	// callers needn't make redundant queries.
 	$counts = db_update_feed($feed_id, $feed);
+	$feed['counts'] = $counts;
 
-	/* Add feed counts to the return value */
-	foreach ($counts as $key => $value)
-	{
-		$feed[$key] = $value;
-	}
+//	/* Add feed counts to the return value */
+//	foreach ($counts as $key => $value)
+//	{
+//		$feed[$key] = $value;
+//	}
 
 //	return db_update_feed($feed_id, $feed);
 	return $feed;
