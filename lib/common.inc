@@ -105,9 +105,10 @@ function jsonify($arg)
 	 * how to handle it, depending on whether $it is a string, an
 	 * assoc, or an array.
 	 */
-	// XXX - Handle NULL?
 	$retval = "";
-	if (is_bool($it))
+	if (!isset($it))
+		$retval = "null";
+	elseif (is_bool($it))
 		$retval = ($it ? "true" : "false");
 	elseif (is_string($it))
 		/* Escape chars in $it */
