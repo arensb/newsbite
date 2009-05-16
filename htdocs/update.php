@@ -11,6 +11,82 @@ require_once("net.inc");
 //require_once("parse-feed.inc");
 require_once("skin.inc");
 
+// XXX - Perhaps could use the {html,json}_output_handler classes
+// throughout, so we can eliminate a bunch of "switch ($out_fmt)"
+// statements.
+
+/* html_output_handler
+ * Used by update_all_feeds() to handle HTML output. Subclass of
+ * feed_update_handler, defined in lib/net.inc.
+ */
+class html_output_handler extends feed_update_handler
+{
+	function start_feed($feed_id, $feed_title)
+	{
+		echo "Starting ($feed_id) [$feed_title]<br/>\n";
+		flush();
+	}
+
+	function end_feed(&$feed)
+	{
+		echo  "Finished (",
+			$feed['id'],
+			") [",
+			$feed['title'],
+			"]<br/>\n";
+		flush();
+	}
+
+	function error($feed_id, $feed_title, $msg)
+	{
+		echo "<b>Error";
+		if (isset($feed_id))
+			echo " in $feed_title ($feed_id)";
+		echo ": $msg</b><br/>\n";
+	}
+}
+
+/* json_output_handler
+ * Used by update_all_feeds() to handle HTML output. Subclass of
+ * feed_update_handler, defined in lib/net.inc.
+ */
+class json_output_handler extends feed_update_handler
+{
+	function start_feed($feed_id, $feed_title)
+	{
+		echo jsonify('state',	"start",
+			     'feed_id',	$feed_id,
+			     'title',	$feed_title),
+			"\n";
+		flush();
+	}
+
+	function end_feed(&$feed)
+	{
+		$skin = new Skin();
+		$skin->assign('feed', $feed);
+		$skin->assign('feed_id', $feed['id']);
+		$skin->assign('counts', $feed['counts']);
+		$count_display = $skin->fetch("feed-title.tpl");
+		echo jsonify('state',	"end",
+			     'feed_id',	$feed['id'],
+			     'count_display',	$count_display
+			),
+			"\n";
+		flush();
+	}
+
+	function error($feed_id, $feed_title, $msg)
+	{
+		echo jsonify('state',	"error",
+			     'feed_id',	$feed_id,
+			     'title',	$feed_title,
+			     'error',	$msg),
+			"\n";
+	}
+}
+
+
 /* See what kind of output the user wants */
 switch ($_REQUEST['o'])
 {
@@ -105,7 +181,18 @@ if (is_numeric($feed_id) && is_int($feed_id+0))
 		echo "<p><a href=\"view.php?id=$feed_id\">Read feed</a></p>\n";
 } elseif ($feed_id == "all")
 {
-	update_all_feeds();
+	switch ($out_fmt)
+	{
+	    case "json":
+		$handler = new json_output_handler();
+		break;
+	    case "html":
+	    default:
+		$handler = new html_output_handler();
+		break;
+	}
+
+	update_all_feeds($handler);
 
 	// XXX - Prettier output
 	if ($out_fmt == "html")
