@@ -2,6 +2,8 @@ var debug_window = undefined;
 var mark_read = {};		// Hash of item_id -> is_read? values
 var mark_request = null;	// Data for marking items as read/unread
 
+onload = init;
+
 var last_time = null;
 function debug(str)
 {
@@ -59,6 +61,30 @@ function createXMLHttpRequest()
 		}
 	}
 	return request;
+}
+
+function init()
+{
+	init_items();
+}
+
+function init_items()
+{
+	var item_list = document.getElementById("items");
+
+	for (i in items)
+	{
+		var item = items[i];
+		var e = document.createElement("li");
+
+		e.innerHTML = unescape(item.display);
+		item_list.appendChild(e);
+
+		// Conserve some memory by reclaiming stuff we don't need.
+		// 'element' points to the displayed DOM element.
+		item.element = e;
+		item.display = null;
+	}
 }
 
 /* toggle-pane
