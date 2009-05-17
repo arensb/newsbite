@@ -108,6 +108,8 @@ function jsonify($arg)
 	$retval = "";
 	if (!isset($it))
 		$retval = "null";
+	elseif (is_numeric($it))
+		$retval = &$it;
 	elseif (is_bool($it))
 		$retval = ($it ? "true" : "false");
 	elseif (is_string($it))
@@ -115,8 +117,6 @@ function jsonify($arg)
 		$retval = "'" .
 			addcslashes($it, "\\\'\n\r\"") .
 			"'";
-	elseif (is_numeric($it))
-		$retval = &$it;
 	elseif (is_array($it))
 	{
 		if (array_key_exists("0", $it))
@@ -142,5 +142,13 @@ function jsonify($arg)
 		return FALSE;
 
 	return $retval;
+}
+
+/* smarty_function_jsonify
+ * Give Smarty access to jsonify().
+ */
+function smarty_function_jsonify($params, Smarty &$smarty)
+{
+	return jsonify($params['var']);
 }
 ?>
