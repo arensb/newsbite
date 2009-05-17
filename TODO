@@ -13,6 +13,9 @@
 	Is this just the N810 browser being wonky?
 - Bug-ish: when marking a feed as inactive, get redirected back to it.
   This is bogus.
+- Perhaps add an entry in the 'options' table, saying which
+  version/revision of Newsbite this is, and perhaps another saying
+  which version of the schema.
 - Ads: perhaps should generalize: look for
   <a href="$some_ad_url">...</a>, optionally wrapped in <p>...</p>.
 - WaPo duplicates: "Today's Highlights" can duplicate stories from
@@ -62,10 +65,6 @@
 - Ajax feed update: use regular expressions to find lines in JSON
   text. Text is sometimes truncated in the middle of a line, resulting
   in parse errors.
-- Ajax "Update feed"/"Update all feeds" should update article count
-  (and feed title, if it's changed). So presumably the Right Thing is
-  to send the new status line as part of JSON status message.
-	Should there be a separate template for this?
 - Should be able to read both read and unread articles.
 - Limit size of articles (to one N810 screenful?)
 - Would be nice to have either "new" flag or a "saved for later" flag.
@@ -206,19 +205,6 @@
   language to translate to. Probably ought to try to guess from
   browser settings. Failing that, use a cookie or an option in the
   database.
-- Should have different skins for different uses: in a full-featured
-  browser, show everything, use Ajax, etc. On mobile device (PDA,
-  phone, etc.) have a more compact skin better adapted to a small
-  screen.
-	For instance, show just headline, and allow user to delete
-  stuff. That should help get rid of the chaff in a small amount of
-  screen real estate.
-	Mobile device might not have network access at the moment when
-  you delete an item. So have a list of items to be deleted. If
-  JavaScript is available, periodically try to delete these items.
-	Should have an XML skin that just returns the data as XML
-  (thus, for instance, it can be used as a feed aggregator for a
-  different RSS reader).
 - Nokia N810 browser identifies itself as:
   "Mozilla/5.0 (X11; U; Linux armv6l; en-US; rv:1.9a6pre) Gecko/20071128 Firefox/3.0a1 Tablet browser 0.2.2 RX-34+RX-44_2008SE_2.2007.51-3"
 
@@ -241,7 +227,8 @@
 	Unfortunately, this doesn't seem possible.
 - Ajax: keybindings for articles:
 	'm'	(more) when viewing preview, show full article
-	'n'	move to next item
+	'j'	move to next item (vi key)
+	'k'	move to previous item (vi key)
 	'd'	mark item as read, and skip to next item
 	'u'	mark item as unread, and skip to next item
 	?	move to previous item
