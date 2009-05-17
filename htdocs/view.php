@@ -96,6 +96,8 @@ $skin->assign('prev_link', $prev_link);
 $skin->assign('prev_link_text', $prev_link_text);
 $skin->assign('next_link', $next_link);
 $skin->assign('next_link_text', $next_link_text);
+$skin->left_delimiter = "<!--{";
+$skin->right_delimiter = "}-->";
 $skin->display("view.tpl");
 
 db_disconnect();
