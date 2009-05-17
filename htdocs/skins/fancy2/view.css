@@ -116,6 +116,11 @@ p {
 	margin-bottom:		0.5em;
 }
 
+ul.items {
+	list-style-type:	none;
+	padding-left:		0px;
+}
+
 /* XXX - Attempt at prettier form buttons
 input[type="reset"],
 input[type="submit"] {
