@@ -9,7 +9,7 @@
   get new articles, and display them: the user isn't expecting new
   articles to appear on their own.
 	It's okay to fetch new articles in the background, and maybe
-  flash a "new articles" icon. But don't interrup reading the existing
-  articles.
+  flash a "new articles" icon. But don't interrupt reading the
+  existing articles.
 	It's okay to display new articles after the user presses a
   "refresh" button or something.
