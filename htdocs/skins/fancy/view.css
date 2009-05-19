@@ -24,6 +24,14 @@ p {
 	margin:			1em;
 }
 
+/* If a p or blockquote contains a floating element, the enclosing box
+ * should resize itself to accommodate it.
+ */
+p,
+blockquote {
+	overflow:	auto;
+}
+
 /* Icon or image for the feed */
 .feed-icon {
 	float:			right;
@@ -316,6 +324,19 @@ input[type="checkbox"].mark-check {
 	font-family:		serif;
 	padding:		0.5em;
 	background-color:	white;
+	overflow:		auto;
+}
+
+/* If an article begins with an image, that image should float left,
+ * with the text wrapped around it.
+ */
+.item-summary p:first-child > img:first-child,
+.item-content p:first-child > img:first-child,
+.item-summary > img:first-child,
+.item-content > img:first-child {
+	float:			left;
+	margin-right:		1em;
+	margin-bottom:		0.5em;
 }
 
 .content-panes a img {
