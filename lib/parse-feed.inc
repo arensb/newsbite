@@ -126,6 +126,7 @@ $element_hooks = array();
 $element_hooks[""]["channel"][] = gocomics_hook;
 $element_hooks[""]["description"][] = googleads_hook;
 $element_hooks[""]["description"][] = feedburner_hook;
+$element_hooks[""]["description"][] = wapo_ad_hook;
 $element_hooks["http://purl.org/rss/1.0/"]["description"][] = feedburner_hook;
 $element_hooks[""]["item"][] = feedburner_origlink_hook;
 $element_hooks["http://purl.org/rss/1.0/modules/content/"]["encoded"][] = googleads_hook;
@@ -2278,5 +2279,34 @@ function slashdot_noise_hook($nodename, &$retval, &$context)
 					'',
 					$retval['#text']);
 #echo "(slashdot_noise) after 2: <pre>["; print_r($retval); echo "]</pre>\n";
+}
+
+/* wapo_ad_hook
+ * Remove ads at bottom of WaPo postings.
+ */
+/* XXX - This should go in a separate file, as a plug-in */
+function wapo_ad_hook($nodename, &$retval, &$context)
+{
+	if (!isset($retval['#text']))
+		return;
+#echo "(wapo ads) before: <pre>["; print_r($retval); echo "]</pre>\n";
+	# Visible ad
+	$retval['#text'] = preg_replace('{<hr />\r?\n<div style="font-size:xx-small;color:gray;padding-bottom:.5em">Featured Advertiser</div>.*}s',
+					'',
+					$retval['#text']);
+	# Bug image
+	$retval['#text'] = preg_replace('{<a href="http://ads.pheedo.com/click.phdo[^\"]*"><img alt="" style="border: 0;" border="0" src="http://ads.pheedo.com/img.phdo[^\"]*"/></a>}s',
+					'',
+					$retval['#text']);
+	# And another bug
+	$retval['#text'] = preg_replace('{<br clear="all"><a href="http://ad.doubleclick.net/[^\"]*" target="_blank"><img src="http://ad.doubleclick.net/[^\"]*" border="0" vspace="5"></a> *}',
+					'',
+					$retval['#text']);
+	# Bogus blank lines at end of article
+	$retval['#text'] = preg_replace('{(<br clear="both" style="clear: both;"/>\r?\n)*}s',
+					'',
+					$retval['#text']);
+
+#echo "(wapo ads) after 1: <pre>["; print_r($retval); echo "]</pre>\n";
 }
 ?>
