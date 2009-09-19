@@ -1,0 +1,27 @@
+/* iphone.css
+ * Specialized settings for iPhone/iPod Touch.
+ */
+body {
+	font-size:		18pt;
+}
+
+/*
+.item {
+	font-size:		12pt;
+}
+*/
+
+.item .item-header {
+	/* XXX - Actually, this should in Safari as well */
+	background-image:
+		-webkit-gradient(linear, left top, left bottom,
+			from(blue),
+			to(navy));
+	border-top-color:	blue;
+	border-bottom-color:	navy;
+}
+
+input[type="checkbox"].mark-check {
+	width:			2.4em;
+	height:			2.4em;
+}
