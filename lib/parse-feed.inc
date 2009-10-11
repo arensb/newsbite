@@ -133,6 +133,9 @@ $element_hooks["http://purl.org/rss/1.0/modules/content/"]["encoded"][] = google
 $element_hooks["http://purl.org/rss/1.0/"]["description"][] = googleads_hook;
 $element_hooks["http://purl.org/rss/1.0/"]["description"][] = slashdot_noise_hook;
 $element_hooks["http://purl.org/rss/1.0/modules/content/"]["encoded"][] = wordpress_noise_hook;
+$element_hooks["http://purl.org/rss/1.0/modules/content/"]["encoded"][] = wapo_ad_hook;
+$element_hooks["http://purl.org/rss/1.0/modules/content/"]["encoded"][] = webbug_hook;
+$element_hooks["http://purl.org/rss/1.0/modules/content/"]["encoded"][] = zemanta_hook;
 
 /* url2handler
  * Maps the URL for a given namespace to its handler.
@@ -601,6 +604,14 @@ function _cdata_handler($parser, $data)
 {
 	global $_context;
 
+	// XXX - Hack for APOD feed: the text in the summary contains
+	// escaped HTML, but there's no <![CDATA[" tag. This kludge
+	// looks for items that begin with "&#60;" (escaped
+	// left-bracket), and manually unescapes the text.
+	if (strpos($data, "&#60;") == 0)
+	{
+		$data = html_entity_decode($data);
+	}
 	// XXX - Call text handler, if one is defined?
 	$parent = &$_context[count($_context)-1];
 	$parent['retval']['#text'] .= $data;
@@ -2193,7 +2204,11 @@ function googleads_hook($nodename, &$retval, &$context)
 	if (!isset($retval['#text']))
 		return;
 #echo "(googleads) before: <pre>["; print_r($retval); echo "]</pre>\n";
-	$retval['#text'] = preg_replace('{\r?\n<p><a href="http://feedads.(googleadservices.com|g\.doubleclick\.net)/[^\"]*"><img src="http://feedads.(googleadservices.com|g\.doubleclick\.net)/[^\"]*" border="0" ismap="true"></img></a></p>}',
+	$retval['#text'] = preg_replace('{\r?\n<p><a href="http://feedads.googleadservices.com/[^\"]*"><img src="http://feedads.googleadservices.com/[^\"]*" border="0" ismap="true"></img></a></p>}',
+					'',
+					$retval['#text']);
+#echo "(googleads) before: <pre>["; print_r($retval); echo "]</pre>\n";
+	$retval['#text'] = preg_replace('{\r?\n<p>(<a href="http://feedads.g.doubleclick.net/[^\"]*"><img src="http://feedads.g.doubleclick.net/[^\"]*" border="0" ismap="true"></img></a>(<br/>\n\r?)?)*<a href="http://feedads.g.doubleclick.net/[^\"]*"><img src="http://feedads.g.doubleclick.net/[^\"]*" border="0" ismap="true"></img></a></p>}',
 					'',
 					$retval['#text']);
 #echo "(googleads) after 1: <pre>["; print_r($retval); echo "]</pre>\n";
@@ -2308,5 +2323,35 @@ function wapo_ad_hook($nodename, &$retval, &$context)
 					$retval['#text']);
 
 #echo "(wapo ads) after 1: <pre>["; print_r($retval); echo "]</pre>\n";
+}
+
+/* webbug_hook
+ * Remove web bugs: images with width=1 and height=1
+ */
+/* XXX - This should go in a separate file, as a plug-in */
+function webbug_hook($nodename, &$retval, &$context)
+{
+	if (!isset($retval['#text']))
+		return;
+#echo "(webbug) before: <pre>["; print_r($retval); echo "]</pre>\n";
+	$retval['#text'] = preg_replace('{<img(\s+\w+=\"[^\"]*\")* (height="1" width="1"|width="1" height="1")\s*/>\r?\n?}',
+					'',
+					$retval['#text']);
+#echo "(webbug) after 2: <pre>["; print_r($retval); echo "]</pre>\n";
+}
+
+/* zemanta_hook
+ * Remove zemanta "web bug" like thing
+ */
+/* XXX - This should go in a separate file, as a plug-in */
+function zemanta_hook($nodename, &$retval, &$context)
+{
+	if (!isset($retval['#text']))
+		return;
+#echo "(zemanta) before: <pre>["; print_r($retval); echo "]</pre>\n";
+	$retval['#text'] = preg_replace('{<div class="zemanta-pixie".*?</div>}',
+					'',
+					$retval['#text']);
+#echo "(zemanta) after 2: <pre>["; print_r($retval); echo "]</pre>\n";
 }
 ?>
