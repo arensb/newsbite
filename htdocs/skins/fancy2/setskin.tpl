@@ -21,9 +21,9 @@ Cookies must be turned on for skins to work.
   <select name="newskin">
     {foreach from=$skins item=s}
       {strip}
-      <option value="{$s.dir}"
-        {if $s.dir == $current_skin}selected{/if}
-        >
+      <option
+        {if $s.dir == $current_skin} selected {/if}
+        value="{$s.dir}">
         {$s.name|escape}</option>
       {/strip}
     {/foreach}
