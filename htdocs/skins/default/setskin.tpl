@@ -20,12 +20,15 @@ Cookies must be turned on for skins to work.
   Choose a skin:
   <select name="newskin">
     {foreach from=$skins item=s}
-      {strip}
-      <option value="{$s.dir}"
-        {if $s.dir == $current_skin}selected{/if}
-        >
-        {$s.name|escape}</option>
-      {/strip}
+      {* XXX - I'd like to get rid of the extraneous whitespace in these
+       * lines, but when I add strip tags, it gets rid of the space
+       * between "option" and "value".
+       *}
+      <option
+        {if $s.dir == $current_skin} selected{/if}
+        value="{$s.dir}">
+        {$s.name|escape}
+      </option>
     {/foreach}
   </select>
   <br/>
