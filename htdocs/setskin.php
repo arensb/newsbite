@@ -11,6 +11,8 @@ require_once("skin.inc");
 
 $skin = new Skin;
 
+$current_skin = $_COOKIE['skin'];
+
 if (isset($_REQUEST['set-skin']))
 {
 	// We've been given a skin by the form.
@@ -50,6 +52,7 @@ while (($fname = readdir($dh)) !== FALSE)
 }
 
 $skin->assign('skins', $skins);
-$skin->assign('current_skin', $new_skin);
+$skin->assign('current_skin', $current_skin);
+$skin->assign('new_skin', $new_skin);
 $skin->display("setskin.tpl");
 ?>
