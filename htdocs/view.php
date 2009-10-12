@@ -74,6 +74,27 @@ if ($start >= $num_items)
 	$next_link = $next_link_text = NULL;
 }
 
+// XXX - Try to normalize the HTML parts of the item.
+// XXX - Is it necessary to create a new DOMDocument each time? Is it
+// possible to reuse one?
+// XXX - Should normalization be done when the item is added to the
+// database?
+foreach ($feed['items'] as &$i)
+{
+	if ($i['content'] != "")
+	{
+		$doc = new DOMDocument('1.0', 'utf-8');
+		@$doc->loadHTML($i['content']);
+		$i['content'] = $doc->saveHTML();
+	}
+	if ($i['summary'] != "")
+	{
+		$doc = new DOMDocument('1.0', 'utf-8');
+		@$doc->loadHTML($i['summary']);
+		$i['summary'] = $doc->saveHTML();
+	}
+}
+
 // Remove FeedBurner bugs.
 // XXX - This belongs in a separate FeedBurner plugin.
 // XXX - In fact, it should be done before adding items to database.
@@ -96,8 +117,6 @@ $skin->assign('prev_link', $prev_link);
 $skin->assign('prev_link_text', $prev_link_text);
 $skin->assign('next_link', $next_link);
 $skin->assign('next_link_text', $next_link_text);
-$skin->left_delimiter = "<!--{";
-$skin->right_delimiter = "}-->";
 $skin->display("view.tpl");
 
 db_disconnect();
@@ -109,6 +128,7 @@ db_disconnect();
  * browser doesn't have to load a jillion external images.
  */
 // XXX - This belongs in a FeedBurner plugin.
+// XXX - Is this duplicated someplace in a lib/*.inc file?
 function defeedburn(&$str)
 {
 	$str = preg_replace(
