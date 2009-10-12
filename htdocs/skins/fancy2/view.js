@@ -2,7 +2,7 @@ var debug_window = undefined;
 var mark_read = {};		// Hash of item_id -> is_read? values
 var mark_request = null;	// Data for marking items as read/unread
 
-onload = init;
+window.onload = init;
 
 var last_time = null;
 function debug(str)
@@ -74,17 +74,40 @@ function init_items()
 
 	for (i in items)
 	{
-		var item = items[i];
-		var e = document.createElement("li");
-
-		e.innerHTML = unescape(item.display);
-		item_list.appendChild(e);
-
-		// Conserve some memory by reclaiming stuff we don't need.
-		// 'element' points to the displayed DOM element.
-		item.element = e;
-		item.display = null;
+		add_item(items[i]);
 	}
+}
+
+/* add_item
+ * Insert an item into the list of articles.
+ */
+function add_item(item)
+{
+	var item_list = document.getElementById("items");
+	var li = document.createElement("li");
+
+	/* XXX - This section is something of a hack: adding the HTML
+	 * with .innerHTML has to be done after adding the <li> with
+	 * appendChild: apparently this prevents JavaScript inside
+	 * the text from being interpreted and executed.
+	 *
+	 * This is a problem with the APOD feed, and presumably any
+	 * other feed that includes Digg JavaScript code: it assumes
+	 * it's being executed while the page is loading, so it feels
+	 * free to use document.write(). But when we insert such code
+	 * in the middle of a loaded document, document.write() erases
+	 * the existing page and starts from scratch. Writing
+	 * innerHTML afterwards seems to prevent this (at the cost of
+	 * not executing the embedded scripts. Maybe we'd like them to
+	 * run).
+	 *
+	 * A better solution would presumably be to generate an iframe
+	 * or object, i.e., a brand new document embedded within the
+	 * document, and put the article text in there. But I don't
+	 * know how to do this.
+	 */
+	item_list.appendChild(li);
+	li.innerHTML = unescape(item.display);
 }
 
 /* toggle-pane
