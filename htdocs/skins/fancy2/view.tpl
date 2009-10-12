@@ -17,6 +17,9 @@
 <title>NewsBite: {$feed.title}</title>
 <link rel="stylesheet" type="text/css" href="skins/{$skin}/style.css" media="all" />
 <link rel="stylesheet" type="text/css" href="skins/{$skin}/view.css" media="all" />
+{if preg_match(',Mozilla/\S+ \(iPod;,', $smarty.server.HTTP_USER_AGENT)}
+<link rel="stylesheet" type="text/css" href="skins/{$skin}/iphone.css" media="screen" />
+{/if}
 <!-- If JavaScript is turned on, slurp in the JavaScript-specific
      stylesheet
 -->
