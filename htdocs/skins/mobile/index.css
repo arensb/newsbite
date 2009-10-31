@@ -1,0 +1,100 @@
+html {
+/*	-webkit-text-size-adjust:	auto;*/
+}
+
+body {
+	background-color:	#c0c0c0;
+	color:			black;
+	margin-left:		0px;
+	margin-right:		0px;
+}
+
+#feeds {
+	padding-left:		0px;
+}
+
+#feeds li.item {
+	list-style-type:	none;
+	margin-left:		0px;
+}
+
+#feeds .item {
+	background-image:	-webkit-gradient(linear,
+					left top,
+					left bottom,
+					color-stop(0.0, #e0e0e0),
+					color-stop(1.0, #c0c0c0)
+				);
+}
+
+#feeds .even-item {
+/*	background-color:	#c0c0c0;*/
+	color:			black;
+/*	-webkit-tap-highlight-color:	red;*/
+}
+
+#feeds .odd-item {
+/*	background-color:	white;*/
+	color:			black;
+/*	-webkit-tap-highlight-color:	yellow;*/
+}
+
+/* The app contains multiple pages of content: the index, the page for
+ * a feed, the page for a single article, the settings. All of these
+ * are divs on the main page, with class "multi-page". By default, all
+ * of them are hidden; only the index page is visible.
+ */
+.multi-page {
+/*	display:		none;*/
+display:		block;
+background-color:	yellow;
+}
+.multi-page#index-page {
+	display:		block;
+}
+
+@-webkit-keyframes leftSlide {
+	from {
+/*		-webkit-transform: translateY(100px);*/
+/*		-webkit-animation-timing-function: ease-out;*/
+		-webkit-animation-timing-function: ease-in-out;
+		background-color:	yellow;
+		display: block;
+	}
+	to {
+/*		left: 0px;*/
+/*		-webkit-transform: translateY(100px);*/
+		-webkit-transform: translateX(-75%);
+		background-color:	cyan;
+		display: none;
+		border:	10px solid red;
+	}
+}
+
+.slide-left {
+  -webkit-animation-name: leftSlide;
+  -webkit-animation-duration: 5s;
+  -webkit-animation-iteration-count: 10;
+}
+
+@-webkit-keyframes slide-left-in {
+	from {
+		-webkit-transform: translateX(100%);
+		display:	none;
+	}
+	to {
+		-webkit-transform: translateX(0px);
+		display:	block;
+	}
+}
+
+@-webkit-keyframes slide-left-out {
+	from {
+		-webkit-transform: translateX(0px);
+		display:	block;
+	}
+	to {
+		-webkit-transform: translateX(-100%);
+		display:	none;
+	}
+}
