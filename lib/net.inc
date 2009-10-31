@@ -349,8 +349,23 @@ function _open_curl_handle($url, $username = NULL, $passwd = NULL)
 	/* Use authentication if required */
 	if ($username != "" || $passwd != "")
 	{
-		curl_setopt($ch, CURLOPT_HTTPAUTH, CURLAUTH_ANYSAFE);
-			// Use reasonable security
+		// Limit the types of authentication allowed. The idea
+		// is to make it hard to send the password in the
+		// clear.
+
+		// XXX - Problem: twitter.com only allows Basic
+		// authentication for feeds (at least, the @me feed).
+		// This is the one authentication type that isn't in
+		// CURLAUTH_ANYSAFE.
+		//
+		// To work around this, see if the URL uses https; if
+		// it does, allow any authentication.
+		$url_scheme = parse_url($url, PHP_URL_SCHEME);
+
+		if ($url_scheme == "https")
+			curl_setopt($ch, CURLOPT_HTTPAUTH, CURLAUTH_ANY);
+		else
+			curl_setopt($ch, CURLOPT_HTTPAUTH, CURLAUTH_ANYSAFE);
 		curl_setopt($ch, CURLOPT_USERPWD, "$username:$passwd");
 	}
 
