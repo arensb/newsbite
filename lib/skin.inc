@@ -20,6 +20,9 @@ class Skin extends Smarty
 		 */
 		if (isset($_COOKIE['skin']))
 			$this->setskin($_COOKIE['skin']);
+		elseif (isset($_REQUEST['skin']) &&
+			is_dir("skins/$_REQUEST[skin]"))
+			$this->setskin($_REQUEST['skin']);
 		else
 			$this->setskin($this->skin);
 
