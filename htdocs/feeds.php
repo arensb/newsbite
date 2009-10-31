@@ -12,9 +12,6 @@ $out_fmt = $_REQUEST['o'];	# Output format
 if ($out_fmt != 'json')
 {
 	# 400 == generic bad request
-//	echo("HTTP/1.1 400 Bad output format");
-//	header("Status: I hate you", true, 500);
-	header("Location: http://moist.ooblick.com/guitar_hero.html");
 	header("HTTP/1.0 400 I hate you");
 	exit(1);
 }
