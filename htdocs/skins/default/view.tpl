@@ -139,7 +139,7 @@
 
 {* XXX - Would it be worth having a separate template for an empty feed? *}
 <p>There are no articles to display.</p>
-{{* item.tpl
+{* item.tpl
  * Display an item.
  * This is just a fragment template. It is intended to be included in
  * another template.
@@ -282,7 +282,7 @@
   </table>
 </div>
 {/strip}
-/if}
+{/if}
 
 </body>
 </html>
