@@ -25,6 +25,8 @@ if (isset($_REQUEST['set-skin']))
 		// domain: $_SERVER['SERVER_NAME'] ?
 		// path: dirname($_SERVER['PHP_SELF']) ?
 		setcookie("skin", $new_skin, 9999999999);
+		redirect_to("index.php");
+		exit(0);
 	}
 	// XXX - Otherwise, should fail somehow.
 }
