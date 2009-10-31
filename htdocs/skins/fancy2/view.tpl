@@ -51,6 +51,7 @@
 <img class="feed-icon" src="{$feed.image}"/>
 {/if}
 
+fancy2
 {strip}
 <h1>
   {if ($feed.url == "")}
@@ -103,7 +104,7 @@
    *}
   &nbsp;
 </div>
-
+<div id="debug" style="clear:both"></div>
 <!-- List of items -->
 {if (count($items) > 0)}
 {* XXX - Should have navigation strip:
@@ -155,7 +156,7 @@
 <p>There are no articles to display.</p>
 {/if}
 
-<div id="debug" style="clear:both"></div>
+<!--<div id="debug" style="clear:both"></div>-->
 <!--</body>-->
 <script type="text/javascript">
 {* List of items, as a JavaScript array. These will be inserted into
