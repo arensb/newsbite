@@ -9,6 +9,11 @@ body {
 	margin-right:		0px;
 }
 
+#debug {
+	clear:			left;
+	margin-top:		1em;
+}
+
 #feeds {
 	padding-left:		0px;
 }
@@ -45,56 +50,10 @@ body {
  * of them are hidden; only the index page is visible.
  */
 .multi-page {
-/*	display:		none;*/
-display:		block;
-background-color:	yellow;
+	display:		none;
+	z-index:		0;
 }
 .multi-page#index-page {
 	display:		block;
-}
-
-@-webkit-keyframes leftSlide {
-	from {
-/*		-webkit-transform: translateY(100px);*/
-/*		-webkit-animation-timing-function: ease-out;*/
-		-webkit-animation-timing-function: ease-in-out;
-		background-color:	yellow;
-		display: block;
-	}
-	to {
-/*		left: 0px;*/
-/*		-webkit-transform: translateY(100px);*/
-		-webkit-transform: translateX(-75%);
-		background-color:	cyan;
-		display: none;
-		border:	10px solid red;
-	}
-}
-
-.slide-left {
-  -webkit-animation-name: leftSlide;
-  -webkit-animation-duration: 5s;
-  -webkit-animation-iteration-count: 10;
-}
-
-@-webkit-keyframes slide-left-in {
-	from {
-		-webkit-transform: translateX(100%);
-		display:	none;
-	}
-	to {
-		-webkit-transform: translateX(0px);
-		display:	block;
-	}
-}
-
-@-webkit-keyframes slide-left-out {
-	from {
-		-webkit-transform: translateX(0px);
-		display:	block;
-	}
-	to {
-		-webkit-transform: translateX(-100%);
-		display:	none;
-	}
+	z-index:		100;
 }

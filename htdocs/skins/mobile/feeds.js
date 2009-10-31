@@ -25,7 +25,6 @@ window.onload = init;
 
 var feed_list;			// List of feeds and their properties
 var pages = new Array();	// The different pages we could be displaying
-var current_page;
 var orientation;		// iPhone orientation
 
 var last_time = null;
@@ -55,9 +54,7 @@ function clrdebug()
 function init()
 {
 	window.onorientationchange = orientation_change;
-//window.navigator.standalone = true;
 	feed_list = document.getElementById("feeds");
-	current_page = document.getElementById("index-page");
 
 	// Find all of the pages in the document
 	var divs = document.getElementsByTagName("div");
@@ -68,9 +65,6 @@ function init()
 		if (div.className != "multi-page")
 			continue;
 		pages.push(div);
-		div.addEventListener('webkitAnimationEnd',
-				     reset_animation,
-				     false);
 	}
 
 	debug("initial orientation: "+window.orientation);
@@ -250,20 +244,12 @@ function flip_to_page(the_page)
 		var p = pages[i];
 		if (p.id == the_page)
 		{
-			current_page.style.webkitAnimationName = 'slide-left-out';
-			current_page.style.webkitAnimationDuration = '1s';
-			current_page.style.webkitAnimation.IterationCount = 1;
-
+			p.style.zIndex = "100";
 			p.style.display = "block";
-			p.style.webkitAnimationName = 'slide-left-in';
-			p.style.webkitAnimationDuration = '1s';
-			p.style.webkitAnimationIterationCount = '1';
-			p.addEventListener('webkitAnimationEnd',
-					   set_current_page,
-					   false);
-		} else
-			;
-//			p.style.display = "none";
+		} else {
+			p.style.zIndex = "0";
+			p.style.display = "none";
+		}
 	}
 }
 
@@ -286,22 +272,4 @@ function flip_to_settings_page()
 function orientation_change()
 {
 	orientation = window.orientation;
-}
-
-/* reset_animation
- * Called at the end of an animation. Used to reset the animation to the
- * empty string. That way, the element can be animated again with the
- * same effect.
- */
-function reset_animation(ev)
-{
-	ev.target.style.webkitAnimationName = "";
-}
-
-function set_current_page(ev)
-{
-	current_page = ev.target;
-	current_page.removeEventListener('webkitAnimationEnd',
-					 set_current_page,
-					 false);
 }
