@@ -15,12 +15,18 @@ $feed_url = $_REQUEST['feed_url'];
 
 if (isset($feed_url))
 {
+	$params = Array();
+
+	$params['feed_url'] = $feed_url;
+	if (isset($_REQUEST['username']))
+		$params['username'] = $_REQUEST['username'];
+	if (isset($_REQUEST['password']) &&
+	    $_REQUEST['password'] != "")
+		$params['passwd'] = $_REQUEST['password'];
 
 	// XXX - Check whether we're already subscribed to that URL
 
-	$feed_id = db_add_feed(array(
-			"feed_url" => $feed_url)
-		);
+	$feed_id = db_add_feed($params);
 	if ($feed_id === false)
 		abort("Error adding feed.");
 
