@@ -14,10 +14,10 @@ function debug(str)
 		return;
 
 	var t = new Date().getTime();
-//	var delta = (last_time == null ? "" : t - last_time);
-//	last_time = t;
-//	debug_window.innerHTML += t + "(" + delta + "): " +
-	debug_window.innerHTML += t + ": " +
+	var delta = (last_time == null ? "" : t - last_time);
+	last_time = t;
+	debug_window.innerHTML += t + "(" + delta + "): " +
+//	debug_window.innerHTML += t + ": " +
 		str + "<br/>\n";
 }
 
@@ -141,7 +141,6 @@ function toggle_pane(node)
 	 * the rest: there are different rules for displaying expanded
 	 * and collapsed articles.
 	 */
-
 	cont_state = container.getAttribute("which");
 	if (cont_state == "summary")
 		container.setAttribute("which", "content");
