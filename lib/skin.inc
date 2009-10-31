@@ -18,11 +18,10 @@ class Skin extends Smarty
 		 * sensible (/^\w+$/) and that it's a directory
 		 * underneath "skins".
 		 */
-		if (isset($_COOKIE['skin']))
-			$this->setskin($_COOKIE['skin']);
-		elseif (isset($_REQUEST['skin']) &&
-			is_dir("skins/$_REQUEST[skin]"))
+		if (isset($_REQUEST['skin']))
 			$this->setskin($_REQUEST['skin']);
+		elseif (isset($_COOKIE['skin']))
+			$this->setskin($_COOKIE['skin']);
 		else
 			$this->setskin($this->skin);
 
