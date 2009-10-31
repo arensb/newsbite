@@ -1,7 +1,20 @@
+- Brian has expressed interest. Clean things up so they're pretty
+  enough for non-me people.
 - Bug: In Safari 4.0, collapsing articles doesn't work anymore.
+  Try using separate classes for different appearances.
+  An element can have multiple (space-separated?) classes. Write a JS
+  function to add or remove classes from a string.
+	Update, Tue Oct 13 08:55:28 2009:
+	Actually, it looks like it does work, but the window needs to
+  be modified in some way (including scrolling) for it to take.
+  Clicking on the bottom collapse bar works. Clicking on the upper one
+  works once you scroll.
+	Might be sufficient to scroll by 0 pixels.
 - Bug: APOD has an embedded Digg script,
 	<script src="http://digg.com/...></script>
   which uses document.write() to add a Digg button to the page.
+  Currently worked around, but it would be nice to have the JS execute
+  without trashing everything on the page.
 
 	When this is executed via "some_element.innerHTML =...", it
   looks as though "document.write()" overwrites the contents of the
@@ -16,6 +29,8 @@
 		overflow:	auto;
 	}
   to make the enclosing box resize itself to the proper size.
+	Perhaps can open an iframe/object onto about:blank, then write
+  the article to the new document.
 - Bug: When updating feeds, sometimes spinner keeps going forever. Why?
 - Bug: When Ajax updates feeds, it doesn't notice updates to the list
   of feeds.
@@ -29,8 +44,20 @@
 - Bug: when on the last page (earliest items) and use "mark all as
   read", sometimes get blank page.
 	Is this just the N810 browser being wonky?
+- Bug: when collapse from bottom collapse bar, window scrolls uglily.
+  Ought to fix this: bottom edge should remain at the same place on
+  screen, if possible.
 - Bug-ish: when marking a feed as inactive, get redirected back to it.
   This is bogus.
+- Read this to make iPhone-friendly skins:
+  http://developer.apple.com/safari/library/documentation/AppleApplications/Reference/SafariWebContent/OptimizingforSafarioniPhone/OptimizingforSafarioniPhone.html
+- On iPhone, when mark an entry as read (using fancy skin), the
+  following happens:
+	- Set both checkboxes
+	- Possibly long delay while calls markitem.php
+	- Finally item collapses
+  this is bogus: item collapse immediately, and change color only when
+  markitem has returned.
 - Perhaps add an entry in the 'options' table, saying which
   version/revision of Newsbite this is, and perhaps another saying
   which version of the schema.
@@ -501,3 +528,34 @@
   so that the article doesn't move: if clicking the bottom collapse
   bar, scroll so that the bottom of the item remains at the same
   position in the window.
+- Icon for iPhone: see
+  http://developer.apple.com/safari/library/documentation/InternetWeb/Conceptual/iPhoneWebAppHIG/MetricsLayout/MetricsLayout.html#//apple_ref/doc/uid/TP40007900-CH6-SW31
+  http://developer.apple.com/safari/library/documentation/AppleApplications/Reference/SafariWebContent/ConfiguringWebApplications/ConfiguringWebApplications.html
+	Should be 57x57 pixel PNG file, with square corners.
+	Add
+  <link rel="apple-touch-icon" href="my-app-icon.png"/>
+  to <head> section of web app. This way, when user puts the app on
+  the iPhone desktop, its icon will be the PNG file instead of a
+  screenshot of the page.
+	There are designated filenames: "apple-touch-icon.png" is, I
+  think, the default if the <link> item is omitted.
+  "apple-touch-icon-precomposed.png" means that the iPod shouldn't add
+  effects (the light-from-above, reflection thingy).
+- iPhone standalone app: when the site is saved to a desktop icon,
+  iPhone OS packages the app up as a standalone. There are several
+  useful tags and whatnot for this. The following tags work when the
+  app is saved to the desktop, then started from there (like an
+  ordinary app):
+	Splash screen:
+  <link rel="apple-touch-startup-image" href="startup.png"/>
+	Say that the app is standalone:
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+	This gets rid of the Safari URL bar and navigation buttons at
+  the bottom.
+	Status bar appearance:
+  <meta name="apple-mobile-web-app-status-bar-style" content="black" />
+  Can set to "default", "black", or "black-translucent".
+- Storing data on iPhone:
+  http://developer.apple.com/safari/library/documentation/AppleApplications/Reference/SafariWebContent/Client-SideStorage/Client-SideStorage.html
+  Can also set up a manifest file, so that the app will download
+  images and whatnot to be used when the device is offline.
