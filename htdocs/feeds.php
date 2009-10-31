@@ -55,5 +55,5 @@ echo "<![CDATA[\n";
 echo jsonify($output);
 
 /* Close the "<![CDATA[" from above */
-echo "]]>\n";
+echo "\n]]>\n";
 ?>
