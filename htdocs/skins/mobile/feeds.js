@@ -27,6 +27,16 @@ var feed_list;			// List of feeds and their properties
 var pages = new Array();	// The different pages we could be displaying
 var orientation;		// iPhone orientation
 
+var feed_tmpl = '<h1>@title@</h1>\
+<img src="@image@"/>\
+<button onclick="flip_to_feed_index()">Back to feed index</button>\
+<hr/>\
+<ol id="items">@+items@</ol>\
+<hr/>\
+';
+
+var feed_item_tmpl = '<li>@title@</li>';
+
 var last_time = null;
 function debug(str)
 {
@@ -67,13 +77,14 @@ function init()
 		pages.push(div);
 	}
 
-	debug("initial orientation: "+window.orientation);
-	if (window.navigator.standalone)
-		debug("Standalone mode");
-	else
-		debug("Not standalone mode");
+//	debug("initial orientation: "+window.orientation);
+//	if (window.navigator.standalone)
+//		debug("Standalone mode");
+//	else
+//		debug("Not standalone mode");
 
 	// Write to the Safari developer console
+	// XXX - Safari has 'console'. Firefox doesn't.
 	//console.log("Hello log world");
 	//console.warn("Hello warning world");
 	//console.error("Hello error world");
@@ -82,6 +93,19 @@ function init()
 	get_feeds();
 }
 
+/* find_page
+ * Look through the list of pages ('pages') and find the one whose
+ * identifier matches the given title.
+ */
+function find_page(title)
+{
+	for (p in pages)
+	{
+		if (pages[p].id == title)
+			return pages[p];	// Found it
+	}
+	return null;		// Not found
+}
 
 // XXX - This function shouldn't be replicated. Consolidate.
 /* createXMLHttpRequest
@@ -118,10 +142,118 @@ function createXMLHttpRequest()
 	return request;
 }
 
+/* get_json_data
+ * Send a request for JSON data.
+ * 'url' is the URL from which to fetch the data.
+ * 'params' is an array of POST pararameters to send.
+ * 'handler' is a function to call when the data has arrived.
+ * 'batch' is a boolean: if true, wait until all the data has come in to
+ * call the handler. Otherwise, call the handler for each line as it
+ * comes in.
+ */
+function get_json_data(url, params, handler, batch)
+{
+	var request = createXMLHttpRequest();
+	if (!request)
+		return null;
+			// XXX - Better error-reporting?
+
+	request.open('POST', url, batch);
+	request.setRequestHeader('Content-Type',
+		'application/x-www-form-urlencoded');
+
+	var param_string = "";
+	for (p in params)
+	{
+		if (param_string != "")
+			param_string += "&";
+		param_string += p + "=" +
+			encodeURIComponent(params[p]);
+	}
+
+	if (handler)
+	{
+		// XXX - Need separate case for calling handler as
+		// data comes in. Or maybe pass the 'batch' argument
+		// to get_json_callback_batch.
+		request.onreadystatechange =
+			function() {
+				get_json_callback_batch(request, handler);
+			};
+	}
+	request.send(param_string);
+		// XXX - Error-checking
+
+	return true;	// Success
+}
+
+function get_json_callback_batch(req, user_func)
+{
+//debug("Inside get_json_callback_batch("+req.readyState+")");
+	switch (req.readyState)
+	{
+	    case 0:		// Uninitialized
+	    case 1:		// Loading
+		return;
+	    case 2:		// Loaded
+		// XXX - Do something intelligent in case of error
+		var err;
+		var errmsg;
+
+		/* Get HTTP status */
+		try {
+			err = req.status;
+			errmsg = req.statusText;
+		} catch (e) {
+			err = 1;
+		}
+
+		/* If the HTTP status isn't 200, abort the request */
+		if (err != 200)
+		{
+			req.abort();
+			req.aborted = true;
+		}
+		return;
+	    case 3:		// Got partial text
+		return;
+	    case 4:
+		/* The response is a JSON object wrapped inside an XML
+		 * CDATA chunk (see feeds.php): the first line is the
+		 * xml header; the second is the start of the CDATA
+		 * block; the third is the data we're interested in;
+		 * the fourth closes the CDATA block.
+		 */
+		if (req.responseText == "")
+			// XXX - No text given. Should have better
+			// error-handling.
+			return;
+
+		var off1, off2;
+
+		// Find first newline
+		off1 = req.responseText.indexOf("\n");
+		if (off1 < 0)
+			return;
+		// Find second newline
+		off1 = req.responseText.indexOf("\n", off1+1);
+
+		// Find last newline (other than the one at the end
+		off2 = req.responseText.lastIndexOf("\n",
+						    req.responseText.length-2);
+		var substr = req.responseText.slice(off1, off2);
+		user_func(substr);
+		break;
+	    default:
+		return;
+	}
+}
+
 /* get_feeds
  */
 function get_feeds()
 {
+debug("Inside get_feeds()");
 	var request = createXMLHttpRequest();
 	if (!request)
 	{
@@ -139,6 +271,7 @@ function get_feeds()
 	// XXX - Should put up a spinner or something to indicate that a
 	// net request has gone out.
 	request.send('');
+debug("sent request");
 }
 
 /* get_feeds_callback
@@ -148,7 +281,7 @@ function get_feeds_callback(req)
 {
 	var feed_items;
 
-//debug("Inside get_feeds_callback("+req.readyState+")");
+debug("Inside get_feeds_callback("+req.readyState+")");
 	switch (req.readyState)
 	{
 	    case 0:		// Uninitialized
@@ -206,7 +339,6 @@ debug("Something went wrong: "+e);
 	// XXX - Sort the items.
 	for (var i in feed_items)
 	{
-var j = i;
 		var li = document.createElement("li");
 		var item = feed_items[i];
 		li.innerHTML = item['id']+": "+item['title'];
@@ -234,6 +366,82 @@ var j = i;
 
 function show_feed(id)
 {
+//	flip_to_page("feed-page");
+	get_json_data("view.php",
+		      {id: id,
+		       o: "json",
+		      },
+		      show_feed_callback,
+		      true);
+}
+
+function show_feed_callback(jstr)
+{
+	var feed;		// Structure describing the feed
+
+	// Get the feed description from the data returned by the server
+	try {
+		eval("feed = "+jstr);
+	} catch (e) {
+		console.error("Caught error " + e);
+		return;
+	}
+
+	var feed_page = find_page("feed-page");
+
+	/* Create the page from the feed_tmpl template: look for
+	 * substrings of the form "@foo@" in feed_tmpl, and replace
+	 * them with feed[foo].
+	 */
+	var tmpl = feed_tmpl;
+	var kwpat = /@([^@]+)@/g;	// Regexp for finding keywords
+	var result;			// Result of regexp match
+	var last_index = 0;		// How much of the template have
+					// we seen?
+	var rendered = "";		// The rendered page
+	while ((result = kwpat.exec(tmpl)) != null)
+	{
+		rendered += tmpl.slice(last_index, result.index);
+		if (result[1] == "+items")
+		{
+//debug("feed.items: ["+feed['items']+"] ("+feed.items.length+")");
+			for (var i = 0; i < feed.items.length; i++)
+//			for (i in feed.items)
+			{
+				/* Generate a list of items from the
+				 * feed_item_tmpl template, using the same
+				 * mechanism as above.
+				 */
+				var item = feed.items[i];
+//debug("item "+i+": ["+item+"]: ["+item.title+"]");
+				var tmpl2 = feed_item_tmpl;
+				var kwpat2 = /@([^@]+)@/g;
+				var result2;
+				var last_index2 = 0;
+				var rendered2 = "";
+//var n = 0;
+//debug("tmpl2: ["+tmpl2+"]");
+//result2 = kwpat2.exec(tmpl2);
+//debug("result2: ["+result2+"]");
+				while ((result2 = kwpat2.exec(tmpl2)) != null)
+				{
+//debug("result2: ["+result2+"]");
+					rendered2 += tmpl2.slice(last_index2, result2.index);
+					rendered2 += item[result2[1]];
+					last_index2 = result2.index+result2[0].length;
+				}
+				rendered2 += tmpl2.slice(last_index2);
+//debug("rendered2 ["+rendered2+"]");
+				rendered += rendered2;
+			}
+		} else if (feed[result[1]] == undefined)
+			rendered += "--dunno--";
+		else
+			rendered += feed[result[1]];
+		last_index = result.index+result[0].length;
+	}
+	rendered += tmpl.slice(last_index);
+	feed_page.innerHTML = rendered;
 	flip_to_page("feed-page");
 }
 
