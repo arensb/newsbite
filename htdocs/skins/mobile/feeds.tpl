@@ -6,13 +6,15 @@
 <title>NewsBite</title>
 <link rel="stylesheet" type="text/css" href="skins/{$skin}/index.css" media="screen"/>
 <script type="text/javascript" src="skins/{$skin}/feeds.js"></script>
-<!--<meta name="apple-mobile-web-app-capable" content="yes" />-->
-<!--<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />-->
+<!-- Tags useful when saving the app to the desktop of an iPhone/iPod Touch -->
+<meta name="apple-mobile-web-app-capable" content="yes" />
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+<link rel="apple-touch-icon" href="star.png"/>
+<link rel="apple-touch-startup-image" href="startup.png"/>
+<!-- Other Apple/Safari tags -->
 <meta name = "viewport"
       content = "width = device-width,
                  initial-scale = 1.0">
-<!--<link rel="apple-touch-icon" href="star.jpg"/>-->
-<!--<link rel="apple-touch-startup-image" href="startup.png"/>-->
 </head>
 <body>
 
@@ -38,6 +40,7 @@
   <!-- XXX - skin -->
 </div>
 
+<h2>Debug:</h2>
 <div id="debug"></div>
-<a onclick="clrdebug()">Clear debug window<a>
+<button onclick="clrdebug()">Clear debug window</button>
 </body>
