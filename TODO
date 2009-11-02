@@ -1,3 +1,4 @@
+- Fix view.php to send list in JSON format, for mobile skin.
 - Brian has expressed interest. Clean things up so they're pretty
   enough for non-me people.
 - Bug: In Safari 4.0, collapsing articles doesn't work anymore.
@@ -65,6 +66,7 @@
   <a href="$some_ad_url">...</a>, optionally wrapped in <p>...</p>.
 - WaPo duplicates: "Today's Highlights" can duplicate stories from
   other feeds. Would be nice to detect these and delete duplicates.
+	Ditto for Google news
 - Would be useful on the feed list page to be able to toggle empty
   feeds on and off. Also stale feeds (those that haven't been updated
   in 30 days (or whatever)).
@@ -415,11 +417,6 @@
   the form (and of course update markitems.php to check for it).
 	With JavaScript, we can toggle the state of each item as the
   user requests.
-- Picking which skin to display:
-	- Specified in URL, otherwise
-	- From cookie, otherwise
-	- From option, otherwise
-	- "default".
 - There are a bunch of times when it's handy to parse XML files:
   reading RSS feeds, importing OPML, parsing HTML pages to find the
   feeds, etc.
@@ -504,8 +501,6 @@
   that should never happen.
 - Perhaps expand the notion of "feed": could show email, current
   weather conditions, Nagios alerts, etc.
-- Class Skin should automatically set $skin_dir variable to the
-  (relative) subdirectory where skin files are found.
 - Perhaps add a "collapse all" button in view.tpl that'll collapse all
   displayed items.
 - In main view: have a button to toggle displaying feeds with no
