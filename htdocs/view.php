@@ -7,6 +7,30 @@ require_once("common.inc");
 require_once("database.inc");
 require_once("skin.inc");
 
+/* See what kind of output the user wants */
+switch ($_REQUEST['o'])
+{
+    case "json":
+	$out_fmt = "json";
+	// The "+xml" here is bogus: apparently there's a bug in
+	// Firefox (2.x) such that if the response is "text/plain", it
+	// apparently assumes that it's ISO8859-1 or US-ASCII or some
+	// such nonsense.
+	header("Content-type: text/plain+xml; charset=utf-8");
+
+	// The stupid "+xml" hack above means that Firefox will try to
+	// interpret what it sees as XML. And since JSON isn't
+	// well-formed XML, we need to wrap the JSON in very minimal
+	// XML: < ?xml ? ><![CDATA[ {json} ]]>
+	echo "<", '?xml version="1.0" encoding="UTF-8"?', ">\n";
+	echo "<![CDATA[\n";
+	break;
+    default:
+	header("Content-type: text/html; charset=utf-8");
+	$out_fmt = "html";
+	break;
+}
+
 $feed_id = $_REQUEST['id'];		// ID of feed to show
 /* Make sure $feed_id is an integer */
 if (is_numeric($feed_id) && is_integer($feed_id+0))
@@ -37,6 +61,10 @@ if ($feed_id == "all")
 	if ($feed === NULL)
 		abort("No such feed: $feed_id.");
 }
+
+# Thigns we don't want to send to the client
+unset($feed['username']);
+unset($feed['passwd']);
 
 $num_items = 25;		// How many items to show
 		// XXX - Should probably be a parameter
@@ -107,6 +135,17 @@ foreach ($feed['items'] as &$i)
 			// next-to-last item.
 }
 
+if ($out_fmt == "json")
+{
+	echo jsonify($feed);
+	/* Close the "<![CDATA[" from above */
+	echo "\n]]>\n";
+
+	db_disconnect();
+	exit(0);
+}
+
+/* If we get this far, user has requested HTML output */
 $skin = new Skin();
 
 $skin->assign('feed', $feed);
