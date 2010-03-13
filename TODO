@@ -489,6 +489,8 @@
 - How should abort() deal with JSON/XML/whatever non-HTML output?
 - Ajax/Firefox: use client-side storage (DOM::Storage) to cache
   articles.
+  See also
+  http://dev.w3.org/html5/webstorage/
 - Is there a way to normalize HTML? If the <![CDATA[...]]> section in
   a feed contains mismatched tags, e.g.
 	<p><a ...><img/></p>
