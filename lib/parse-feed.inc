@@ -127,8 +127,11 @@ $element_hooks[""]["channel"][] = gocomics_hook;
 $element_hooks[""]["description"][] = googleads_hook;
 $element_hooks[""]["description"][] = feedburner_hook;
 $element_hooks[""]["description"][] = wapo_ad_hook;
+$element_hooks[""]["description"][] = webbug_hook;
+$element_hooks[""]["description"][] = more_ads_hook;
 $element_hooks["http://purl.org/rss/1.0/"]["description"][] = feedburner_hook;
 $element_hooks[""]["item"][] = feedburner_origlink_hook;
+$element_hooks[""]["item"][] = pheedo_origlink_hook;
 $element_hooks["http://purl.org/rss/1.0/modules/content/"]["encoded"][] = googleads_hook;
 $element_hooks["http://purl.org/rss/1.0/"]["description"][] = googleads_hook;
 $element_hooks["http://purl.org/rss/1.0/"]["description"][] = slashdot_noise_hook;
@@ -608,7 +611,9 @@ function _cdata_handler($parser, $data)
 	// escaped HTML, but there's no <![CDATA[" tag. This kludge
 	// looks for items that begin with "&#60;" (escaped
 	// left-bracket), and manually unescapes the text.
-	if (strpos($data, "&#60;") == 0)
+	if (strpos($data, "&#60;") === 0)
+		// Note that this uses ===, not ==, so as not to run
+		// on FALSE.
 	{
 		$data = html_entity_decode($data);
 	}
@@ -2254,6 +2259,19 @@ function feedburner_origlink_hook($nodename, &$retval, &$context)
 	}
 }
 
+/* pheedo_origlink_hook
+ * Same as above, with a different name.
+ */
+function pheedo_origlink_hook($nodename, &$retval, &$context)
+{
+	if (isset($retval['pheedo:origLink']))
+	{
+		if (isset($retval['url']))
+			$retval['oldurl'] = $retval['url'];
+		$retval['url'] = $retval['pheedo:origLink'];
+	}
+}
+
 /* wordpress_noise_hook
  * Like googleads_hook, removes the image links and web bug that
  * wordpress adds to the bottom of postings.
@@ -2353,5 +2371,21 @@ function zemanta_hook($nodename, &$retval, &$context)
 					'',
 					$retval['#text']);
 #echo "(zemanta) after 2: <pre>["; print_r($retval); echo "]</pre>\n";
+}
+
+/* more_ads_hook
+ * Remove yet more ads at bottom of RSS items.
+ */
+/* XXX - This should go in a separate file, as a plug-in */
+function more_ads_hook($nodename, &$retval, &$context)
+{
+	if (!isset($retval['#text']))
+		return;
+#echo "(more ads) before: <pre>["; print_r($retval); echo "]</pre>\n";
+	# Visible ad
+	$retval['#text'] = preg_replace('{(<br */>\r?\n?)*<a href="http://da.feedsportal.com/.*?</a>}',
+					'',
+					$retval['#text']);
+#echo "(more ads) after 1: <pre>["; print_r($retval); echo "]</pre>\n";
 }
 ?>
