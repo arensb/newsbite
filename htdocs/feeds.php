@@ -9,7 +9,8 @@ require_once("database.inc");
 $out_fmt = $_REQUEST['o'];	# Output format
 
 # Make sure the requested output format is sane
-if ($out_fmt != 'json')
+// XXX - jsonr == Raw JSON, without the +xml hack
+if ($out_fmt != 'json' && $out_fmt != 'jsonr' && $out_fmt != "xml")
 {
 	# 400 == generic bad request
 	header("HTTP/1.0 400 I hate you");
@@ -47,13 +48,25 @@ foreach ($feeds as $id => $data)
 	$output[] = $desc;
 }
 
-// XXX - The following assumes that the user picked JSON output, above.
-header("Content-type: text/plain+xml; charset=utf-8");
-echo "<", '?xml version="1.0" encoding="UTF-8"?', ">\n";
-echo "<![CDATA[\n";
+if ($out_fmt == "json")
+{
+	header("Content-type: text/plain+xml; charset=utf-8");
+	echo "<", '?xml version="1.0" encoding="UTF-8" ?', ">\n";
+	echo "<![CDATA[\n";
 
-echo jsonify($output);
+	echo jsonify($output);
 
-/* Close the "<![CDATA[" from above */
-echo "\n]]>\n";
+	/* Close the "<![CDATA[" from above */
+	echo "\n]]>\n";
+} elseif ($out_fmt == "jsonr")
+{
+	header("Content-type: text/plain; charset=utf-8");
+
+	echo jsonify($output);
+} elseif ($out_fmt == "xml")
+{
+	header("Content-type: text/xml; charset=utf-8");
+//	echo xmlify($output);
+	print_xml($output);
+}
 ?>
