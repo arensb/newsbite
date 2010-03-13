@@ -178,6 +178,7 @@ function get_json_data(url, params, handler, batch)
 		// to get_json_callback_batch.
 		request.onreadystatechange =
 			function() {
+debug("In the other handler");
 				get_json_callback_batch(request, handler);
 			};
 	}
@@ -189,6 +190,7 @@ function get_json_data(url, params, handler, batch)
 
 function get_json_callback_batch(req, user_func)
 {
+debug("Inside get_json_callback_batch");
 //debug("Inside get_json_callback_batch("+req.readyState+")");
 	switch (req.readyState)
 	{
@@ -251,6 +253,7 @@ function get_json_callback_batch(req, user_func)
 
 /* get_feeds
  */
+// XXX - Redo this with get_json_data()
 function get_feeds()
 {
 debug("Inside get_feeds()");
@@ -260,13 +263,23 @@ debug("Inside get_feeds()");
 		// XXX - Error-reporting
 		return;
 	}
+//for (i in request)
+//{
+//try { debug(i+": ["+request[i]+"]");
+//} catch (e) {}
+//}
 
 	request.open('POST',
 		     'feeds.php?o=json',
 		     false);	// Don't call me until you have all the text
 	request.setRequestHeader('Content-Type',
 		'application/x-www-form-urlencoded');
-	request.onreadystatechange = function() { get_feeds_callback(request) };
+	request.onreadystatechange = function() {
+//debug("Got ready state change");
+ get_feeds_callback(request) };
+//request.onload = function() { debug("Inside onload"); }
+request.onerror = function() { debug("Inside onerror()"); }
+request.onprogress = function() { debug("Inside onprogress"); }
 
 	// XXX - Should put up a spinner or something to indicate that a
 	// net request has gone out.
@@ -281,7 +294,8 @@ function get_feeds_callback(req)
 {
 	var feed_items;
 
-debug("Inside get_feeds_callback("+req.readyState+")");
+debug("Inside get_feeds_callback");
+//debug("Inside get_feeds_callback("+req.readyState+")");
 	switch (req.readyState)
 	{
 	    case 0:		// Uninitialized
@@ -322,6 +336,7 @@ debug("Inside get_feeds_callback("+req.readyState+")");
 		 * the third, and eval it as JavaScript code.
 		 */
 		try {
+debug("About to eval stuff");
 			eval("feed_items = " + req.responseText.split("\n")[2]);
 		} catch (e) {
 			// XXX - Error-reporting
@@ -366,6 +381,7 @@ debug("Something went wrong: "+e);
 
 function show_feed(id)
 {
+debug("Inside show_feed()");
 //	flip_to_page("feed-page");
 	get_json_data("view.php",
 		      {id: id,
@@ -377,10 +393,12 @@ function show_feed(id)
 
 function show_feed_callback(jstr)
 {
+debug("Inside show_feed_callback()");
 	var feed;		// Structure describing the feed
 
 	// Get the feed description from the data returned by the server
 	try {
+debug("About to eval ["+jstr+"]");
 		eval("feed = "+jstr);
 	} catch (e) {
 		console.error("Caught error " + e);
