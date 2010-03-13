@@ -55,7 +55,7 @@
 {* XXX - Do something with categories *}
 {* category: [{$item.category}]<br/>*}
        {* XXX - When showing read items, change this to "mark as unread" *}
-        Mark as read:&nbsp;
+        <span class="mark-read">Mark as read:&nbsp;</span>
         {* "cbt": checkbox top *}
         <input class="mark-check" type="checkbox" name="cbt-{$item.id}" value="1" onclick="javascript:mark_item(this)"/>
       </td>

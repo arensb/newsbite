@@ -7,6 +7,15 @@ require_once("common.inc");
 require_once("database.inc");
 require_once("skin.inc");
 
+/* Try to guess whether we're viewing this on an iPhone or other
+ * mobile device
+ */
+$mobile = false;
+if (preg_match(',Mozilla/\S+ \(iPod;,', $_SERVER['HTTP_USER_AGENT']))
+{
+	$mobile = "iPhone";
+}
+
 /* See what kind of output the user wants */
 switch ($_REQUEST['o'])
 {
@@ -112,6 +121,45 @@ if ($start >= $num_items)
 	$next_link = $next_link_text = NULL;
 }
 
+/* If we're reading this on a mobile device, try to convert the URL to
+ * a mobile-friendly version.
+ */
+// XXX - This should go in a separate plugin
+// XXX - Is it worth adding a 'mobile_url' column to the feeds table,
+// and generating these URLs when the feed is fetched?
+
+// XXX - Bleah. The Onion has a mobile site, but there's no obvious
+// way to get the articles from the RSS feed: the feed uses URLs with
+// the subject in the URL, while the mobile site only uses internal
+// identifiers, which don't seem to appear anywhere else.
+if ($mobile)
+{
+	// Wunderground has two mobile sites: 'i' for iPhone, 'm' for
+	// generic mobile.
+	if ($mobile == "iPhone")
+		$m_wund = "i.wund.com";		# iPhone mobile site
+	else
+		$m_wund = "m.wund.com";		# Generic mobile site
+	foreach ($feed['items'] as &$i)
+	{
+		$i['url'] = preg_replace(',^http://www\.lemonde\.fr/,',
+					 'http://mobile.lemonde.fr/',
+					 $i['url']);
+		// WaPo stuff is ugly.
+		// "spf=1" is to show the full article. Leave it off
+		// to show only the first page.
+		$i['url'] = preg_replace(',^http://www\.washingtonpost\.com/wp-dyn/content/article/(\d+)/(\d+)/(\d+)/(.*)\.html\??,',
+					 'http://mobile.washingtonpost.com/rss.jsp?rssid=578819&item=http%3a%2f%2fwww.washingtonpost.com%2fwp-syndication%2farticle%2f\1%2f\2%2f\3%2f\4_mobile.xml&cid=1&spf=1&',
+					 $i['url']);
+		$i['url'] = preg_replace(',^http://www\.wunderground\.com/,',
+					 "http://$m_wund/",
+					 $i['url']);
+		$i['url'] = preg_replace(',^http://(\w+)\.livejournal\.com/(.*),',
+					 '\0?format=light',
+					 $i['url']);
+	}
+}
+
 // XXX - Try to normalize the HTML parts of the item.
 // XXX - Is it necessary to create a new DOMDocument each time? Is it
 // possible to reuse one?
@@ -181,6 +229,7 @@ $skin->assign('prev_link', $prev_link);
 $skin->assign('prev_link_text', $prev_link_text);
 $skin->assign('next_link', $next_link);
 $skin->assign('next_link_text', $next_link_text);
+$skin->assign('mobile', $mobile);
 $skin->display("view.tpl");
 
 db_disconnect();

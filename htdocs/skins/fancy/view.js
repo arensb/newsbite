@@ -94,7 +94,7 @@ function toggle_pane(node)
 	 */
 
 	cont_state = container.getAttribute("which");
-	if (cont_state == "summary")
+	if (cont_state == "which")
 		container.setAttribute("which", "content");
 	else
 		container.setAttribute("which", "summary");

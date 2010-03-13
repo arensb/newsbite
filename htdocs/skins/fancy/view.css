@@ -24,14 +24,6 @@ p {
 	margin:			1em;
 }
 
-/* If a p or blockquote contains a floating element, the enclosing box
- * should resize itself to accommodate it.
- */
-p,
-blockquote {
-	overflow:	auto;
-}
-
 /* Icon or image for the feed */
 .feed-icon {
 	float:			right;
@@ -208,6 +200,15 @@ input[type="submit"] {
 	/* Safari: */
 	-webkit-border-top-left-radius:		20px;
 	-webkit-border-top-right-radius:	20px;
+}
+
+.item-header .info {
+	/* XXX - this hack is to prevent long unbreakable titles from
+	 * resizing the iPhone display. But there's got to be a better
+	 * way of doing this.
+	 */
+	max-width:	900px;
+	overflow:	hidden;
 }
 
 .item-header td {

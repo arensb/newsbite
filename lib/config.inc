@@ -14,7 +14,7 @@ $AUTODELETE_DAYS = 90;
  * Of course, if you have hundreds or thousands of feeds, it might be
  * worth increasing this.
  */
-$PARALLEL_UPDATES = 10;
+$PARALLEL_UPDATES = 20;
 
 /* If FEED_CACHE is set and refers to an existing directory,
  * update.php will save a copy of the raw feed to "FEED_CACHE/$id", to

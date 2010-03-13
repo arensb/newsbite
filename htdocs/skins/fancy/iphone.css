@@ -2,14 +2,15 @@
  * Specialized settings for iPhone/iPod Touch.
  */
 body {
-	font-size:		18pt;
+/*	font-size:		18pt;*/
+	font-size:		24pt !important;
 }
 
-/*
-.item {
-	font-size:		12pt;
+.item .item-summary,
+.item .item-content {
+	font-family:		Helvetica, sans-serif;
+/*	font-size:		24pt;*/
 }
-*/
 
 .item .item-header {
 	/* XXX - Actually, this should in Safari as well */
@@ -21,7 +22,19 @@ body {
 	border-bottom-color:	navy;
 }
 
+.item .mark-read {
+	display:		none;
+}
+
 input[type="checkbox"].mark-check {
-	width:			2.4em;
+/*	width:			2.4em;
 	height:			2.4em;
+*/
+	width:			4em;
+	height:			4em;
+}
+
+input[type="submit"],
+input[type="reset"] {
+	font-size:		80%;
 }

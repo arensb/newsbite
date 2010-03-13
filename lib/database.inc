@@ -274,9 +274,6 @@ EOT;
  * This function can also be called with a single argument, an assoc
  * of keyword => value pairs.
  *
- * !!! Note that unlike db_get_feed_items(), this just returns a list
- * of items. It doesn't fill in the 'items' field in a feed list.
- *
  * feed_id => int id
  *	Which feed's items to fetch. If missing, fetch from all feeds
  * start_at => int n
@@ -349,18 +346,17 @@ function db_get_some_feed_items(/* varargs */)
 	}
 
 	/* Specify order in query */
-	// XXX - How should this work with last_update?
 	switch ($args['order'])
 	{
 	    case "date_asc":
-		$query .= "ORDER BY pub_date ASC\n";
+		$query .= "ORDER BY last_update ASC\n";
 		break;
 	    case "date_desc":
 	    default:
 		// XXX - This fall-through means we don't notice bogus
 		// values. Then again, we can probably trust the
 		// caller.
-		$query .= "ORDER BY pub_date DESC\n";
+		$query .= "ORDER BY last_update DESC\n";
 		break;
 	}
 
@@ -625,7 +621,6 @@ function db_update_feed($feed_id, $feed)
 
 	foreach ($feed['items'] as $item)
 	{
-
 		// This query may look long and redundant, but
 		// basically it means:
 		//
@@ -682,7 +677,7 @@ INSERT INTO	items
 VALUES		(?, ?, ?, ?, ?, ?, ?,
 		 ?, ?, ?,
 		 IFNULL(FROM_UNIXTIME(?), NOW()),
-		 IFNULL(FROM_UNIXTIME(?), pub_date),
+		 NOW(),
 		 FALSE)
 ON DUPLICATE KEY UPDATE
 		url=?,
@@ -693,8 +688,7 @@ ON DUPLICATE KEY UPDATE
 		category=?,
 		comment_url=?,
 		comment_rss=?,
-		pub_date=IFNULL(FROM_UNIXTIME(?), pub_date),
-		last_update=IFNULL(FROM_UNIXTIME(?), last_update)
+		pub_date=IFNULL(FROM_UNIXTIME(?), pub_date)
 EOT;
 		$stmt = $dbh->prepare($query);
 		$dummy_categories = NULL;	// XXX - Hack until I
@@ -722,8 +716,8 @@ EOT;
 			$item['guid'] = $item['url'];
 		}
 
-		$stmt->bind_param("dsssssssssdd" .
-				  "ssssssssdd",
+		$stmt->bind_param("dsssssssssd" .
+				  "ssssssssd",
 				  // Values for new items
 				  $feed_id,
 				  $item['url'],
@@ -736,7 +730,6 @@ EOT;
 				  $item['comment_feed'],
 				  $item['guid'],
 				  $item['pub_time'],
-				  $item['build_time'],
 				  // 'is_read' automatically set to false
 
 				  // Values for updated items
@@ -748,8 +741,7 @@ EOT;
 				  $dummy_categories,	// XXX - Deal with categories
 				  $item['comment_url'],
 				  $item['comment_feed'],
-				  $item['pub_time'],
-				  $item['build_time']
+				  $item['pub_time']
 				  // 'is_read' left unchanged
 			);
 		$err = $stmt->execute();
