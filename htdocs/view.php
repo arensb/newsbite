@@ -25,6 +25,16 @@ switch ($_REQUEST['o'])
 	echo "<", '?xml version="1.0" encoding="UTF-8"?', ">\n";
 	echo "<![CDATA[\n";
 	break;
+    case "jsonr":	// Raw JSON
+	// XXX - A better approach would be to have a "hack" parameter
+	// that turns on the +xml hack above. Perhaps the calling
+	// script can auto-determine which hacks it needs.
+	$out_fmt = "jsonr";
+	header("Content-type: text/plain; charset=utf-8");
+	break;
+    case "xml":
+	$out_fmt = "xml";
+	break;
     default:
 	header("Content-type: text/html; charset=utf-8");
 	$out_fmt = "html";
@@ -142,6 +152,21 @@ if ($out_fmt == "json")
 	echo "\n]]>\n";
 
 	db_disconnect();
+	exit(0);
+}
+
+if ($out_fmt == "jsonr")
+{
+	echo jsonify($feed);
+
+	db_disconnect();
+	exit(0);
+}
+
+if ($out_fmt == "xml")
+{
+	print_xml($feed);
+	db_disconnect(0);
 	exit(0);
 }
 
