@@ -790,7 +790,7 @@ EOT;
 		$query = <<<EOT
 DELETE FROM	items
 WHERE		feed_id = ?
-  AND		last_update < NOW() - INTERVAL ? DAY
+  AND		pub_date < NOW() - INTERVAL ? DAY
 EOT;
 		$stmt = $dbh->prepare($query);
 			// XXX - Error-checking
