@@ -1,9 +1,57 @@
+/* iPhone size, from
+ * http://developer.apple.com/safari/library/documentation/InternetWeb/Conceptual/iPhoneWebAppHIG/MetricsLayout/MetricsLayout.html#//apple_ref/doc/uid/TP40007900-CH6
+ * Portrait:
+ * Width: 320 px
+ * Height: 480 px
+ *	20 px	Status bar (battery indicator etc)
+ *	60 px	URL bar
+ *	356 px	usable
+ *	44 px	button bar
+ *
+ * Landscape:
+ * Width: 480 px
+ * Height: 320 px
+ *	20 px	Status bar (battery indicator etc)
+ *	60 px	URL bar
+ *	208 px	usable
+ *	32 px	button bar
+ */
+
+/* Gradients:
+ * -webkit-gradient(
+ *	"linear"
+ *	y1 x1,
+ *	y2 x2,
+ *	color+
+ * );
+ * -webkit-gradient(
+ *	"radial"
+ *	y1 x1,
+ *	radius1
+ *	y2 x2,
+ *	radius2
+ *	color+
+ * );
+ */
+
 html {
 /*	-webkit-text-size-adjust:	auto;*/
 }
 
 body {
 	background-color:	#c0c0c0;
+	background-image:
+		-webkit-gradient(
+			radial,
+			160 178,
+			10,
+			160 178,
+			160,
+			from(#c0c0ff),
+			to(#8080ff)/*,
+			color-stop(90%, #019F62)*/
+		);
+	background-attachment:	fixed;
 	color:			black;
 	margin-left:		0px;
 	margin-right:		0px;
@@ -18,18 +66,32 @@ body {
 	padding-left:		0px;
 }
 
+.index-feed {
+	background-color:	cyan;
+	background-image:
+		-webkit-gradient(
+			linear,
+	                left top,
+	                left bottom,
+	                from(rgba(0,0,255,255)),
+	                to(rgba(0,0,255,0)),
+			color-stop(30%, rgba(0, 0, 200, 0))
+		);
+	border:	1px solid black;
+	-webkit-border-radius:	5px;
+	-moz-border-radius:	5px;
+	font-family:	Helvetica, sans;
+	padding-top:	0.3em;
+	padding-bottom:	0.3em;
+	margin-bottom:	0.1em;
+}
+
 #feeds li.item {
 	list-style-type:	none;
 	margin-left:		0px;
 }
 
 #feeds .item {
-	background-image:	-webkit-gradient(linear,
-					left top,
-					left bottom,
-					color-stop(0.0, #e0e0e0),
-					color-stop(1.0, #c0c0c0)
-				);
 }
 
 #feeds .even-item {
