@@ -20,6 +20,7 @@
  */
 
 var debug_window = undefined;
+var browser_type = undefined;
 
 window.onload = init;
 
@@ -60,6 +61,43 @@ function clrdebug()
 		return;
 	debug_window.innerHTML = "";
 }
+
+// --- Template class ----------------------------------------
+function Template(tmpl)
+{
+	// Look for sequences of the form @VAR@. These are the variables
+	// that will be replaced in the template.
+	// split() is perfect for this, since a template is by definition
+	// a series of strings punctuated by variables to be expanded.
+	// Thus we know that the even-numbered elements (0, 2, 4, ...) are
+	// strings, and the odd-numbered ones are names of variables.
+	this.template = tmpl.split(/@(\w+)@/);
+}
+
+// Template.expand
+// Takes an array of values (as an object) and expands the template.
+// Returns the result.
+Template.prototype.expand = function(values)
+{
+	var retval = "";
+	var n = this.template.length;
+
+	for (var i = 0; i < n; i += 2)
+	{
+		// We're looking at a plain string. Append it to retval
+		retval += this.template[i];
+
+		// See if this string is followed by a variable name.
+		// If so, expand it.
+		if (i+1 < n)
+		{
+			retval += values[this.template[i+1]];
+		}
+	}
+
+	return retval;
+}
+//--- end Template class ----------------------------------------
 
 function init()
 {
@@ -178,7 +216,7 @@ function get_json_data(url, params, handler, batch)
 		// to get_json_callback_batch.
 		request.onreadystatechange =
 			function() {
-debug("In the other handler");
+//debug("In the other handler");
 				get_json_callback_batch(request, handler);
 			};
 	}
@@ -190,7 +228,7 @@ debug("In the other handler");
 
 function get_json_callback_batch(req, user_func)
 {
-debug("Inside get_json_callback_batch");
+//debug("Inside get_json_callback_batch");
 //debug("Inside get_json_callback_batch("+req.readyState+")");
 	switch (req.readyState)
 	{
@@ -253,130 +291,43 @@ debug("Inside get_json_callback_batch");
 
 /* get_feeds
  */
-// XXX - Redo this with get_json_data()
 function get_feeds()
 {
-debug("Inside get_feeds()");
-	var request = createXMLHttpRequest();
-	if (!request)
-	{
-		// XXX - Error-reporting
-		return;
-	}
-//for (i in request)
-//{
-//try { debug(i+": ["+request[i]+"]");
-//} catch (e) {}
-//}
-
-	request.open('POST',
-		     'feeds.php?o=json',
-		     false);	// Don't call me until you have all the text
-	request.setRequestHeader('Content-Type',
-		'application/x-www-form-urlencoded');
-	request.onreadystatechange = function() {
-//debug("Got ready state change");
- get_feeds_callback(request) };
-//request.onload = function() { debug("Inside onload"); }
-request.onerror = function() { debug("Inside onerror()"); }
-request.onprogress = function() { debug("Inside onprogress"); }
-
-	// XXX - Should put up a spinner or something to indicate that a
-	// net request has gone out.
-	request.send('');
-debug("sent request");
+//debug("Inside get_feeds()");
+	get_json_data("feeds.php",
+		      {o:	"json",
+		      },
+		      get_feeds_callback,
+		      true);
+	return;
 }
 
-/* get_feeds_callback
- * Handle the state changes for the request issued by get_feeds().
- */
-function get_feeds_callback(req)
+function get_feeds_callback(jstr)
 {
-	var feed_items;
+//debug("get_feeds_callback("+jstr+")");
+debug("Inside get_feeds_callback()");
 
-debug("Inside get_feeds_callback");
-//debug("Inside get_feeds_callback("+req.readyState+")");
-	switch (req.readyState)
-	{
-	    case 0:		// Uninitialized
-	    case 1:		// Loading
+	var feeds;
+
+	// Get the feed description from the data returned by the server
+	try {
+//debug("About to eval ["+jstr+"]");
+		eval("feeds = "+jstr);
+	} catch (e) {
+		console.error("Caught error " + e);
 		return;
-	    case 2:		// Loaded
-		// XXX
-		var err;
-		var errmsg;
-
-		/* Get HTTP status */
-		try {
-			err = req.status;
-			errmsg = req.statusText;
-		} catch (e) {
-			err = 1;
-		}
-
-		/* If the HTTP status isn't 200, abort the request */
-		if (err != 200)
-		{
-			req.abort();
-			req.aborted = true;
-		}
-		return;
-	    case 3:		// Got partial text
-		return;
-	    case 4:		// Got all text
-		// XXX
-
-		/* The response is a JSON object wrapped inside an XML
-		 * CDATA chunk (see feeds.php): the first line is the
-		 * xml header; the second is the start of the CDATA
-		 * block; the third is the data we're interested in;
-		 * the fourth closes the CDATA block.
-		 *
-		 * So here we split the response text into lines, take
-		 * the third, and eval it as JavaScript code.
-		 */
-		try {
-debug("About to eval stuff");
-			eval("feed_items = " + req.responseText.split("\n")[2]);
-		} catch (e) {
-			// XXX - Error-reporting
-debug("Something went wrong: "+e);
-			return;
-		}
-
-//		feed_list.innerHTML = feed_items.length + " lists";
-		break;
 	}
+//debug("first feed: ["+feeds+"]");
 
-	/* If we get this far, feed_items is a list of objects describing
-	 * feeds.
-	 */
-	// XXX - Sort the items.
-	for (var i in feed_items)
+	var index_page = find_page("index-page");
+	var index_text = "";
+
+	for (var i = 0; i < feeds.length; i++)
 	{
-		var li = document.createElement("li");
-		var item = feed_items[i];
-		li.innerHTML = item['id']+": "+item['title'];
-		if (i % 2)
-		{
-			li.setAttribute("class", "item even-item");
-		} else {
-			li.setAttribute("class", "item odd-item");
-		}
-
-		/* Okay, this is convoluted, but it's necessary
-		 * because of JavaScript's closures, to make sure we
-		 * don't wind up with a hundred callbacks all
-		 * referring to the same value of 'item'. Basically,
-		 * we need to create a new local variable in each
-		 * iteratin of the loop, which is why we have the
-		 * outer anonymous function.
-		 */
-		li.onclick = (function(id) {
-			return function() { show_feed(id) }
-		})(item['id']);
-		feed_list.appendChild(li);
+debug("Adding feed "+i);
+		index_text += feed_index_tmpl.expand(feeds[i]);
 	}
+	feed_list.innerHTML = index_text;
 }
 
 function show_feed(id)
@@ -498,4 +449,31 @@ function flip_to_settings_page()
 function orientation_change()
 {
 	orientation = window.orientation;
+}
+
+function showfeed(id)
+{
+	alert("I ought to show you feed "+id);
+}
+
+/* ---------------------------------------------------------------------- */
+/* Try to guess the browser type.
+ * This should be run once, when the file is loaded.
+ */
+if (browser_type == undefined)
+{
+	/* XXX - Really ought to check for various features independently.
+	 * http://developer.apple.com/internet/webcontent/objectdetection.html
+	 */
+//alert("userAgent ["+navigator.userAgent+"]");
+	if (navigator.userAgent.indexOf("AppleWebKit") != -1)
+	{
+//alert("found safari");
+		browser_type = "safari";
+	} else if (navigator.userAgent.indexOf("Firefox") != -1)
+	{
+//alert("found firefox");
+		browser_type = "firefox";
+	}
+//else {alert("found other");}
 }
