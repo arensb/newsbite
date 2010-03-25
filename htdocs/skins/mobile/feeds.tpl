@@ -6,6 +6,9 @@
 <title>NewsBite</title>
 <link rel="stylesheet" type="text/css" href="skins/{$skin}/index.css" media="screen"/>
 <script type="text/javascript" src="skins/{$skin}/feeds.js"></script>
+<script type="text/javascript">
+var feed_index_tmpl = new Template('<li class="index-feed" onclick="showfeed(@id@)">@title@</li>');
+</script>
 <!-- Tags useful when saving the app to the desktop of an iPhone/iPod Touch -->
 <meta name="apple-mobile-web-app-capable" content="yes" />
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
