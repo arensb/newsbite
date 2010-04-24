@@ -331,8 +331,8 @@ input[type="checkbox"].mark-check {
 /* If an article begins with an image, that image should float left,
  * with the text wrapped around it.
  */
-.item-summary p:first-child > img:first-child,
-.item-content p:first-child > img:first-child,
+.item-summary p > img:first-child,
+.item-content p > img:first-child,
 .item-summary > img:first-child,
 .item-content > img:first-child {
 	float:			left;

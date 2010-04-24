@@ -556,3 +556,5 @@
   http://developer.apple.com/safari/library/documentation/AppleApplications/Reference/SafariWebContent/Client-SideStorage/Client-SideStorage.html
   Can also set up a manifest file, so that the app will download
   images and whatnot to be used when the device is offline.
+- Wii browser referer:
+  Opera/9.30 (Nintendo Wii; U; ; 3642; en)

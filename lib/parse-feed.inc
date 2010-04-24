@@ -129,6 +129,7 @@ $element_hooks[""]["description"][] = feedburner_hook;
 $element_hooks[""]["description"][] = wapo_ad_hook;
 $element_hooks[""]["description"][] = webbug_hook;
 $element_hooks[""]["description"][] = more_ads_hook;
+$element_hooks[""]["description"][] = no_style_hook;
 $element_hooks["http://purl.org/rss/1.0/"]["description"][] = feedburner_hook;
 $element_hooks[""]["item"][] = feedburner_origlink_hook;
 $element_hooks[""]["item"][] = pheedo_origlink_hook;
@@ -2355,6 +2356,10 @@ function webbug_hook($nodename, &$retval, &$context)
 	$retval['#text'] = preg_replace('{<img(\s+\w+=\"[^\"]*\")* (height="1" width="1"|width="1" height="1")\s*/>\r?\n?}',
 					'',
 					$retval['#text']);
+	# Same thing, but with single quotes instead of double
+	$retval['#text'] = preg_replace('{<img(\s+\w+=\'[^\']*\')* (height=\'1\' width=\'1\'|width=\'1\' height=\'1\').*?/>\r?\n?}',
+					'',
+					$retval['#text']);
 #echo "(webbug) after 2: <pre>["; print_r($retval); echo "]</pre>\n";
 }
 
@@ -2387,5 +2392,24 @@ function more_ads_hook($nodename, &$retval, &$context)
 					'',
 					$retval['#text']);
 #echo "(more ads) after 1: <pre>["; print_r($retval); echo "]</pre>\n";
+}
+
+
+/* no_style_hook
+ * Remove <font style=...> tags in Google News
+ */
+/* XXX - This should go in a separate file, as a plug-in */
+function no_style_hook($nodename, &$retval, &$context)
+{
+	if (!isset($retval['#text']))
+		return;
+#echo "(no style) before: <pre>["; print_r($retval); echo "]</pre>\n";
+	$retval['#text'] = preg_replace('{<font[^>]*>}',
+					'',
+					$retval['#text']);
+	$retval['#text'] = preg_replace('{</font\s*>}',
+					'',
+					$retval['#text']);
+#echo "(no style) after 1: <pre>["; print_r($retval); echo "]</pre>\n";
 }
 ?>
