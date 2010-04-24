@@ -12,6 +12,7 @@ fix-schema-r213.sql
 htdocs/.htaccess
 htdocs/addfeed.php
 htdocs/editfeed.php
+htdocs/feeds.php
 htdocs/index.php
 htdocs/loadopml.php
 htdocs/markitems.php
@@ -52,6 +53,7 @@ htdocs/skins/fancy/feeds.js
 htdocs/skins/fancy/feeds.tpl
 htdocs/skins/fancy/gray-bg.jpg
 htdocs/skins/fancy/index.css
+htdocs/skins/fancy/iphone.css
 htdocs/skins/fancy/item.tpl
 htdocs/skins/fancy/opml.css
 htdocs/skins/fancy/opml.tpl
@@ -78,6 +80,7 @@ htdocs/skins/fancy2/feeds.js
 htdocs/skins/fancy2/feeds.tpl
 htdocs/skins/fancy2/gray-bg.jpg
 htdocs/skins/fancy2/index.css
+htdocs/skins/fancy2/iphone.css
 htdocs/skins/fancy2/item.tpl
 htdocs/skins/fancy2/opml.css
 htdocs/skins/fancy2/opml.tpl
@@ -91,6 +94,11 @@ htdocs/skins/fancy2/unsubscribe.tpl
 htdocs/skins/fancy2/view.css
 htdocs/skins/fancy2/view.js
 htdocs/skins/fancy2/view.tpl
+htdocs/skins/mobile/feeds.js
+htdocs/skins/mobile/feeds.tpl
+htdocs/skins/mobile/index.css
+htdocs/skins/mobile/setskin.css
+htdocs/skins/mobile/setskin.tpl
 htdocs/smarty/configs
 htdocs/smarty/templates_c
 htdocs/unsubscribe.php
@@ -104,5 +112,4 @@ lib/parse-feed.inc
 lib/skin.inc
 php.ini
 schema.sql
-tests
 tests/README
