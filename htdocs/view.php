@@ -14,6 +14,9 @@ $mobile = false;
 if (preg_match(',Mozilla/\S+ \(iPod;,', $_SERVER['HTTP_USER_AGENT']))
 {
 	$mobile = "iPhone";
+} else if (preg_match(',Mozilla/\S+ \(iPad;,', $_SERVER['HTTP_USER_AGENT']))
+{
+	$mobile = "iPad";
 }
 
 /* See what kind of output the user wants */
@@ -81,7 +84,7 @@ if ($feed_id == "all")
 		abort("No such feed: $feed_id.");
 }
 
-# Thigns we don't want to send to the client
+# Things we don't want to send to the client
 unset($feed['username']);
 unset($feed['passwd']);
 
