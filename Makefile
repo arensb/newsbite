@@ -29,7 +29,7 @@ dist:
 	if [ ! -d dist/"${DISTNAME}" ]; then \
 		mkdir dist/"${DISTNAME}"; \
 	fi
-	${TAR} cnf - `cat MANIFEST` | \
+	${TAR} cnf - --no-recursion `cat MANIFEST` | \
 		(cd dist/"${DISTNAME}"; tar xBpf -)
 	-chgrp 80 "dist/${DISTNAME}/htdocs/smarty/templates_c"
 	chmod g+w "dist/${DISTNAME}/htdocs/smarty/templates_c"
