@@ -99,8 +99,6 @@ htdocs/skins/mobile/feeds.tpl
 htdocs/skins/mobile/index.css
 htdocs/skins/mobile/setskin.css
 htdocs/skins/mobile/setskin.tpl
-htdocs/smarty/configs
-htdocs/smarty/templates_c
 htdocs/unsubscribe.php
 htdocs/update.php
 htdocs/view.php

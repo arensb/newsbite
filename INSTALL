@@ -6,29 +6,29 @@ Make sure you have the following sofware packages installed:
 - PHP 5.x
 - PHP modules:
 	- Curl
-	- XML Reader
+	- MySQLi (not MySQL)
+	- XML Parser
 - MySQL 5.x
 - Smarty template engine (included with this distribution)
 
 
 INSTALLATION:
 
+- Unpack the Newsbite distribution
+
+	If you're reading this, you've probably unpacked the source tarball.
+	If not, do so now.
+
 - Create the database
 
-	You'll need administrative rights to create the database.
+	In MySQL, as a user with administrative rights:
 
 	> create database newsbite character set 'utf8';
+	> use newsbite;
+	> source /path/to/schema.sql
 
-	In the shell, create the database tables:
-
-	# mysql -u<DBA> -p newsbite < schema.sql
-
-	where "<DBA>" is the name of a user with administrative
-	privileges on the database (i.e., a user who can alter the
-	"newsbite" database).
-
-	With the "-p" flag, MySQL will prompt you for the password for
-	"<DBA>".
+	where "/path/to/schema.sql" is the path to the "schema.sql" file in
+	the Newsbite distribution.
 
 - Create a database user for the PHP scripts to access the database:
 
@@ -40,17 +40,12 @@ INSTALLATION:
 	user is "newsbiteuser", and the password is
 	"newsbitepassword". Make substitutions as appropriate.
 
-	In MySQL, run:
+	In MySQL, as a user with administrative rights:
 
 	> grant delete, insert, select, update
 	  on newsbite.*
 	  to `newsbiteuser`@`localhost`
 	  identified by "newsbitepassword";
-
-- Unpack the Newsbite distribution
-
-	If you're reading this, you've probably unpacked the source tarball.
-	If not, do so now.
 
 - Unpack the Smarty distribution
 
@@ -65,12 +60,13 @@ INSTALLATION:
 	- htdocs: PHP scripts that will be accessed by the user's
 	  browser. These need to be in the web server's DocumentRoot.
 
-	- htdocs/smarty: this contains directories used by Smarty.
-	  Some of these need to be writable by the user that will be
-	  running the Newsbite PHP scripts (usually the user running
-	  httpd).
-	  "htdocs/smarty" does not need to be in the DocumentRoot, and
-	  it's probably a good idea to install it someplace else.
+	- htdocs/smarty: the distribution contains two empty
+	  directories, "configs" and "templates_c", that are used by
+	  Smarty templates.
+
+	  Since the files that will be created there will be sent back
+	  to the client, they may be put in the DocumentRoot, but need
+	  not be.
 
 	- lib: PHP files used by the scripts in "htdocs", but not
 	  accessed directly by the browser. These do not need to be in
@@ -84,6 +80,30 @@ INSTALLATION:
 
 	Copy the "htdocs" directory from the distribution to where you
 	want it in the DocumentRoot.
+
+- Add authentication in .htaccess
+
+	* To use digest authentication:
+
+	- Make sure mod_auth_digest is enabled in the Apache config:
+
+	LoadModule auth_digest_module /path/to/mod_auth_digest.so
+
+	- add to .htpasswd (in the same directory as the .php files):
+
+	AuthType Digest
+	AuthName "Newsbite on MySite"
+	AuthDigestDomain /newsbite/
+	AuthDigestProvider
+	AuthUserFile /path/to/.digest_pw
+	Require valid-user
+
+	- Create .digest_pw
+
+	> htdigst -c /path/to/.digest_pw "Newsbite on MySite" myusername
+	Adding password for myusername in realm Newsbite on MySite.
+	New password: 
+	Re-type new password: 
 
 - Install "htdocs/smarty"
 
@@ -136,7 +156,42 @@ INSTALLATION:
 	That is, if "config.inc" is in /foo/bar/config.inc, then the
 	.htaccess file should contain
 
-	php_value include_path ".:/foo/bar"
+	<IfModule mod_php5.c>
+		php_value include_path "/path/to/lib:/path/to/Smarty"
+	</IfModule>
+
+	where "/path/to/lib" is the directory where you put the lib/*
+	files, and "/path/to/Smarty" is where you put the Smarty
+	files.
 
 	If you're not running Apache, you'll have to do this some
 	other way.
+
+- Point your browser at wherever you put the htdocs/* files.
+
+	You should be prompted for a password. Once you do, you'll see
+	a page with a toolbar and not much else.
+
+- Change to a prettier skin
+
+	You'll need to have cookies turned on for this to work.
+
+	"fancy" is the best supported skin.
+
+- Add some feeds.
+
+	Click on "Add a feed". Or, if you have an OPML file from
+	another newsreader, you can import that with "Import OPML
+	file".
+
+- (Optional) Add a cron job to update feeds
+
+	Or you can just do it manually.
+
+	0 7,9,11,14,17,20 * * * /usr/local/bin/php-cgi -d include_path=/path/to/lib /path/to/htdocs/update.php -- id=all >/dev/null
+
+- (Optional) Add a cron job to clean up old Smarty files
+
+	Or you could just delete them whenever you upgrade Newsbite.
+
+And you're finally done.

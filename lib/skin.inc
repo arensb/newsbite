@@ -36,8 +36,8 @@ class Skin extends Smarty
 	 */
 	function setskin($newskin)
 	{
-		if(preg_match('/^\w+$/', $newskin) &&
-		   is_dir("skins/$newskin"))
+		if (preg_match('/^\w+$/', $newskin) &&
+		    is_dir("skins/$newskin"))
 		{
 			$this->skin = $newskin;
 			$this->compile_id	= "{$this->skin}-skin";

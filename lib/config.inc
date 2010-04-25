@@ -20,7 +20,8 @@ $PARALLEL_UPDATES = 20;
  * update.php will save a copy of the raw feed to "FEED_CACHE/$id", to
  * make it easier to debug.
  * To turn this feature on, uncomment the following line and set it to
- * a directory you like.
+ * a directory you like. The directory must be writable by the httpd
+ * user.
  */
 //define('FEED_CACHE', "/tmp/feed-cache");
 
