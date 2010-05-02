@@ -37,6 +37,8 @@ if ($cmd == "mark-lists")
 	// Firefox (2.x) such that if the response is "text/plain", it
 	// apparently assumes that it's ISO8859-1 or US-ASCII or some
 	// such nonsense.
+	// XXX - Safari doesn't require this. Detect browser and act
+	// accordingly. Ditto everywhere else that uses "+xml".
 	header("Content-type: text/plain+xml; charset=utf-8");
 		// Assume JSON
 
