@@ -1,7 +1,3 @@
-- Try following directions in INSTALL file.
-  Try putting things in as many different places as possible.  
-- Brian has expressed interest. Clean things up so they're pretty
-  enough for non-me people.
 - Bug: In Safari 4.0, collapsing articles doesn't work anymore.
   Try using separate classes for different appearances.
   An element can have multiple (space-separated?) classes. Write a JS
@@ -30,6 +26,18 @@
   screen, if possible.
 - Bug-ish: when marking a feed as inactive, get redirected back to it.
   This is bogus.
+- Do some profiling: find out why under Safari it takes so long for an
+  article to collapse when it's marked read.
+	Bleah. Problem only seems to show up on iPod/iPad. Can the
+  simulator do profiling?
+	If not, may need to log some stuff.
+- Bookmarklet to mark an article as read.
+	If I stumble across, say, a Bad Astronomy article in Twitter,
+  I don't want to read it again in the normal feed. It'd be nice to
+  mark it as read.
+	There's a stub function in database.inc: db_mark_url(), which
+  marks items as read that have a given URL.
+- Search function: find words in feeds, titles, articles, etc.
 - Simpler AJAX fetch:
 	// loadXMLDoc
 	// Fetch data from a URL, and return it.
@@ -66,6 +74,10 @@
   this case.
 	It's vulnerable to replay attacks, but seems good enough for
   WordPress.
+	Is it possible to use PHP auth to get a persistent in lieu of
+  the session key?
+  http://php.net/manual/en/features.http-auth.php
+  Or will that expire as soon as the browser forgets the password?
 - Add an entry in the 'options' table, saying which version/revision
   of Newsbite this is, and perhaps another saying which version of the
   schema.
@@ -74,11 +86,24 @@
 - WaPo duplicates: "Today's Highlights" can duplicate stories from
   other feeds. Would be nice to detect these and delete duplicates.
 	Ditto for Google news
+- Sorting by many criteria
+	It'd be nice to sort all of the items by many criteria, e.g.,
+  comics come before news; comics are shown oldest-first, while news
+  items are shown newest-first; dKos articles by Hunter percolate to
+  the top; etc.
+	This is probably too hard to sort in MySQL, so presumably need
+  to do it in PHP. However, don't want to sort a massive data set on
+  the fly.
+	Might be possible to pre-sort in a cron job. But to avoid
+  sorting a massive data set, would it be possible to use some variant
+  of quicksort to first sort by time, then sort by "comics go before
+  news", etc.?
 - Would be useful on the feed list page to be able to toggle empty
   feeds on and off. Also stale feeds (those that haven't been updated
   in 30 days (or whatever)).
 	Can't just toggle visibility in JS: that would break coloring
   alternating rows.
+	Eh. Fuck alternating rows.
 - Might be useful to add gestures, for portable devices. See
   http://depts.washington.edu/aimgroup/proj/dollar/
 	On the N810, one can scroll the display by drawing on it. So
@@ -498,6 +523,11 @@
   articles.
   See also
   http://dev.w3.org/html5/webstorage/
+	Note that the Storage interface only allows storing and
+  retrieving strings, so data structures must be JSONified before
+  storage.
+- On iPad, might be nice to have "Mark as read" control on the left,
+  for one-handed reading.
 - Is there a way to normalize HTML? If the <![CDATA[...]]> section in
   a feed contains mismatched tags, e.g.
 	<p><a ...><img/></p>
@@ -565,3 +595,15 @@
   images and whatnot to be used when the device is offline.
 - Wii browser referer:
   Opera/9.30 (Nintendo Wii; U; ; 3642; en)
+- CSS allows the device to decide whether it considers itself a
+  handheld device:
+  http://www.boutell.com/newfaq/creating/iphone.html
+	@media handheld {
+	  .navigation {
+	    display: none;
+	  }
+	}
+  More at http://www.w3.org/TR/CSS2/media.html
+
+  Apparently currently (May 2010) neither iPod Touch nor iPad consider
+  themselves handheld devices. Go figure.
