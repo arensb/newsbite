@@ -846,4 +846,47 @@ EOT
 			$dbh->error, "\"<br/>\n";
 	}
 }
+
+/* db_mark_url
+ * Mark an item as read or unread, given the item's URL.
+ * $is_read is a boolean, either true (mark item as read) or false
+ * (mark item as unread), and $url is the URL of the article
+ */
+function db_mark_url($is_read, $url)
+{
+	$dbh = db_connect();
+echo "Escaped: [", $dbh->real_escape_string("http://foo%20bar/"), "]\n";
+return;
+
+	$query = sprintf(<<<EOT
+UPDATE	items
+SET	is_read=?
+WHERE	url=?
+EOT
+		);
+echo "query [$query]\n";
+	$stmt = $dbh->prepare($query);
+#echo "prepared stmt [$stmt]\n";
+	$is_read_sql = $is_read ? "TRUE" : "FALSE";	# Needs to be passed by reference
+$err =
+	$stmt->bind_param("ss",
+			  $is_read_sql,
+			  $dbh->real_escape_string($url)
+		);
+echo "bind_param returned [$err]\n";
+	$result = $dbh->query($query);
+echo "result [$result]\n";
+	$err = $stmt->execute();
+echo "execute returned [$err]\n";
+	$nrows = $stmt->affected_rows;
+echo "affected rows: [$nrows]\n";
+
+	// XXX - This only works with the complete URL. But it should
+	// also work with internal anchors, both in $url and in the
+	// database. That is:
+	// - Strip "#.*" from the end of the URL
+	// - Strip "#.*" from the URL in the database
+	// - Compare the two
+	// (We don't want "foo.html#a" to match "foo.htmlXYZ").
+}
 ?>
