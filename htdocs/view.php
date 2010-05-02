@@ -135,7 +135,8 @@ if ($start >= $num_items)
 // way to get the articles from the RSS feed: the feed uses URLs with
 // the subject in the URL, while the mobile site only uses internal
 // identifiers, which don't seem to appear anywhere else.
-if ($mobile)
+if ($mobile &&
+    $mobile != "iPad")		// XXX - Hack!
 {
 	// Wunderground has two mobile sites: 'i' for iPhone, 'm' for
 	// generic mobile.
