@@ -55,6 +55,12 @@
 {/if}
 </head>
 <body id="view-body">
+
+<!--
+<p><a onclick="p.report(); false">Profiling report</a></p>
+<pre id="profiler" style="clear:both"></pre>
+-->
+
 {if ($feed.image != "")}
 <img class="feed-icon" src="{$feed.image}"/>
 {/if}
