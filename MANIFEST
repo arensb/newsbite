@@ -53,6 +53,7 @@ htdocs/skins/fancy/feeds.js
 htdocs/skins/fancy/feeds.tpl
 htdocs/skins/fancy/gray-bg.jpg
 htdocs/skins/fancy/index.css
+htdocs/skins/fancy/ipad.css
 htdocs/skins/fancy/iphone.css
 htdocs/skins/fancy/item.tpl
 htdocs/skins/fancy/opml.css
