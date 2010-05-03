@@ -24,6 +24,22 @@
 - Bug: when collapse from bottom collapse bar, window scrolls uglily.
   Ought to fix this: bottom edge should remain at the same place on
   screen, if possible.
+- Use cookies for authentication, to remain logged in when iPod
+  forgets password. See
+	http://www.lightbluetouchpaper.org/2008/04/25/wordpress-25-cookie-integrity-protection-vulnerability/
+	http://pdos.csail.mit.edu/papers/webauth:tr.pdf
+  and especially
+	http://www.cse.msu.edu/~alexliu/publications/Cookie/cookie.pdf
+
+	Probably best to use Fu's protocol rather than Chu's: Chu's
+  protocol requires there to be an SSL key, which isn't practical in
+  this case.
+	It's vulnerable to replay attacks, but seems good enough for
+  WordPress.
+	Is it possible to use PHP auth to get a persistent in lieu of
+  the session key?
+  http://php.net/manual/en/features.http-auth.php
+  Or will that expire as soon as the browser forgets the password?
 - Bug-ish: when marking a feed as inactive, get redirected back to it.
   This is bogus.
 - Do some profiling: find out why under Safari it takes so long for an
@@ -60,24 +76,11 @@
 	- Finally item collapses
   this is bogus: item collapse immediately, and change color only when
   markitem has returned.
+	Sun May  2 13:18:42 2010: Not clear where this delay is coming
+  from. Doesn't seem to be my code. Apparently Safari is really slow
+  about updating the display.
 - Make updates smarter about updating when no network available.
   On iPhone, don't contact the network if there's no network to contact.
-- Use cookies for authentication, to remain logged in when iPod
-  forgets password. See
-	http://www.lightbluetouchpaper.org/2008/04/25/wordpress-25-cookie-integrity-protection-vulnerability/
-	http://pdos.csail.mit.edu/papers/webauth:tr.pdf
-  and especially
-	http://www.cse.msu.edu/~alexliu/publications/Cookie/cookie.pdf
-
-	Probably best to use Fu's protocol rather than Chu's: Chu's
-  protocol requires there to be an SSL key, which isn't practical in
-  this case.
-	It's vulnerable to replay attacks, but seems good enough for
-  WordPress.
-	Is it possible to use PHP auth to get a persistent in lieu of
-  the session key?
-  http://php.net/manual/en/features.http-auth.php
-  Or will that expire as soon as the browser forgets the password?
 - Add an entry in the 'options' table, saying which version/revision
   of Newsbite this is, and perhaps another saying which version of the
   schema.
@@ -593,8 +596,10 @@
   http://developer.apple.com/safari/library/documentation/AppleApplications/Reference/SafariWebContent/Client-SideStorage/Client-SideStorage.html
   Can also set up a manifest file, so that the app will download
   images and whatnot to be used when the device is offline.
-- Wii browser referer:
+- Wii browser ID:
   Opera/9.30 (Nintendo Wii; U; ; 3642; en)
+- iPad browser ID:
+  Mozilla/5.0 (iPad; U; CPU OS 3_2 like Mac OS X; en-us) AppleWebKit/531.21.10 (KHTML, like Gecko) Version/4.0.4 Mobile/7B367 Safari/531.21.10
 - CSS allows the device to decide whether it considers itself a
   handheld device:
   http://www.boutell.com/newfaq/creating/iphone.html
