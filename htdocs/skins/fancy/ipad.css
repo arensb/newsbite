@@ -1,0 +1,44 @@
+/* iphone.css
+ * Specialized settings for iPad
+ */
+body {
+	font-size:		14pt;
+	background-color:	#c0c0c0;
+	background-image:
+		-webkit-gradient(
+			radial,
+			512 320,
+			10,
+			512 320,
+			320,
+			from(#c0c0ff),
+			to(#8080c0)
+		);
+	background-repeat:	no-repeat
+	background-attachment:	fixed;
+	color:			black;
+	margin-left:		0px;
+	margin-right:		0px;
+}
+
+.item .item-header {
+	/* XXX - Actually, this should in Safari as well */
+	background-image:
+		-webkit-gradient(linear, left top, left bottom,
+			from(blue),
+			to(navy));
+	border-top-color:	blue;
+	border-bottom-color:	navy;
+}
+
+.button-box input {
+	font-size:	16pt;
+	padding-left:	2px;
+	padding-right:	2px;
+
+}
+
+input[type="checkbox"].mark-check {
+	width:			2.0em;
+	height:			2.0em;
+}
