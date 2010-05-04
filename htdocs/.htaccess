@@ -1,3 +1,17 @@
+# Make sure PHP can find all of its libraries
 <IfModule mod_php5.c>
 	php_value include_path ".:./lib"
 </IfModule>
+
+# Restrict access
+AuthType Digest
+AuthName "Newsbite on moist"
+AuthDigestDomain /newsbite/
+AuthDigestProvider
+AuthUserFile /folks/htdocs/newsbite/.digest_pw
+
+#Require valid-user
+
+<Files "login.php">
+	Require valid-user
+</Files>

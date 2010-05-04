@@ -24,6 +24,12 @@
 - Bug: when collapse from bottom collapse bar, window scrolls uglily.
   Ought to fix this: bottom edge should remain at the same place on
   screen, if possible.
+- Mention SERVER_SECRET in install instructions.
+	Perhaps include a utility for generating a random string.
+- common.inc requires a setting from config.inc. So just #include it
+  there.
+	At which point, might as well have all scripts that include
+  both just include common.inc.
 - Use cookies for authentication, to remain logged in when iPod
   forgets password. See
 	http://www.lightbluetouchpaper.org/2008/04/25/wordpress-25-cookie-integrity-protection-vulnerability/
@@ -612,3 +618,5 @@
 
   Apparently currently (May 2010) neither iPod Touch nor iPad consider
   themselves handheld devices. Go figure.
+- iPhone/iPad: might be fun to set a background gradient that changes
+  over the course of a day.

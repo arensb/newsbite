@@ -5,6 +5,57 @@
 // XXX - abort()
 // It'd be nice if abort() could work even if the installation is broken.
 
+require_once("config.inc");
+
+/* Check to make sure the user is properly logged in. We put this here
+ * because common.php is included by every script.
+ *
+ * A script can set $NO_AUTH_CHECK to avoid this check. In particular,
+ * the login form shouldn't be blocked because the user hasn't
+ * properly logged in.
+ */
+if (!$NO_AUTH_CHECK)
+{
+	/* XXX - A lot of the identifiers in this section are
+	 * replicated in login.php, which can lead to subtle problems.
+	 * (E.g., name of the cookie, names of the config variables,
+	 * etc.)
+	 */
+	$login_cookie = $_COOKIE['newsbite_user'];
+
+	# XXX - This code probably belongs in login.php. Except, want
+	# to avoid infinite recursion of #includes.
+	if (!isset($login_cookie))
+	{
+		# XXX - Ought to allow redirect to https://...
+		redirect_to("login.php?from=" .
+			 urlencode($_SERVER['REQUEST_URI']));
+		exit(0);
+	}
+
+	/* Check whether the cookie has expired */
+	$now = time();
+	list($user, $expiration, $hmac_sum) =
+		explode("|", $_COOKIE['newsbite_user']);
+		// XXX - Ought to check all of these fields
+	if (!is_numeric($expiration) ||
+	    ($now > $expiration))
+	{
+		redirect_to("login.php?from=" . urlencode($_SERVER['REQUEST_URI']));
+		exit(0);
+	}
+
+	/* Cookie hasn't expired. Make sure the signature is good */
+	// XXX - Probably want a separate function for calculating the HMAC.
+	$good_hmac = md5(implode("|",
+			    array($user, $expiration, SERVER_SECRET)));
+	if ($hmac_sum != $good_hmac)
+	{
+		// This appears to be a breakin attempt. Do nothing.
+		exit(0);
+	}
+}
+
 /* redirect_to
  * Redirect the browser to $url.
  */
