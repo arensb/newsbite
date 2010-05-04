@@ -364,7 +364,6 @@ clrdebug();
 
 function parse_flush_response(req)
 {
-debug("inside parse_flush_response, caller " + arguments.callee.caller.caller.caller.toString());
 	var err = 0;
 	var errmsg = undefined;
 // XXX - If there's an error, take all the items in req and put them

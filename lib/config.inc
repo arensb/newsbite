@@ -39,4 +39,27 @@ define('SMARTY_PATH', "smarty/");	// Relative to htdocs/
 
 /* Default skin. This is the name of a directory in htdocs/skins */
 define('DEFAULT_SKIN', "default");
+
+/* Server secret password. This is only used to generate a checksum
+ * for the authentication cookie. It is never used by humans, and is
+ * never sent to the user. Use a long (>= 64-char?) random string.
+ */
+// XXX - Put this in the install instructions
+define('SERVER_SECRET', "very-secret-string");
+
+/* It is recommended that you let the web server authenticate you. If
+ * you're unwilling or unable to do this, however, you can set the
+ * username and password below.
+ */
+define('USERNAME', 'theuser');
+define('PASSWORD', 'thepass');
+
+/* Authorization cookie duration, in seconds: how long an
+ * authorization cookie lasts. The longer this value, the less often
+ * you have to re-log in, but the more vulnerable you are to replay
+ * attacks.
+ *
+ * Set to one week by default.
+ */
+define('AUTH_COOKIE_DURATION', 87600*7);
 ?>
