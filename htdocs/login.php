@@ -32,7 +32,17 @@ if (isset($_SERVER['REMOTE_USER']))
 	 * to go.
 	 */
 	set_auth_cookie($_SERVER['REMOTE_USER']);
-	redirect_to($from);
+#	redirect_to($from);
+?>
+<html>
+<head><title>Authenticated by Apache</title></head>
+<body>
+<h1>You've been authenticated through Apache</h1>
+<p><a href="<?=$from?>">Back to where you came from</a></p>
+<?phpinfo();?>
+</body>
+</html>
+<?
 	exit(0);
 }
 
@@ -46,8 +56,8 @@ if (isset($user) &&
 	if ($user == USERNAME &&
 	    $pass == PASSWORD) :
 		set_auth_cookie($user);
-		redirect_to($from);
-		exit(0);
+#		redirect_to($from);
+#		exit(0);
 ?>
 <html>
 <body>
