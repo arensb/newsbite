@@ -43,7 +43,10 @@ body {
 }
 
 .item .item-header {
-	/* XXX - Actually, this should in Safari as well */
+	/* XXX - Actually, this goes in Safari as well. Arguably all
+	 * webkit-based browsers. Would be nice to put it all in one
+	 * place.
+         */
 	background-image:
 		-webkit-gradient(linear, left top, left bottom,
 			from(blue),
