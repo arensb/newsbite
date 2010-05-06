@@ -247,6 +247,10 @@ $skin->assign('prev_link_text', $prev_link_text);
 $skin->assign('next_link', $next_link);
 $skin->assign('next_link_text', $next_link_text);
 $skin->assign('mobile', $mobile);
+# XXX - Debugging
+$skin->assign('auth_user', $auth_user);
+$skin->assign('auth_expiration', strftime("%c", $auth_expiration));
+# XXX - end debugging
 $skin->display("view.tpl");
 
 db_disconnect();
