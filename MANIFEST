@@ -15,6 +15,7 @@ htdocs/editfeed.php
 htdocs/feeds.php
 htdocs/index.php
 htdocs/loadopml.php
+htdocs/login.php
 htdocs/markitems.php
 htdocs/opml.php
 htdocs/setskin.php
