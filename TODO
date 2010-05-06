@@ -620,3 +620,6 @@
   themselves handheld devices. Go figure.
 - iPhone/iPad: might be fun to set a background gradient that changes
   over the course of a day.
+- Add a customized error page for when can't authenticate?
+	ErrorDocument /path/to/page.html
+  in .htaccess
