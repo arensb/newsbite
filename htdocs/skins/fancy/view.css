@@ -134,6 +134,16 @@ input[type="submit"] {
 	clear:			both;
 }
 
+.item .item-header {
+	/* This should only apply to Safari */
+	background-image:
+		-webkit-gradient(linear, left top, left bottom,
+			from(blue),
+			to(navy));
+	border-top-color:	blue;
+	border-bottom-color:	navy;
+}
+
 .item[state="read"] .item-header {
 	/* Mozilla: */
 	-moz-border-radius-bottomleft:	20px;
