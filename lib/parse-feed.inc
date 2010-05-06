@@ -2324,10 +2324,11 @@ function wapo_ad_hook($nodename, &$retval, &$context)
 	if (!isset($retval['#text']))
 		return;
 #echo "(wapo ads) before: <pre>["; print_r($retval); echo "]</pre>\n";
-	# Visible ad
-	$retval['#text'] = preg_replace('{<hr />\r?\n<div style="font-size:xx-small;color:gray;padding-bottom:.5em">Featured Advertiser</div>.*}s',
-					'',
-					$retval['#text']);
+# XXX - This ad appears to be gone
+#	# Visible ad
+#	$retval['#text'] = preg_replace('{<hr />\r?\n<div style="font-size:xx-small;color:gray;padding-bottom:.5em">Featured Advertiser</div>.*}s',
+#					'',
+#					$retval['#text']);
 	# Bug image
 	$retval['#text'] = preg_replace('{<a href="http://ads.pheedo.com/click.phdo[^\"]*"><img alt="" style="border: 0;" border="0" src="http://ads.pheedo.com/img.phdo[^\"]*"/></a>}s',
 					'',
