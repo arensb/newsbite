@@ -1,3 +1,12 @@
+- Add to INSTALL: set CRON=true environent variable, otherwise feeds
+  won't update because of authentication.
+	For that matter, is there a better way of checking whether a
+  script is running from cron or as a CGI script?
+- Bug?: There are some old articles in the database. Why aren't they
+  being cleaned out properly?
+	db_update_feed() only cleans out whichever feed it was called
+  with. There's nothing to clean out all feeds, including inactive
+  ones.
 - Bug: In Safari 4.0, collapsing articles doesn't work anymore.
   Try using separate classes for different appearances.
   An element can have multiple (space-separated?) classes. Write a JS
