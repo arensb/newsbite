@@ -155,6 +155,9 @@ if ($mobile &&
 		$i['url'] = preg_replace(',^http://www\.washingtonpost\.com/wp-dyn/content/article/(\d+)/(\d+)/(\d+)/(.*)\.html\??,',
 					 'http://mobile.washingtonpost.com/rss.jsp?rssid=578819&item=http%3a%2f%2fwww.washingtonpost.com%2fwp-syndication%2farticle%2f\1%2f\2%2f\3%2f\4_mobile.xml&cid=1&spf=1&',
 					 $i['url']);
+		$i['url'] = preg_replace(',^http://(www\.)?factcheck\.org/,',
+					 "http://m.factcheck.org/",
+					 $i['url']);
 		$i['url'] = preg_replace(',^http://www\.wunderground\.com/,',
 					 "http://$m_wund/",
 					 $i['url']);
