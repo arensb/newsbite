@@ -14,7 +14,8 @@ require_once("config.inc");
  * the login form shouldn't be blocked because the user hasn't
  * properly logged in.
  */
-if (!$NO_AUTH_CHECK)
+if (!$NO_AUTH_CHECK &&
+    !isset($ENV['CRON']))	# Allow me to run update.php from cron
 {
 	/* XXX - A lot of the identifiers in this section are
 	 * replicated in login.php, which can lead to subtle problems.
