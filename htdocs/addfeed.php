@@ -4,6 +4,19 @@
  */
 // XXX - Should accept OPML file.
 // XXX - There should be a bookmarklet for this
+// Basically, just go through <head> and look for
+// <link rel="alternate" type="application/rss+xml" title="DOGHOUSE Feed" href="http://www.thedoghousediaries.com/?feed=rss2" />
+// There may be several of them, either for different flavors of RSS
+// (RSS 0.92 vs. RSS 2.0 vs. Atom), given by "type="; or for different
+// feeds (articles vs. comments), indicated by "title=".
+// If there are multiple feeds, ought to present the user with a list
+// saying which one(s) to subscribe to.
+//
+// Might be simplest to decompose the page text with SimpleXML.
+//
+// The bookmarklet should probably look something like
+// javascript:void(location.href='http://www.ooblick.com/newsbite/addfeed.php?url='+escape(location.href))
+
 require_once("config.inc");
 require_once("common.inc");
 require_once("database.inc");
