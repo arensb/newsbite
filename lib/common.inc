@@ -15,7 +15,7 @@ require_once("config.inc");
  * properly logged in.
  */
 if (!$NO_AUTH_CHECK &&
-    !isset($ENV['CRON']))	# Allow me to run update.php from cron
+    !isset($_ENV['CRON']))	# Allow me to run update.php from cron
 {
 	/* XXX - A lot of the identifiers in this section are
 	 * replicated in login.php, which can lead to subtle problems.
