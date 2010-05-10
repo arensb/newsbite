@@ -5,7 +5,6 @@
 // XXX - Make sure the cookie is being set correctly. Perhaps set a
 // "cookie-test" cookie when the form is loaded, and make sure it's
 // there when the filled-in form has been submitted.
-require_once("config.inc");
 require_once("common.inc");
 require_once("skin.inc");
 

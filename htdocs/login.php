@@ -4,7 +4,6 @@
  */
 $NO_AUTH_CHECK = true;		// Don't authenticate the user. That's
 				// what the code below is for.
-require_once("config.inc");
 require_once("common.inc");
 
 $from = Urldecode($_REQUEST['from']);	// Where did user come from?

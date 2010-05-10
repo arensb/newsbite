@@ -2,7 +2,6 @@
 /* editfeed.php
  * Edit the user-settable parameters on a feed.
  */
-require_once("config.inc");
 require_once("common.inc");
 require_once("database.inc");
 require_once("skin.inc");

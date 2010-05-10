@@ -6,7 +6,6 @@
 // the database for later. This can be good for subscribing to
 // political feeds only during election season, or sports feeds only
 // during playoffs, that sort of thing.
-require_once("config.inc");
 require_once("common.inc");
 require_once("database.inc");
 require_once("skin.inc");
