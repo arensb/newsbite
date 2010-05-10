@@ -17,7 +17,6 @@
 // The bookmarklet should probably look something like
 // javascript:void(location.href='http://www.ooblick.com/newsbite/addfeed.php?url='+escape(location.href))
 
-require_once("config.inc");
 require_once("common.inc");
 require_once("database.inc");
 require_once("net.inc");

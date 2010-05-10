@@ -4,7 +4,6 @@
  */
 // XXX - Move the guts of this file to a separate .inc file, so that a
 // newly-added feed can be automatically updated.
-require_once("config.inc");
 require_once("common.inc");
 //require_once("database.inc");
 require_once("net.inc");

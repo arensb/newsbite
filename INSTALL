@@ -148,6 +148,10 @@ INSTALLATION:
 	options for Newsbite. Edit it (wherever you installed it).
 	Read the comments to see what each option does.
 
+	In particular, you'll need to set a server-side secret
+	password. This is never used by humans, so it's best to use a
+	randomly-generated string.
+
 - Make sure the PHP files can find the "lib" files.
 
 	The distribution contains a "htdocs/.htaccess" file that tells
@@ -188,7 +192,10 @@ INSTALLATION:
 
 	Or you can just do it manually.
 
-	0 7,9,11,14,17,20 * * * /usr/local/bin/php-cgi -d include_path=/path/to/lib /path/to/htdocs/update.php -- id=all >/dev/null
+	0 7,9,11,14,17,20 * * * CRON=true /usr/local/bin/php-cgi -d include_path=/path/to/lib /path/to/htdocs/update.php -- id=all >/dev/null
+
+The "CRON=true" environment variable allows the script to bypass
+authentication.
 
 - (Optional) Add a cron job to clean up old Smarty files
 

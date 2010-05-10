@@ -190,6 +190,20 @@ Profiler.prototype.register_class = function(theclass)
 }
 
 // ----- End Profiler class ----------------------------------------
+
+//// Function.defer
+//// From http://www.jslab.dk/library/Function.defer
+//Function.prototype.defer =
+//  function(n,o) {
+//    // Get arguments as array
+//    var a = [];
+//    for(var i=2; i<arguments.length; i++)
+//      a.push(arguments[i]);
+//    var that = this;
+//    window.setTimeout(function(){return that.apply(o,a);},n);
+//  };
+
+
 //var p = new Profiler();
 
 var debug_window = undefined;
@@ -335,6 +349,7 @@ clrdebug();
 		// XXX - Better error-reporting
 //		defaultStatus = "Error: can't create XMLHttpRequest";
 //debug("Error: can't create XMLHttpRequest");
+		return;
 	}
 
 	var err;
@@ -364,6 +379,7 @@ clrdebug();
 
 function parse_flush_response(req)
 {
+//p.record("readyState " + req.request.readyState);
 	var err = 0;
 	var errmsg = undefined;
 // XXX - If there's an error, take all the items in req and put them
@@ -760,7 +776,7 @@ function toggle_class(elem, classA, classB)
 }
 /* ---------------------------------------- */
 
-// Mark all global functions for profiling.
+//// Mark all global functions for profiling.
 //for (f in window)
 //{
 //	if (typeof(window[f]) == "function")

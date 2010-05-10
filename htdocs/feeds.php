@@ -2,7 +2,6 @@
 /* feeds.php
  * Send list of feeds.
  */
-require_once("config.inc");
 require_once("common.inc");
 require_once("database.inc");
 
