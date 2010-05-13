@@ -24,6 +24,8 @@ require_once("skin.inc");
 
 $feed_url = $_REQUEST['feed_url'];
 	// XXX - Probably needs to be escaped. Can there be quotes in URLs?
+$page_url = $_REQUEST['page_url'];
+	// URL of page whose feed to subscribe to.
 
 if (isset($feed_url))
 {
@@ -53,6 +55,39 @@ if (isset($feed_url))
 	/* Redirect to the feed's page */
 	redirect_to("view.php?id=$feed_id");
 	exit(0);
+}
+
+// We were given a page URL rather than a direct link to the RSS. Find
+// the RSS links.
+
+// XXX - Will need changes to the skin: pass a link of feed URLs and
+// allow the user to pick the one to subscribe to.
+
+if (isset($page_url))
+{
+	// Read the page
+	$page = file_get_contents($page_url);
+
+	// Parse as XML
+	$dom = new DOMDocument();
+	@$dom->loadHTML($page);
+		// Tends to return lots of warnings on bad HTML.
+		// Suppress this output.
+	$links = $dom->getElementsByTagName("link");
+		// XXX - This isn't limited to the head element. Do we
+		// care?
+echo $links->length, " links<br/>\n";
+foreach ($links as $link)
+{
+	$rel = $link->getAttribute("rel");
+	if ($rel != "alternate")
+		continue;
+	$type = $link->getAttribute("type");
+	$title = $link->getAttribute("title");
+	$href = $link->getAttribute("href");
+	echo "rel=[$rel] type=[$type] title=[$title] href=[$href]<br/>\n";
+}
+exit(0);
 }
 
 // If we get this far, $feed_url is not set.
