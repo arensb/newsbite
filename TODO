@@ -13,7 +13,6 @@
   Clicking on the bottom collapse bar works. Clicking on the upper one
   works once you scroll.
 	Might be sufficient to scroll by 0 pixels.
-- Bug: When updating feeds, sometimes spinner keeps going forever. Why?
 - Bug: When Ajax updates feeds, it doesn't notice updates to the list
   of feeds.
 	Perhaps when updating all, update.php should append a list of
@@ -29,26 +28,9 @@
 - Bug: when collapse from bottom collapse bar, window scrolls uglily.
   Ought to fix this: bottom edge should remain at the same place on
   screen, if possible.
-- All scripts that #include common.inc already #include config.inc.
-  Remove the redundant line.
-- Use cookies for authentication, to remain logged in when iPod
-  forgets password. See
-	http://www.lightbluetouchpaper.org/2008/04/25/wordpress-25-cookie-integrity-protection-vulnerability/
-	http://pdos.csail.mit.edu/papers/webauth:tr.pdf
-  and especially
-	http://www.cse.msu.edu/~alexliu/publications/Cookie/cookie.pdf
-
-	Probably best to use Fu's protocol rather than Chu's: Chu's
-  protocol requires there to be an SSL key, which isn't practical in
-  this case.
-	It's vulnerable to replay attacks, but seems good enough for
-  WordPress.
-	Is it possible to use PHP auth to get a persistent in lieu of
-  the session key?
-  http://php.net/manual/en/features.http-auth.php
-  Or will that expire as soon as the browser forgets the password?
 - Bug-ish: when marking a feed as inactive, get redirected back to it.
   This is bogus.
+	Redirect to feed index.
 - The various .js and .css files are getting large enough to be
   unmanageable. Break them up into chunks and build them with m4 or
   something.
