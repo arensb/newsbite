@@ -7,7 +7,7 @@
 
 // XXX - Perhaps add a OPML_MAX_SIZE option to config.inc?
 
-require_once("config.inc");
+require_once("common.inc");
 require_once("database.inc");
 require_once("skin.inc");
 
