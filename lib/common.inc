@@ -29,8 +29,8 @@ if (!$NO_AUTH_CHECK &&
 	if (!isset($login_cookie))
 	{
 		# XXX - Ought to allow redirect to https://...
-#		redirect_to("login.php?from=" .
-#			 urlencode($_SERVER['REQUEST_URI']));
+		redirect_to("login.php?from=" .
+			 urlencode($_SERVER['REQUEST_URI']));
 ?>
 <html>
 <head><title>You're not logged in</title></head>
@@ -46,20 +46,21 @@ if (!$NO_AUTH_CHECK &&
 
 	/* Check whether the cookie has expired */
 	$now = time();
-global $auth_user;
-global $auth_expiration;
+
+	global $auth_user;
+	global $auth_expiration;
 	list($auth_user, $auth_expiration, $hmac_sum) =
 		explode("|", $_COOKIE['newsbite_user']);
 		// XXX - Ought to check all of these fields
 	if (!is_numeric($auth_expiration) ||
 	    ($now > $auth_expiration))
 	{
-#		redirect_to("login.php?from=" . urlencode($_SERVER['REQUEST_URI']));
+		redirect_to("login.php?from=" . urlencode($_SERVER['REQUEST_URI']));
 ?>
 <html>
 <head><title>You're not logged in</title></head>
 <body>
-<h1>You're not logged in</h1>
+<h1>Your login is invalid</h1>
 <p>You came from [<?=urlencode($_SERVER['REQUEST_URI'])?>]</p>
 <p><a href="login.php?from=<?=urlencode($_SERVER['REQUEST_URI'])?>">Go log in</a></p>
 </body>
@@ -75,7 +76,7 @@ global $auth_expiration;
 	if ($hmac_sum != $good_hmac)
 	{
 		// This appears to be a breakin attempt. Do nothing.
-echo "<p>You seem to be trying to break in.</p>\n";
+#echo "<p>You seem to be trying to break in.</p>\n";
 		exit(0);
 	}
 }
