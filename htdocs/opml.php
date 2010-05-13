@@ -3,7 +3,7 @@
  * Dump subsriptions in OPML format.
  */
 // OPML validator: http://validator.opml.org/
-require_once("config.inc");
+require_once("common.inc");
 require_once("database.inc");
 
 /* Write the subscription list in OPML 2.0 format.
