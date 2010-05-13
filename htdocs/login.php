@@ -1,16 +1,63 @@
 <?
 /* login.php
  * Authenticate the user.
+ *
+ * Note that _checking_ whether the user is authenticated is done in
+ * "lib/common.inc" (since authentication has to be done for
+ * everything, and every page includes common.inc).
+ *
+ * The authentication method is Fu's, as described in
+ * http://www.cse.msu.edu/~alexliu/publications/Cookie/cookie.pdf
+ *
+ * The basic approach, though, is that once the user has authenticated,
+ * to set a "newsbite_user" cookie with the value
+ *	user "|" expiration "|" md5(user "|" expiration "|" secret)
+ * The pipes are literal pipe characters, and are used as
+ * concatenation operators, to ensure that we can tell the fields
+ * apart.
+ *
+ * "user" is the user name, either as given by Apache authentication,
+ * or as defined in "config.inc".
+ *
+ * "expiration" is the expiration time of the login session, as a
+ * time_t.
+ *
+ * The third field in the cookie is the md5 sum of everything before
+ * that, plus a secret value known only to the server (defined in
+ * "config.php"). This ensures that the other data in the cookie is
+ * good.
+ *
+ * Note that this system is vulnerable to a replay attack: if I can
+ * steal your cookie, I can authenticate as you. So cookies expire to
+ * reduce the window of vulnerability.
+ *
+ * To prevent the replay attacks, it would be best to add another
+ * piece of data to the HMAC that is unique to the session, such as
+ * the IP address (questionable) or the SSL session.
+ *
+ * Actually, the IP address isn't constant, since I want to move from
+ * one WiFi net to the next. SSL would suffer from the same problem,
+ * since every time I moved to another network, I'd get a new SSL
+ * session.
+ *
+ *
+ * The reason for using an authentication cookie (rather than, say,
+ * Apache digest authentication) is that the iPod Touch and iPad don't
+ * actually store passwords, even though they say they do. Or maybe
+ * I'm misunderstanding how this is supposed to work, but the upshot
+ * is that with just digest authentication, I have to type the
+ * password in a lot more often than I want to.
  */
-$NO_AUTH_CHECK = true;		// Don't authenticate the user. That's
-				// what the code below is for.
+$NO_AUTH_CHECK = true;		// Don't authenticate the user in
+				// common.inc. That's what the code
+				// below is for.
 require_once("common.inc");
 
-$from = Urldecode($_REQUEST['from']);	// Where did user come from?
+$from = urldecode($_REQUEST['from']);	// Where did user come from?
 
 function set_auth_cookie($user)
 {
-	// XXX - Set "user" cookie to
+	// Set "user" cookie to
 	// $user | $expiration | md5($user | $expiration | $secret);
 	$now = time();
 	$expiration = $now + AUTH_COOKIE_DURATION;
@@ -31,7 +78,7 @@ if (isset($_SERVER['REMOTE_USER']))
 	 * to go.
 	 */
 	set_auth_cookie($_SERVER['REMOTE_USER']);
-#	redirect_to($from);
+	redirect_to($from);
 ?>
 <html>
 <head><title>Authenticated by Apache</title></head>
@@ -55,7 +102,7 @@ if (isset($user) &&
 	if ($user == USERNAME &&
 	    $pass == PASSWORD) :
 		set_auth_cookie($user);
-#		redirect_to($from);
+		redirect_to($from);
 #		exit(0);
 ?>
 <html>
