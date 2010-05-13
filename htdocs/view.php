@@ -157,6 +157,9 @@ if ($mobile &&
 		$i['url'] = preg_replace(',^http://(www\.)?factcheck\.org/,',
 					 "http://m.factcheck.org/",
 					 $i['url']);
+		$i['url'] = preg_replace(',^http://(www\.)?thinkprogress\.org/,',
+					 "http://m.thinkprogress.org/",
+					 $i['url']);
 		$i['url'] = preg_replace(',^http://www\.wunderground\.com/,',
 					 "http://$m_wund/",
 					 $i['url']);
