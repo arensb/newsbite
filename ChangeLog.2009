@@ -1,0 +1,229 @@
+2009-11-02  Andrew Arensburger  <arensb@moist.ooblick.com>
+
+	* htdocs/skins/mobile/feeds.js: Templates for feed list, and feed
+	list item. Commented out some debugging stuff. find_page() to find
+	a named page. get_json_data(), get_json_data_callback(): utility
+	functions to fetch data from server. show_feed() now fetches data
+	from server, via show_feed_callback().
+
+	* htdocs/skins/mobile/feeds.tpl: Apple standalone web app headers.
+	Debug window now more cleanly marked.
+
+	* htdocs/view.php: Now supports both HTML and JSON output.
+
+2009-10-31  Andrew Arensburger  <arensb@moist.ooblick.com>
+
+	* lib/skin.inc: Changed order: skin requested in URL comes first,
+	then cookie, then default.
+
+	* lib/skin.inc: Allow user to set skin with an HTTP variable.
+
+	* htdocs/skins/mobile/feeds.js, htdocs/skins/mobile/index.css:
+	Removed bits and pieces of pretty animation. That'll wait until
+	later.
+
+	* htdocs/skins/mobile/setskin.tpl,
+	htdocs/skins/mobile/setskin.css: Copied from another skin.
+
+	* htdocs/skins/mobile/*: First iteration of skin for mobile
+	devices (iPhone).
+
+	* htdocs/skins/fancy2/view.tpl: Moved debug box to the top.
+
+	* htdocs/skins/fancy2/view.js: Log length since last event in
+	debug window.
+
+	* htdocs/skins/default/view.tpl: Fixed typos.
+
+	* htdocs/feeds.php: Close CDATA block on a separate line, so we
+	can just pull out the 3d line to get the data.
+
+2009-10-30  Andrew Arensburger  <arensb@moist.ooblick.com>
+
+	* htdocs/setskin.php: Redirect to main list index after setting
+	skin.
+
+	* htdocs/feeds.php: Took out some dev/debugging stuff.
+
+	* htdocs/feeds.php: Allow client to get list of feeds and their
+	stats.
+
+	* htdocs/addfeed.php, lib/net.inc: Can now add a feed with
+	username and password. When fetching URLs, allow using basic
+	authentication over https (but not http, as before).
+
+2009-10-12  Andrew Arensburger  <arensb@moist.ooblick.com>
+
+	* htdocs/skins/fancy2/iphone.css: Copied from fancy skin.
+
+	* htdocs/skins/fancy2/view.tpl: iPhone/iPod Touch-specific CSS
+	entry.
+
+	* htdocs/skins/default/view.tpl, htdocs/skins/fancy/view.tpl,
+	htdocs/skins/default/item.tpl, htdocs/skins/fancy2/item.tpl,
+	htdocs/skins/fancy/item.tpl: Go back to less butt-ugly Smarty
+	delimiters.
+
+	* htdocs/view.php: Normalize items to proper HTML. Less butt-ugly
+	Smarty delimiters.
+
+	* htdocs/skins/fancy2/view.css: Error console doesn't like
+	scrollbar-arrow-color.
+
+	* htdocs/skins/fancy2/view.js: JavaScript hackery to work around
+	items with embedded JS scripts.
+
+2009-10-11  Andrew Arensburger  <arensb@moist.ooblick.com>
+
+	* htdocs/skins/fancy2/view.tpl: Less-ugly solution to JavaScript
+	embedded in a Smarty template: use "literal" tags.
+
+	* lib/parse-feed.inc: Incorporated hacks from production version
+	to: strip ads, make APOD posts display properly.
+
+	* htdocs/skins/default/setskin.tpl,
+	htdocs/skins/fancy/setskin.tpl: Propagated changes from
+	htdocs/skins/fancy2
+
+	* htdocs/skins/fancy2/setskin.tpl: More correctly make the current
+	skin the default.
+
+	* htdocs/setskin.php: Get skin from cookie, so we can make it the
+	default.
+
+	* htdocs/skins/fancy2/setskin.tpl: In <select><option>, apparently
+	"selected" has to come before "value". Huh.
+
+2009-09-19  Andrew Arensburger  <arensb@moist.ooblick.com>
+
+	* htdocs/skins/fancy/view.tpl, htdocs/skins/fancy/iphone.css:
+	Added CSS file for iPhone/iPod Touch.
+
+	* htdocs/skins/fancy/purple-gradient.png,
+	htdocs/skins/fancy/blue-bg.jpg: Finally added skin's images.
+
+2009-06-21  Andrew Arensburger  <arensb@moist.ooblick.com>
+
+	* lib/parse-feed.inc: Added hook to filter out Washington Post
+	ads.
+
+2009-05-18  Andrew Arensburger  <arensb@moist.ooblick.com>
+
+	* htdocs/skins/fancy2/view.css: Better presentation: wrap text
+	around images in posts.
+
+	* htdocs/skins/fancy/view.css: Wrap text around images in posts.
+
+2009-05-17  Andrew Arensburger  <arensb@moist.ooblick.com>
+
+	* Makefile: Hack: manually chgrp 80 the Smarty compiled template
+	directory.
+
+	* htdocs/view.php, htdocs/skins/fancy/item.tpl,
+	htdocs/skins/fancy/view.tpl, htdocs/skins/default/item.tpl,
+	htdocs/skins/default/view.tpl: Use different delimiters for Smarty
+	templates, to make it easier to embed JavaScript.
+
+	* htdocs/skins/fancy2/view.tpl, htdocs/skins/fancy2/view.js,
+	htdocs/skins/fancy2/view.css, htdocs/skins/fancy2/item.tpl: First
+	draft of working view skin: load items as JavaScript objects, and
+	load them dynamically.
+
+	* MANIFEST: Added missing files.
+
+	* lib/skin.inc: Register smarty_function_jsonify, to give Smarty
+	access to jsonify().
+
+	* lib/common.inc: jsonify: numbers come out as numbers, not
+	strings. Added Smarty glue function for jsonify().
+
+2009-05-16  Andrew Arensburger  <arensb@moist.ooblick.com>
+
+	* lib/net.inc: More old code snipped.
+
+	* lib/net.inc, htdocs/update.php: update_all_feeds() now takes an
+	object containing handlers for the various conditions (start feed,
+	end feed, error). update.php instantiates different objects for
+	HTML and JSON output.
+
+	* lib/common.inc: jsonify(): handle NULL value.
+
+2009-05-07  Andrew Arensburger  <arensb@moist.ooblick.com>
+
+	* htdocs/update.php: Print JSON output correctly.
+
+	* lib/net.inc: Don't print anything: leave that to the caller.
+
+2009-05-05  Andrew Arensburger  <arensb@moist.ooblick.com>
+
+	* lib/parse-feed.inc: Tweaked Google ads hook: accept either
+	feedads.googleadservices.com or feedads.g.doubleclick.net.
+
+2009-05-03  Andrew Arensburger  <arensb@moist.ooblick.com>
+
+	* lib/parse-feed.inc: Fixed Slashdot noise remover: some URLs just
+	have http://slashdot.org, no hostname.
+
+	* htdocs/update.php, lib/net.inc: update_feed() includes updated
+	feed status and item counts. No need to get this in the caller.
+
+	* lib/net.inc: Removed a bunch of stuff that goes in the caller.
+	update_feed(): Return article counts in return value.
+
+2009-04-25  Andrew Arensburger  <arensb@moist.ooblick.com>
+
+	* lib/parse-feed.inc: Hack to parse White House blog Atom feed:
+	find non-standard links to posts.
+
+2009-04-19  Andrew Arensburger  <arensb@moist.ooblick.com>
+
+	* htdocs/update.php (bug fix): Update item count when updating a
+	feed with JSON.
+
+2009-04-15  Andrew Arensburger  <arensb@moist.ooblick.com>
+
+	* lib/net.inc (bug fix): some sites return LF in HTTP headers
+	instead of CR-LF.
+
+2009-04-13  Andrew Arensburger  <arensb@moist.ooblick.com>
+
+	* lib/parse-feed.inc: Added slashdot_noise_hook(). Use
+	googleads_hook() on more feed types.
+
+2009-04-02  Andrew Arensburger  <arensb@moist.ooblick.com>
+
+	* htdocs/skins/fancy/item.tpl: Reverted back to using <div>
+	instead of <object>, since that breaks embedded media.
+
+2009-03-28  Andrew Arensburger  <arensb@moist.ooblick.com>
+
+	* Makefile: Hack to make ${REV} work with both BSD and GNU make.
+
+2009-03-25  Andrew Arensburger  <arensb@moist.ooblick.com>
+
+	Added a bunch of changes from hacked-in-production box:
+
+	* htdocs/skins/fancy/view.js: Remove focus from "mark as read"
+	button when clicked, so that user can press <space> to scroll
+	down.
+
+	* htdocs/skins/fancy/style.css, htdocs/skins/fancy/view.css:
+	Explicitly specify serif font.
+
+	* htdocs/skins/fancy/item.tpl: use <object> instead of <div> for
+	article contents. This tends to protect neighbors against bad
+	markup (like missing close-element tags).
+
+	* php.ini: add hack path, for convenience.
+
+	* lib/parse-feed.inc: a bunch of hooks to remove ads, web bugs,
+	etc.
+
+2009-03-24  Andrew Arensburger  <arensb@moist.ooblick.com>
+
+	* lib/net.inc: Checking in old change. Moving output to a higher
+	function, I think.
+
+	* htdocs/update.php: Better, more thorough updating of feeds.
+
+	* htdocs/addfeed.php: Better error reporting.
