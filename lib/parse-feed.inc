@@ -121,8 +121,9 @@ $element_hooks = array();
 
 // XXX - This should go in a separate plugin file.
 // XXX - There should be pseudo-tags, to say "I want to apply this
-// hook to the body of the post", regardless of which specific tag is
-// used in any given XML variant.
+// hook to the body of the post" and "I want this to apply to the
+// summary", regardless of which specific tag is used in any given XML
+// variant.
 $element_hooks[""]["channel"][] = gocomics_hook;
 $element_hooks[""]["description"][] = googleads_hook;
 $element_hooks[""]["description"][] = feedburner_hook;
@@ -201,7 +202,7 @@ $url2handler = array(		// Handlers for specific URLs
 // lj		http://www.livejournal.org/rss/lj/1.0/
 	"http://www.livejournal.org/rss/lj/1.0/" => array(
 		"init"		=> lj_init,
-		"element"	=> lj_element_handler,
+		"element"	=> lj_element_handler,	// XXX - Write this
 		),
 // media	http://search.yahoo.com/mrss/
 // openSearch	http://a9.com/-/spec/opensearchrss/1.0/
@@ -337,9 +338,8 @@ function parse_feed($feed_text)
 		return FALSE;
 	} else	if ($feed_err)
 	{
-		// XXX - Should just set error message, and allow
-		// caller to do error-reporting.
-//		echo "<b>Handler found an error</b><br/>\n";
+		// Set the error message, and let the caller do any
+		// error-reporting.
 		$feed_errmsg = "Handler error: $feed_errmsg";
 
 		// The handlers have found an error.
@@ -556,7 +556,6 @@ function _element_end_handler($parser, $fullname)
 	 * chance to clean up the element before the hander determines
 	 * what its return value is.
 	 */
-	// XXX - Test this code
 	$hooks = $element_hooks[$ns_url][$name];
 	if (isset($hooks))
 	{
@@ -566,7 +565,6 @@ function _element_end_handler($parser, $fullname)
 			$h($node['name'],
 			   $node['retval'],
 			   $context);
-//echo "In _element_end_handler, now retval == [<pre>"; print_r($node['retval']); echo "</pre>]<br/>\n";
 		}
 	}
 
@@ -608,16 +606,6 @@ function _cdata_handler($parser, $data)
 {
 	global $_context;
 
-	// XXX - Hack for APOD feed: the text in the summary contains
-	// escaped HTML, but there's no <![CDATA[" tag. This kludge
-	// looks for items that begin with "&#60;" (escaped
-	// left-bracket), and manually unescapes the text.
-	if (strpos($data, "&#60;") === 0)
-		// Note that this uses ===, not ==, so as not to run
-		// on FALSE.
-	{
-		$data = html_entity_decode($data);
-	}
 	// XXX - Call text handler, if one is defined?
 	$parent = &$_context[count($_context)-1];
 	$parent['retval']['#text'] .= $data;
@@ -900,18 +888,6 @@ function rss_element_handler(
 		switch ($parent)
 		{
 		    case "channel":
-			$retval[$elt_name] = $children;
-			break;
-		    default:
-			// XXX - Better error-reporting
-//			echo "Warning: Unexpected [$elt_name] parent: [$parent]\n";
-			break;
-		}
-		break;
-
-	    case "generator":
-		switch ($parent)
-		{
 		    case "image":
 			$retval[$elt_name] = $children;
 			break;
