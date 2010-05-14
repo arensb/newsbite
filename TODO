@@ -81,6 +81,15 @@
 - WaPo duplicates: "Today's Highlights" can duplicate stories from
   other feeds. Would be nice to detect these and delete duplicates.
 	Ditto for Google news
+	it might be useful to define a cluster of feeds: "WaPo
+  Highlights", "WaPo International", and "WaPo Top Stories" could be
+  grouped together, and duplicate items removed.
+	Sometimes the URLs are different (e.g., WaPo or NYT use an
+  "&src=" or "#foo" parameter to say which feed the user came from).
+  Need a way to normalize URLs.
+	Perhaps the best way to do this is to just allow the user to
+  define arbitrary groups, then attach properties/plugins/hooks to
+  groups, as well as to individual feeds.
 - Sorting by many criteria
 	It'd be nice to sort all of the items by many criteria, e.g.,
   comics come before news; comics are shown oldest-first, while news
@@ -104,7 +113,7 @@
 	On the N810, one can scroll the display by drawing on it. So
   adding gesture recognition is likely to play havoc with that.
   Perhaps hard-code straight-line templates, and implement scrolling
-  manually.
+  manually. (Swipe, on iPhone/iPad.)
 	That implementation is rotation-independent: "v" can be
   drawn as ">" and still be recognized as "v". To fix this, can divide
   space into quadrants (or octants) centered on centroid, and classify
@@ -167,6 +176,10 @@
   gracefully? OTOH, is it a good idea to be too liberal in what we
   accept? Isn't that an invitation to XSS? XML is supposed to be
   really anal about syntax.
+- Should there be an external log file, for debugging and whatnot?
+	It'd also be nice to add a pile of monitoring, to be able to
+  see what happens when, to optimize properly.
+	Perhaps use syslog? I think it's a core function in PHP.
 - Make a list of conditions for calling it version 2.0
 	- Fully-functional Ajax skin
 		- XXX - Meaning what, exactly?
@@ -190,6 +203,8 @@
   necessary/desirable to use authentication methods other than
   username/password, possibly involving certificate exchange or
   something.
+	We already have a server-side secret string. Could encrypt
+  feed passwords with that string.
 - Should be able to specify password for all of livejournal.com, not
   have to specify it separately for every LJ feed.
 	Use parse_url() to get hostname.
@@ -202,7 +217,13 @@
   leading space marks this as special; strip space from user-defined
   folders).
 	Folders can contain subfolders, and so on. So each folder
-  needs a pointer to its parent folder.
+  needs a pointer to its parent folder. Better yet: for each group,
+  list the group's contents. That way, a feed can be in multiple
+  groups. (Though will need to make sure to avoid loops, e.g., groups
+  containing themselves (perhaps indirectly), or at least avoiding
+  infinite loops/recursion.)
+	AFS's pts uses negative UIDs to represent groups. Perhaps the
+  same can be done here.
 - Ajax: user should also be able to drag feeds around, so they're
   listed in arbitrary order. Need an "nth" field somewhere, giving the
   numeric order in which the feed is listed.
@@ -226,8 +247,6 @@
   the schema for both feeds and items that this isn't practical. Start
   out with naive implementation, and see if anyone starts using it on
   a multi-user system.
-- Deal with malformed text in the RSS feed, e.g., unescaped or
-  poorly-escaped entities, and the like.
 - Killfile: automatically mark as read messages that match certain
   criteria.
 	Perhaps this should have a scoring system or something: I'd
@@ -245,11 +264,7 @@
 - Don't want to automatically display a feed's image: some are good
   (like LJ icons), others are annoying, like FeedBurner feeds that
   just have a "Feed powered by FeedBurner" image.
-- Make curl (and other modules) optional: use references-to-functions
-  to pick the appropriate function to call:
-	function fetch_rss_curl(...) { ... }
-	$fetch_rss = fetch_rss_curl;
-	$fetch_rss($url);
+	Make this a per-feed customizable option.
 - Provide hooks for various plugins to do their thing.
 	- After adding or updating a feed in the database. Perhaps to
 	  add fields to a custom table.
@@ -279,22 +294,26 @@
   language to translate to. Probably ought to try to guess from
   browser settings. Failing that, use a cookie or an option in the
   database.
-- Nokia N810 browser identifies itself as:
+- Browser IDs:
+  Nokia N810 browser:
   "Mozilla/5.0 (X11; U; Linux armv6l; en-US; rv:1.9a6pre) Gecko/20071128 Firefox/3.0a1 Tablet browser 0.2.2 RX-34+RX-44_2008SE_2.2007.51-3"
 
-  Nokia N810 RSS reader identifies itself as:
+  Nokia N810 RSS reader:
   "gnome-vfs/2.16.3 neon/0.25.4"
 
-  Palm T|X browser identifies itself as:
+  Palm T|X browser:
   "Mozilla/4.0 (compatible; MSIE 6.0; Windows 98; PalmSource/Palm-D050; Blazer/4.3) 16;320x320"
 	This can be used to pick a default skin.
+
+  Wii browser:
+  Opera/9.30 (Nintendo Wii; U; ; 3642; en)
+
+  iPad browser:
+  Mozilla/5.0 (iPad; U; CPU OS 3_2 like Mac OS X; en-us) AppleWebKit/531.21.10 (KHTML, like Gecko) Version/4.0.4 Mobile/7B367 Safari/531.21.10
 - One possible way of displaying a feed might be to have a small frame
   at the top, like Google Image results, with a brief identification
   of the item, and navigation arrows to go to the {previous,next}
   {item,feed}. The bottom frame shows the original article.
-- FeedBurner plugin: remove the stuff (esp. bugs) that FeedBurner adds
-  to bottom of articles.
-	Perhaps more generally look for any 1x1 pixel image.
 - MediaWiki plugin: if you subscribe to the "recent changes" page on a
   MediaWiki wiki, there should be buttons at the bottom that allow you
   to either mark the change as patrolled, or revert it.
@@ -353,10 +372,9 @@
   E.g., for the Onion, just seeing the headlines (sometimes summaries)
   is sufficient. For This Modern World, might want a strip-frame at
   the top, and the original site underneath.
-- Might be nice to have "lightweight skins": the default skin
-  (currently the only skin) is reasonably modular: there's a template
-  for viewing a list of items, which in turn uses a template to
-  display a single item.
+- Might be nice to have "lightweight skins": the default skin is
+  reasonably modular: there's a template for viewing a list of items,
+  which in turn uses a template to display a single item.
 	A lightweight skin could default to view.tpl for displaying a
   list of items, and only provide a custom item.tpl for displaying the
   item itself.
@@ -588,10 +606,6 @@
   http://developer.apple.com/safari/library/documentation/AppleApplications/Reference/SafariWebContent/Client-SideStorage/Client-SideStorage.html
   Can also set up a manifest file, so that the app will download
   images and whatnot to be used when the device is offline.
-- Wii browser ID:
-  Opera/9.30 (Nintendo Wii; U; ; 3642; en)
-- iPad browser ID:
-  Mozilla/5.0 (iPad; U; CPU OS 3_2 like Mac OS X; en-us) AppleWebKit/531.21.10 (KHTML, like Gecko) Version/4.0.4 Mobile/7B367 Safari/531.21.10
 - CSS allows the device to decide whether it considers itself a
   handheld device:
   http://www.boutell.com/newfaq/creating/iphone.html
