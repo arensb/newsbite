@@ -44,7 +44,6 @@ define('DEFAULT_SKIN', "default");
  * for the authentication cookie. It is never used by humans, and is
  * never sent to the user. Use a long (>= 64-char?) random string.
  */
-// XXX - Put this in the install instructions
 define('SERVER_SECRET', "very-secret-string");
 
 /* It is recommended that you let the web server authenticate you. If
