@@ -75,10 +75,14 @@
       {assign var="collapsible" value="no"}
       {assign var="which" value="content"}
       {assign var="content" value="This space intentionally left blank"}
+      {assign var="display_summary" value="none"}
+      {assign var="display_content" value="block"}
     {else}
       {* No summary,    content *}
       {assign var="collapsible" value="no"}
       {assign var="which" value="content"}
+      {assign var="display_summary" value="none"}
+      {assign var="display_content" value="block"}
     {/if}
   {else}
     {* Summary *}
@@ -86,19 +90,24 @@
       {*    summary, no content *}
       {assign var="collapsible" value="no"}
       {assign var="which" value="summary"}
+      {assign var="display_summary" value="block"}
+      {assign var="display_content" value="none"}
     {else}
       {*    summary,    content *}
       {assign var="collapsible" value="yes"}
       {assign var="which" value="content"}
+      {assign var="display_summary" value="none"}
+      {assign var="display_content" value="block"}
     {/if}
   {/if}
   <div class="content-panes" collapsible="{$collapsible}" which="{$which}">
-    <div class="collapse-bar"
+    <div class="collapse-bar" 
+         style="display: {$display_content}" 
          onclick="javascript:toggle_pane(this)">
       &#x25b2;{* Upward-pointing triangle *}
     </div>
 
-    <div class="item-summary">
+    <div class="item-summary" style="display: {$display_summary}">
       {$item.summary}
       {* This is for items with floating elements in them (such as
        * tall images): make sure the image is contained within the
@@ -107,15 +116,17 @@
       <br style="clear: both"/>
     </div>
 
-    <div class="item-content">
+    <div class="item-content" style="display: {$display_content}">
       {$item.content}
       <br style="clear: both"/>
     </div>
-    <div class="collapse-bar"
+    <div class="collapse-bar" 
+         style="display: {$display_content}" 
          onclick="javascript:toggle_pane(this)">
       &#x25b2;{* Upward-pointing triangle *}
     </div>
     <div class="expand-bar"
+         style="display: {$display_summary}"
          onclick="javascript:toggle_pane(this)">
       &#x25bc;{* Downward-pointing triangle *}
     </div>

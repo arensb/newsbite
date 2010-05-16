@@ -296,17 +296,74 @@ function toggle_pane(node)
 		/* Something's wrong. Abort */
 		return;
 
-	/* Set the "which" attribute on the pane container. CSS does
-	 * the rest: there are different rules for displaying expanded
-	 * and collapsed articles.
+	/* Get the "which" attribute to see which pane is currently
+	 * displayed, and toggle it.
+	 * Ideally, CSS should take care of the rest, and in Firefox it
+	 * does, but Safari is stupid and doesn't update its display.
+	 * So we need to do this stuff manually.
 	 */
-
-	cont_state = container.getAttribute("which");
-	container.removeAttribute("which");
+	var cont_state = container.getAttribute("which");
 	if (cont_state == "summary")
-		container.setAttribute("which", "content");
+		cont_state = "content";
 	else
-		container.setAttribute("which", "summary");
+		cont_state = "summary";
+	container.setAttribute("which", cont_state);
+	/* Go through the children, and make each one display=block or
+	 * display=none, as appropriate, per the following table:
+	 * content-panes child:	display-summary:	display-content:
+	 *	collapse-bar	none			block
+	 *	item-summary	block			none
+	 *	item-content	none			block
+	 *	collapse-bar	none			block
+	 *	expand-bar	block			none
+	 */
+	// XXX - Perhaps check browser and see whether we need to do this.
+	for (var c = container.firstChild; c != undefined; c = c.nextSibling)
+	{
+		switch (cont_state)
+		{
+		    case "summary":
+			switch (c.className)
+			{
+			    case "collapse-bar":
+				c.style.display = "none";
+				break;
+			    case "item-summary":
+				c.style.display = "block";
+				break;
+			    case "item-content":
+				c.style.display = "none";
+				break;
+			    case "expand-bar":
+				c.style.display = "block";
+				break;
+			    default:
+				    break;
+			}
+			break;
+		    case "content":
+			switch (c.className)
+			{
+			    case "collapse-bar":
+				c.style.display = "block";
+				break;
+			    case "item-summary":
+				c.style.display = "none";
+				break;
+			    case "item-content":
+				c.style.display = "block";
+				break;
+			    case "expand-bar":
+				c.style.display = "none";
+				break;
+			    default:
+				    break;
+			}
+			break;
+		    default:
+			    break;
+		}
+	}
 }
 
 /* flush_queues
