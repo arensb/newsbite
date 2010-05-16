@@ -298,6 +298,10 @@ input[type="checkbox"].mark-check {
 	display:		none ! important;
 }
 
+/* This stuff (with the which= selector) should be considered to
+ * work only for the initial view.
+ */
+/*
 .content-panes[which="summary"] .item-summary,
 .content-panes[which="summary"] .expand-bar {
 	display:		block;
@@ -317,6 +321,7 @@ input[type="checkbox"].mark-check {
 .content-panes[which="content"] .collapse-bar {
 	display:		block;
 }
+*/
 
 /* Summary of item */
 .item-summary,
