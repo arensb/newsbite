@@ -31,6 +31,29 @@
 - Bug-ish: when marking a feed as inactive, get redirected back to it.
   This is bogus.
 	Redirect to feed index.
+- It might be interesting to move the "mark as read" buttons to the
+  left when reading left-handed. That is, if you turn the iPad
+  upside-down, the "mark as read" button flips to the left side.
+	window.onorientationchange = orientation_change;
+
+	function orientation_change()
+	{
+		box.innerHTML = "Orientation: " + window.orientation;
+	}
+
+  Position of the hardware button at various values of window.orientation:
+  0:	bottom
+  90:	right
+  180:	top
+  -90:	left
+	It might be useful to have the buttons on the left at one of
+  90 or -90 as well. Play around with this and see how it works.
+	While we're at it, in landscape mode it would be good to have
+  a list of other items in the feed in a box on the left.
+- Why are the checkboxes marked cbb-12345 and cbt-12345? It might be
+  possible to getElementById("input") and find the checkboxes with
+  class "mark-check". See
+	http://snipplr.com/view/1696/get-elements-by-class-name/
 - The various .js and .css files are getting large enough to be
   unmanageable. Break them up into chunks and build them with m4 or
   something.
@@ -247,6 +270,8 @@
   the schema for both feeds and items that this isn't practical. Start
   out with naive implementation, and see if anyone starts using it on
   a multi-user system.
+- Deal with malformed text in the RSS feed, e.g., unescaped or
+  poorly-escaped entities, and the like.
 - Killfile: automatically mark as read messages that match certain
   criteria.
 	Perhaps this should have a scoring system or something: I'd
@@ -618,6 +643,8 @@
 
   Apparently currently (May 2010) neither iPod Touch nor iPad consider
   themselves handheld devices. Go figure.
+- CSS media queries described at
+  http://www.w3.org/TR/2002/CR-css3-mediaqueries-20020708/
 - iPhone/iPad: might be fun to set a background gradient that changes
   over the course of a day.
 - Add a customized error page for when can't authenticate?
