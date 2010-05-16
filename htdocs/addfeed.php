@@ -27,6 +27,9 @@ $feed_url = $_REQUEST['feed_url'];
 $page_url = $_REQUEST['page_url'];
 	// URL of page whose feed to subscribe to.
 
+/* If we were given a single feed_url, subscribe to it, and refresh it
+ * immediately.
+ */
 if (isset($feed_url))
 {
 	$params = Array();
@@ -57,43 +60,67 @@ if (isset($feed_url))
 	exit(0);
 }
 
-// We were given a page URL rather than a direct link to the RSS. Find
-// the RSS links.
-
-// XXX - Will need changes to the skin: pass a link of feed URLs and
-// allow the user to pick the one to subscribe to.
-
+/* If we were given the URL to a content page, rather than directly to
+ * the feed, download the page and look for links to RSS feeds.
+ */
 if (isset($page_url))
 {
+	global $feeds;		// Array of feeds found in this page
+	$feeds = Array();
+
 	// Read the page
-	$page = file_get_contents($page_url);
+	@$page = file_get_contents($page_url);
+	if ($page === false)
+	{
+		// XXX - Better error-reporting
+		// error_get_last()['message'] arguably gives too much
+		// information, so it'd be nice to pare it down to
+		// just what the user needs to know.
+		// ['type'] is a numeric error message, but for both
+		// "no such file" and "authorization required", it has
+		// value 2. So not very useful.
+		$errors = error_get_last();
+		$errmsg = $errors['message'];
+		echo "Error: ", $errmsg, "<br/>\n";
+		exit(0);
+	}
 
 	// Parse as XML
 	$dom = new DOMDocument();
 	@$dom->loadHTML($page);
 		// Tends to return lots of warnings on bad HTML.
 		// Suppress this output.
-	$links = $dom->getElementsByTagName("link");
-		// XXX - This isn't limited to the head element. Do we
-		// care?
-echo $links->length, " links<br/>\n";
-foreach ($links as $link)
-{
-	$rel = $link->getAttribute("rel");
-	if ($rel != "alternate")
-		continue;
-	$type = $link->getAttribute("type");
-	$title = $link->getAttribute("title");
-	$href = $link->getAttribute("href");
-	echo "rel=[$rel] type=[$type] title=[$title] href=[$href]<br/>\n";
-}
-exit(0);
+	$head = $dom->getElementsByTagName("head");
+	if ($head)
+		$head = $head->item(0);
+	$links = $head->getElementsByTagName("link");
+
+	foreach ($links as $link)
+	{
+		$rel = $link->getAttribute("rel");
+		if ($rel != "alternate")
+			continue;
+		$type = $link->getAttribute("type");
+		$title = $link->getAttribute("title");
+		$href = $link->getAttribute("href");
+
+		// Append this feed to the list
+		$feeds[] = Array("type" => $type,
+				 "title" => $title,
+				 "url" => $href);
+
+	}
+
+	// XXX - If there's exactly one feed link, should probably
+	// subscribe immediately, rather than present a form to the
+	// user.
+
+	// XXX - If there aren't any feed links, should put up an
+	// error message or something.
 }
 
-// If we get this far, $feed_url is not set.
-
-/* Construct the URL for subscribing to a feed, so we can pass it to
- * JavaScript magic.
+/* Construct the URL for subscribing to a feed (i.e., the URL of this
+ * script), so we can pass it to JavaScript magic.
  */
 $subscribe_url = "http://";
 if ($_SERVER['SERVER_NAME'] != "")
@@ -102,10 +129,11 @@ else
 	$subscribe_url .= $_SERVER['SERVER_ADDR'];
 if ($_SERVER['SERVER_PORT'] != "" && $_SERVER['SERVER_PORT'] != 80)
 	$subscribe_url .= ":$_SERVER[SERVER_PORT]";
-$subscribe_url .= $_SERVER['REQUEST_URI'] . '?feed_url=%s';
+$subscribe_url .= $_SERVER['SCRIPT_NAME'];
 
 /* Display a form for adding a URL */
 $skin = new Skin();
 $skin->assign("subscribe_url", $subscribe_url);
+$skin->assign("feed_list", $feeds);
 $skin->display("addfeed.tpl");
 ?>
