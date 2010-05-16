@@ -2,8 +2,6 @@
 /* common.inc
  * Widely-useful functions that don't fit anywhere else.
  */
-// XXX - abort()
-// It'd be nice if abort() could work even if the installation is broken.
 
 require_once("config.inc");
 

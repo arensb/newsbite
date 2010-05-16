@@ -18,6 +18,11 @@
 - Bug-ish: when marking a feed as inactive, get redirected back to it.
   This is bogus.
 	Redirect to feed index.
+- iPod/iPad is slow
+	Takes a long time to redraw the window when the CSS changes.
+  Why?
+- Add a status box that pops down from the top to give important
+  information, like when you've lost network connectivity and whatnot.
 - Use addEventListener() instead of on*=script
 - Use addEventListener("DOMContentLoaded"...) instead of "onload".
 - It might be interesting to move the "mark as read" buttons to the
@@ -46,11 +51,6 @@
 - The various .js and .css files are getting large enough to be
   unmanageable. Break them up into chunks and build them with m4 or
   something.
-- Do some profiling: find out why under Safari it takes so long for an
-  article to collapse when it's marked read.
-	Bleah. Problem only seems to show up on iPod/iPad. Can the
-  simulator do profiling?
-	If not, may need to log some stuff.
 - Bookmarklet to mark an article as read.
 	If I stumble across, say, a Bad Astronomy article in Twitter,
   I don't want to read it again in the normal feed. It'd be nice to

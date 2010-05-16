@@ -3,19 +3,6 @@
  * Add a feed.
  */
 // XXX - Should accept OPML file.
-// XXX - There should be a bookmarklet for this
-// Basically, just go through <head> and look for
-// <link rel="alternate" type="application/rss+xml" title="DOGHOUSE Feed" href="http://www.thedoghousediaries.com/?feed=rss2" />
-// There may be several of them, either for different flavors of RSS
-// (RSS 0.92 vs. RSS 2.0 vs. Atom), given by "type="; or for different
-// feeds (articles vs. comments), indicated by "title=".
-// If there are multiple feeds, ought to present the user with a list
-// saying which one(s) to subscribe to.
-//
-// Might be simplest to decompose the page text with SimpleXML.
-//
-// The bookmarklet should probably look something like
-// javascript:void(location.href='http://www.ooblick.com/newsbite/addfeed.php?url='+escape(location.href))
 
 require_once("common.inc");
 require_once("database.inc");
@@ -26,39 +13,6 @@ $feed_url = $_REQUEST['feed_url'];
 	// XXX - Probably needs to be escaped. Can there be quotes in URLs?
 $page_url = $_REQUEST['page_url'];
 	// URL of page whose feed to subscribe to.
-
-/* If we were given a single feed_url, subscribe to it, and refresh it
- * immediately.
- */
-if (isset($feed_url))
-{
-	$params = Array();
-
-	$params['feed_url'] = $feed_url;
-	if (isset($_REQUEST['username']))
-		$params['username'] = $_REQUEST['username'];
-	if (isset($_REQUEST['password']) &&
-	    $_REQUEST['password'] != "")
-		$params['passwd'] = $_REQUEST['password'];
-
-	// XXX - Check whether we're already subscribed to that URL
-
-	$feed_id = db_add_feed($params);
-	if ($feed_id === false)
-		abort("Error adding feed.");
-
-	/* Refresh the new feed, to get info and new articles */
-	$err = update_feed($feed_id);
-	if (!$err)
-		// XXX - Better error reporting: include error message
-		abort("Error updating new feed.");
-	if (isset($err['status']) && $err['status'] != 0)
-		abort($err['errmsg']);
-
-	/* Redirect to the feed's page */
-	redirect_to("view.php?id=$feed_id");
-	exit(0);
-}
 
 /* If we were given the URL to a content page, rather than directly to
  * the feed, download the page and look for links to RSS feeds.
@@ -111,12 +65,52 @@ if (isset($page_url))
 
 	}
 
-	// XXX - If there's exactly one feed link, should probably
-	// subscribe immediately, rather than present a form to the
-	// user.
+	if (count($feeds) == 0)
+	{
+		/* If there aren't any feed links, put up an error
+		 * message to that effect.
+		 */
+		abort("Couldn't find any RSS links in that page.");
+	} elseif (count($feeds) == 1)
+	{
+		/* Exactly one RSS feed link. Assume that that's what
+		 * the user wants to subscribe to.
+		 */
+		$feed_url = $feeds[0]['url'];
+	}
+}
 
-	// XXX - If there aren't any feed links, should put up an
-	// error message or something.
+/* If we were given a single feed_url, subscribe to it, and refresh it
+ * immediately.
+ */
+if (isset($feed_url))
+{
+	$params = Array();
+
+	$params['feed_url'] = $feed_url;
+	if (isset($_REQUEST['username']))
+		$params['username'] = $_REQUEST['username'];
+	if (isset($_REQUEST['password']) &&
+	    $_REQUEST['password'] != "")
+		$params['passwd'] = $_REQUEST['password'];
+
+	// XXX - Check whether we're already subscribed to that URL
+
+	$feed_id = db_add_feed($params);
+	if ($feed_id === false)
+		abort("Error adding feed.");
+
+	/* Refresh the new feed, to get info and new articles */
+	$err = update_feed($feed_id);
+	if (!$err)
+		// XXX - Better error reporting: include error message
+		abort("Error updating new feed.");
+	if (isset($err['status']) && $err['status'] != 0)
+		abort($err['errmsg']);
+
+	/* Redirect to the feed's page */
+	redirect_to("view.php?id=$feed_id");
+	exit(0);
 }
 
 /* Construct the URL for subscribing to a feed (i.e., the URL of this
