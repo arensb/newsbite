@@ -2,12 +2,8 @@
 /* update.php
  * Update one feed, or all feeds.
  */
-// XXX - Move the guts of this file to a separate .inc file, so that a
-// newly-added feed can be automatically updated.
 require_once("common.inc");
-//require_once("database.inc");
 require_once("net.inc");
-//require_once("parse-feed.inc");
 require_once("skin.inc");
 
 // XXX - Perhaps could use the {html,json}_output_handler classes
