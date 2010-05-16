@@ -26,7 +26,7 @@ class Skin extends Smarty
 			$this->setskin($this->skin);
 
 		$this->compile_dir	= SMARTY_PATH . "templates_c";
-		$this->config_dir	= SMARTY_PATH . "configs";
+#		$this->config_dir	= SMARTY_PATH . "configs";
 		$this->register_function('jsonify', 'smarty_function_jsonify');
 	}
 
