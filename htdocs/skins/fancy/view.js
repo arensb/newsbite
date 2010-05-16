@@ -190,6 +190,39 @@ Profiler.prototype.register_class = function(theclass)
 }
 
 // ----- End Profiler class ----------------------------------------
+document.addEventListener("DOMContentLoaded", init, false);
+
+function init()
+{
+//	if (document.getElementsByClassName)
+//;//		alert("have getElementsByClassName")
+//	else
+//;//		alert("don't have getElementsByClassName")
+//		// XXX - Ought to implement one. But it exists in all
+//		// the browsers I care about.
+
+	addListenerByClass("collapse-bar", "click", toggle_pane, false);
+	addListenerByClass("expand-bar", "click", toggle_pane, false);
+}
+
+/* addListenerByClass
+ * Adds an event listener to all elements with class 'className'.
+ * The arguments 'event', 'handler', and 'capture' are passed on
+ * to addEventListener().
+ */
+function addListenerByClass(className, event, handler, capture)
+{
+	var elements = document.getElementsByClassName(className);
+
+	for (var i = 0; i < elements.length; i++)
+	{
+		try {
+			elements[i].addEventListener(event, handler, capture);
+		} catch (err) {
+			// XXX - Is there anything to do?
+		}
+	}
+}
 
 //// Function.defer
 //// From http://www.jslab.dk/library/Function.defer
@@ -280,8 +313,11 @@ function createXMLHttpRequest()
  * used to display the summary, it should now display the content, and
  * vice-versa.
  */
-function toggle_pane(node)
+function toggle_pane(ev)
 {
+	var node = ev.currentTarget;
+			// Not the element that was clicked on, but
+			// the one that captured the event.
 	var my_pane;		// Pane containing the calling element
 	var sib_class;	 	// Class of sibling we're looking for
 
@@ -290,7 +326,7 @@ function toggle_pane(node)
 	/* Go up until we find the <div content-panes> that contains
 	 * both the <div item-summary> and the <div item-content>.
 	 */
-	while (container && (container.className != "content-panes"))
+	while (container && (!is_in_class(container, "content-panes")))
 		container = container.parentNode;
 	if (container == null)
 		/* Something's wrong. Abort */
@@ -302,68 +338,21 @@ function toggle_pane(node)
 	 * does, but Safari is stupid and doesn't update its display.
 	 * So we need to do this stuff manually.
 	 */
-	var cont_state = container.getAttribute("which");
+	var cont_state = container.which_pane;
+	if (cont_state == undefined)
+		cont_state = container.getAttribute("which");
 	if (cont_state == "summary")
-		cont_state = "content";
-	else
-		cont_state = "summary";
-	container.setAttribute("which", cont_state);
-	/* Go through the children, and make each one display=block or
-	 * display=none, as appropriate, per the following table:
-	 * content-panes child:	display-summary:	display-content:
-	 *	collapse-bar	none			block
-	 *	item-summary	block			none
-	 *	item-content	none			block
-	 *	collapse-bar	none			block
-	 *	expand-bar	block			none
-	 */
-	// XXX - Perhaps check browser and see whether we need to do this.
-	for (var c = container.firstChild; c != undefined; c = c.nextSibling)
 	{
-		switch (cont_state)
-		{
-		    case "summary":
-			switch (c.className)
-			{
-			    case "collapse-bar":
-				c.style.display = "none";
-				break;
-			    case "item-summary":
-				c.style.display = "block";
-				break;
-			    case "item-content":
-				c.style.display = "none";
-				break;
-			    case "expand-bar":
-				c.style.display = "block";
-				break;
-			    default:
-				    break;
-			}
-			break;
-		    case "content":
-			switch (c.className)
-			{
-			    case "collapse-bar":
-				c.style.display = "block";
-				break;
-			    case "item-summary":
-				c.style.display = "none";
-				break;
-			    case "item-content":
-				c.style.display = "block";
-				break;
-			    case "expand-bar":
-				c.style.display = "none";
-				break;
-			    default:
-				    break;
-			}
-			break;
-		    default:
-			    break;
-		}
+		cont_state = "content";
+		container.which_pane = "content";
+		replace_class(container, "show-summary", "show-content");
+	} else {
+		cont_state = "summary";
+		container.which_pane = "summary";
+		replace_class(container, "show-content", "show-summary");
 	}
+
+	ev.preventDefault();	// Stop processing the event
 }
 
 /* flush_queues
@@ -662,7 +651,7 @@ function mark_item(elt)
  */
 function is_in_class(elem, cls)
 {
-	var class_str = elem.getAttribute("class");
+	var class_str = elem.className;
 
 	if (class_str == undefined)
 		// No class set
@@ -686,7 +675,7 @@ function is_in_class(elem, cls)
  */
 function add_class(elem, cls)
 {
-	var class_str = elem.getAttribute("class");
+	var class_str = elem.className;
 
 	if (class_str == undefined)
 		// No class set
@@ -703,8 +692,7 @@ function add_class(elem, cls)
 	}
 
 	// Need to add the class
-	elem.setAttribute("class",
-			  classes.concat([cls]).join(" "));
+	elem.className = classes.concat([cls]).join(" ");
 }
 
 /* remove_class
@@ -712,7 +700,7 @@ function add_class(elem, cls)
  */
 function remove_class(elem, cls)
 {
-	var class_str = elem.getAttribute("class");
+	var class_str = elem.className;
 
 	if (class_str == undefined)
 		// No class set
@@ -733,7 +721,7 @@ function remove_class(elem, cls)
 	}
 
 	// The new class list is whatever we're left with.
-	elem.setAttribute("class", new_classes.join(" "));
+	elem.className = new_classes.join(" ");
 }
 
 /* replace_class
@@ -745,7 +733,7 @@ function remove_class(elem, cls)
  */
 function replace_class(elem, old_class, new_class)
 {
-	var class_str = elem.getAttribute("class");
+	var class_str = elem.className;
 
 	if (class_str == undefined)
 		// No class set
@@ -753,6 +741,7 @@ function replace_class(elem, old_class, new_class)
 
 	var classes = class_str.split(" ");
 			// Split class string into a list
+	var new_classes = new Array();
 	var seen_new_class = false;
 			// Have we seen the new class already?
 
@@ -764,15 +753,16 @@ function replace_class(elem, old_class, new_class)
 		if (classes[i] == new_class)
 			// Note that we've seen new_class on the way
 			seen_new_class = true;
+		new_classes.push(classes[i]);
 	}
 
 	// If new_class is already on the class list, don't add it a
 	// second time.
 	if (!seen_new_class)
-		classes.push(new_class);
+		new_classes.push(new_class);
 
 	// The new class list is whatever we're left with.
-	elem.setAttribute("class", classes.join(" "));
+	elem.className = new_classes.join(" ");
 }
 
 /* toggle_class
@@ -781,7 +771,7 @@ function replace_class(elem, old_class, new_class)
  */
 function toggle_class(elem, classA, classB)
 {
-	var class_str = elem.getAttribute("class");
+	var class_str = elem.className;
 
 	if (class_str == undefined)
 		// No class set
@@ -829,7 +819,7 @@ function toggle_class(elem, classA, classB)
 	}
 
 	// The new class list is whatever we're left with.
-	elem.setAttribute("class", new_classes.join(" "));
+	elem.className = new_classes.join(" ");
 }
 /* ---------------------------------------- */
 
