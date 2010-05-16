@@ -21,15 +21,15 @@
 
 <script type="text/javascript">
 // Function to add NewsBite as an RSS subscriber in Firefox
-var subscribe_url = "{$subscribe_url}";	// Subscription URL
+var ff_subscribe_url = "{$subscribe_url}?feed_url=%s";	// Subscription URL
 {literal}
 // register_feed_reader
-// Function to add 'subscribe_url' as a subscription URL in Firefox
+// Function to add 'ff_subscribe_url' as a subscription URL in Firefox
 function register_feed_reader()
 {
 	navigator.registerContentHandler(
 		"application/vnd.mozilla.maybe.feed",
-		subscribe_url,
+		ff_subscribe_url,
 		"NewsBite");
 }
 </script>
@@ -49,9 +49,31 @@ if (navigator.registerContentHandler)
 </script>
 {/literal}
 
+<p>Bookmarklet: <a href="javascript:void(location.href='{$subscribe_url}?page_url='+escape(location))">Subscribe in NewsBite</a>.</p>
+
 <form name="add-feed-form" method="post" action="addfeed.php">
 
 <table id="add-feed">
+{* If we've been given a list of URLs (presumably extracted from a
+ * page by addfeed.php), display that list.
+ *} 
+{if isset($feed_list)}
+  <tr>
+    <th id="th-feed-list">Pick a URL</th>
+    <td>
+      <ul class="feed-list">
+      {foreach from=$feed_list item=f name=feedlist}
+        <li><input type="radio" name="feed_url" value="{$f.url}"
+               {* Check the first item by default *}
+               {if $smarty.foreach.feedlist.first}checked="checked"{/if}/>
+              <a href="{$f.url}">{$f.title}</a> ({$f.type})
+        </li>
+      {/foreach}
+      </ul>
+    </td>
+  </tr>
+{else}
+{* No list of URLs given. Display a text entry field *}
   <tr>
     <th>Feed URL</th>
     <td>
@@ -61,7 +83,7 @@ if (navigator.registerContentHandler)
       <input type="text" name="feed_url" value="{$feed.feed_url}"/>
     </td>
   </tr>
-
+{/if}
   {* XXX - Ought to manage passwords separately, so can have one
    * username/password for all of livejournal.com.
    *
