@@ -3,16 +3,6 @@
 	db_update_feed() only cleans out whichever feed it was called
   with. There's nothing to clean out all feeds, including inactive
   ones.
-- Bug: In Safari 4.0, collapsing articles doesn't work anymore.
-  Try using separate classes for different appearances.
-  An element can have multiple (space-separated?) classes. Write a JS
-  function to add or remove classes from a string.
-	Update, Tue Oct 13 08:55:28 2009:
-	Actually, it looks like it does work, but the window needs to
-  be modified in some way (including scrolling) for it to take.
-  Clicking on the bottom collapse bar works. Clicking on the upper one
-  works once you scroll.
-	Might be sufficient to scroll by 0 pixels.
 - Bug: When Ajax updates feeds, it doesn't notice updates to the list
   of feeds.
 	Perhaps when updating all, update.php should append a list of
@@ -22,15 +12,14 @@
                 $err = curl_multi_select($mh);
   This doesn't seem to be a simple case of an operation exceeding a
   timeout.
-- Bug: when on the last page (earliest items) and use "mark all as
-  read", sometimes get blank page.
-	Is this just the N810 browser being wonky?
 - Bug: when collapse from bottom collapse bar, window scrolls uglily.
   Ought to fix this: bottom edge should remain at the same place on
   screen, if possible.
 - Bug-ish: when marking a feed as inactive, get redirected back to it.
   This is bogus.
 	Redirect to feed index.
+- Use addEventListener() instead of on*=script
+- Use addEventListener("DOMContentLoaded"...) instead of "onload".
 - It might be interesting to move the "mark as read" buttons to the
   left when reading left-handed. That is, if you turn the iPad
   upside-down, the "mark as read" button flips to the left side.
@@ -94,6 +83,13 @@
 	Sun May  2 13:18:42 2010: Not clear where this delay is coming
   from. Doesn't seem to be my code. Apparently Safari is really slow
   about updating the display.
+	Possible fix:
+  http://matt.might.net/articles/how-to-native-iphone-ipad-apps-in-javascript/
+  suggests that capturing touch and gesture events is faster than
+  capturing clicks. A quick replacement of "onclick=" with
+  "ontouchstart=" doesn't show any improvement.
+	Perhaps need to use addEventListener() or something rather than
+  using the "on*=" attributes.
 - Make updates smarter about updating when no network available.
   On iPhone, don't contact the network if there's no network to contact.
 - Add an entry in the 'options' table, saying which version/revision
@@ -134,9 +130,10 @@
 - Might be useful to add gestures, for portable devices. See
   http://depts.washington.edu/aimgroup/proj/dollar/
 	On the N810, one can scroll the display by drawing on it. So
-  adding gesture recognition is likely to play havoc with that.
-  Perhaps hard-code straight-line templates, and implement scrolling
-  manually. (Swipe, on iPhone/iPad.)
+  adding gesture recognition is likely to play havoc with that. Ditto
+  iPhone/iPad.
+	Perhaps hard-code straight-line templates, and implement
+  scrolling manually. (Swipe, on iPhone/iPad.)
 	That implementation is rotation-independent: "v" can be
   drawn as ">" and still be recognized as "v". To fix this, can divide
   space into quadrants (or octants) centered on centroid, and classify
@@ -357,10 +354,6 @@
   don't have to RTFS or "View Properties" to see it.
 	(Or, if you want to get fancy: abduct the tooltip stuff and
   write a replacement that shows the entire title, like Google does.)
-- Bookmarklet to find RSS feed for the current page and subscribe to
-  it.
-	This needs to be robust enough to handle sloppy HTML pages. So
-  maybe don't want to use XML parser; rather, use regular expressions.
 - LiveJournal plugin should look at the <description> and parse lj
   tags in the body of the item. E.g., expand '<lj:user="foo">' into
   proper HTML.
