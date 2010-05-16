@@ -58,7 +58,6 @@ function update_feed($feed_id, $feed = NULL)
 }
 
 /* feed_update_handler
-
  * An abstract class for dealing with updating multiple feeds. When
  * something happens, like starting to update a feed, or an error, one
  * of the handler's methods is called.
