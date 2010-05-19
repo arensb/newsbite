@@ -203,6 +203,7 @@ function init()
 
 	addListenerByClass("collapse-bar", "click", toggle_pane, false);
 	addListenerByClass("expand-bar", "click", toggle_pane, false);
+	addListenerByClass("mark-check", "click", mark_item, false);
 }
 
 /* addListenerByClass
@@ -564,8 +565,10 @@ function parse_flush_response(req)
  * read to unread or vice-versa.
  * 'elt' is the checkbox that was just checked by the user.
  */
-function mark_item(elt)
+function mark_item(ev)
 {
+	var elt = ev.target;
+
 	/* Find the enclosing <div class="item"> by going up the parent
 	 * chain.
 	 */
