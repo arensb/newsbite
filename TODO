@@ -57,6 +57,18 @@
   mark it as read.
 	There's a stub function in database.inc: db_mark_url(), which
   marks items as read that have a given URL.
+	One potential problem: what if I find out about a new post
+  from Twitter, before NewsBite has refreshed the feed? Then there
+  will be no item in the database with the given URL.
+	Perhaps the way to get around this is, if the post URL isn't
+  already in the database, add it to a list in another table. The next
+  time feeds are updated, check the list again, and remove them.
+	Problem is, what if the sequence is:
+	1) Mark http://pharyngula.org/some-post as read
+	2) No such post found; add it to the check-later list
+	3) User updates Bad Astronomy feed
+	4) Check the list again; http://pharyngula.org/some-post still
+  doesn't exist in the database.
 - Search function: find words in feeds, titles, articles, etc.
 - Simpler AJAX fetch:
 	// loadXMLDoc
