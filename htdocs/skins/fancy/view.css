@@ -135,7 +135,7 @@ input[type="submit"] {
 }
 
 .item .item-header {
-	/* This should only apply to Safari */
+	/* This should only apply to Safari and other webkit browsers */
 	background-image:
 		-webkit-gradient(linear, left top, left bottom,
 			from(blue),
@@ -144,7 +144,7 @@ input[type="submit"] {
 	border-bottom-color:	navy;
 }
 
-.item[state="read"] .item-header {
+.item.item-read .item-header {
 	/* Mozilla: */
 	-moz-border-radius-bottomleft:	20px;
 	-moz-border-radius-bottomright:	20px;
@@ -155,27 +155,27 @@ input[type="submit"] {
 	-webkit-border-bottom-right-radius:	20px;
 }
 
-.item[state="read"] .item-header .item-title {
+.item.item-read .item-header .item-title {
 	font-size:		100%;
 	display:		inline;
 }
 
-.item[state="read"] .item-header .item-title:after {
+.item.item-read .item-header .item-title:after {
 	content:		" — ";		/* Em-dash, u2014 */
 }
 
-.item[state="read"] .item-header .feed-title {
+.item.item-read .item-header .feed-title {
 	font-size:		100%;
 	display:		inline;
 }
 
-.item[state="read"] .item-header .feed-title:after {
+.item.item-read .item-header .feed-title:after {
 	content:		" ";
 }
 
 /* If an item has been marked as read, collapse it to just a header */
-.item[state="read"] .content-panes,
-.item[state="read"] .item-footer {
+.item.item-read .content-panes,
+.item.item-read .item-footer {
 	display:		none;
 }
 
@@ -281,6 +281,16 @@ input[type="submit"] {
 	text-align:		right;
 	font-size:		66%;
 	width:			6em;
+}
+
+/* Checkboxes on the top left on the iPad */
+.item-header .icon-box.button-box-left {
+	text-align:		left;
+	width:			3em;
+	padding-top:		1em;
+	padding-left:		0.5em;
+	border-right:		2px solid LightBlue;
+			/* Line between this and item title */
 }
 
 input[type="checkbox"].mark-check {
@@ -411,6 +421,13 @@ input[type="checkbox"].mark-check {
 .item-footer a {
 	/* Want links to show up against navy background */
 	color:			cyan;
+}
+
+/* Checkboxes on the bottom left on iPad */
+.item-footer .icon-box.button-box-left {
+	border-right:		2px solid LightBlue;
+			/* Line between this and item title */
+	width:			2em;
 }
 
 /* .bottom-link box: <td> that contains .bottom-links (see below) */

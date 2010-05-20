@@ -18,9 +18,19 @@
 - Bug-ish: when marking a feed as inactive, get redirected back to it.
   This is bogus.
 	Redirect to feed index.
+- Try compressing JS/CSS/etc. to save bandwidth
+  - Figure out how to do this with Apache
+  - 'make install' needs to compress files
 - iPod/iPad is slow
 	Takes a long time to redraw the window when the CSS changes.
   Why?
+	Too many graphics: background images, webkit-gradients slow
+  things down considerably.
+- How does AIG add a custom font?
+  (Only shows up in Safari for me.)
+  http://blogs.answersingenesis.org/blogs/ken-ham/2010/05/18/is-groupon-anti-christian/
+- Articles with only content, no summary, should also be collapsible.
+	Set the max. height
 - Add a status box that pops down from the top to give important
   information, like when you've lost network connectivity and whatnot.
 - Use addEventListener() instead of on*=script
@@ -83,6 +93,8 @@
 	        xhttp.send(data);
 	        return xhttp.responseXML;
 	}
+  http://ajaxpatterns.org/XMLHttpRequest_Call says not to use this
+  (because hard to catch errors, etc.)
 - Read this to make iPhone-friendly skins:
   http://developer.apple.com/safari/library/documentation/AppleApplications/Reference/SafariWebContent/OptimizingforSafarioniPhone/OptimizingforSafarioniPhone.html
 - On iPhone, when mark an entry as read (using fancy skin), the

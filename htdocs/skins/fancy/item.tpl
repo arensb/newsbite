@@ -21,6 +21,14 @@
 
   <table class="item-header">
     <tr>
+      {if $mobile == "iPad"}
+      {* Put a second set of checkboxes on the left on the iPad, so that
+       * I can hold it in either hand, and push the buttons with my thumb.
+       *}
+        <td class="icon-box button-box-left">
+          <input class="mark-check" type="checkbox" name="cbX-{$item.id}" value="1"/>
+        </td>
+      {/if}
       <td class="info">
         <h3 class="item-title">
           {if $item.url != ""}
@@ -120,6 +128,13 @@
 
   <table class="item-footer">
     <tr>
+      {if $mobile == "iPad"}
+        {* Second set of checkboxes on the left on the iPad *}
+        <td class="icon-box button-box-left">
+          {* "cbY": checkbox bottom left *}
+          <input class="mark-check" type="checkbox" name="cbY-{$item.id}" value="1"/>
+        </td>
+      {/if}
       <td class="bottom-link-box">
         <ul class="bottom-links">
           {if $item.summary != "" && $item.content == "" && $item.url != ""}

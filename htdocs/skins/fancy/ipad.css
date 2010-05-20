@@ -1,32 +1,22 @@
 /* iphone.css
  * Specialized settings for iPad
+ *
+ * Background images and webkit gradients slow the iPad/iPhone down
+ * considerably. So try to avoid them.
  */
 body {
 	font-size:		14pt;
-	background-color:	#c0c0c0;
-	background-image:
-		-webkit-gradient(
-			radial,
-			512 320,
-			10,
-			512 320,
-			320,
-			from(#c0c0ff),
-			to(#8080c0)
-		);
-	background-repeat:	no-repeat
-	background-attachment:	fixed;
+	background-color:	#8080c0;
+	background-image:	none;
+		/* Graphics slow things down */
 	color:			black;
 	margin-left:		0px;
 	margin-right:		0px;
 }
 
 .item .item-header {
-	/* XXX - Actually, this should in Safari as well */
-	background-image:
-		-webkit-gradient(linear, left top, left bottom,
-			from(blue),
-			to(navy));
+	background-image:	none;
+		/* Graphics slow things down */
 	border-top-color:	blue;
 	border-bottom-color:	navy;
 }
