@@ -364,6 +364,8 @@ function flush_queues()
 clrdebug();
 	// XXX - If another flush_queues() request is running, do
 	// nothing; return.
+	// XXX - There should never be two flush_queues()es running at
+	// the same time.
 //	if (mark_request == null)
 //		return;
 
@@ -390,6 +392,14 @@ clrdebug();
 	 * mark_request.unread) to the server.
 	 */
 //debug("Flushing queues");
+	// XXX - http://stackoverflow.com/questions/2680756/why-should-i-reuse-xmlhttprequest-objects
+	// suggests reusing XMLHttpRequest objects: reduces number of
+	// distinct objects, so fewer network connections to step on
+	// each other's toes, less garbage collection, lower chance of
+	// a memory leak, etc.
+	// http://ajaxpatterns.org/XMLHttpRequest_Call says to make sure
+	// the object has either completed, or you've called abort()
+	// before reusing.
 	var request = createXMLHttpRequest();
 	if (!request)
 	{
@@ -579,26 +589,24 @@ function mark_item(ev)
 		/* Something's wrong. Abort */
 		return;
 
-	/* Set the "state" attribute to either "read" or "unread" so
-	 * that the CSS rules can change the appearance appropriately.
+	/* Iff the item is being marked as read, add the "item-read"
+	 * class.
 	 */
-	// XXX - Should the "state" attribute be retained?
-	item_div.setAttribute("state", (elt.checked ? "read" : "unread"));
-
-	/* There are two checkboxes for each item. Find the matching
-	 * one, and make sure it's checked/unchecked as well.
-	 * The two checkboxes are named "cbt-12345" and "cbb-12345",
-	 * so given the name of the box the user clicked on, we can
-	 * easily construct the name of the other one. And since
-	 * they're both fields in the same form, we can save a lot of
-	 * searching.
-	 */
-	var other_cb_name;
-	if (elt.name[2] == "t")
-		other_cb_name = "cbb-" + elt.name.slice(4);
+	if (is_checked)
+		add_class(item_div, "item-read");
 	else
-		other_cb_name = "cbt-" + elt.name.slice(4);
-	elt.form[other_cb_name].checked = elt.checked;
+		remove_class(item_div, "item-read");
+
+	/* There are several checkboxes for each item. Find them all,
+	 * and make sure they're checked/unchecked as well.
+	 */
+	var buttons;
+	buttons = item_div.getElementsByClassName("mark-check");
+
+	for (var i = 0; i < buttons.length; i++)
+	{
+		buttons[i].checked = is_checked;
+	}
 
 	/* Scroll so that the (collapsed) item is visible.
 	 * Let's say the item is long; the user has read the item, and
@@ -628,6 +636,9 @@ function mark_item(ev)
 	var item_id = elt.name.slice(4);
 		// The name of the checkbox is either "cbt-12345" or
 		// "cbb-12345". Get the item ID from that.
+		// XXX - Ought to get it from a div attribute or
+		// something. Perhaps add 'item-id="12345"' to the
+		// item div.
 
 	/* Add the item ID to the queue of items to mark as read/unread */
 	mark_read[item_id] = elt.checked;
