@@ -592,7 +592,7 @@ function mark_item(ev)
 	/* Iff the item is being marked as read, add the "item-read"
 	 * class.
 	 */
-	if (is_checked)
+	if (elt.checked)
 		add_class(item_div, "item-read");
 	else
 		remove_class(item_div, "item-read");
@@ -605,7 +605,7 @@ function mark_item(ev)
 
 	for (var i = 0; i < buttons.length; i++)
 	{
-		buttons[i].checked = is_checked;
+		buttons[i].checked = elt.checked;
 	}
 
 	/* Scroll so that the (collapsed) item is visible.
@@ -630,6 +630,15 @@ function mark_item(ev)
 	{
 		// Window has been scrolled so that top of item is no
 		// longer visible.
+		/* XXX - If the top is no longer visible, but the
+		 * bottom is still visible, then we want to scroll so
+		 * that the bottom is still in the same position.
+		 */
+		/* XXX - Likewise, if the user has zoomed the window,
+		 * and the left edge is hidden, shouldn't scroll to
+		 * the left edge. This means replacing the 0, below,
+		 * with something else.
+		 */
 		window.scrollTo(0, item_div.offsetTop);
 	}
 
