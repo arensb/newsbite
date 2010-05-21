@@ -18,14 +18,13 @@
 - Bug-ish: when marking a feed as inactive, get redirected back to it.
   This is bogus.
 	Redirect to feed index.
+- Firefox 2 (carrot) doesn't have getElementsByClassName.
+	Do I care?
 - Try compressing JS/CSS/etc. to save bandwidth
   - Figure out how to do this with Apache
   - 'make install' needs to compress files
-- iPod/iPad is slow
-	Takes a long time to redraw the window when the CSS changes.
-  Why?
-	Too many graphics: background images, webkit-gradients slow
-  things down considerably.
+- Perhaps get a JavaScript compacter: utility to remove blanks,
+  comments, etc. from files.
 - How does AIG add a custom font?
   (Only shows up in Safari for me.)
   http://blogs.answersingenesis.org/blogs/ken-ham/2010/05/18/is-groupon-anti-christian/
@@ -54,10 +53,6 @@
   90 or -90 as well. Play around with this and see how it works.
 	While we're at it, in landscape mode it would be good to have
   a list of other items in the feed in a box on the left.
-- Why are the checkboxes marked cbb-12345 and cbt-12345? It might be
-  possible to getElementById("input") and find the checkboxes with
-  class "mark-check". See
-	http://snipplr.com/view/1696/get-elements-by-class-name/
 - The various .js and .css files are getting large enough to be
   unmanageable. Break them up into chunks and build them with m4 or
   something.

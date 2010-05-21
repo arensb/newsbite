@@ -200,6 +200,7 @@ function init()
 //;//		alert("don't have getElementsByClassName")
 //		// XXX - Ought to implement one. But it exists in all
 //		// the browsers I care about.
+	// XXX - Firefox 2 (carrot) doesn't have getElementsByClassName
 
 	addListenerByClass("collapse-bar", "click", toggle_pane, false);
 	addListenerByClass("expand-bar", "click", toggle_pane, false);
