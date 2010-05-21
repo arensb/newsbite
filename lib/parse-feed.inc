@@ -2295,11 +2295,14 @@ function slashdot_noise_hook($nodename, &$retval, &$context)
  * Remove ads at bottom of WaPo postings.
  */
 /* XXX - This should go in a separate file, as a plug-in */
+/* XXX - For the WaPo, I think we can just find the first
+ * <br clear="both" style="clear: both;"/>
+ * and consider everything after that to be ads and fluff.
+ */
 function wapo_ad_hook($nodename, &$retval, &$context)
 {
 	if (!isset($retval['#text']))
 		return;
-#echo "(wapo ads) before: <pre>["; print_r($retval); echo "]</pre>\n";
 # XXX - This ad appears to be gone
 #	# Visible ad
 #	$retval['#text'] = preg_replace('{<hr />\r?\n<div style="font-size:xx-small;color:gray;padding-bottom:.5em">Featured Advertiser</div>.*}s',
@@ -2309,10 +2312,18 @@ function wapo_ad_hook($nodename, &$retval, &$context)
 	$retval['#text'] = preg_replace('{<a href="http://ads.pheedo.com/click.phdo[^\"]*"><img alt="" style="border: 0;" border="0" src="http://ads.pheedo.com/img.phdo[^\"]*"/></a>}s',
 					'',
 					$retval['#text']);
-	# And another bug
-	$retval['#text'] = preg_replace('{<br clear="all"><a href="http://ad.doubleclick.net/[^\"]*" target="_blank"><img src="http://ad.doubleclick.net/[^\"]*" border="0" vspace="5"></a> *}',
+#echo "(wapo ads) after 1: <pre>["; print_r($retval); echo "]</pre>\n";
+	$retval['#text'] = preg_replace('{\n*<img src=["\']http://(\w+\.)?pheedo\.com.*?/>}s',
 					'',
 					$retval['#text']);
+#echo "(wapo ads) after 2: <pre>["; print_r($retval); echo "]</pre>\n";
+
+# XXX - This appears to be gone
+#	# And another bug
+#	$retval['#text'] = preg_replace('{<br clear="all"><a href="http://ad.doubleclick.net/[^\"]*" target="_blank"><img src="http://ad.doubleclick.net/[^\"]*" border="0" vspace="5"></a> *}',
+#					'',
+#					$retval['#text']);
+
 	# Bogus blank lines at end of article
 	$retval['#text'] = preg_replace('{(<br clear="both" style="clear: both;"/>\r?\n)*}s',
 					'',
@@ -2330,11 +2341,11 @@ function webbug_hook($nodename, &$retval, &$context)
 	if (!isset($retval['#text']))
 		return;
 #echo "(webbug) before: <pre>["; print_r($retval); echo "]</pre>\n";
-	$retval['#text'] = preg_replace('{<img(\s+\w+=\"[^\"]*\")* (height="1" width="1"|width="1" height="1")\s*/>\r?\n?}',
+	$retval['#text'] = preg_replace('{<img(\s+\w+=\"[^\"]*\")* (height="[01]" width="[01]"|width="[01]" height="[01]")(\s+\w+=\"[^\"]*\")*\s*/>\r?\n?}',
 					'',
 					$retval['#text']);
 	# Same thing, but with single quotes instead of double
-	$retval['#text'] = preg_replace('{<img(\s+\w+=\'[^\']*\')* (height=\'1\' width=\'1\'|width=\'1\' height=\'1\').*?/>\r?\n?}',
+	$retval['#text'] = preg_replace('{<img(\s+\w+=\'[^\']*\')* (height=\'[01]\' width=\'[01]\'|width=\'[01]\' height=\'[01]\').*?/>\r?\n?}',
 					'',
 					$retval['#text']);
 #echo "(webbug) after 2: <pre>["; print_r($retval); echo "]</pre>\n";
