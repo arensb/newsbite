@@ -108,8 +108,23 @@ switch ($_REQUEST['o'])
 
 $feed_id = $_REQUEST["id"];
 
+/* See which feeds we're updating */
 if (is_numeric($feed_id) && is_int($feed_id+0))
 {
+	/* Just update one feed */
+	/* XXX - In HTML mode, probably shouldn't print anything
+	 * unless there's an error. That way, can redirect back to the
+	 * feed.
+	 */
+	/* XXX - Would this be desirable in "update all feeds" mode?
+	 * Maybe not. Just try one-feed mode for now.
+	 *
+	 * OTOH, I use this extensively when debugging plugins to
+	 * remove ads. So perhaps this stuff should be left alone,
+	 * save that if the user left-clicks on the "Update feed"
+	 * link, it should use JS and update in the background, while
+	 * if ve middle-clicks, it should use traditional HTML.
+	 */
 	$feed = db_get_feed($feed_id);
 
 	switch ($out_fmt)
@@ -176,6 +191,7 @@ if (is_numeric($feed_id) && is_int($feed_id+0))
 		echo "<p><a href=\"view.php?id=$feed_id\">Read feed</a></p>\n";
 } elseif ($feed_id == "all")
 {
+	/* Update all feeds */
 	switch ($out_fmt)
 	{
 	    case "json":
@@ -193,7 +209,7 @@ if (is_numeric($feed_id) && is_int($feed_id+0))
 	if ($out_fmt == "html")
 		echo "<p><a href=\"view.php?id=$feed_id\">Read feeds</a></p>\n";
 } else {
-	/* Abort with an error message */
+	/* Invalid feed ID. Abort with an error message */
 	abort("Invalid feed ID: $feed_id");
 }
 
