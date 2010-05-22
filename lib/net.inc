@@ -27,7 +27,9 @@ function update_feed($feed_id, $feed = NULL)
 		$feed = db_get_feed($feed_id);
 		if (!$feed)
 			// XXX - Should note what went wrong: no such feed
-			return FALSE;
+			return array('status'	=> -1,
+				     'errmsg'	=> "No such feed: $feed_id"
+				);
 	}
 
 	/* Fetch the feed */
@@ -44,6 +46,11 @@ function update_feed($feed_id, $feed = NULL)
 	$err = _save_handle($feed_id, $feed_text);
 		// XXX - Error-handling: returns FALSE on error, or
 		// array on success
+	if (!$err)
+		return array('status'	=> -1,
+			     'errmsg'	=> "_save_handle(id $feed_id) failed"
+			);
+
 	// Get updated version of feed, to return to caller.
 	$feed = db_get_feed($feed_id);
 	$counts = db_get_feed_counts($feed_id);
