@@ -29,8 +29,12 @@ table#feeds tr.even-row {
 	background-color:	white;
 }
 
-table#feeds tr.inactive-feed {
-	background-color:	#c0c0c0 !important;
+table#feeds tr.inactive-feed .title-col {
+	text-decoration:	line-through !important;
+}
+
+table#feeds tr.stale-feed {
+	background-color:	#808080 !important;
 }
 
 .tools {

@@ -45,9 +45,10 @@
 {strip}
   <tr class="{cycle values="odd-row,even-row"}
   {* NB: careful with whitespace in the class list: *}
-  {if !$feed.active} inactive-feed{/if}" id="feed-{$feed_id}">
+  {if !$feed.active} inactive-feed{/if}
+  {if $feed.stale} stale-feed{/if}" id="feed-{$feed_id}">
     <td class="icon-col">&nbsp;</td>{* Refresh/status icons go here *}
-    <td>{include file='feed-title.tpl' feed=$feed counts=$counts[$feed_id]}</td>
+    <td class="title-col">{include file='feed-title.tpl' feed=$feed counts=$counts[$feed_id]}</td>
     <td>
       {* Tools *}
       <a href="update.php?id={$feed.id}" onclick="return update_feed({$feed.id})">update</a>
