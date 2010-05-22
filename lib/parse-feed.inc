@@ -2278,14 +2278,27 @@ function slashdot_noise_hook($nodename, &$retval, &$context)
 	if (!isset($retval['#text']))
 		return;
 #echo "(slashdot_noise) before: <pre>["; print_r($retval); echo "]</pre>\n";
-	# Image link
-	$retval['#text'] = preg_replace('{\s*<p><a href="http://(\w+\.)?slashdot.org/article.pl[^\"]*"><img src="http://slashdot.org/[^\"]*"></a></p>}',
+
+	/* "Share on Facebook/Twitter" links */
+	# Facebook link
+	$retval['#text'] = preg_replace('{<a href="http://www.facebook.com/sharer.php.*?</a>}',
 					'',
 					$retval['#text']);
+
+	# Twitter link
+	$retval['#text'] = preg_replace('{<a href="http://twitter.com/home\?status=[^>]*title="Share on Twitter".*?</a>}',
+					'',
+					$retval['#text']);
+
+	# Empty paragraphs
+	$retval['#text'] = preg_replace('{<p>\s*</p>}s',
+					'',
+					$retval['#text']);
+
 #echo "(slashdot_noise) after 1: <pre>["; print_r($retval); echo "]</pre>\n";
 	# Unnecessary link to story
 	# XXX - Should this check to see whether the link is the same as in the "header"?
-	$retval['#text'] = preg_replace('{\s*<p><a href="http://(\w+\.)?slashdot.org/article.pl[^\"]*">Read more of this story</a> at Slashdot.</p>}',
+	$retval['#text'] = preg_replace('{\s*<p><a href="http://(\w+\.)?slashdot.org/story/[^\"]*">Read more of this story</a> at Slashdot.</p>}',
 					'',
 					$retval['#text']);
 #echo "(slashdot_noise) after 2: <pre>["; print_r($retval); echo "]</pre>\n";
