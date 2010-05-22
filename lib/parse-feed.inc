@@ -2309,7 +2309,7 @@ function wapo_ad_hook($nodename, &$retval, &$context)
 #					'',
 #					$retval['#text']);
 	# Bug image
-	$retval['#text'] = preg_replace('{<a href="http://ads.pheedo.com/click.phdo[^\"]*"><img alt="" style="border: 0;" border="0" src="http://ads.pheedo.com/img.phdo[^\"]*"/></a>}s',
+	$retval['#text'] = preg_replace('{<a href="http://ads.pheedo.com/.*?</a>}s',
 					'',
 					$retval['#text']);
 #echo "(wapo ads) after 1: <pre>["; print_r($retval); echo "]</pre>\n";
