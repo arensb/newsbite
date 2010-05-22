@@ -2,6 +2,9 @@
 PROJECT =	newsbite
 #VERSION =	1.1.9
 
+PHP =		php
+EGREP =		egrep
+
 # REV_CMD: command to figure out which svn revision we're using.
 REV_CMD =	svn status -uq | grep "Status against revision:"|awk '{print $$4}'
 
@@ -37,8 +40,19 @@ dist:
 clean::
 	rm -rf dist
 
+check:	missing syntax-check
+
 # Look for files missing from the manifest
 missing:
 	@svn status -qv | \
-		perl -lane '$$f=$$F[-1]; print $$f if -f $$f' | \
+		perl -lane '$$f=$$F[-1]; print "Missing: $$f" if -f $$f' | \
 		fgrep -vf MANIFEST || true
+
+# Check for syntax errors in PHP files
+# XXX - Bleah. This randomly dumps core. Why?
+syntax-check:
+	@$(EGREP) '\.(php|inc)$$' MANIFEST | \
+	while read fname; do \
+		echo "Checking $$fname"; \
+		$(PHP) -l "$$fname" || exit $?; \
+	done
