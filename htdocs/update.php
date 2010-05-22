@@ -81,29 +81,57 @@ class json_output_handler extends feed_update_handler
 	}
 }
 
+class console_output_handler extends feed_update_handler
+{
+	function start_feed($feed_id, $feed_title)
+	{
+		echo "Starting feed ($feed_id): [$feed_title]\n";
+	}
+
+	function end_feed(&$feed)
+	{
+		echo  "Finished (",
+			$feed['id'],
+			") [",
+			$feed['title'],
+			"]\n";
+	}
+
+	function error($feed_id, $feed_title, $msg)
+	{
+		error_log($msg);
+	}
+}
+
 
 /* See what kind of output the user wants */
-switch ($_REQUEST['o'])
-{
-    case "json":
-	$out_fmt = "json";
-	// The "+xml" here is bogus: apparently there's a bug in
-	// Firefox (2.x) such that if the response is "text/plain", it
-	// apparently assumes that it's ISO8859-1 or US-ASCII or some
-	// such nonsense.
-	header("Content-type: text/plain+xml; charset=utf-8");
 
-	// The stupid "+xml" hack above means that Firefox will try to
-	// interpret what it sees as XML. And since JSON isn't
-	// well-formed XML, we need to wrap the JSON in very minimal
-	// XML: < ?xml ? ><![CDATA[ {json} ]]>
-	echo "<", '?xml version="1.0" encoding="UTF-8"?', ">\n";
-	echo "<![CDATA[\n";
-	break;
-    default:
-	header("Content-type: text/html; charset=utf-8");
-	$out_fmt = "html";
-	break;
+if ($_ENV['CRON'] == "yes")
+{
+	$out_fmt = "console";
+} else {
+	switch ($_REQUEST['o'])
+	{
+	    case "json":
+		$out_fmt = "json";
+		// The "+xml" here is bogus: apparently there's a bug in
+		// Firefox (2.x) such that if the response is "text/plain", it
+		// apparently assumes that it's ISO8859-1 or US-ASCII or some
+		// such nonsense.
+		header("Content-type: text/plain+xml; charset=utf-8");
+
+		// The stupid "+xml" hack above means that Firefox will try to
+		// interpret what it sees as XML. And since JSON isn't
+		// well-formed XML, we need to wrap the JSON in very minimal
+		// XML: < ?xml ? ><![CDATA[ {json} ]]>
+		echo "<", '?xml version="1.0" encoding="UTF-8"?', ">\n";
+		echo "<![CDATA[\n";
+		break;
+	    default:
+		header("Content-type: text/html; charset=utf-8");
+		$out_fmt = "html";
+		break;
+	}
 }
 
 $feed_id = $_REQUEST["id"];
@@ -132,6 +160,9 @@ if (is_numeric($feed_id) && is_int($feed_id+0))
 	    case "html":
 		echo "<h3>Updating feed [$feed[title]]</h3>\n";
 		break;
+	    case "console":
+		echo "Updating feed [$feed[title]]\n";
+		break;
 	    case "json":
 		$skin = new Skin();
 		echo jsonify('state',	"start",
@@ -145,24 +176,48 @@ if (is_numeric($feed_id) && is_int($feed_id+0))
 
 	if (!$err)
 	{
+		// XXX - This should never happen
 		switch ($out_fmt)
 		{
 		    case "json":
 			// XXX - What to do?
 			break;
+		    case "console":
+			// XXX - Better error-handling
+			$err_msg = "feed $feed_id: $feed[title] ($feed[feed_url]): parse_feed() returned ";
+			if ($err === false) $err_msg .= "FALSE";
+			if ($err === null)  $err_msg .= "NULL";
+			if ($err === "")    $err_msg .= "(empty string)";
+			error_log($err_msg);
+			exit(1);
 		    case "html":
 		    default:
 			// XXX - Better error-handling
-			$err_msg = "feed $feed_id: parse_feed() returned ";
-			if ($feed === false) $err_msg .= "FALSE";
-			if ($feed === null)  $err_msg .= "NULL";
-			if ($feed === "")    $err_msg .= "(empty string)";
+			$err_msg = "feed $feed_id: $feed[title] (<a href=\"$feed[feed_url]\">RSS</a>]): parse_feed() returned ";
+			if ($err === false) $err_msg .= "FALSE";
+			if ($err === null)  $err_msg .= "NULL";
+			if ($err === "")    $err_msg .= "(empty string)";
 			abort($err_msg);
+			break;
 		}
 	}
 
+	/* Error-checking */
 	if (isset($err['status']) && $err['status'] != 0)
-		abort($err['errmsg']);
+	{
+		switch ($out_fmt)
+		{
+		    case "json":
+			// XXX - What to do?
+			exit(1);
+		    case "console":
+			error_log($err['errmsg']);
+			exit(1);
+		    case "html":
+		    default:
+			abort($err['errmsg']);
+		}
+	}
 
 	$feed = $err;
 	switch ($out_fmt)
@@ -180,6 +235,9 @@ if (is_numeric($feed_id) && is_int($feed_id+0))
 			"\n";
 		flush();
 		break;
+	    case "console":
+		echo "Finished [$feed[title]]\n";
+		break;
 	    case "html":
 	    default:
 		echo "Finished [$feed[title]]<br/>\n";
@@ -196,6 +254,9 @@ if (is_numeric($feed_id) && is_int($feed_id+0))
 	{
 	    case "json":
 		$handler = new json_output_handler();
+		break;
+	    case "console":
+		$handler = new console_output_handler();
 		break;
 	    case "html":
 	    default:
