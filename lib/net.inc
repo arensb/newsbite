@@ -404,6 +404,24 @@ function _save_handle($feed_id, &$feed_text)
 	if (!$feed)
 		return FALSE;
 
+	/* See when the feed was last updated, i.e., when the most
+	 * recent article was posted.
+	 */
+	$last_update = NULL;
+	if (is_array($feed['items']))
+	{
+		foreach ($feed['items'] as $item)
+		{
+			if (isset($item['pub_time']) &&
+			    $item['pub_time'] > $last_update)
+				$last_update = $item['pub_time'];
+		}
+	}
+	if (isset($last_update))
+		// This will be fed to db_update_feed(), so we can
+		// identify stale feeds.
+		$feed['last_update'] = $last_update;
+
 	/* Add the feed to the database */
 	// XXX - What does this do? Is it redundant?
 	// XXX - The callers call db_get_feed() to get a fresh copy of

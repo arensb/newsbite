@@ -57,12 +57,19 @@ function db_disconnect()
  */
 function db_get_feeds($inactive = FALSE)
 {
+	global $STALE_DAYS;
+
 	$dbh = db_connect();
 
-	$query = <<<EOT
-SELECT	*
+	$query = sprintf(<<<EOT
+SELECT	*,
+	UNIX_TIMESTAMP(last_update) as unix_last_update,
+	IF(DATEDIFF(NOW(),
+		    IFNULL(last_update, '1970-01-01')) > %d, 1, 0) as stale
 FROM	feeds
-EOT;
+EOT
+		,
+		$STALE_DAYS);
 	if (!$inactive)
 		$query .= "\nWHERE active";
 
@@ -91,14 +98,20 @@ EOT;
  */
 function db_get_feed($id)
 {
+	global $STALE_DAYS;
+
 	$dbh = db_connect();
 
 	$query = sprintf(<<<EOT
-SELECT	*
+SELECT	*,
+	UNIX_TIMESTAMP(last_update) as unix_last_update,
+	IF(DATEDIFF(NOW(),
+		    IFNULL(last_update, '1970-01-01')) > %d, 1, 0) as stale
 FROM	feeds
 WHERE	id = %d
 EOT
 		,
+		$STALE_DAYS,
 		$id);
 	$result = $dbh->query($query);
 	$row = $result->fetch_assoc();
@@ -506,6 +519,7 @@ function db_delete_feed($feed_id)
  */
 function db_update_feed_info($feed_id, $fields)
 {
+#echo "db_update_feed_info: fields ["; print_r($fields); echo "]\n";
 	$dbh = db_connect();
 
 	/* Get info about existing feed */
@@ -520,6 +534,7 @@ function db_update_feed_info($feed_id, $fields)
 	// Can't use $stmt->bind_param(), because that takes a
 	// variable number of arguments, and I don't think PHP has the
 	// equivalent of Lisp's (apply).
+	// XXX - Actually, see call_user_func_array()
 
 	// Also, some of the fields require special processing anyway:
 	// it's not a simple mapping from $feed[X] -> database column
@@ -559,9 +574,9 @@ function db_update_feed_info($feed_id, $fields)
 			"'";
 
 	if (array_key_exists('last_update', $fields) &&
-	    $fields['last_update'] != $old['last_update'])
+	    $fields['last_update'] > $old['unix_last_update'])
 		// Last update (time_t)
-		$updates[] = sprintf("last_update = %ld", $fields['last_update']);
+		$updates[] = sprintf("last_update = FROM_UNIXTIME(%ld)", $fields['last_update']);
 
 	if (array_key_exists('ttl', $fields) &&
 	    $fields['ttl'] != $old['ttl'])

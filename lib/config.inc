@@ -8,6 +8,11 @@ $DB_PASS = "newsbitepass";	// Database user's password
 /* Age in days when articles are automatically deleted */
 $AUTODELETE_DAYS = 90;
 
+/* How old the latest post must be, in days, before the feed is
+ * considered stale.
+ */
+$STALE_DAYS = 90;
+
 /* How many feeds to update in parallel. It looks as though the total
  * time goes down until about 10 or so, and then there's a point of
  * diminishing returns. So probably best to leave this at 10.
