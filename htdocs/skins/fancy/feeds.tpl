@@ -43,7 +43,9 @@
 {* Feed ID gets used a lot, so it gets its own variable *}
 {assign var="feed_id" value=$feed.id}
 {strip}
-  <tr class="{cycle values="odd-row,even-row"}" id="feed-{$feed_id}">
+  <tr class="{cycle values="odd-row,even-row"}
+  {* NB: careful with whitespace in the class list: *}
+  {if !$feed.active} inactive-feed{/if}" id="feed-{$feed_id}">
     <td class="icon-col">&nbsp;</td>{* Refresh/status icons go here *}
     <td>{include file='feed-title.tpl' feed=$feed counts=$counts[$feed_id]}</td>
     <td>

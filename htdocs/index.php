@@ -4,7 +4,7 @@ require_once("database.inc");
 require_once("skin.inc");
 
 $dbh = db_connect();
-$feeds = db_get_feeds();
+$feeds = db_get_feeds(TRUE);
 $counts = db_get_all_feed_counts();
 
 $skin = new Skin();

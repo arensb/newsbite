@@ -3,6 +3,15 @@
 	db_update_feed() only cleans out whichever feed it was called
   with. There's nothing to clean out all feeds, including inactive
   ones.
+	Arguably this isn't that much of a problem with inactive
+  feeds, since the number of articles won't grow.
+	But some active feeds aren't being cleaned out either.
+  Apparently this is because the URLs are dead.
+- Bug: in cron mode, update.php should print an error to stderr if
+  something goes wrong.
+	- Can't fetch feed (error 404)
+	- Get non-RSS feed
+	- Other
 - Bug: When Ajax updates feeds, it doesn't notice updates to the list
   of feeds.
 	Perhaps when updating all, update.php should append a list of
@@ -18,6 +27,17 @@
 - Bug-ish: when marking a feed as inactive, get redirected back to it.
   This is bogus.
 	Redirect to feed index.
+- update_feed (net.inc) is inconsistent in its return value.
+	Presumably in case of error should return a tuple giving the
+  error status and an error message.
+- Feed maintenance: feeds go stale, get deleted, etc. all the time.
+  It'd be really nice if the index page showed the ones with errors.
+	Also, it'd be nice if it could show the ones that haven't been
+  updated in, say, 3 months.
+	Check the HTTP status: if it's 4xx, then the feed is dead.
+- Get rid of unused skins: default, fancy2.
+	Make "fancy" the new default. Maybe just rename it to
+  "default".
 - Do I really need Smarty? I'm not sure it's doing anything it
   wouldn't be just as easy to do in PHP.
 - High Performance JS book:
