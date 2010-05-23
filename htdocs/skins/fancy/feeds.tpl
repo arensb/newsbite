@@ -6,6 +6,12 @@
 <title>NewsBite: Feeds</title>
 <link rel="stylesheet" type="text/css" href="skins/{$skin}/style.css" media="all" />
 <link rel="stylesheet" type="text/css" href="skins/{$skin}/index.css" media="all" />
+{* Include a mobile device-specific stylesheet. *}
+{if ($mobile == "iPhone")}
+<link rel="stylesheet" type="text/css" href="skins/{$skin}/iphone.css" media="screen" />
+{elseif ($mobile == "iPad")}
+<link rel="stylesheet" type="text/css" href="skins/{$skin}/ipad.css" media="screen" />
+{/if}
 <!-- If JavaScript is turned on, slurp in the JavaScript-specific
      stylesheet
 -->
@@ -22,6 +28,9 @@
   var skin_dir="skins/{$skin}";
 </script>
 <script type="text/javascript" src="skins/{$skin}/feeds.js"></script>
+{if ($mobile == "iPhone")}
+<meta name="viewport" content="width = device-width, initial-scale=0.8">
+{/if}
 </head>
 <body>
 
