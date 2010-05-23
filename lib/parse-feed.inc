@@ -606,6 +606,16 @@ function _cdata_handler($parser, $data)
 {
 	global $_context;
 
+	// XXX - Hack for APOD feed: the text in the summary contains
+	// escaped HTML, but there's no <![CDATA[" tag. This kludge
+	// looks for items that begin with "&#60;" (escaped
+	// left-bracket), and manually unescapes the text.
+	if (strpos($data, "&#60;") === 0)
+		// Note that this uses ===, not ==, so as not to run
+		// on FALSE.
+	{
+		$data = html_entity_decode($data);
+	}
 	// XXX - Call text handler, if one is defined?
 	$parent = &$_context[count($_context)-1];
 	$parent['retval']['#text'] .= $data;
