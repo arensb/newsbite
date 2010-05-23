@@ -7,7 +7,9 @@ require_once("database.inc");
 require_once("skin.inc");
 
 /* Try to guess whether we're viewing this on an iPhone or other
- * mobile device
+ * mobile device.
+ * XXX - Should this go in common.php? It should probably be at the
+ * top of any page that displays output.
  */
 $mobile = false;
 if (preg_match(',Mozilla/\S+ \(iPod;,', $_SERVER['HTTP_USER_AGENT']))

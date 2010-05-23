@@ -27,13 +27,15 @@
 - Bug-ish: when marking a feed as inactive, get redirected back to it.
   This is bogus.
 	Redirect to feed index.
+- Break up main index page into sections:
+	Active, non-stale feeds
+	Active stale feeds
+	Inactive feeds
 - update_feed (net.inc) is inconsistent in its return value.
 	Presumably in case of error should return a tuple giving the
   error status and an error message.
 - Feed maintenance: feeds go stale, get deleted, etc. all the time.
   It'd be really nice if the index page showed the ones with errors.
-	Also, it'd be nice if it could show the ones that haven't been
-  updated in, say, 3 months.
 	Check the HTTP status: if it's 4xx, then the feed is dead.
 - Get rid of unused skins: default, fancy2.
 	Make "fancy" the new default. Maybe just rename it to
