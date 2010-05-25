@@ -793,6 +793,23 @@ EOT;
 //echo "Affected rows: [", $stmt->affected_rows, "]<br/>\n";
 	}
 
+	// Update feeds.last_update, so we can measure staleness
+	$query = <<<EOT
+UPDATE	feeds
+	SET	last_update = 
+		(SELECT	IFNULL(MAX(items.pub_date), NOW())
+		 FROM	items
+		 WHERE	items.feed_id = feeds.id)
+	WHERE	feed_id = ?
+EOT;
+	$stmt = $dbh->prepare($query);
+			// XXX - Error-checking
+	$err = $stmt->bind_param("d",
+				 $feed_id);
+			// XXX - Error-checking
+	$err = $stmt->execute();
+			// XXX - Error-checking
+
 	/* Delete old items from database */
 	// XXX - This is potentially a problem with
 	// a) An article that has gone unread n+1 days, and was just
