@@ -800,7 +800,7 @@ UPDATE	feeds
 		(SELECT	IFNULL(MAX(items.pub_date), NOW())
 		 FROM	items
 		 WHERE	items.feed_id = feeds.id)
-	WHERE	feed_id = ?
+	WHERE	id = ?
 EOT;
 	$stmt = $dbh->prepare($query);
 			// XXX - Error-checking
