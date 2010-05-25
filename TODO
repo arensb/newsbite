@@ -1,3 +1,29 @@
+- Staleness: need to tweak
+  - When upgrading, feeds.last_update is NULL.
+	Set it to the release_date of the latest post in each feed. If
+    that's still NULL, set it to NOW() to reset the staleness clock.
+	select	feeds.id,
+		feeds.title,
+		ifnull(max(items.pub_date), now()) as foo from feeds left join items on feeds.id = items.feed_id group by feeds.id order by foo asc;
+
+    update feeds set last_update = (select max(pub_date) from items
+    where items.feed_id = feeds.id);
+
+    update feeds set last_update = (select ifnull(max(pub_date), NOW()) from items where items.feed_id = feeds.id);
+
+
+
+  - Iron Chariots has <entry><updated>, which goes to the
+    $item[build_time], which I don't think is ever used.
+	Should it be used if no better pub time is available?
+  - Some feeds don't provide good publication times (e.g., Non
+    Sequitur): nothing in the feed says when a given item was
+    published.
+	Perhaps a better approach would be: use
+	select max(pub_date) from items where feed_id=151;
+    Since this doesn't change often, perhaps just do this when after
+    updating the feed.
+- Add "CREATE INDEX" lines in schema.
 - Bug?: There are some old articles in the database. Why aren't they
   being cleaned out properly?
 	db_update_feed() only cleans out whichever feed it was called
@@ -65,6 +91,16 @@
     define an array of functions such that, if they're ever called,
     load the requisite JS script, then call the original function.
 	Can use the same introspection techniques as the profiler.
+  - Building HTML with innerHTML is faster on all browsers except
+    WebKit, though the difference is far less significant than it used
+    to be.
+  - cloneNode method. Is this useful at all?
+  - The getElementsBy*() functions return collections. Accessing them
+    is expensive, because they're live. This includes getting the
+    length. So intead of
+	for (i = 0; i < collection.length; i++)
+    use
+	for (i = 0, len = collection.length; i < len; i++
 - Can Rhino be used to check JS syntax and whatnot?
   https://developer.mozilla.org/en/Rhino
 	What about profiling?
