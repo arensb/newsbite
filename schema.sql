@@ -88,7 +88,7 @@ CREATE TABLE items (
 	last_update	DATETIME,	# Time when item was last updated
 	is_read		BOOLEAN,	# Has the item been read?
 	PRIMARY KEY(id),
-	UNIQUE KEY(feed_id, guid)	# Having (feed_id, guid)
+	UNIQUE KEY(feed_id, guid),	# Having (feed_id, guid)
 					# instead of (guid) may be
 					# overkill, but it's to ensure
 					# that if two feeds have the
@@ -96,5 +96,8 @@ CREATE TABLE items (
 					# contains the other), then
 					# they'll be considered
 					# separate items.
+	# Indexes to speed up lookups
+	KEY `last_update` (`last_update`),
+	KEY `is_read` (`is_read`)
 )
 DEFAULT CHARSET=utf8;
