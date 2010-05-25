@@ -289,6 +289,10 @@ function parse_feed($feed_text)
 	// Oh, and it unescapes entities like "&quot;"
 
 	// XXX - Come up with a better way of dealing with this.
+	// Since this will (hopefully) only be a problem with
+	// known-bad feeds, perhaps the best approach would be to have
+	// a pre-parse hook that gets called for certain specific
+	// feeds.
 	$feed_text = preg_replace_callback('{<description>(.*?)</description>}s',
 					   create_function('$matches',
 							   'if (preg_match("/^\s*<!\[CDATA\[.*\]\]>\s*$/s", $matches[1]))
@@ -862,6 +866,24 @@ function rss_element_handler(
 			break;
 		}
 		break;
+
+		# XXX - <summary> appears to be used by Yahoo!, in
+		# the cracked.com feed.
+	    case "summary":
+		switch ($parent)
+		{
+		    case "item":
+			$retval['content'] = $children;
+			break;
+		    default:
+			// XXX - Better error-reporting
+//			echo "Warning: Unexpected [$elt_name] parent: [$parent]\n";
+			break;
+		}
+		break;
+# XXX - Should also have "thumbnail", also for the cracked.com feed:
+# It has a thumbnail image that goes with the article.
+# Could also use <media:thumbnail>. See the RSS feed for details.
 
 	    case "pubDate":
 		switch ($parent)
@@ -1441,25 +1463,40 @@ function atom_element_handler(
 	&$retval,	// Fill in the blanks here
 	&$context)	// Where we are at the moment
 {
-	if ($prefix != "")
-	{
-		/* If we're a guest (i.e., an Atom element inside a
-		 * non-Atom XML file), just pass this element along.
-		 */
-		// XXX - Should put this in the other
-		// *_element_handler()s.
-		$retval["$prefix:$elt_name"] = $children;
-		if ($children === NULL)
-		{
-			$retval["$prefix:$elt_name"] = array(
-				"@attrs" => $attrs
-				);
-		} elseif (is_array($children))
-		{
-			$retval["$prefix:$elt_name"]['@attrs'] = $attrs;
-		}
-		return true;
-	}
+# XXX - This breaks in the case where we have an Atom guest inside an Atom
+# file. For Atheist Media (at least), Feedburner inserts
+# <atom10:link xmlns:atom10="http://www.w3.org/2005/Atom" rel="self" type="application/atom+xml" href="http://feeds.feedburner.com/AtheistMedia" />
+# <atom10:link xmlns:atom10="http://www.w3.org/2005/Atom" rel="hub" href="http://pubsubhubbub.appspot.com/" />
+
+# The <link>s have the same xmlns as the rest of the file
+# (http://www.w3.org/2005/Atom), which apparently tricks the XML parser
+# into thinking that all the no-prefix elements in the rest of the file
+# actually have the "atom10:" prefix, i.e., that they're Atom guests
+# inside a non-Atom file.
+#
+# I don't remember why I originally put this guest code in here, so I'm
+# not sure what will break as a consequence. Hopefully nothing.
+
+#	if ($prefix != "")
+#	{
+#		/* If we're a guest (i.e., an Atom element inside a
+#		 * non-Atom XML file), just pass this element along.
+#		 */
+#		// XXX - Should put this in the other
+#		// *_element_handler()s.
+#echo "This is a guest ($prefix:$elt_name\n";
+#		$retval["$prefix:$elt_name"] = $children;
+#		if ($children === NULL)
+#		{
+#			$retval["$prefix:$elt_name"] = array(
+#				"@attrs" => $attrs
+#				);
+#		} elseif (is_array($children))
+#		{
+#			$retval["$prefix:$elt_name"]['@attrs'] = $attrs;
+#		}
+#		return true;
+#	}
 
 	$parent = $context[count($context)-1]['name'];
 	switch ($elt_name)
@@ -2331,8 +2368,8 @@ function wapo_ad_hook($nodename, &$retval, &$context)
 #	$retval['#text'] = preg_replace('{<hr />\r?\n<div style="font-size:xx-small;color:gray;padding-bottom:.5em">Featured Advertiser</div>.*}s',
 #					'',
 #					$retval['#text']);
-	# Bug image
-	$retval['#text'] = preg_replace('{<a href="http://ads.pheedo.com/.*?</a>}s',
+	# Keyword/ad link
+	$retval['#text'] = preg_replace('{<a href=["\']http://ads.pheedo.com/.*?</a>( - )?}s',
 					'',
 					$retval['#text']);
 #echo "(wapo ads) after 1: <pre>["; print_r($retval); echo "]</pre>\n";
@@ -2348,7 +2385,7 @@ function wapo_ad_hook($nodename, &$retval, &$context)
 #					$retval['#text']);
 
 	# Bogus blank lines at end of article
-	$retval['#text'] = preg_replace('{(<br clear="both" style="clear: both;"/>\r?\n)*}s',
+	$retval['#text'] = preg_replace('{(\s*<br[^/>]*?/>)+\s*$}s',
 					'',
 					$retval['#text']);
 
