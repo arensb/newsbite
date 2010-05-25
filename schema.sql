@@ -6,14 +6,16 @@ CREATE TABLE options (
 	name		CHAR(64)	NOT NULL,
 	value		VARCHAR(255),
 	PRIMARY KEY(name)
-);
+)
+DEFAULT CHARSET=utf8;
 
 CREATE TABLE feed_options (
 	feed_id		INT		NOT NULL,
 	name		CHAR(64)	NOT NULL,
 	value		VARCHAR(255),
 	PRIMARY KEY(feed_id, name)
-);
+)
+DEFAULT CHARSET=utf8;
 
 /* groups
  * For grouping feeds into nested groups.
@@ -25,7 +27,8 @@ CREATE TABLE groups (
 	parent		INT		NOT NULL,
 	name		VARCHAR(127),
 	PRIMARY KEY(id)
-);
+)
+DEFAULT CHARSET=utf8;
 
 /* XXX - Need another table to specify which feeds go in which groups
  * (plural) and the relative order within each group.
@@ -57,7 +60,8 @@ CREATE TABLE feeds (
 	username	char(32),	# Username, for authentication
 	passwd		char(32),	# Password, for authentication
 	PRIMARY KEY(id)
-);
+)
+DEFAULT CHARSET=utf8;
 
 /* items
  * An item is a story or article in a feed.
@@ -92,4 +96,5 @@ CREATE TABLE items (
 					# contains the other), then
 					# they'll be considered
 					# separate items.
-);
+)
+DEFAULT CHARSET=utf8;
