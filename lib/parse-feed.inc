@@ -51,14 +51,14 @@
 // Element-to-field mapping:
 // RSS:			Atom:			field
 // <item>		<entry>			items[]
-// <rss>			<feed>			feed_type
-// <rss version>		-			rss_version
+// <rss>		<feed>			feed_type
+// <rss version>	-			rss_version
 // <title>		<title>			title
 // -			<subtitle>		subtitle
 // <link>		<link rel=alternate>	url
 // -			<link rel=replies type=html>	comment_url
 // -			<link rel=replies type=xml>	comment_feed
-// <description>					description
+// <description>				description
 // <language>					language
 // <copyright>					-
 // <managingEditor>	<author><email>		author_email
@@ -76,10 +76,10 @@
 //			<generator version>	generator_version
 // <docs>					-
 // <cloud>					-
-// <ttl>						ttl (secs)
+// <ttl>					ttl (secs)
 // <image><url>		<icon>			image[url]
 // <image><title>				image[title]
-// <image><link>					image[link]
+// <image><link>				image[link]
 // <rating>					-
 // <textInput>					-
 // <skipHours>					-
@@ -90,7 +90,7 @@
 // RSS item:		Atom entry		field
 // <title>		<title>			title
 // <link>		<link rel=alternate>	url
-// <description>		<summary>		description
+// <description>	<summary>		description
 //			<content>		content
 // <author>		<author><email>		author_email
 //			<author><name>		author_name
@@ -131,10 +131,10 @@ $element_hooks[""]["description"][] = wapo_ad_hook;
 $element_hooks[""]["description"][] = webbug_hook;
 $element_hooks[""]["description"][] = more_ads_hook;
 $element_hooks[""]["description"][] = no_style_hook;
-$element_hooks[""]["description"][] = thumbnail_hook;
 $element_hooks["http://purl.org/rss/1.0/"]["description"][] = feedburner_hook;
 $element_hooks[""]["item"][] = feedburner_origlink_hook;
 $element_hooks[""]["item"][] = pheedo_origlink_hook;
+$element_hooks[""]["item"][] = thumbnail_hook;
 $element_hooks["http://purl.org/rss/1.0/modules/content/"]["encoded"][] = googleads_hook;
 $element_hooks["http://purl.org/rss/1.0/"]["description"][] = googleads_hook;
 $element_hooks["http://purl.org/rss/1.0/"]["description"][] = slashdot_noise_hook;
@@ -147,6 +147,7 @@ $element_hooks["http://purl.org/rss/1.0/modules/content/"]["encoded"][] = zemant
  * Maps the URL for a given namespace to its handler.
  * Elements of this array are of the form
  *	$URL => array(
+ *			"init" => namespace_initialization,
  *			"element" => element_handler,
  *			"attribute" => attribute_handler,
  *			"text" => text_handler,
@@ -186,7 +187,6 @@ $url2handler = array(		// Handlers for specific URLs
 
 // Other namespaces I've seen, for additional features inside a feed:
 // admin	http://webns.net/mvcb/
-// atom		http://www.w3.org/2005/Atom
 // blogChannel	http://backend.userland.com/blogChannelModule
 // cc		http://web.resource.org/cc/
 // content	http://purl.org/rss/1.0/modules/content/
@@ -194,6 +194,7 @@ $url2handler = array(		// Handlers for specific URLs
 		"element"	=> content_element_handler,
 		),
 // dc		http://purl.org/dc/elements/1.1/
+//		(Dublin Core)
 	"http://purl.org/dc/elements/1.1/"	=> array(
 		"element"	=> dc_element_handler,
 		),
@@ -201,17 +202,14 @@ $url2handler = array(		// Handlers for specific URLs
 // flickr	http://flickr.com/services/feeds/
 // itunes	http://www.itunes.com/dtds/podcast-1.0.dtd
 // lj		http://www.livejournal.org/rss/lj/1.0/
-	"http://www.livejournal.org/rss/lj/1.0/" => array(
-		"init"		=> lj_init,
-		"element"	=> lj_element_handler,	// XXX - Write this
-		),
-// media	http://search.yahoo.com/mrss/
-// Used by cracked.com
-// XXX - Not working yet
-#	"http://search.yahoo.com/mrss/"	=> array(
-#		"init"		=> media_init,
-#		"element"	=> media_element_handler,
+# XXX - Nothing implemented yet
+#	"http://www.livejournal.org/rss/lj/1.0/" => array(
+#		"element"	=> lj_element_handler,	// XXX - Write this
 #		),
+// media	http://search.yahoo.com/mrss/
+	"http://search.yahoo.com/mrss/"	=> array(
+		"element"	=> media_element_handler,
+		),
 // openSearch	http://a9.com/-/spec/opensearchrss/1.0/
 // sy		http://purl.org/rss/1.0/modules/syndication/
 // thr		http://purl.org/syndication/thread/1.0
@@ -577,7 +575,7 @@ function _element_end_handler($parser, $fullname)
 			/* Call each hook in turn */
 			$h($node['name'],
 			   $node['retval'],
-			   $context);
+			   $_context);
 		}
 	}
 
@@ -876,13 +874,21 @@ function rss_element_handler(
 		}
 		break;
 
-		# XXX - <summary> appears to be used by Yahoo!, in
-		# the cracked.com feed.
-	    case "summary":
+		// Hack: <summary> and <abstract> are used in the
+		// Cracked.com RSS feed as, apparently, the summary,
+		// even though these elements aren't in the RSS 2.0
+		// spec.
+		// On top of which, <description> is just a bunch of
+		// FeedBurner garbage. Bastards.
+
+		// XXX - Can't get the parser to put the real summary
+		// in the ultimate return value.
+	    # case "summary":
+	    case "abstract":
 		switch ($parent)
 		{
 		    case "item":
-			$retval['content'] = $children;
+			$retval['summary'] = $children;
 			break;
 		    default:
 			// XXX - Better error-reporting
@@ -2076,10 +2082,6 @@ function lj_init($url, $prefix)
 
 /********** media ****************************************/
 // XXX - This belongs in a plugin
-function media_init($url, $prefix)
-{
-	return true;
-}
 
 function media_element_handler(
 	$ns_url,	// URL of this element's namespace
@@ -2091,20 +2093,21 @@ function media_element_handler(
 	&$context)	// Where we are at the moment
 {
 	$parent = $context[count($context)-1]['name'];
-#echo "Inside media_element_handler($elt_name) in [$parent]<br/>\n";
+
 	switch ($elt_name)
 	{
 	    case "thumbnail":
-#echo "Adding thumbnail [$attrs[url]]<br/>\n";
+		# Thumbnail for a post, presumably
 		$retval['media:thumbnail'] = $attrs['url'];
 		break;
+		// XXX - group
+		// XXX - content
 	    default:
 		    // Ignore
 		    // XXX - Is there anything else we'd want?
 		    break;
 	}
 
-#echo "[<pre>"; print_r($retval); echo "</pre>]\n";
 	return true;
 }
 
@@ -2506,22 +2509,23 @@ function no_style_hook($nodename, &$retval, &$context)
 
 function thumbnail_hook($nodename, &$retval, &$context)
 {
-	return;
 #echo "Inside thumbnail_hook($nodename)<br/>\n";
-#echo "<pre>"; print_r(&$context[count($context)-1]); echo "</pre>\n";
+#echo "<pre>"; print_r($retval); echo "</pre>\n";
 	if (!isset($retval['media:thumbnail']))
 		return;
 #echo "There's a thumbnail<br/>\n";
 
+	$thumb = "<img class=\"thumbnail\" src=\"".
+		$retval['media:thumbnail'] .
+		"\"/>\n";
+
 	if (isset($retval['content']))
-		$retval['content'] = "<img class=\"thumbnail\" src=\"" .
-			$retval['media:thumbnail'] .
-			"\"/>" .
-			$retval['content'];
+		$retval['content'] = $thumb . $retval['content'];
+	if (isset($retval['summary']))
+		$retval['content'] = $thumb . $retval['summary'];
 	if (isset($retval['description']))
-		$retval['description'] = "<img class=\"thumbnail\" src=\"" .
-			$retval['media:thumbnail'] .
-			"\"/>" .
-			$retval['description'];
+		$retval['content'] = $thumb . $retval['description'];
+
+	return true;
 }
 ?>
