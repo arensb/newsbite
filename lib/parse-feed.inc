@@ -131,6 +131,7 @@ $element_hooks[""]["description"][] = wapo_ad_hook;
 $element_hooks[""]["description"][] = webbug_hook;
 $element_hooks[""]["description"][] = more_ads_hook;
 $element_hooks[""]["description"][] = no_style_hook;
+$element_hooks[""]["description"][] = thumbnail_hook;
 $element_hooks["http://purl.org/rss/1.0/"]["description"][] = feedburner_hook;
 $element_hooks[""]["item"][] = feedburner_origlink_hook;
 $element_hooks[""]["item"][] = pheedo_origlink_hook;
@@ -205,6 +206,12 @@ $url2handler = array(		// Handlers for specific URLs
 		"element"	=> lj_element_handler,	// XXX - Write this
 		),
 // media	http://search.yahoo.com/mrss/
+// Used by cracked.com
+// XXX - Not working yet
+#	"http://search.yahoo.com/mrss/"	=> array(
+#		"init"		=> media_init,
+#		"element"	=> media_element_handler,
+#		),
 // openSearch	http://a9.com/-/spec/opensearchrss/1.0/
 // sy		http://purl.org/rss/1.0/modules/syndication/
 // thr		http://purl.org/syndication/thread/1.0
@@ -339,6 +346,8 @@ function parse_feed($feed_text)
 		$feed_errmsg = "XML Parser found an error: " .
 			xml_error_string(xml_get_error_code($xml_parser));
 
+		# XXX - There's still stuff in $_context. Perhaps a partial
+		# list of items can be fished out from that.
 		return FALSE;
 	} else	if ($feed_err)
 	{
@@ -881,9 +890,6 @@ function rss_element_handler(
 			break;
 		}
 		break;
-# XXX - Should also have "thumbnail", also for the cracked.com feed:
-# It has a thumbnail image that goes with the article.
-# Could also use <media:thumbnail>. See the RSS feed for details.
 
 	    case "pubDate":
 		switch ($parent)
@@ -2068,6 +2074,40 @@ function lj_init($url, $prefix)
 }
 
 
+/********** media ****************************************/
+// XXX - This belongs in a plugin
+function media_init($url, $prefix)
+{
+	return true;
+}
+
+function media_element_handler(
+	$ns_url,	// URL of this element's namespace
+	$prefix,	// Namespace of this element
+	$elt_name,	// Name of this element, without prefix
+	&$attrs,	// Attributes
+	&$children,	// Contents of this element
+	&$retval,	// Fill in the blanks here
+	&$context)	// Where we are at the moment
+{
+	$parent = $context[count($context)-1]['name'];
+#echo "Inside media_element_handler($elt_name) in [$parent]<br/>\n";
+	switch ($elt_name)
+	{
+	    case "thumbnail":
+#echo "Adding thumbnail [$attrs[url]]<br/>\n";
+		$retval['media:thumbnail'] = $attrs['url'];
+		break;
+	    default:
+		    // Ignore
+		    // XXX - Is there anything else we'd want?
+		    break;
+	}
+
+#echo "[<pre>"; print_r($retval); echo "</pre>]\n";
+	return true;
+}
+
 /********** content ****************************************/
 // XXX - This belongs in a plugin
 /* content_element_handler
@@ -2363,33 +2403,36 @@ function wapo_ad_hook($nodename, &$retval, &$context)
 {
 	if (!isset($retval['#text']))
 		return;
-# XXX - This ad appears to be gone
-#	# Visible ad
-#	$retval['#text'] = preg_replace('{<hr />\r?\n<div style="font-size:xx-small;color:gray;padding-bottom:.5em">Featured Advertiser</div>.*}s',
-#					'',
-#					$retval['#text']);
-	# Keyword/ad link
-	$retval['#text'] = preg_replace('{<a href=["\']http://ads.pheedo.com/.*?</a>( - )?}s',
-					'',
-					$retval['#text']);
-#echo "(wapo ads) after 1: <pre>["; print_r($retval); echo "]</pre>\n";
-	$retval['#text'] = preg_replace('{\n*<img src=["\']http://(\w+\.)?pheedo\.com.*?/>}s',
-					'',
-					$retval['#text']);
-#echo "(wapo ads) after 2: <pre>["; print_r($retval); echo "]</pre>\n";
 
-# XXX - This appears to be gone
-#	# And another bug
-#	$retval['#text'] = preg_replace('{<br clear="all"><a href="http://ad.doubleclick.net/[^\"]*" target="_blank"><img src="http://ad.doubleclick.net/[^\"]*" border="0" vspace="5"></a> *}',
-#					'',
-#					$retval['#text']);
+	// Row of pheedo ads at the bottom, optionally separated by
+	// dashes.
+	$retval['#text'] = preg_replace(
+		'{<a href=[\'"]http://ads\.pheedo\.com/.*?</a>( - )?}s',
+		'',
+		$retval['#text']);
+#echo "text 2: [", $retval['#text'], "]\n";
 
-	# Bogus blank lines at end of article
-	$retval['#text'] = preg_replace('{(\s*<br[^/>]*?/>)+\s*$}s',
-					'',
-					$retval['#text']);
+	// Pheedo's Bing image
+	$retval['#text'] = preg_replace(
+		'{<img src=[\'"]http://ads\.pheedo\.com/[^>]*/>}',
+		'',
+		$retval['#text']);
+#echo "text 3: [", $retval['#text'], "]\n";
 
-#echo "(wapo ads) after 1: <pre>["; print_r($retval); echo "]</pre>\n";
+	// Any number of web bugs
+	$retval['#text'] = preg_replace(
+		'{<img[^>]*height="0" width="0"[^>]*/>}s',
+		'',
+		$retval['#text']);
+#echo "text 4: [", $retval['#text'], "]\n";
+
+	// Removing all of the above leaves a bunch of <br>s at the
+	// end.
+	$retval['#text'] = preg_replace(
+		'{(\s*<br\b[^>]*/>)+\s*$}s',
+		'',
+		$retval['#text']);
+#echo "text 5: [", $retval['#text'], "]\n";
 }
 
 /* webbug_hook
@@ -2459,5 +2502,26 @@ function no_style_hook($nodename, &$retval, &$context)
 					'',
 					$retval['#text']);
 #echo "(no style) after 1: <pre>["; print_r($retval); echo "]</pre>\n";
+}
+
+function thumbnail_hook($nodename, &$retval, &$context)
+{
+	return;
+#echo "Inside thumbnail_hook($nodename)<br/>\n";
+#echo "<pre>"; print_r(&$context[count($context)-1]); echo "</pre>\n";
+	if (!isset($retval['media:thumbnail']))
+		return;
+#echo "There's a thumbnail<br/>\n";
+
+	if (isset($retval['content']))
+		$retval['content'] = "<img class=\"thumbnail\" src=\"" .
+			$retval['media:thumbnail'] .
+			"\"/>" .
+			$retval['content'];
+	if (isset($retval['description']))
+		$retval['description'] = "<img class=\"thumbnail\" src=\"" .
+			$retval['media:thumbnail'] .
+			"\"/>" .
+			$retval['description'];
 }
 ?>
