@@ -1,18 +1,4 @@
 - Staleness: need to tweak
-  - When upgrading, feeds.last_update is NULL.
-	Set it to the release_date of the latest post in each feed. If
-    that's still NULL, set it to NOW() to reset the staleness clock.
-	select	feeds.id,
-		feeds.title,
-		ifnull(max(items.pub_date), now()) as foo from feeds left join items on feeds.id = items.feed_id group by feeds.id order by foo asc;
-
-    update feeds set last_update = (select max(pub_date) from items
-    where items.feed_id = feeds.id);
-
-    update feeds set last_update = (select ifnull(max(pub_date), NOW()) from items where items.feed_id = feeds.id);
-
-
-
   - Iron Chariots has <entry><updated>, which goes to the
     $item[build_time], which I don't think is ever used.
 	Should it be used if no better pub time is available?
@@ -308,6 +294,9 @@
   gracefully? OTOH, is it a good idea to be too liberal in what we
   accept? Isn't that an invitation to XSS? XML is supposed to be
   really anal about syntax.
+- There should really be a tool for testing plugins.
+	For removing ads and such: it'd be nice to plug the XML or the
+  article into a temp file, and 
 - Should there be an external log file, for debugging and whatnot?
 	It'd also be nice to add a pile of monitoring, to be able to
   see what happens when, to optimize properly.
