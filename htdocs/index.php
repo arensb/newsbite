@@ -19,6 +19,8 @@ $dbh = db_connect();
 $feeds = db_get_feeds(TRUE);
 $counts = db_get_all_feed_counts();
 
+$err = usort($feeds, "byname");
+
 $skin = new Skin();
 
 $skin->assign('feeds', $feeds);
@@ -26,4 +28,14 @@ $skin->assign('counts', $counts);
 $skin->assign('mobile', $mobile);
 $skin->display("feeds.tpl");
 db_disconnect();
+
+function byname($a, $b)
+{
+       $nameA = ($a['nickname'] == "" ? $a['title'] : $a['nickname']);
+       $nameB = ($b['nickname'] == "" ? $b['title'] : $b['nickname']);
+
+       if ($nameA == $nameB)
+               return 0;
+       return ($nameA < $nameB ? -1 : 1);
+}
 ?>
