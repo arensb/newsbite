@@ -172,12 +172,6 @@ $url2handler = array(		// Handlers for specific URLs
 		"element"	=> atom_element_handler,
 		"attribute"	=> atom_attribute_handler,
 		),
-// XXX - Used by atheistcartoons.com
-"http://purl.org/atom/ns#" => array(
-	"init"		=> atom_init,
-	"element"	=> atom_element_handler,
-	"attribute"	=> atom_attribute_handler,
-	),
 
 	// RDF
 	"http://purl.org/rss/1.0/" => array(
@@ -192,14 +186,10 @@ $url2handler = array(		// Handlers for specific URLs
 // blogChannel	http://backend.userland.com/blogChannelModule
 // cc		http://web.resource.org/cc/
 // content	http://purl.org/rss/1.0/modules/content/
-#	"http://purl.org/rss/1.0/modules/content/"	=> array(
-#		"element"	=> content_element_handler,
-#		),
+//		Handled by plugins/xml-content.php
 // dc		http://purl.org/dc/elements/1.1/
 //		(Dublin Core)
-	"http://purl.org/dc/elements/1.1/"	=> array(
-		"element"	=> dc_element_handler,
-		),
+//		Handled by plugins/xml-dc.php
 // feedburner	http://rssnamespace.org/feedburner/ext/1.0
 // flickr	http://flickr.com/services/feeds/
 // itunes	http://www.itunes.com/dtds/podcast-1.0.dtd
@@ -208,6 +198,8 @@ $url2handler = array(		// Handlers for specific URLs
 #	"http://www.livejournal.org/rss/lj/1.0/" => array(
 #		"element"	=> lj_element_handler,	// XXX - Write this
 #		),
+// media       http://search.yahoo.com/mrss/
+//		Handled by plugins/xml-media.php
 // openSearch	http://a9.com/-/spec/opensearchrss/1.0/
 // sy		http://purl.org/rss/1.0/modules/syndication/
 // thr		http://purl.org/syndication/thread/1.0
@@ -2083,42 +2075,6 @@ function rdf_element_handler(
 		// XXX - Better error-reporting
 //		echo "Warning: unknown RDF element: [$elt_name]\n";
 		break;
-	}
-
-	return true;
-}
-
-/********** dc *********************************************/
-// XXX - This belongs in a plugin
-/* dc_element_handler
- * Handle the RSS Dublin Core extension:
- * http://purl.org/dc/elements/1.1/
- * http://dublincore.org/documents/dces/
- *
- * <dc:creator>name</dc:creator>
- *	The author of the post
- */
-function dc_element_handler(
-	$ns_url,	// URL of this element's namespace
-	$prefix,	// Namespace of this element
-	$elt_name,	// Name of this element, without prefix
-	&$attrs,	// Attributes
-	&$children,	// Contents of this element
-	&$retval,	// Fill in the blanks here
-	&$context)	// Where we are at the moment
-{
-	$parent = $context[count($context)-1]['name'];
-	switch ($elt_name)
-	{
-	    case "creator":
-		// XXX - Make sure $chldren is a string?
-		$retval['author_name'] = $children;
-		break;
-
-	    default:
-//		echo "Warning: unknown \"dc:\" element: [$elt_name]\n";
-		break;
-		
 	}
 
 	return true;
