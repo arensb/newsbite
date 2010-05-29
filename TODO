@@ -27,6 +27,14 @@
 - Bug-ish: when marking a feed as inactive, get redirected back to it.
   This is bogus.
 	Redirect to feed index.
+- Washington Post World feed starts with
+	<?xml version="1.0" encoding="iso-8859-1"?>
+  But content is really UTF-8. Can this be fixed in a hook? Can this
+  be a hook to the XML parser, or do we need to fix the text of the
+  feed before passing it along to be parsed?
+	Probably the latter. There's an
+  xml_set_processing_instruction_handler(), but presumably it gets
+  called only after the PI has been read.
 - Break up main index page into sections:
 	Active, non-stale feeds
 	Active stale feeds
@@ -75,6 +83,13 @@
 	for (i = 0; i < collection.length; i++)
     use
 	for (i = 0, len = collection.length; i < len; i++
+  - Repaints/reflows are expensive, but necessary for
+    collapsing/expanding articles.
+	Is it worth getting the height and Y-offset of each <div item>
+    in an onload callback, and caching the value in case the user
+    wants to collapse/expand something?
+	Use onload, since that's when all the images will have loaded,
+    and we know what the final look of the page is.
 - Can Rhino be used to check JS syntax and whatnot?
   https://developer.mozilla.org/en/Rhino
 	What about profiling?

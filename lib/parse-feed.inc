@@ -3,6 +3,8 @@
  * Functions for parsing RSS (and similar) XML feed files.
  */
 
+require_once("hooks.inc");
+
 /* Note on time:
  * One bit of odd behavior that might be reported as a bug is that the
  * displayed time of an item is several days in the future from what
@@ -206,15 +208,29 @@ $url2handler = array(		// Handlers for specific URLs
 #	"http://www.livejournal.org/rss/lj/1.0/" => array(
 #		"element"	=> lj_element_handler,	// XXX - Write this
 #		),
-// media	http://search.yahoo.com/mrss/
-	"http://search.yahoo.com/mrss/"	=> array(
-		"element"	=> media_element_handler,
-		),
 // openSearch	http://a9.com/-/spec/opensearchrss/1.0/
 // sy		http://purl.org/rss/1.0/modules/syndication/
 // thr		http://purl.org/syndication/thread/1.0
 // wfw		http://wellformedweb.org/CommentAPI/
 	);
+
+/* add_xml_handler
+ * Very similar to add_hook, but for XML namespaces. Takes a namespace
+ * identifier, like http://purl.org/rss/1.0/modules/content/ , and
+ * sets its handler, an array of the form:
+ *	array("init"	=> init_function,
+ *	      "element"	=> element_handler_function,
+ *	      "attribute"	=> attribute_handler_function,
+ *	      "text"	=> text_handler_function);
+ */
+function add_xml_handler($namespace, $handler)
+{
+	global $url2handler;
+
+	$url2handler[$namespace] = $handler;
+}
+
+load_hooks(PLUGIN_DIR);
 
 $url2ns = array();	// Map URLs to their namespace prefixes
 $ns2url = array();	// Map namespace prefixes to their URLs
@@ -2076,38 +2092,6 @@ function rdf_element_handler(
 // XXX - This belongs in a plugin
 function lj_init($url, $prefix)
 {
-	return true;
-}
-
-
-/********** media ****************************************/
-// XXX - This belongs in a plugin
-
-function media_element_handler(
-	$ns_url,	// URL of this element's namespace
-	$prefix,	// Namespace of this element
-	$elt_name,	// Name of this element, without prefix
-	&$attrs,	// Attributes
-	&$children,	// Contents of this element
-	&$retval,	// Fill in the blanks here
-	&$context)	// Where we are at the moment
-{
-	$parent = $context[count($context)-1]['name'];
-
-	switch ($elt_name)
-	{
-	    case "thumbnail":
-		# Thumbnail for a post, presumably
-		$retval['media:thumbnail'] = $attrs['url'];
-		break;
-		// XXX - group
-		// XXX - content
-	    default:
-		    // Ignore
-		    // XXX - Is there anything else we'd want?
-		    break;
-	}
-
 	return true;
 }
 
