@@ -5,7 +5,6 @@
 require_once("config.inc");
 
 /* hooks
-
  * The entries in this array are hook names; the values are arrays of
  * function names to call for that hook. That is, if the hook is
  * called "parse-hook", and we want to call functions somefunc() and
@@ -40,7 +39,7 @@ function load_hooks($dir)
 			continue;
 
 		/* Include the file */
-		@$err = include_once("$dir/$file");
+		$err = include_once("$dir/$file");
 			// XXX - If the file fails to load,
 			// include_once will return false. What do we
 			// want to do about this?
