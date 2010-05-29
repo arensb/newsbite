@@ -111,9 +111,11 @@ htdocs/view.php
 lib/common.inc
 lib/config.inc
 lib/database.inc
+lib/hooks.inc
 lib/net.inc
 lib/parse-feed.inc
 lib/skin.inc
 php.ini
+plugins/xml-media.php
 schema.sql
 tests/README
