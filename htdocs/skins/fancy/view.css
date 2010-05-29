@@ -468,3 +468,9 @@ blockquote {
 	margin-left:		1em;
 	padding-left:		0.5em;
 }
+
+img.thumbnail {
+	float:			left;
+	margin-right:		1em;
+	margin-bottom:		1em;
+}
