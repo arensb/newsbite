@@ -349,6 +349,14 @@ input[type="checkbox"].mark-check {
 	overflow:		auto;
 }
 
+.content-panes[collapsible="yes"] .item-summary {
+	/* Summary should be short. Make sure it doesn't take up too much
+	 * screen real estate.
+	 */
+	max-height:		10em;
+	overflow:		auto;
+}
+
 /* If an article begins with an image, that image should float left,
  * with the text wrapped around it.
  */
