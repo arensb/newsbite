@@ -309,7 +309,7 @@ function parse_feed($feed_text)
 	$feed_text = preg_replace_callback('{<description>(.*?)</description>}s',
 					   create_function('$matches',
 							   'if (preg_match("/^\s*<!\[CDATA\[.*\]\]>\s*$/s", $matches[1]))
-					// Properly escpaed
+					// Properly escaped
 					return $matches[0];
 			       if (strpbrk($matches[1], "<>"))
 					// Contains <>. Must escape
@@ -510,9 +510,10 @@ function _element_start_handler($parser, $fullname, $attrs)
 			// "attr" means. But since "attr" is in the
 			// default namespace, it'll be processed by
 			// some function that doesn't know about
-			// "attr". It ought to pass "attr" through, so
-			// that the function that'll handle
-			// </ext:element> will see the attribute.
+			// "ext:element". It ought to pass "attr"
+			// through, so that the function that'll
+			// handle </ext:element> will see the
+			// attribute.
 			//
 			// This can cause some confusion, but
 			// http://www.w3.org/TR/REC-xml-names/
@@ -568,7 +569,6 @@ function _element_end_handler($parser, $fullname)
 	$node = array_pop($_context);	// Node that we're closing
 	$retval =& $_context[count($_context)-1]['retval'];
 			// Where to put return value from this element
-
 
 	/* Run any hooks associated with this element.
 	 * Hooks are run before the handler: that way, a hook has a
@@ -869,8 +869,12 @@ function rss_element_handler(
 	    case "description":
 		switch ($parent)
 		{
-		    case "channel":
 		    case "item":
+			run_hooks("summary",
+				  array($elt_name, &$children, &$context));
+			$retval[$elt_name] = &$children;
+			break;
+		    case "channel":
 		    case "image":
 		    case "textInput":
 			$retval[$elt_name] = $children;
@@ -1197,7 +1201,11 @@ function rss_element_handler(
 		switch ($parent)
 		{
 		    case "channel":
-			$retval['items'][] = $children;
+			run_hooks("item",
+				  array($elt_name,
+					&$children,
+					&$context));
+			$retval['items'][] = &$children;
 			break;
 		    default:
 			// XXX - Better error-reporting
@@ -1210,6 +1218,11 @@ function rss_element_handler(
 		switch ($parent)
 		{
 		    case "rss":
+			// Hooks for when we've seen the entire channel
+			run_hooks("feed",
+				  array($elt_name,
+					&$children,
+					&$context));
 			$retval = $children;
 			break;
 		    default:
@@ -1224,6 +1237,11 @@ function rss_element_handler(
 		{
 		    case "":
 			$retval = $children;
+			// XXX - Is it worth adding a hook for the
+			// <rss> element, which normally only contains
+			// a single <channel> element?
+			// Maybe if there's a feed with more than one
+			// <channel>. Wait until that happens.
 			break;
 		    default:
 			// XXX - Better error-reporting
@@ -1827,7 +1845,9 @@ function atom_element_handler(
 		{
 		    case "entry":
 			// XXX - Make sure $children is a string.
-			$retval['description'] = $children;
+			run_hooks("summary",
+				  array($elt_name, &$children, &$context));
+			$retval['description'] = &$children;
 			break;
 
 		    default:
@@ -1855,7 +1875,9 @@ function atom_element_handler(
 		switch ($parent)
 		{
 		    case "entry":
-			$retval[$elt_name] = $children;
+			run_hooks("body",
+				  array($elt_name, &$children, &$context));
+			$retval[$elt_name] = &$children;
 			break;
 
 		    default:
@@ -1869,7 +1891,11 @@ function atom_element_handler(
 		switch ($parent)
 		{
 		    case "feed":
-			$retval['items'][] = $children;
+			$retval['items'][] = &$children;
+			run_hooks("item",
+				  array($elt_name,
+					&$children,
+					&$context));
 			break;
 
 		    default:
@@ -1883,6 +1909,10 @@ function atom_element_handler(
 		switch ($parent)
 		{
 		    case "":
+			run_hooks("feed",
+				  array($elt_name,
+					&$children,
+					&$context));
 			$retval = $children;
 			break;
 
@@ -1976,7 +2006,9 @@ function rdf_element_handler(
 
 		    case "item":
 			// XXX - Make sure $children is a string
-			$retval[$elt_name] = $children;
+			run_hooks("summary",
+				  array($elt_name, &$children, &$context));
+			$retval[$elt_name] = &$children;
 			break;
 
 		    default:
@@ -2047,7 +2079,11 @@ function rdf_element_handler(
 		switch ($parent)
 		{
 		    case "RDF":
-			$retval['items'][] = $children;
+			run_hooks("item",
+				  array($elt_name,
+					&$children,
+					&$context));
+			$retval['items'][] = &$children;
 			break;
 
 		    default:
@@ -2061,6 +2097,10 @@ function rdf_element_handler(
 		switch ($parent)
 		{
 		    case "":
+			run_hooks("feed",
+				  array($elt_name,
+					&$children,
+					&$context));
 			$retval = $children;
 			break;
 
@@ -2412,4 +2452,93 @@ function thumbnail_hook($nodename, &$retval, &$context)
 
 	return true;
 }
+
+// Test hooks ----------------------------------------
+# Test with:
+# - RSS
+#	- 0.91	ok
+#	- 0.92	ok
+#	- 1.0	? (no examples)
+#	- 2.0	ok
+# - Atom	ok
+# - RDF		ok
+function mangle_summary($nodename, &$retval, &$context)
+{
+	// If this works, each article summary will have "XXX
+	// Description" in front of it.
+
+#	echo "Inside mangle_summary($nodename)<br/>\n";
+#	echo "Start retval: [<pre>"; print_r($retval); echo "</pre>]<br/>\n";
+
+	$retval = "XXX Description ($nodename): " .
+		$retval;
+
+#	echo "retval: [<pre>"; print_r($retval); echo "</pre>]<br/>\n";
+}
+#add_hook("summary", "mangle_summary");
+
+# Test with:
+# - RSS
+#	- 0.91	ok
+#	- 0.92	ok
+#	- 1.0	? (no examples)
+#	- 2.0	ok
+# - Atom	ok
+# - RDF		ok
+function mangle_content($nodename, &$retval, &$context)
+{
+	// If this works, each article body will have "XXX Body" in
+	// front of it.
+#	echo "Inside mangle_content($nodename)<br/>\n";
+#	echo "Start retval: [<pre>"; print_r($retval); echo "</pre>]<br/>\n";
+
+	$retval = "XXX Body ($nodename): " .
+		$retval;
+#	echo "retval: [<pre>"; print_r($retval); echo "</pre>]<br/>\n";
+}
+#add_hook("body", "mangle_content");
+
+# Test with:
+# - RSS
+#	- 0.91	ok
+#	- 0.92	ok
+#	- 1.0	? (no examples)
+#	- 2.0	ok
+# - Atom	ok
+# - RDF		ok
+$seen_item = false;
+function mangle_item($nodename, &$retval, &$context)
+{
+	// If this works, the title of each item will have "(Category:
+	// <something>)" appended to it.
+#echo "Inside mangle_item($nodename)<br/>\n";
+#echo "start title: [$retval[title]]<br/>\n";
+#echo "Start retval: [<pre>"; print_r($retval); echo "</pre>]<br/>\n";
+	if (count($retval['categories']) > 0)
+	{
+#echo "Adding category [", $retval['categories'][0], "]<br/>\n";
+		$retval['title'] .= " (Category: " . $retval['categories'][0] . ")";
+	} else {
+#echo "Adding no category<br/>\n";
+		$retval['title'] .= " (No categories)";
+	}
+#echo "retval: [<pre>"; print_r($retval); echo "</pre>]<br/>\n";
+}
+#add_hook("item", "mangle_item");
+
+function mangle_feed($nodename, &$retval, &$context)
+{
+	// If this works, at the end of the output of update.php,
+	// there'll be a list of the titles of the articles that were
+	// seen.
+#	echo "Inside mangle_feed($nodename)<br/>\n";
+#	echo "<pre>"; print_r($retval); echo "</pre>\n";
+	echo "<ul>";
+	foreach ($retval['items'] as $i)
+	{
+		echo "<li>$i[title]</li>";
+	}
+	echo "</ul>\n";
+}
+#add_hook("feed", "mangle_feed");
 ?>
