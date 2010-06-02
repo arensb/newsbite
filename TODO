@@ -1,4 +1,5 @@
 - Convert $element_hooks stuff in parse-feed.inc to actual hooks.
+- Hook to strip iframe in Popdose.
 - Add hook for links to mobile versions of URLs (view.php).
 	Probably should add a subdirectory underneath "plugins".
 - Bug?: There are some old articles in the database. Why aren't they

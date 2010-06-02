@@ -205,18 +205,6 @@ if ($mobile &&
 #	}
 #}
 
-// Remove FeedBurner bugs.
-// XXX - This belongs in a separate FeedBurner plugin.
-// XXX - In fact, it should be done before adding items to database.
-foreach ($feed['items'] as &$i)
-{
-	$i['summary'] = defeedburn($i['summary']);
-	$i['content'] = defeedburn($i['content']);
-	unset($i);	// Otherwise, $feed['items'] messed up: last
-			// item removed, replaced with copy of
-			// next-to-last item.
-}
-
 if ($out_fmt == "json")
 {
 	echo jsonify($feed);
@@ -261,33 +249,5 @@ $skin->assign('auth_expiration', strftime("%c", $auth_expiration));
 $skin->display("view.tpl");
 
 db_disconnect();
-
-/* defeedburn
- * Remove bugs and links that FeedBurner adds to articles.
- * Not only does this help prevent FeedBurner from following your
- * reading habits, it also speeds up loading the page, since the
- * browser doesn't have to load a jillion external images.
- */
-// XXX - This belongs in a FeedBurner plugin.
-// XXX - Is this duplicated someplace in a lib/*.inc file?
-function defeedburn(&$str)
-{
-	$str = preg_replace(
-		'{<p><a href="http://feeds.feedburner.com/.*?">.*?</a></p>}s',
-		'',
-		$str);
-
-	$str = preg_replace(
-		'{<div class="feedflare">(\s*<a href=".*?"><img src=".*?" border="0"></img></a>)*\s*</div>}s',
-		'',
-		$str);
-
-	$str = preg_replace(
-		'{<img src="http://feeds.feedburner.com/.*?" height="1" width="1"/>}s',
-		'',
-		$str);
-
-	return $str;
-}
 
 ?>
