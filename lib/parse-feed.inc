@@ -48,8 +48,6 @@ require_once("hooks.inc");
 // links or images are relative, try to make them absolute. Or maybe
 // there's a way in HTML/XHTML to specify a base URL.
 
-// XXX - Functions to add handlers
-
 // Element-to-field mapping:
 // RSS:			Atom:			field
 // <item>		<entry>			items[]
@@ -118,6 +116,9 @@ require_once("hooks.inc");
  *			rss_rss_cleanup
  *			)
  *		)
+ */
+/* XXX - Arguably obsolete, what with plugins. But let's keep this
+ * around for a bit in case it proves to be useful.
  */
 $element_hooks = array();
 
