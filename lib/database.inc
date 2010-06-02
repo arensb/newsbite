@@ -519,7 +519,6 @@ function db_delete_feed($feed_id)
  */
 function db_update_feed_info($feed_id, $fields)
 {
-#echo "db_update_feed_info: fields ["; print_r($fields); echo "]\n";
 	$dbh = db_connect();
 
 	/* Get info about existing feed */

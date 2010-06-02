@@ -47,8 +47,12 @@ define('DEFAULT_SKIN', "default");
 
 /* Plugin directory. All *.php files in this directory will be loaded
  * by modules that take plugins or hooks.
+ *
+ * If you don't want to activate all of the plugins in the standard
+ * distribution, you can set this to some other directory, and make
+ * symlinks from there to the plugins that you want to turn on.
  */
-define('PLUGIN_DIR', "/path/to/plugins/");
+define('PLUGIN_DIR', "plugins");	// Relative to htdocs/
 
 /* Server secret password. This is only used to generate a checksum
  * for the authentication cookie. It is never used by humans, and is

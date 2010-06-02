@@ -116,6 +116,8 @@ lib/net.inc
 lib/parse-feed.inc
 lib/skin.inc
 php.ini
+plugins/xml-dc.php
+plugins/xml-content.php
 plugins/xml-media.php
 schema.sql
 tests/README

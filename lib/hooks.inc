@@ -60,21 +60,27 @@ function add_hook($hook, $func)
 
 /* run_hooks
  * Run all the functions on a given hook.
- * The first argument is the hook to run; all subsequent arguments
- * will be passed to the hook functions.
+ * The first argument is name of the function to run; the second is an
+ * array of arguments to pass to the function.
+ *
+ * Note on references: if a hook function expects an argument to be
+ * passed by reference, $args must be explicitly called with a
+ * reference to a variable:
+ *	function hook_func(&$ref_arg) { ... };
+ *	add_hook("myhook", "hook_func");
+ *	run_hooks("myhook",
+ *		array($&some_var));
  */
-function run_hooks($hook)
+function run_hooks($hook, $args)
 {
 	global $hooks;
-
-	$args = func_get_args();
-	array_shift($args);	// Remove $hook
 
 	if (!isset($hooks[$hook]) ||
 	    !is_array($hooks[$hook]))
 		// No such hook
 		return NULL;
 
+	// Call each hook in turn
 	foreach ($hooks[$hook] as $h)
 		call_user_func_array($h, $args);
 

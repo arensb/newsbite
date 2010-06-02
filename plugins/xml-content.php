@@ -48,7 +48,13 @@ function content_element_handler(
 		 * crafted to look like RSS.
 		 */
 		// XXX - Make sure $chldren is a string?
-		$retval['content'] = $children;
+		$retval['content'] = &$children;
+
+		// XXX - AFAIK <content:encoded> is only used in RSS
+		// feeds, to provide the body of an article (i.e.
+		// inside an <item>).
+		run_hooks("body",
+			  array("content", &$children, &$context));
 		break;
 
 	    default:

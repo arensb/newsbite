@@ -1,3 +1,6 @@
+- Convert $element_hooks stuff in parse-feed.inc to actual hooks.
+- Add hook for links to mobile versions of URLs (view.php).
+	Probably should add a subdirectory underneath "plugins".
 - Bug?: There are some old articles in the database. Why aren't they
   being cleaned out properly?
 	db_update_feed() only cleans out whichever feed it was called
@@ -27,6 +30,15 @@
 - Bug-ish: when marking a feed as inactive, get redirected back to it.
   This is bogus.
 	Redirect to feed index.
+- It'd be nice if PLUGIN_DIR could optionally be an array.
+  Unfortunately, PHP constants have to be scalars.
+- Maybe just give up on maintaining ChangeLog. Just use 'svn log -r
+  head:1' in Makefile. Or 'svn log -r "head:{2010-01-01}"' to get this
+  year's changes.
+	Should also have a NEWS file with changes users might care
+  about.
+- On iPod/iPad, perhaps item titles should open in a new window.
+- When an RSS URL gets redirected, this should cause a visible warning.
 - Washington Post World feed starts with
 	<?xml version="1.0" encoding="iso-8859-1"?>
   But content is really UTF-8. Can this be fixed in a hook? Can this
@@ -462,6 +474,16 @@
   tags in the body of the item. E.g., expand '<lj:user="foo">' into
   proper HTML.
 	Apparently <lj-embed id="<int>" /> indicates an embedded item.
+	Some known tags:
+  <lj:journal>
+  <lj:journalid>
+  <lj:journaltype>
+  <lj:mood>
+  <lj:music>
+  <lj:poster>
+  <lj:posterid>
+  <lj:reply-count>
+  <lj:security>
 - Security: should probably try to parse the body of any foreign text
   (in particular, summary and body of posts, as well as titles) to
   include only known-good HTML.
