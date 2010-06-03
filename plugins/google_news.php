@@ -4,7 +4,7 @@
 /* no_style_hook
  * Remove <font style=...> tags in Google News
  */
-function no_style_hook($nodename, &$retval, &$context)
+function google_news_hook($nodename, &$retval, &$context)
 {
 #echo "Inside no_style_hook($nodename)<br/>\n";
 	if (!is_string($retval))
@@ -19,6 +19,6 @@ function no_style_hook($nodename, &$retval, &$context)
 #echo "(no style) after 1: <pre>[", htmlentities($retval), "]</pre>\n";
 }
 
-add_hook("summary", "no_style_hook");
-#add_hook("body", "no_style_hook");
+add_hook("summary", "google_news_hook");
+#add_hook("body", "google_news_hook");
 ?>
