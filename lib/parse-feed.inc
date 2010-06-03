@@ -283,19 +283,30 @@ function parse_feed($feed_text)
 	// known-bad feeds, perhaps the best approach would be to have
 	// a pre-parse hook that gets called for certain specific
 	// feeds.
-	$feed_text = preg_replace_callback('{<description>(.*?)</description>}s',
-					   create_function('$matches',
-							   'if (preg_match("/^\s*<!\[CDATA\[.*\]\]>\s*$/s", $matches[1]))
-					// Properly escaped
-					return $matches[0];
-			       if (strpbrk($matches[1], "<>"))
-					// Contains <>. Must escape
-					return "<description><![CDATA[" .
-						htmlspecialchars_decode($matches[1]) .
-						"]]></description>";
-			       // No need to escape
-			       return $matches[0];'),
-					   $feed_text);
+
+	// XXX - This also breaks the FYI feed, because the items contain
+	//	<description>
+	//	  <![CDATA[<some-html>]]>
+	//	  &lt;some-more-html&gt;blah blah blah&lt;/some-more-html&gt;
+	//	</description>
+
+	// I guess what this should really do is: if there are any
+	// stretches of text that contain <s or >s, make sure they're
+	// properly escaped with CDATA.
+
+#	$feed_text = preg_replace_callback('{<description>(.*?)</description>}s',
+#					   create_function('$matches',
+#							   'if (preg_match("/^\s*<!\[CDATA\[.*\]\]>\s*$/s", $matches[1]))
+#					// Properly escaped
+#					return $matches[0];
+#			       if (strpbrk($matches[1], "<>"))
+#					// Contains <>. Must escape
+#					return "<description><![CDATA[" .
+#						htmlspecialchars_decode($matches[1]) .
+#						"]]></description>";
+#			       // No need to escape
+#			       return $matches[0];'),
+#					   $feed_text);
 
 	/* Initialize parser */
 	$xml_parser = xml_parser_create_ns();
