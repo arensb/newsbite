@@ -168,21 +168,6 @@
 	4) Check the list again; http://pharyngula.org/some-post still
   doesn't exist in the database.
 - Search function: find words in feeds, titles, articles, etc.
-- Simpler AJAX fetch:
-	// loadXMLDoc
-	// Fetch data from a URL, and return it.
-	function loadXMLDoc(url, data)
-	{
-	        var xhttp = new XMLHttpRequest();
-	
-	        xhttp.open("GET", url, false);
-	        if (data == undefined)
-	                data = "";
-	        xhttp.send(data);
-	        return xhttp.responseXML;
-	}
-  http://ajaxpatterns.org/XMLHttpRequest_Call says not to use this
-  (because hard to catch errors, etc.)
 - Read this to make iPhone-friendly skins:
   http://developer.apple.com/safari/library/documentation/AppleApplications/Reference/SafariWebContent/OptimizingforSafarioniPhone/OptimizingforSafarioniPhone.html
 - On iPhone, when mark an entry as read (using fancy skin), the
