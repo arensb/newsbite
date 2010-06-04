@@ -19,6 +19,9 @@ $dbh = db_connect();
 $feeds = db_get_feeds(TRUE);
 $counts = db_get_all_feed_counts();
 
+// Normalize each feed's name, to make sorting easier.
+foreach ($feeds as &$f)
+	get_normal_name($f);
 $err = usort($feeds, "byname");
 
 $skin = new Skin();
@@ -29,13 +32,35 @@ $skin->assign('mobile', $mobile);
 $skin->display("feeds.tpl");
 db_disconnect();
 
+// get_normal_name
+// Normalize the feed's name, for sorting purposes
+// XXX - Arguably, this should be cached somewhere. Like in a "sortname"
+// field in the database.
+function get_normal_name(&$feed)
+{
+	# Use the nickname if it's set, or the title otherwise.
+	$newname = $feed['title'];
+	if ($feed['nickname'] != "")
+		$newname = $feed['nickname'];
+
+	# Lower-case everything for case-insensitivity
+	$newname = strtolower($newname);
+
+	# Move "a", "an", "the", etc. to the end.
+	$newname = preg_replace('/^(a|an|the)\s+(.*)/',
+				'\2 \1',
+				$newname);
+
+	# And set it in the array.
+	$feed['normal_name'] = $newname;
+}
+
+// byname
+// Helper function to sort feeds by (normalized) name.
 function byname($a, $b)
 {
-       $nameA = ($a['nickname'] == "" ? $a['title'] : $a['nickname']);
-       $nameB = ($b['nickname'] == "" ? $b['title'] : $b['nickname']);
-
-       if ($nameA == $nameB)
-               return 0;
-       return ($nameA < $nameB ? -1 : 1);
+	if ($a['normal_name'] == $b['normal_name'])
+		return 0;
+	return $a['normal_name'] < $b['normal_name'] ? -1 : 1;
 }
 ?>
