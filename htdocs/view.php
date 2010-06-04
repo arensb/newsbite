@@ -131,11 +131,6 @@ if ($start >= $num_items)
 // XXX - This should go in a separate plugin
 // XXX - Is it worth adding a 'mobile_url' column to the feeds table,
 // and generating these URLs when the feed is fetched?
-
-// XXX - Bleah. The Onion has a mobile site, but there's no obvious
-// way to get the articles from the RSS feed: the feed uses URLs with
-// the subject in the URL, while the mobile site only uses internal
-// identifiers, which don't seem to appear anywhere else.
 if ($mobile &&
     $mobile != "iPad")		// XXX - Hack!
 {
@@ -167,6 +162,9 @@ if ($mobile &&
 					 $i['url']);
 		$i['url'] = preg_replace(',^http://(\w+)\.livejournal\.com/(.*),',
 					 '\0?format=light',
+					 $i['url']);
+		$i['url'] = preg_replace(',^http://(www\.)?theonion\.com/,',
+					 "http://mobile.theonion.com/",
 					 $i['url']);
 	}
 }
