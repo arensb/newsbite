@@ -1,5 +1,3 @@
-- Security: Remote code execution in Smarty < 2.6.23
-  Message-ID: <20100602231815.4a5db514@mail.a3li.li>
 - Add hook for links to mobile versions of URLs (view.php).
 	Probably should add a subdirectory underneath "plugins".
 - Bug?: There are some old articles in the database. Why aren't they
