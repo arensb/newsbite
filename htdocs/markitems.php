@@ -24,9 +24,9 @@ EOT
 		);
 else
 	abort("No command found; \$_REQUEST == [" .
-	      var_export($_REQUEST) .
+	      var_export($_REQUEST, TRUE) .
 	      "]\n\$_POST == [" .
-	      var_export($_POST) .
+	      var_export($_POST, TRUE) .
 	      "]");
 
 /* Ajax code submits lists of items */
