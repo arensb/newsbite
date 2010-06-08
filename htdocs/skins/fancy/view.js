@@ -1,5 +1,7 @@
 document.addEventListener("DOMContentLoaded", init, false);
 
+var main_form;		// Form containing all the items.
+
 function init()
 {
 //	if (document.getElementsByClassName)
@@ -13,6 +15,12 @@ function init()
 	addListenerByClass("collapse-bar", "click", toggle_pane, false);
 	addListenerByClass("expand-bar", "click", toggle_pane, false);
 	addListenerByClass("mark-check", "click", mark_item, false);
+
+	// The main form, the one that holds all the items, their
+	// checkboxes, the buttons at the top and bottom, etc.
+	main_form = document.forms[0];
+
+	window.addEventListener("keydown", handle_key, false);
 }
 
 /* addListenerByClass
@@ -486,16 +494,7 @@ function is_in_class(elem, cls)
 		// No class set
 		return false;
 
-	var classes = class_str.split(" ");
-			// Split class string into a list
-
-	for (var i in classes)
-	{
-		if (classes[i] == cls)
-			// Yup. It's in 'cls'.
-			return true;
-	}
-	return false;	// Nope. It's not in 'cls'
+	return class_str.match(new RegExp('(^|\\s)'+cls+'($|\\s)'));
 }
 
 /* add_class
@@ -650,6 +649,107 @@ function toggle_class(elem, classA, classB)
 	// The new class list is whatever we're left with.
 	elem.className = new_classes.join(" ");
 }
+/* ---------------------------------------- */
+var key_box = undefined;
+/* Handle keys */
+function handle_key(evt)
+{
+	/* Display the key that was pressed */
+	if (key_box == undefined)
+		key_box = document.getElementById("thekey");
+	if (key_box != undefined)
+	{
+		var msg = "Event: ";
+		if (evt.ctrlKey)
+			msg += "Ctrl-";
+		if (evt.shiftKey)
+			msg += "Shift-";
+		if (evt.metaKey)
+			msg += "Meta-";
+		if (evt.altKey)
+			msg += "Alt-";
+		if (evt.keyCode >= 32 &&
+		    evt.keyCode <= 126)
+		msg += String.fromCharCode(evt.keyCode);
+		else
+			msg += "&lt;"+evt.keyCode+"&gt;"
+		key_box.innerHTML = msg;
+	}
+
+// evt: object KeyboardEvent
+// originalTarget
+// target
+// currentTarget
+// type (keyup)
+// eventPhase (3)
+// which (74 == ASCII J)
+// ctrlKey (false)
+// shiftKey (false)
+// keyCode (74)
+// metaKey (false)
+// altKey (false)
+// view (object Window)
+
+	if (!evt.ctrlKey &&
+	    !evt.shiftKey &&
+	    !evt.metaKey &&
+	    !evt.altKey)
+	{
+		switch(evt.keyCode)
+		{
+		    case String.charCodeAt("R"):
+			main_form.submit();
+			return;
+		    default:
+			return;
+		}
+	} else if (!evt.ctrlKey &&
+	     evt.shiftKey &&
+	    !evt.metaKey &&
+	    !evt.altKey)
+	{
+		switch (evt.keyCode)
+		{
+		    case "C".charCodeAt():	// S-C: collapse-all
+			collapse_all();
+			break;
+		    case "E".charCodeAt():	// S-E: expand-all
+			expand_all();
+			break;
+		}
+		return;
+	}
+}
+
+/* XXX - collapse_all() and expand_all() don't play nice with
+ * toggle_pane(): they force a collapse/expansion, but toggle_pane()
+ * looks at the "which" attribute to decide which state to move the item
+ * to.
+ * collapse_all() and expand_all() should probably call toggle_pane()
+ * with arguments saying to force a state, or soemthing.
+ */
+function collapse_all()
+{
+	var items = document.getElementsByClassName("content-panes");
+
+//	alert("Found "+items.length+" items");
+	for (var i = 0, len = items.length; i < len; i++)
+	{
+		replace_class(items[i], "show-content", "show-summary");
+	}
+}
+
+function expand_all()
+{
+	var items = document.getElementsByClassName("content-panes");
+
+//	alert("Found "+items.length+" items");
+	for (var i = 0, len = items.length; i < len; i++)
+	{
+		replace_class(items[i], "show-summary", "show-content");
+	}
+}
+
 /* ---------------------------------------- */
 
 /* load_module
