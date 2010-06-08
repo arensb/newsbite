@@ -447,6 +447,33 @@
 	'd'	mark item as read, and skip to next item
 	'u'	mark item as unread, and skip to next item
 	?	move to previous item
+
+	Problem: attaching an event listener to each "item" element
+  doesn't work reliably: apparently Firefox doesn't understand
+  focus-follows-mouse, so it doesn't trigger as it should, when the
+  mouse is over a given item.
+	Besides, it's probably more efficient to just have a listener
+  on the window.
+	Perhaps can attach "mouseover" and "mouseout" listeners to
+  individual items: the last one that gets a mouseover is the current
+  item.
+
+	Probably best to have a keytab that maps keycodes to
+  functions, in Emacs fashion. Probably easiest to have 4 (or 8, or
+  32) keytabs, indexed by modifier key:
+	keytab[0] => bindings where Meta == false
+	keytab[0][1] => bindings where Meta == false, Ctrl == true
+	keytab[0][1][0][90] =>
+		binding for Meta == false, Ctrl == true, Shift == false,
+		keycode == 90.
+  Apparently booleans can be used as integers, so this should work.
+	Of course, by the same token, we could just have a 2-D array:
+		keytab[modifiers][keycode]
+  where
+	modifiers == shiftKey +
+		(ctrlKey << 1) +
+		(altKey << 2) +
+		(metaKey << 3);
 - Handle attachments (e.g., <media:content>,
   <feedburner:origEnclosureLink>) kind of like a mail reader would:
   put a list at the bottom of the message.

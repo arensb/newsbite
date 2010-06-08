@@ -310,24 +310,24 @@ input[type="checkbox"].mark-check {
 
 /* Which items should be displayed and hidden... */
 /* ...when we're showing the summary */
-.content-panes.show-summary .item-summary,
-.content-panes.show-summary .expand-bar {
+.content-panes[collapsible="yes"].show-summary .item-summary,
+.content-panes[collapsible="yes"].show-summary .expand-bar {
 	display:		block;
 }
 
-.content-panes.show-summary .collapse-bar,
-.content-panes.show-summary .item-content {
+.content-panes[collapsible="yes"].show-summary .collapse-bar,
+.content-panes[collapsible="yes"].show-summary .item-content {
 	display:		none;
 }
 
 /* ...when we're showing the content */
-.content-panes.show-content .item-summary,
-.content-panes.show-content .expand-bar {
+.content-panes[collapsible="yes"].show-content .item-summary,
+.content-panes[collapsible="yes"].show-content .expand-bar {
 	display:		none;
 }
 
-.content-panes.show-content .collapse-bar,
-.content-panes.show-content .item-content {
+.content-panes[collapsible="yes"].show-content .collapse-bar,
+.content-panes[collapsible="yes"].show-content .item-content {
 	display:		block;
 }
 

@@ -62,6 +62,7 @@
 <p><a onclick="p.report(); false">Profiling report</a></p>
 <pre id="profiler" style="clear:both"></pre>
 -->
+<!--<p id="thekey">No keys yet.</p>-->
 <p>User {$auth_user}, session expires {$auth_expiration}.</p>
 
 {if ($feed.image != "")}
