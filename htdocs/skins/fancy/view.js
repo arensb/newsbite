@@ -21,6 +21,11 @@ function init()
 	main_form = document.forms[0];
 
 	window.addEventListener("keydown", handle_key, false);
+
+	// Key bindings
+	bind_key("C-r", function() { main_form.submit() });
+	bind_key("S-c", collapse_all);
+	bind_key("C-e", expand_all);
 }
 
 /* addListenerByClass
@@ -147,27 +152,36 @@ function toggle_pane(ev)
 		/* Something's wrong. Abort */
 		return;
 
+	set_pane(container);
+
+	ev.preventDefault();	// Stop processing the event
+}
+
+function set_pane(container, state)
+{
 	/* Get the "which" attribute to see which pane is currently
 	 * displayed, and toggle it.
 	 * Ideally, CSS should take care of the rest, and in Firefox it
 	 * does, but Safari is stupid and doesn't update its display.
 	 * So we need to do this stuff manually.
 	 */
-	var cont_state = container.which_pane;
-	if (cont_state == undefined)
-		cont_state = container.getAttribute("which");
-	if (cont_state == "summary")
+	var cont_state;
+	var new_state;
+	if (state == undefined)
 	{
-		cont_state = "content";
-		container.which_pane = "content";
-		replace_class(container, "show-summary", "show-content");
-	} else {
-		cont_state = "summary";
-		container.which_pane = "summary";
-		replace_class(container, "show-content", "show-summary");
-	}
+		/* No new state given. Toggle the pane's state */
+		cont_state = container.getAttribute("which");
+		new_state = (cont_state == "summary" ? "content" : "summary");
+	} else
+		new_state = state;
 
-	ev.preventDefault();	// Stop processing the event
+	if (new_state == "summary")
+	{
+		replace_class(container, "show-content", "show-summary");
+	} else {
+		replace_class(container, "show-summary", "show-content");
+	}
+	container.setAttribute("which", new_state);
 }
 
 /* flush_queues
@@ -650,7 +664,53 @@ function toggle_class(elem, classA, classB)
 	elem.className = new_classes.join(" ");
 }
 /* ---------------------------------------- */
-var key_box = undefined;
+var key_box = undefined;	/* Debugging key events */
+
+var keytab = [];
+for (var ctrl = 0; ctrl <= 1; ctrl++)
+{
+	keytab[ctrl] = [];
+	for (var shift = 0; shift <= 1; shift++)
+	{
+		keytab[ctrl][shift] = [];
+		for (var meta = 0; meta <= 1; meta++)
+		{
+			keytab[ctrl][shift][meta] = [];
+			for (var alt = 0; alt <= 1; alt++)
+			{
+				keytab[ctrl][shift][meta][alt] = [];
+			}
+		}
+	}
+}
+
+function bind_key(key, func)
+{
+	var matches;
+
+//	c	no modifiers
+//	C	shift
+//	A-C-c	alt, ctrl
+//	A-C-M-S-c	alt, ctrl, meta, shift
+	matches = /^(A-)?(C-)?(M-)?(S-)?(.)/.exec(key);
+		// XXX - Error-checking
+//alert(matches);
+
+	var alt   = (matches[1] ? true : false);
+	var ctrl  = (matches[2] ? true : false);
+	var meta  = (matches[3] ? true : false);
+	var shift = (matches[4] ? true : false);
+	var ltr   = matches[5];
+
+	if (ltr.toLowerCase() != ltr)
+		// Special case: "S-x" and "X" are the same thing.
+		shift = true;
+
+//alert("A: "+alt+", C: "+ctrl+", M: "+meta+", S: "+shift+" ltr: "+ltr+" == "+func);
+//	keytab[alt+0][ctrl+0][meta+0][shift+0][ltr.toUpperCase().charCodeAt()] = func;
+	keytab[ctrl+0][shift+0][meta+0][alt+0][ltr.toUpperCase().charCodeAt()] = func;
+}
+
 /* Handle keys */
 function handle_key(evt)
 {
@@ -670,8 +730,8 @@ function handle_key(evt)
 			msg += "Alt-";
 		if (evt.keyCode >= 32 &&
 		    evt.keyCode <= 126)
-		msg += String.fromCharCode(evt.keyCode);
-		else
+			msg += String.fromCharCode(evt.keyCode);
+//		else
 			msg += "&lt;"+evt.keyCode+"&gt;"
 		key_box.innerHTML = msg;
 	}
@@ -690,6 +750,15 @@ function handle_key(evt)
 // altKey (false)
 // view (object Window)
 
+	var func = keytab[evt.ctrlKey+0][evt.shiftKey+0][evt.metaKey+0][evt.altKey+0][evt.keyCode];
+	if (func != undefined)
+	{
+key_box.innerHTML = "Calling function ["+func+"]";
+		func();
+		return;
+	}
+return;
+
 	if (!evt.ctrlKey &&
 	    !evt.shiftKey &&
 	    !evt.metaKey &&
@@ -697,7 +766,7 @@ function handle_key(evt)
 	{
 		switch(evt.keyCode)
 		{
-		    case String.charCodeAt("R"):
+		    case "R".charCodeAt():
 			main_form.submit();
 			return;
 		    default:
@@ -735,7 +804,8 @@ function collapse_all()
 //	alert("Found "+items.length+" items");
 	for (var i = 0, len = items.length; i < len; i++)
 	{
-		replace_class(items[i], "show-content", "show-summary");
+//		replace_class(items[i], "show-content", "show-summary");
+		set_pane(items[i], "summary");
 	}
 }
 
@@ -746,7 +816,8 @@ function expand_all()
 //	alert("Found "+items.length+" items");
 	for (var i = 0, len = items.length; i < len; i++)
 	{
-		replace_class(items[i], "show-summary", "show-content");
+//		replace_class(items[i], "show-summary", "show-content");
+		set_pane(items[i], "content");
 	}
 }
 
