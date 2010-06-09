@@ -18,6 +18,7 @@ htdocs/addfeed.php
 htdocs/editfeed.php
 htdocs/feeds.php
 htdocs/index.php
+htdocs/js/profiler.js
 htdocs/loadopml.php
 htdocs/login.php
 htdocs/markitems.php
