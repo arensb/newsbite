@@ -25,7 +25,7 @@ function init()
 	// Key bindings
 	bind_key("C-r", function() { main_form.submit() });
 	bind_key("S-c", collapse_all);
-	bind_key("C-e", expand_all);
+	bind_key("S-e", expand_all);
 }
 
 /* addListenerByClass
@@ -666,6 +666,13 @@ function toggle_class(elem, classA, classB)
 /* ---------------------------------------- */
 var key_box = undefined;	/* Debugging key events */
 
+/* keytab
+ * This is the main table for mapping keystrokes to functions.
+ * It's actually a 5-dimensional array, with the first four dimensions
+ * being booleans, keyed on the various modifier flags: Ctrl, Shift,
+ * Meta, and Alt. The fifth dimension is the keycode found in key
+ * events.
+ */
 var keytab = [];
 for (var ctrl = 0; ctrl <= 1; ctrl++)
 {
@@ -684,17 +691,30 @@ for (var ctrl = 0; ctrl <= 1; ctrl++)
 	}
 }
 
+/* bind_key
+ * Similar to define-key in Emacs. 'key' is a human-readable string
+ * defining a key combination, and 'func' is a function to call when
+ * that key is pressed.
+ *
+ * 'key' can be a letter, with optional modifiers:
+ *	x		The letter 'x'
+ *	X		Shift-X
+ *	S-x		Shift-X
+ *	M-x		Meta-X
+ *	C-x		Ctrl-X
+ *	A-x		Alt-X
+ * Modifiers may be combined:
+ *	M-S-x		Meta-Shift-X
+ *	A-C-M-S-x	Alt-Ctrl-Meta-Shift-X
+ * Unfortunately, order matters.
+ */
 function bind_key(key, func)
 {
 	var matches;
 
-//	c	no modifiers
-//	C	shift
-//	A-C-c	alt, ctrl
-//	A-C-M-S-c	alt, ctrl, meta, shift
+	/* Extract the key definition */
 	matches = /^(A-)?(C-)?(M-)?(S-)?(.)/.exec(key);
 		// XXX - Error-checking
-//alert(matches);
 
 	var alt   = (matches[1] ? true : false);
 	var ctrl  = (matches[2] ? true : false);
@@ -706,8 +726,7 @@ function bind_key(key, func)
 		// Special case: "S-x" and "X" are the same thing.
 		shift = true;
 
-//alert("A: "+alt+", C: "+ctrl+", M: "+meta+", S: "+shift+" ltr: "+ltr+" == "+func);
-//	keytab[alt+0][ctrl+0][meta+0][shift+0][ltr.toUpperCase().charCodeAt()] = func;
+	/* Bind the key to the function */
 	keytab[ctrl+0][shift+0][meta+0][alt+0][ltr.toUpperCase().charCodeAt()] = func;
 }
 
