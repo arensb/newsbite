@@ -331,6 +331,12 @@ input[type="checkbox"].mark-check {
 	display:		block;
 }
 
+/* ...when there's only one pane to show */
+.content-panes[collapsible="no"].show-content .item-summary,
+.content-panes[collapsible="no"].show-summary .item-content {
+	display:		none;
+}
+
 /* Summary of item */
 .item-summary,
 .item-content {
