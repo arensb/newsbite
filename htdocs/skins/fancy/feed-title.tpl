@@ -16,7 +16,7 @@
   {else}
     [no&nbsp;title]
   {/if}
-</a>:
+</a><span class="feed-details hidden">:
 &nbsp;
 {* Number of unread/read items in the feed *}
 {* XXX - These should be links, to show only read items, or all
@@ -27,4 +27,5 @@
 {* Links to places related to the feed *}
 &nbsp;(<a href="{$feed.url}">site</a>)
 &nbsp;(<a href="{$feed.feed_url}">RSS</a>)
+</span>
 {/strip}

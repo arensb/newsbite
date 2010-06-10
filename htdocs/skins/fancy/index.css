@@ -37,6 +37,11 @@ table#feeds tr.stale-feed {
 	background-color:	#a0a0a0 !important;
 }
 
+/* Hidden elements, or shown only selectively */
+.hidden {
+	display:		none;
+}
+
 .tools {
 	margin-top:		1em;
 	margin-bottom:		1em;
