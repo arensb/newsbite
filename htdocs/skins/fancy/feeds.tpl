@@ -26,6 +26,8 @@
 </noscript>
 <script type="text/javascript">
   var skin_dir="skins/{$skin}";
+  var show_details = false;
+  var show_tools = false;
 </script>
 <script type="text/javascript" src="skins/{$skin}/feeds.js"></script>
 {if ($mobile == "iPhone")}
@@ -44,6 +46,8 @@
   <li><a href="opml.php">Subscription list as OPML</a></li>
   <li><a href="loadopml.php">Add OPML file</a></li>
   <li><a href="setskin.php">Change skin</a></li>
+  <li><a onclick="javascript:toggle_details()"/>Toggle details</a></li>
+  <li><a onclick="javascript:toggle_tools()"/>Toggle tools</a></li>
 </ul>
 {/strip}
 
@@ -58,7 +62,7 @@
   {if $feed.stale} stale-feed{/if}" id="feed-{$feed_id}">
     <td class="icon-col">&nbsp;</td>{* Refresh/status icons go here *}
     <td class="title-col">{include file='feed-title.tpl' feed=$feed counts=$counts[$feed_id]}</td>
-    <td>
+    <td class="feed-tools hidden">
       {* Tools *}
       <a href="update.php?id={$feed.id}" onclick="return update_feed({$feed.id})">update</a>
       &nbsp;
