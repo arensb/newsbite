@@ -23,7 +23,8 @@ function init()
 	window.addEventListener("keydown", handle_key, false);
 
 	// Key bindings
-	bind_key("C-r", function() { main_form.submit() });
+	bind_key("C-r", function() { main_form.doit[0].click() });
+			// XXX - Hack: just click on the button
 	bind_key("S-c", collapse_all);
 	bind_key("S-e", expand_all);
 }
@@ -736,7 +737,7 @@ function handle_key(evt)
 	/* Display the key that was pressed */
 	if (key_box == undefined)
 		key_box = document.getElementById("thekey");
-	if (key_box != undefined)
+	if (key_box)
 	{
 		var msg = "Event: ";
 		if (evt.ctrlKey)
@@ -772,39 +773,8 @@ function handle_key(evt)
 	var func = keytab[evt.ctrlKey+0][evt.shiftKey+0][evt.metaKey+0][evt.altKey+0][evt.keyCode];
 	if (func != undefined)
 	{
-key_box.innerHTML = "Calling function ["+func+"]";
 		func();
-		return;
-	}
-return;
-
-	if (!evt.ctrlKey &&
-	    !evt.shiftKey &&
-	    !evt.metaKey &&
-	    !evt.altKey)
-	{
-		switch(evt.keyCode)
-		{
-		    case "R".charCodeAt():
-			main_form.submit();
-			return;
-		    default:
-			return;
-		}
-	} else if (!evt.ctrlKey &&
-	     evt.shiftKey &&
-	    !evt.metaKey &&
-	    !evt.altKey)
-	{
-		switch (evt.keyCode)
-		{
-		    case "C".charCodeAt():	// S-C: collapse-all
-			collapse_all();
-			break;
-		    case "E".charCodeAt():	// S-E: expand-all
-			expand_all();
-			break;
-		}
+		// XXX - Should this also evt.prevent_default()?
 		return;
 	}
 }
