@@ -62,8 +62,7 @@
 <p><a onclick="p.report(); false">Profiling report</a></p>
 <pre id="profiler" style="clear:both"></pre>
 -->
-<p id="thekey">No keys yet.</p>
-<p>User {$auth_user}, session expires {$auth_expiration}.</p>
+<!--<p id="thekey">No keys yet.</p>-->
 
 {if ($feed.image != "")}
 <img class="feed-icon" src="{$feed.image}"/>
@@ -176,6 +175,7 @@
 <p>There are no articles to display.</p>
 {/if}
 
+<p>User {$auth_user}, session expires {$auth_expiration}.</p>
 <!-- <div id="debug" style="clear:both"></div> -->
 
 </body>
