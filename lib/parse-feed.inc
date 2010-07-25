@@ -903,6 +903,13 @@ function rss_element_handler(
 		    case "channel":
 		    case "item":
 			// XXX - Make sure $children is a string.
+
+			# Hack: apparently strtotime() can handle
+			# Jul  19 2010 11:25:00 EDT
+			# but not
+			# Jul, 19 2010 11:25:00 EDT
+			$children = preg_replace('/,/', ' ', $children);
+
 			$retval['pub_time'] = strtotime($children);
 				// See note on time at top of file
 			break;
