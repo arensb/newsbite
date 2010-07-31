@@ -38,15 +38,16 @@ if ($cmd == "mark-lists")
 	// such nonsense.
 	// XXX - Safari doesn't require this. Detect browser and act
 	// accordingly. Ditto everywhere else that uses "+xml".
-	header("Content-type: text/plain+xml; charset=utf-8");
+//	header("Content-type: text/plain+xml; charset=utf-8");
+header("Content-type: text/plain; charset=utf-8");
 		// Assume JSON
 
 	// The stupid "+xml" hack above means that Firefox will try to
 	// interpret what it sees as XML. And since JSON isn't
 	// well-formed XML, we need to wrap the JSON in very minimal
 	// XML: < ?xml ? ><![CDATA[ {json} ]]>
-	echo "<", '?xml version="1.0" encoding="UTF-8"?', ">\n";
-	echo "<dummy><![CDATA[\n";
+//	echo "<", '?xml version="1.0" encoding="UTF-8"?', ">\n";
+//	echo "<dummy><![CDATA[\n";
 
 	/* Check syntax of $_REQUEST[mark-read] and [mark-unread] */
 	if (!preg_match('/^(\d+,)*\d*$/', $_REQUEST['mark-read']))
@@ -76,7 +77,7 @@ if ($cmd == "mark-lists")
 	// tell caller the status of each item marked: it's possible
 	// that 
 	echo jsonify('state',	"ok");
-	echo "\n]]></dummy>\n";	// Close "<![CDATA[" from above.
+//	echo "\n]]></dummy>\n";	// Close "<![CDATA[" from above.
 	exit(0);
 }
 
