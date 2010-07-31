@@ -56,3 +56,7 @@ syntax-check:
 		echo "Checking $$fname"; \
 		$(PHP) -l "$$fname" || exit $?; \
 	done
+
+# Generate ChangeLog file from the beginning of this year until now
+ChangeLog.svn:
+	svn log -v -rhead:\{`date +%Y-01-01`\} > $@
