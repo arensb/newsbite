@@ -38,8 +38,22 @@ table#feeds tr.stale-feed {
 }
 
 /* Hidden elements, or shown only selectively */
-.hidden {
+/* Feed details */
+#feeds .feed-details {
 	display:		none;
+}
+
+#feeds.show-details .feed-details {
+    	display:		inline;
+}
+
+/* Links to tools for managing feeds */
+#feeds .feed-tools {
+	display:		none;
+}
+
+#feeds.show-tools .feed-tools {
+	display:		inline;
 }
 
 .tools {

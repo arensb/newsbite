@@ -51,7 +51,7 @@
 </ul>
 {/strip}
 
-<table id="feeds">
+<table id="feeds" class="hide-details hide-tools">
 {foreach from=$feeds item=feed}
 {* Feed ID gets used a lot, so it gets its own variable *}
 {assign var="feed_id" value=$feed.id}
@@ -62,7 +62,7 @@
   {if $feed.stale} stale-feed{/if}" id="feed-{$feed_id}">
     <td class="icon-col">&nbsp;</td>{* Refresh/status icons go here *}
     <td class="title-col">{include file='feed-title.tpl' feed=$feed counts=$counts[$feed_id]}</td>
-    <td class="feed-tools hidden">
+    <td class="feed-tools">
       {* Tools *}
       <a href="update.php?id={$feed.id}" onclick="return update_feed({$feed.id})">update</a>
       &nbsp;

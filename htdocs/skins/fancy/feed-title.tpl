@@ -16,7 +16,7 @@
   {else}
     [no&nbsp;title]
   {/if}
-</a><span class="feed-details hidden">:
+</a><span class="feed-details">:
 &nbsp;
 {* Number of unread/read items in the feed *}
 {* XXX - These should be links, to show only read items, or all
