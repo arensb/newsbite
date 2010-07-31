@@ -18,6 +18,8 @@
   of feeds.
 	Perhaps when updating all, update.php should append a list of
   known feeds. If it's out of date, JS can request a full list.
+- Bug: If you show details, then update a feed, the newly-updated feed
+  defaults to not showing details.
 - Bug: When updates take too long, PHP terminates. 30 sec. max.
 	This is a curl error, and should be caught. Error at
                 $err = curl_multi_select($mh);
@@ -29,6 +31,47 @@
 - Bug-ish: when marking a feed as inactive, get redirected back to it.
   This is bogus.
 	Redirect to feed index.
+- AJAX requests can be blocked due to authentication. Should return a
+  status code of some sort, and allow the user to log in. How?
+- It'd be nice to compress files in advance. Have Apache figure out
+  that if the user is asking for "foo.css", and the browser accepts
+  gzipped compression, and "foo.css.gz" exists, then just return that.
+- Figure out DOM::Storage interface
+	Need a way to store feeds, items in a way that can be
+  retrieved.
+	Write a module for this.
+	Unfortunately, storage is just a hash mapping strings to
+  strings. So need to build structure on top of that.
+	Need a way to serialize/unserialize strings. Perhaps rewrite
+  jsonify() in JS.
+	"typeof" operator might be useful.
+  See
+	https://developer.mozilla.org/en/storage
+	http://developer.apple.com/safari/library/documentation/iphone/conceptual/safarijsdatabaseguide/usingthejavascriptdatabase/usingthejavascriptdatabase.html
+  (for database storage in Safari)
+
+  |          | sessionStorage | localStorage | database | JSON |
+  | FF 3.5   | Yes            | Yes          | No       | Yes  |
+  | FF 3.6   | Yes            | Yes          | No       | Yes  |
+  | iPod     | Yes            | Yes          | Yes      | Yes  |
+  | Safari 5 | Yes            | Yes          | No?      | Yes  |
+- Worker threads could be useful. However, iPad doesn't seem to
+  support them.
+- Since all the browsers I care about seem to have the JSON object,
+  use JSON.parse("...") instead of eval("...").
+- Could build an object to coordinate asynchronous activities:
+	var checkpoint = new waitForIt(cont_func, arg1, arg2, ...);
+	checkpoint.waitFor("this");
+	checkpoint.waitFor("that");
+	checkpoint.waitFor("theother");
+  says that once "this", "that", and "theother" have completed, it
+  should execute cont_func(arg1, arg2, ...).
+	Then start the various asynchronous activities, like loading
+  modules. When it's done, each one calls
+	checkpoint.doneWith("this");
+	checkpoint.doneWith("that");
+	checkpoint.doneWith("theother");
+  and once they've all checked in, checkpoint runs cont_func().
 - It'd be nice if PLUGIN_DIR could optionally be an array.
   Unfortunately, PHP constants have to be scalars.
 - Maybe just give up on maintaining ChangeLog. Just use 'svn log -r
@@ -101,6 +144,18 @@
     wants to collapse/expand something?
 	Use onload, since that's when all the images will have loaded,
     and we know what the final look of the page is.
+  - Worker threads can be used for long-running functions without
+    affecting the UI: they spawn off a second thread and do stuff
+    there. However, they can't touch the DOM, and can only communicate
+    with the main thread through callbacks. See
+    https://developer.mozilla.org/en/Using_web_workers
+  - Suggests using cpp on JS. This allows using cpp macros and #ifdef
+    DEBUG. Downside is need to remember to 'make' before running.
+  - Compress files with gz, mod_deflate. Should work well on HTML, JS,
+    CPP. But not images, obviously.
+  - Set the expiration time on pages, so that they get cached. By
+    convention, caching for slightly less than a year means forever.
+    But also want to pick up new versions. A week, maybe?
 - Can Rhino be used to check JS syntax and whatnot?
   https://developer.mozilla.org/en/Rhino
 	What about profiling?

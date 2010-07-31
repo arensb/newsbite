@@ -322,7 +322,7 @@ function parse_flush_response(req)
 //		debug("Got some text. Len " + req.request.responseText.length);
 		return;
 	    case 4:		// Got all text
-//		debug("Got all text. Len " + req.request.responseText.length +", \"" + req.request.responseText, "\"");
+//		debug("Got all text. Len " + req.request.responseText.length +", \"" + req.request.responseText+ "\"");
 //		debug("Got all text. Len " + req.request.responseText.length);
 
 		/* Check response text: if it's not a status message
@@ -387,7 +387,7 @@ function parse_flush_response(req)
 		}
 		for (i in req.unread)
 		{
-//debug("marking "+req.read[i]+" as unread");
+//debug("marking "+req.unread[i]+" as unread");
 			var item = document.getElementById("item-"+req.unread[i]);
 			if (item == null)
 				continue;
@@ -479,6 +479,10 @@ function mark_item(ev)
 		// item div.
 
 	/* Add the item ID to the queue of items to mark as read/unread */
+	/* XXX - As time goes on, item IDs will grow ever larger. So
+	 * 'mark_read' will have an ever larger number of empty entries
+	 * at the beginning.
+	 */
 	mark_read[item_id] = elt.checked;
 
 	/* Flush the queue if necessary */
@@ -773,7 +777,7 @@ function handle_key(evt)
 	var func = keytab[evt.ctrlKey+0][evt.shiftKey+0][evt.metaKey+0][evt.altKey+0][evt.keyCode];
 	if (func != undefined)
 	{
-		func();
+		func(evt);
 		// XXX - Should this also evt.prevent_default()?
 		return;
 	}
