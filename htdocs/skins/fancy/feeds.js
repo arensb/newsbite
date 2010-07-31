@@ -231,34 +231,14 @@ debug("feed id "+l.feed_id+", state "+l.state);
 
 function toggle_details()
 {
-	var details = document.getElementsByClassName("feed-details");
-
-	show_details = !show_details;
-
-	if (show_details)
-	{
-		for (var i = 0, len = details.length; i < len; i++)
-			remove_class(details[i], "hidden");
-	} else {
-		for (var i = 0, len = details.length; i < len; i++)
-			add_class(details[i], "hidden");
-	}
+	var feed_list = document.getElementById("feeds");
+	toggle_class(feed_list, "show-details", "hide-details");
 }
 
 function toggle_tools()
 {
-	var tools = document.getElementsByClassName("feed-tools");
-
-	show_tools = !show_tools;
-
-	if (show_tools)
-	{
-		for (var i = 0, len = tools.length; i < len; i++)
-			remove_class(tools[i], "hidden");
-	} else {
-		for (var i = 0, len = tools.length; i < len; i++)
-			add_class(tools[i], "hidden");
-	}
+	var feed_list = document.getElementById("feeds");
+	toggle_class(feed_list, "show-tools", "hide-tools");
 }
 
 // XXX - Since these are duplicated in view.js, they should live in

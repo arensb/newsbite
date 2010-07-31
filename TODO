@@ -18,8 +18,6 @@
   of feeds.
 	Perhaps when updating all, update.php should append a list of
   known feeds. If it's out of date, JS can request a full list.
-- Bug: If you show details, then update a feed, the newly-updated feed
-  defaults to not showing details.
 - Bug: When updates take too long, PHP terminates. 30 sec. max.
 	This is a curl error, and should be caught. Error at
                 $err = curl_multi_select($mh);
