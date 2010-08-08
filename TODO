@@ -1,3 +1,8 @@
+- Check that cpp version of view.js works
+- 'make' from top level should build everything
+- 'make install' (or 'make upgrade') should install everything
+- Do I really need Smarty? I'm not sure it's doing anything it
+  wouldn't be just as easy to do in PHP.
 - Add hook for links to mobile versions of URLs (view.php).
 	Probably should add a subdirectory underneath "plugins".
 - Bug?: There are some old articles in the database. Why aren't they
@@ -100,8 +105,6 @@
 - Get rid of unused skins: default, fancy2.
 	Make "fancy" the new default. Maybe just rename it to
   "default".
-- Do I really need Smarty? I'm not sure it's doing anything it
-  wouldn't be just as easy to do in PHP.
 - High Performance JS book:
   - Move <script> tags to the bottom of <body>: loading scripts blocks,
     so this at least shows HTML to the user while the JS loads.
@@ -346,6 +349,7 @@
   gracefully? OTOH, is it a good idea to be too liberal in what we
   accept? Isn't that an invitation to XSS? XML is supposed to be
   really anal about syntax.
+- Should there be a module (or something) for Twitter updates?
 - There should really be a tool for testing plugins.
 	For removing ads and such: it'd be nice to plug the XML or the
   article into a temp file, and 
