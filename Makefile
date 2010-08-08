@@ -25,7 +25,8 @@ GZIP =	gzip
 
 .PHONY:	dist
 
-all:
+all::
+	(cd htdocs/skins/fancy && $(MAKE))
 
 dist:
 	if [ ! -d dist ]; then mkdir dist; fi
@@ -60,3 +61,7 @@ syntax-check:
 # Generate ChangeLog file from the beginning of this year until now
 ChangeLog.svn:
 	svn log -v -rhead:\{`date +%Y-01-01`\} > $@
+
+# Recursive targets
+all clean depend::
+	(cd htdocs/skins/fancy && $(MAKE) -$(MAKEFLAGS) $@)
