@@ -48,6 +48,7 @@ htdocs/skins/default/view.js
 htdocs/skins/default/view.tpl
 htdocs/skins/fancy/Attention_niels_epting.png
 htdocs/skins/fancy/Loading.gif
+htdocs/skins/fancy/Makefile
 htdocs/skins/fancy/abort.css
 htdocs/skins/fancy/abort.tpl
 htdocs/skins/fancy/addfeed.css
@@ -56,12 +57,19 @@ htdocs/skins/fancy/editfeed.css
 htdocs/skins/fancy/editfeed.tpl
 htdocs/skins/fancy/feed-title.tpl
 htdocs/skins/fancy/feeds.js
+htdocs/skins/fancy/feeds.jsh
 htdocs/skins/fancy/feeds.tpl
 htdocs/skins/fancy/gray-bg.jpg
 htdocs/skins/fancy/index.css
 htdocs/skins/fancy/ipad.css
 htdocs/skins/fancy/iphone.css
 htdocs/skins/fancy/item.tpl
+htdocs/skins/fancy/js/classes.js
+htdocs/skins/fancy/js/debug.js
+htdocs/skins/fancy/js/defer.js
+htdocs/skins/fancy/js/keybindings.js
+htdocs/skins/fancy/js/load_module.js
+htdocs/skins/fancy/js/xhr.js
 htdocs/skins/fancy/opml.css
 htdocs/skins/fancy/opml.tpl
 htdocs/skins/fancy/setskin.css
@@ -73,6 +81,7 @@ htdocs/skins/fancy/unsubscribe.css
 htdocs/skins/fancy/unsubscribe.tpl
 htdocs/skins/fancy/view.css
 htdocs/skins/fancy/view.js
+htdocs/skins/fancy/view.jsh
 htdocs/skins/fancy/view.tpl
 htdocs/skins/fancy2/Attention_niels_epting.png
 htdocs/skins/fancy2/Loading.gif
