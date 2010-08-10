@@ -18,8 +18,8 @@ class Skin extends Smarty
 		 * sensible (/^\w+$/) and that it's a directory
 		 * underneath "skins".
 		 */
-		if (isset($_REQUEST['skin']))
-			$this->setskin($_REQUEST['skin']);
+		if (isset($_GET['skin']))
+			$this->setskin($_GET['skin']);
 		elseif (isset($_COOKIE['skin']))
 			$this->setskin($_COOKIE['skin']);
 		else
@@ -27,6 +27,7 @@ class Skin extends Smarty
 
 		$this->compile_dir	= SMARTY_PATH . "templates_c";
 #		$this->config_dir	= SMARTY_PATH . "configs";
+		$this->vars		= array();
 		$this->register_function('jsonify', 'smarty_function_jsonify');
 	}
 
@@ -47,6 +48,34 @@ class Skin extends Smarty
 
 		$this->assign('skin', $this->skin);
 		return true;		// Success
+	}
+# Methods:
+# new()
+# assign("var_name", $value)
+# display("somepage.tpl")
+# fetch("subpage.tpl")
+
+	/* XXX - Temporary glue functions, for transition between
+	 * Smarty and nont-Smarty.
+	 */
+	function assign($var, $value)
+	{
+		$this->vars[$var] = $value;
+		parent::assign($var, $value);
+	}
+
+	function display($tmpl)
+	{
+		// XXX - See if $tmpl =~ s/tpl/php/ exists; if so,
+		// include() it. Otherwise, use Smarty.
+#		$fname = "skins/$this->skin/$tmpl";
+		$fname = "skins/$this->skin/" .
+			str_replace(".tpl", ".php", $tmpl);
+echo "fname: [$fname]<br/>\n";
+		if (file_exists($fname))
+			include($fname);
+		else
+			parent::display($tmpl);
 	}
 }
 ?>
