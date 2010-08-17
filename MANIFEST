@@ -119,7 +119,7 @@ htdocs/unsubscribe.php
 htdocs/update.php
 htdocs/view.php
 lib/common.inc
-lib/config.inc
+lib/config.inc.sample
 lib/database.inc
 lib/hooks.inc
 lib/net.inc
