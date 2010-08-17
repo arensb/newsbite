@@ -1,6 +1,7 @@
-- Check that cpp version of view.js works
-- 'make' from top level should build everything
-- 'make install' (or 'make upgrade') should install everything
+- 'make install' (or 'make upgrade') should install everything.
+- Rename lib/config.inc to lib/config.inc.dist. That way, upgrade can
+  just overwrite everything. Install instructions should say to merge
+  with config.inc.dist, in case options have changed.
 - Do I really need Smarty? I'm not sure it's doing anything it
   wouldn't be just as easy to do in PHP.
 - Add hook for links to mobile versions of URLs (view.php).
@@ -58,6 +59,7 @@
   | FF 3.6   | Yes            | Yes          | No       | Yes  |
   | iPod     | Yes            | Yes          | Yes      | Yes  |
   | Safari 5 | Yes            | Yes          | No?      | Yes  |
+  | Chrome   | ?              | ?            | ?        | ?    |
 - Worker threads could be useful. However, iPad doesn't seem to
   support them.
 - Since all the browsers I care about seem to have the JSON object,
@@ -75,6 +77,13 @@
 	checkpoint.doneWith("that");
 	checkpoint.doneWith("theother");
   and once they've all checked in, checkpoint runs cont_func().
+- `items' table should include a field saying when the read/unread
+  state (and other metadata) was last updated. That way, it updates
+  come from multiple devices at the same time (e.g. I go outside, and
+  updates accumulate on mobile device; then I go to desktop machine
+  and start marking articles there; then the mobile device finds the
+  network and sends the updates it had cached), the back-end can use
+  only the latest update.
 - It'd be nice if PLUGIN_DIR could optionally be an array.
   Unfortunately, PHP constants have to be scalars.
 - Maybe just give up on maintaining ChangeLog. Just use 'svn log -r
