@@ -28,7 +28,7 @@ GZIP =	gzip
 all::
 	(cd htdocs/skins/fancy && $(MAKE))
 
-dist:
+dist:	all
 	if [ ! -d dist ]; then mkdir dist; fi
 	if [ ! -d dist/"${DISTNAME}" ]; then \
 		mkdir dist/"${DISTNAME}"; \
