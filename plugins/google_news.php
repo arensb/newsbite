@@ -21,4 +21,19 @@ function google_news_hook($nodename, &$retval, &$context)
 
 add_hook("summary", "google_news_hook");
 #add_hook("body", "google_news_hook");
+
+/* google_news_origlink
+ * Google News puts its own wrapper in front of story URLs.
+ */
+function google_news_origlink($nodename, &$retval, &$context)
+{
+#echo "google news origlink before: [$retval]<br/>\n";
+	$retval = preg_replace('{<a href="http://news.google.com/[^"]*url=([^"&]*)[^"]*">}',
+			       '<a href="\\1">',
+			       $retval);
+#echo "google news origlink after: [$retval]<br/>\n";
+}
+
+#add_hook("body", "google_news_origlink");
+add_hook("summary", "google_news_origlink");
 ?>
