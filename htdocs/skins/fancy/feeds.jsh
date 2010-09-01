@@ -3,6 +3,9 @@
  */
 #if DEBUG
 #  include "js/debug.js"
+#else
+function debug() { }
+function clrdebug() { }
 #endif	// DEBUG
 // #include "js/defer.js"
 #include "js/xhr.js"

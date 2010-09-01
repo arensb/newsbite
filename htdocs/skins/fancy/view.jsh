@@ -1,5 +1,8 @@
 #if DEBUG
 #  include "js/debug.js"
+#else
+function debug() { }
+function clrdebug() { }
 #endif	// DEBUG
 // #include "js/defer.js"
 #include "js/xhr.js"
@@ -10,6 +13,8 @@
 document.addEventListener("DOMContentLoaded", init, false);
 
 var main_form;		// Form containing all the items.
+var mark_read = {};		// Hash of item_id -> is_read? values
+var mark_request = null;	// Data for marking items as read/unread
 
 function init()
 {
