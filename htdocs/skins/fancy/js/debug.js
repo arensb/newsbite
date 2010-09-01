@@ -5,8 +5,6 @@
 #define _debug_js_
 
 var debug_window = undefined;
-var mark_read = {};		// Hash of item_id -> is_read? values
-var mark_request = null;	// Data for marking items as read/unread
 
 var last_time = null;
 function debug(str)
