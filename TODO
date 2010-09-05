@@ -1,9 +1,29 @@
 - 'make install' (or 'make upgrade') should install everything.
-- Rename lib/config.inc to lib/config.inc.dist. That way, upgrade can
-  just overwrite everything. Install instructions should say to merge
-  with config.inc.dist, in case options have changed.
 - Do I really need Smarty? I'm not sure it's doing anything it
   wouldn't be just as easy to do in PHP.
+	htdocs/skins/mobile/setskin.tpl
+	htdocs/skins/mobile/feeds.tpl
+	- htdocs/skins/fancy/opml.tpl
+	- htdocs/skins/fancy/setskin.tpl
+	- htdocs/skins/fancy/abort.tpl
+	- htdocs/skins/fancy/view.tpl
+	- htdocs/skins/fancy/feeds.tpl
+	- htdocs/skins/fancy/feed-title.tpl
+	- htdocs/skins/fancy/addfeed.tpl
+	- htdocs/skins/fancy/item.tpl
+	- htdocs/skins/fancy/editfeed.tpl
+	- htdocs/skins/fancy/unsubscribe.tpl
+	- htdocs/skins/default/opml.tpl
+	htdocs/skins/default/setskin.tpl
+	htdocs/skins/default/abort.tpl
+	htdocs/skins/default/view.tpl
+	htdocs/skins/default/feeds.tpl
+	htdocs/skins/default/feed-title.tpl
+	htdocs/skins/default/addfeed.tpl
+	htdocs/skins/default/item.tpl
+	htdocs/skins/default/editfeed.tpl
+	htdocs/skins/default/unsubscribe.tpl
+- Build htdocs/.htaccess file as part of 'make all'.
 - Add hook for links to mobile versions of URLs (view.php).
 	Probably should add a subdirectory underneath "plugins".
 - Bug?: There are some old articles in the database. Why aren't they
