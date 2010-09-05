@@ -13,6 +13,10 @@ class Skin extends Smarty
 	{
 		parent::__construct();
 
+		$this->compile_dir	= SMARTY_PATH . "templates_c";
+#		$this->config_dir	= SMARTY_PATH . "configs";
+		$this->vars		= array();
+
 		/* Pick skin.
 		 * For security, make sure the value of the cookie is
 		 * sensible (/^\w+$/) and that it's a directory
@@ -25,9 +29,6 @@ class Skin extends Smarty
 		else
 			$this->setskin($this->skin);
 
-		$this->compile_dir	= SMARTY_PATH . "templates_c";
-#		$this->config_dir	= SMARTY_PATH . "configs";
-		$this->vars		= array();
 		$this->register_function('jsonify', 'smarty_function_jsonify');
 	}
 
@@ -46,6 +47,7 @@ class Skin extends Smarty
 		} else
 			return false;	// Failure
 
+		$this->vars['skin'] = $newskin;
 		$this->assign('skin', $this->skin);
 		return true;		// Success
 	}
@@ -56,7 +58,7 @@ class Skin extends Smarty
 # fetch("subpage.tpl")
 
 	/* XXX - Temporary glue functions, for transition between
-	 * Smarty and nont-Smarty.
+	 * Smarty and non-Smarty.
 	 */
 	function assign($var, $value)
 	{
@@ -68,14 +70,48 @@ class Skin extends Smarty
 	{
 		// XXX - See if $tmpl =~ s/tpl/php/ exists; if so,
 		// include() it. Otherwise, use Smarty.
-#		$fname = "skins/$this->skin/$tmpl";
 		$fname = "skins/$this->skin/" .
 			str_replace(".tpl", ".php", $tmpl);
-echo "fname: [$fname]<br/>\n";
 		if (file_exists($fname))
+		{
+			global $the_skin;
+			global $skin_vars;
+			$the_skin = $this;
+			$skin_vars = $this->vars;
 			include($fname);
-		else
+		} else
 			parent::display($tmpl);
 	}
-}
+
+	function _include($tmpl, $more_vars)
+	{
+#echo "Inside _include($tmpl)<br/>\n";
+		// XXX - See if $tmpl =~ s/tpl/php/ exists; if so,
+		// include() it as a string. Otherwise, use Smarty.
+		$fname = "skins/$this->skin/" .
+			str_replace(".tpl", ".php", $tmpl);
+#echo "fname (", getcwd(), "): [$fname]<br/>\n";
+		if (file_exists($fname))
+		{
+#echo "Yes, it exists<br/>\n";
+			global $the_skin;
+			global $skin_vars;
+			$the_skin = $this;
+			$old_skin_vars = $skin_vars;
+					// Save current skin variables
+
+			$skin_vars = array_merge($this->vars, $more_vars);
+#echo "Including [$fname]<br/>\n";
+//			ob_start();		// Turn on output buffering
+			include($fname);
+//			$retval = ob_get_contents();
+//						// Get output buffer
+//			ob_end_clean();		// End output buffering
+			$skin_vars = $old_skin_vars;
+					// Restore skin variables
+//			return $retval;
+		} else
+			parent::_include($tmpl);
+	}
+};
 ?>
