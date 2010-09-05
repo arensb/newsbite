@@ -1,6 +1,5 @@
 # Variables
 PROJECT =	newsbite
-#VERSION =	1.1.9
 
 PHP =		php
 EGREP =		egrep
@@ -16,12 +15,34 @@ REV_CMD =	svn status -uq | grep "Status against revision:"|awk '{print $$4}'
 REV =		$(shell ${REV_CMD})
 REV !=		${REV_CMD}
 
-#DISTNAME =	${PROJECT}-${VERSION}
 DISTNAME =	${PROJECT}-r${REV}
 
 # Commands
 TAR =	tar
 GZIP =	gzip
+
+# XXX - Installation directories
+
+# Installation root
+INSTALL_ROOT =	/folks/htdocs/${PROJECT}
+
+# * Files that must be fetched by browser
+PUB_ROOT =	${INSTALL_ROOT}
+# ./htdocs
+# ./htdocs/js
+# * Files that are only read by PHP scripts
+PRIV_ROOT =	${INSTALL_ROOT}
+
+# ./lib		Outside of DocRoot
+INSTALL_LIB =	${PRIV_ROOT}/lib
+# ./plugins	Outside of DocRoot
+INSTALL_PLUGINS =	${PRIV_ROOT}/plugins
+# ./htdocs/skins/*
+INSTALL_SKINS =	${PRIV_ROOT}/skins
+# ./htdocs/smarty/templates_c
+
+# XXX - Create htdocs/.htaccess based on the directories above
+# XXX - Create lib/config.inc based on the directories above
 
 .PHONY:	dist
 
@@ -37,6 +58,8 @@ dist:	all
 		(cd dist/"${DISTNAME}"; tar xBpf -)
 	(cd dist; tar cvf - "${DISTNAME}") | \
 		${GZIP} --best > "${DISTNAME}.tar.gz"
+
+install::
 
 clean::
 	rm -rf dist
