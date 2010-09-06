@@ -29,23 +29,12 @@ Cookies must be turned on for skins to work.
 <?
 foreach ($skin_vars['skins'] as $s)
 {
-//    {foreach from=$skins item=s}
-      /* XXX - I'd like to get rid of the extraneous whitespace in these
-       * lines, but when I add strip tags, it gets rid of the space
-       * between "option" and "value".
-       */
-//      <option
 	echo "<option";
-//        {if $s.dir == $current_skin} selected{/if}
 	if ($s['dir'] == $skin_vars['current_skin'])
 		echo " selected";
-//        value="{$s.dir}">
 	echo " value=\"$s[dir]\">";
-//        {$s.name|escape}
 	echo htmlspecialchars($s['name']);
-//      </option>
 	echo "</option>";
-//    {/foreach}
 }
 ?>
   </select>
