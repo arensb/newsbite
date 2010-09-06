@@ -4,6 +4,7 @@ echo '<', '?xml version="1.0" encoding="UTF-8"?', ">\n";
 // Give some of the skin variables shorter names
 $skin_dir = $skin_vars['skin'];
 $feeds = &$skin_vars['feed'];
+$feed = &$skin_vars['feed'];
 ?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
 	"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
@@ -45,7 +46,7 @@ $feeds = &$skin_vars['feed'];
 <?/* XXX - Is it worth displaying the title? It's right above */?>
   <tr>
     <th>Title</th>
-    <td><?=$feed['title']?>
+    <td><?=$feed['title']?></td>
   </tr>
 
   <tr>
@@ -57,13 +58,9 @@ $feeds = &$skin_vars['feed'];
   <tr>
     <th>Nickname</th>
     <td>
-<? if (isset($skin_vars['errors']['nickname'])):
-//      {if isset($errors.nickname)}
-?>
+<? if (isset($skin_vars['errors']['nickname'])): ?>
         <div class="error-msg"><?=$skin_vars['errors']['nickname']?></div>
-<? endif
-//      {/if}
-?>
+<? endif ?>
       <input type="text" name="nickname" value="<?=$feed['nickname']?>"/>
     </td>
   </tr>
@@ -75,13 +72,9 @@ $feeds = &$skin_vars['feed'];
   <tr>
     <th>Site URL</th>
     <td>
-<? if (isset($skin_vars['errors']['url'])):
-//      {if isset($errors.url)}
-?>
+<? if (isset($skin_vars['errors']['url'])): ?>
         <div class="error-msg"><?=$skin_vars['errors']['url']?></div>
-<? endif
-//      {/if}
-?>
+<? endif ?>
       <input type="text" name="url" value="<?=$feed['url']?>"/>
     </td>
   </tr>
@@ -89,13 +82,9 @@ $feeds = &$skin_vars['feed'];
   <tr>
     <th>Feed URL</th>
     <td>
-<?    if (isset($skin_vars['errors']['feed_url'])):
-//      {if isset($errors.feed_url)}
-?>
+<?    if (isset($skin_vars['errors']['feed_url'])): ?>
         <div class="error-msg"><?=$skin_vars['errors']['feed_url']?></div>
-<? endif
-//      {/if}
-?>
+<? endif ?>
       <input type="text" name="feed_url" value="<?=$feed['feed_url']?>"/>
     </td>
   </tr>
@@ -125,17 +114,11 @@ $feeds = &$skin_vars['feed'];
   <tr>
     <th>Image</th>
     <td>
-<?    if (isset($feed['image'])):
-//      {if isset($feed.image)}
-?>
+<?    if (isset($feed['image'])): ?>
         <img src="<?=$feed['image']?>"/>
-<? else:
-//      {else}
-?>
+<? else: ?>
         No image.
-<? endif
-//      {/if}
-?>
+<? endif ?>
     </td>
   </tr>
 
@@ -163,13 +146,9 @@ $feeds = &$skin_vars['feed'];
   <tr>
     <th>Username</th>
     <td>
-<?    if (isset($skin_vars['errors']['username'])):
-//      {if isset($errors.username)}
-?>
+<?    if (isset($skin_vars['errors']['username'])): ?>
         <div class="error-msg"><?=$skin_vars['errors']['username']?></div>
-<? endif
-//      {/if}
-?>
+<? endif ?>
       <input type="text" name="username" value="<?=$feed['username']?>"/>
     </td>
   </tr>
@@ -177,13 +156,9 @@ $feeds = &$skin_vars['feed'];
   <tr>
     <th>Password</th>
     <td>
-<?    if (isset($skin_vars['errors']['passwd'])): 
-//      {if isset($errors.passwd)}
-?>
+<?    if (isset($skin_vars['errors']['passwd'])): ?>
         <div class="error-msg"><?=$skin_vars['errors']['passwd']?></div>
-<? endif
-//      {/if}
-?>
+<? endif ?>
       <input type="password" name="password" value="<?=$feed['passwd']?>"/>
     </td>
   </tr>
