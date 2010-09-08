@@ -14,15 +14,15 @@
 	- htdocs/skins/fancy/editfeed.tpl
 	- htdocs/skins/fancy/unsubscribe.tpl
 	- htdocs/skins/default/opml.tpl
-	htdocs/skins/default/setskin.tpl
-	htdocs/skins/default/abort.tpl
-	htdocs/skins/default/view.tpl
-	htdocs/skins/default/feeds.tpl
-	htdocs/skins/default/feed-title.tpl
-	htdocs/skins/default/addfeed.tpl
-	htdocs/skins/default/item.tpl
-	htdocs/skins/default/editfeed.tpl
-	htdocs/skins/default/unsubscribe.tpl
+	- htdocs/skins/default/setskin.tpl
+	- htdocs/skins/default/abort.tpl
+	- htdocs/skins/default/view.tpl
+	- htdocs/skins/default/feeds.tpl
+	- htdocs/skins/default/feed-title.tpl
+	- htdocs/skins/default/addfeed.tpl
+	- htdocs/skins/default/item.tpl
+	- htdocs/skins/default/editfeed.tpl
+	- htdocs/skins/default/unsubscribe.tpl
 - Build htdocs/.htaccess file as part of 'make all'.
 - Add hook for links to mobile versions of URLs (view.php).
 	Probably should add a subdirectory underneath "plugins".
