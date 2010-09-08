@@ -1,4 +1,5 @@
 - 'make install' (or 'make upgrade') should install everything.
+- Remove ".tpl" from all skin invocations
 - Do I really need Smarty? I'm not sure it's doing anything it
   wouldn't be just as easy to do in PHP.
 	htdocs/skins/mobile/setskin.tpl
