@@ -1,20 +1,15 @@
 <?php
 /* skin.inc
- * Skin class. Provides a wrapper around Smarty, for handling skins.
+ * Skin class. Displays a page using a given skin.
  */
 require_once("config.inc");
-require_once(SMARTY_DIR . "Smarty.class.php");
 
-class Skin extends Smarty
+class Skin
 {
 	public $skin = DEFAULT_SKIN;
 
 	function __construct()
 	{
-		parent::__construct();
-
-		$this->compile_dir	= SMARTY_PATH . "templates_c";
-#		$this->config_dir	= SMARTY_PATH . "configs";
 		$this->vars		= array();
 
 		/* Pick skin.
@@ -28,8 +23,6 @@ class Skin extends Smarty
 			$this->setskin($_COOKIE['skin']);
 		else
 			$this->setskin($this->skin);
-
-		$this->register_function('jsonify', 'smarty_function_jsonify');
 	}
 
 	/* setskin
@@ -63,7 +56,7 @@ class Skin extends Smarty
 	function assign($var, $value)
 	{
 		$this->vars[$var] = $value;
-		parent::assign($var, $value);
+#		parent::assign($var, $value);
 	}
 
 	function display($tmpl)
