@@ -145,7 +145,7 @@ if ($item['summary'] == "")
 
   <table class="item-footer">
     <tr>
-<?    if ($mobile == "iPad"):
+<?    if ($skin_vars['mobile'] == "iPad"):
         /* Second set of checkboxes on the left on the iPad */
 ?>
         <td class="icon-box button-box-left">
