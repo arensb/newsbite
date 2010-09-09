@@ -32,7 +32,7 @@ if ($item['title'] == "")
 
   <table class="item-header">
     <tr>
-<?    if ($mobile == "iPad"):
+<?    if ($skin_vars['mobile'] == "iPad"):
       /* Put a second set of checkboxes on the left on the iPad, so that
        * I can hold it in either hand, and push the buttons with my thumb.
        */
