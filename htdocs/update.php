@@ -62,7 +62,7 @@ class json_output_handler extends feed_update_handler
 		$skin->assign('feed', $feed);
 		$skin->assign('feed_id', $feed['id']);
 		$skin->assign('counts', $feed['counts']);
-		$count_display = $skin->fetch("feed-title.tpl");
+		$count_display = $skin->fetch("feed-title");
 		echo jsonify('state',	"end",
 			     'feed_id',	$feed['id'],
 			     'count_display',	$count_display
@@ -227,7 +227,7 @@ if (is_numeric($feed_id) && is_int($feed_id+0))
 		$skin->assign('feed', $feed);
 		$skin->assign('feed_id', $feed_id);
 		$skin->assign('counts', $feed['counts']);
-		$count_display = $skin->fetch("feed-title.tpl");
+		$count_display = $skin->fetch("feed-title");
 		echo jsonify('state',	"end",
 			     'feed_id',	$feed_id,
 			     'count_display',	$count_display

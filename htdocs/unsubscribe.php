@@ -43,5 +43,5 @@ if ($feed_info === NULL)
 $skin = new Skin();
 
 $skin->assign('feed', $feed_info);
-$skin->display("unsubscribe.tpl");
+$skin->display("unsubscribe");
 ?>

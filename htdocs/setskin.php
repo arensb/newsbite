@@ -55,5 +55,5 @@ while (($fname = readdir($dh)) !== FALSE)
 $skin->assign('skins', $skins);
 $skin->assign('current_skin', $current_skin);
 $skin->assign('new_skin', $new_skin);
-$skin->display("setskin.tpl");
+$skin->display("setskin");
 ?>

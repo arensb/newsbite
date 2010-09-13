@@ -15,7 +15,7 @@ if ($_FILES['opml'] == "")
 {
 	/* No file given. Show the form requesting an OPML file. */
 	$skin = new Skin;
-	$skin->display("opml.tpl");
+	$skin->display("opml");
 	exit(0);
 }
 
