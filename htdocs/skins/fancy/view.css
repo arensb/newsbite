@@ -299,7 +299,7 @@ input[type="checkbox"].mark-check {
 }
 
 /* The next few rules are for toggling between expanded and collapsed
- * articles: the "item.tpl" and "item.js" add the class "show-content"
+ * articles: the "item.php" and "item.js" add the class "show-content"
  * or "show-summary" to the content-panes element. This CSS determines
  * what to display in each case.
  */

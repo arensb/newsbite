@@ -111,7 +111,7 @@ else
 <input type="hidden" name="mark-how" value="read"/>
 
 <?
-/* List of items. Items are displayed using the separate "item.tpl"
+/* List of items. Items are displayed using the separate "item"
  * template
  */
 $olddate = '';
@@ -120,7 +120,7 @@ foreach ($items as $i)
 	$date = strftime("%d %b, %Y", strtotime($i['pub_date']));
 	if ($date != $olddate)
 		echo "<h3 class=\"date-header\">$date</h3>";
-	$the_skin->_include("item.tpl",
+	$the_skin->_include("item",
 			    array("item" => $i));
 	$olddate = $date;
 }

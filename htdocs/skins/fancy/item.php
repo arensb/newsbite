@@ -1,5 +1,5 @@
 <?
-/* item.tpl
+/* item.php
  * Display an item.
  * This is just a fragment template. It is intended to be included in
  * another template.

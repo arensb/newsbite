@@ -44,19 +44,12 @@ for ($i = 0; $i < count($skin_vars['feeds']); $i++)
 {
 	$feed = $skin_vars['feeds'][$i];
 	$feed_id = $feed['id'];
-//{foreach from=$feeds item=feed}
-//{* Feed ID gets used a lot, so it gets its own variable *}
-//{assign var="feed_id" value=$feed.id}
-//{strip}
-//  <tr class="{cycle values="odd-row,even-row"}" id="feed-{$feed_id}">
 	echo "<tr class=\"",
 		($i & 1 ? "odd-row" : "even-row"),
 		"\" id=\"feed-${feed_id}\">";
-//    <td class="icon-col">&nbsp;</td>{* Refresh/status icons go here *}
 	echo "<td class=\"icon-col\">&nbsp;</td>";
-//    <td>{include file='feed-title.tpl' feed=$feed counts=$counts[$feed_id]}</td>
 	echo "<td>";
-	$the_skin->_include("feed-title.tpl",
+	$the_skin->_include("feed-title",
 			    array("feed" =>	$feed,
 				  "counts" =>	$skin_vars['counts'][$feed_id]
 				    )

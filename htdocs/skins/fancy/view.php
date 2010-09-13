@@ -152,15 +152,12 @@ foreach ($skin_vars as $k => $v)
 <input type="hidden" name="mark-how" value="read"/>
 
 <?
-/* List of items. Items are displayed using the separate "item.tpl"
+/* List of items. Items are displayed using the separate "item"
  * template
  */
-#{foreach from=$items item=i}
-#  {include file='item.tpl' item=$i}
-#{/foreach}
 foreach ($items as $i)
 {
-	$the_skin->_include("item.tpl",
+	$the_skin->_include("item",
 			    array("item" => $i));
 } 
 ?>
