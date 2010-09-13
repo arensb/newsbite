@@ -109,7 +109,7 @@ function abort($msg)
 	 * doesn't return a useful error code that I've found. So
 	 * instead, fetch the text of the error page, then print it.
 	 */
-	$page = @$skin->fetch("abort.tpl");
+	$page = @$skin->fetch("abort");
 	if ($page == "")
 		bare_abort($msg);
 	echo $page;
