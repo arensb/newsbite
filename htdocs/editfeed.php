@@ -47,7 +47,7 @@ function show_form($feed_id)
 
 	$skin->assign('feed', $feed_info);
 	$skin->assign('command', "update");
-	$skin->display("editfeed.tpl");
+	$skin->display("editfeed");
 }
 
 function update_feed_info($feed_id)
@@ -121,7 +121,7 @@ function update_feed_info($feed_id)
 		$skin->assign('feed', $feed_info);
 		$skin->assign('errors', $errors);
 		$skin->assign('command', "update");
-		$skin->display("editfeed.tpl");
+		$skin->display("editfeed");
 		return;
 	}
 

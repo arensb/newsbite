@@ -129,5 +129,5 @@ $subscribe_url .= $_SERVER['SCRIPT_NAME'];
 $skin = new Skin();
 $skin->assign("subscribe_url", $subscribe_url);
 $skin->assign("feed_list", $feeds);
-$skin->display("addfeed.tpl");
+$skin->display("addfeed");
 ?>
