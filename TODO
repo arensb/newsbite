@@ -1,3 +1,4 @@
+- Add HTMLPurifier instructions to INSTALL
 - 'make install' (or 'make upgrade') should install everything.
 - Remove ".tpl" from all skin invocations
 - Do I really need Smarty? I'm not sure it's doing anything it
@@ -24,6 +25,7 @@
 	- htdocs/skins/default/item.tpl
 	- htdocs/skins/default/editfeed.tpl
 	- htdocs/skins/default/unsubscribe.tpl
+- Delete "mobile" skin?
 - Build htdocs/.htaccess file as part of 'make all'.
 - Add hook for links to mobile versions of URLs (view.php).
 	Probably should add a subdirectory underneath "plugins".
