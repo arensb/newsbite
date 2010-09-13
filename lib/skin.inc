@@ -56,15 +56,11 @@ class Skin
 	function assign($var, $value)
 	{
 		$this->vars[$var] = $value;
-#		parent::assign($var, $value);
 	}
 
 	function display($tmpl)
 	{
-		// XXX - See if $tmpl =~ s/tpl/php/ exists; if so,
-		// include() it. Otherwise, use Smarty.
-		$fname = "skins/$this->skin/" .
-			str_replace(".tpl", ".php", $tmpl);
+		$fname = "skins/$this->skin/$tmpl.php";
 		if (file_exists($fname))
 		{
 			global $the_skin;
@@ -73,20 +69,14 @@ class Skin
 			$skin_vars = $this->vars;
 			include($fname);
 		} else
-			parent::display($tmpl);
+			abort("Can't find template skins/$this->skin/$tmpl");
 	}
 
 	function _include($tmpl, $more_vars)
 	{
-#echo "Inside _include($tmpl)<br/>\n";
-		// XXX - See if $tmpl =~ s/tpl/php/ exists; if so,
-		// include() it as a string. Otherwise, use Smarty.
-		$fname = "skins/$this->skin/" .
-			str_replace(".tpl", ".php", $tmpl);
-#echo "fname (", getcwd(), "): [$fname]<br/>\n";
+		$fname = "skins/$this->skin/$tmpl.php";
 		if (file_exists($fname))
 		{
-#echo "Yes, it exists<br/>\n";
 			global $the_skin;
 			global $skin_vars;
 			$the_skin = $this;
@@ -94,17 +84,37 @@ class Skin
 					// Save current skin variables
 
 			$skin_vars = array_merge($this->vars, $more_vars);
-#echo "Including [$fname]<br/>\n";
-//			ob_start();		// Turn on output buffering
 			include($fname);
-//			$retval = ob_get_contents();
-//						// Get output buffer
-//			ob_end_clean();		// End output buffering
 			$skin_vars = $old_skin_vars;
 					// Restore skin variables
-//			return $retval;
 		} else
-			parent::_include($tmpl);
+			abort("Can't find template skins/$this->skin/$tmpl");
+	}
+
+	function fetch($tmpl, $more_vars = NULL)
+	{
+		$fname = "skins/$this->skin/$tmpl.php";
+
+		if (file_exists($fname))
+		{
+			global $the_skin;
+			global $skin_vars;
+			$the_skin = $this;
+			$old_skin_vars = $skin_vars;
+					// Save current skin variables
+
+			if (isset($more_vars))
+				$skin_vars = array_merge($this->vars, $more_vars);
+			else
+				$skin_vars = $this->vars;
+
+			ob_start();
+			include($fname);
+			$retval = ob_get_contents();
+			ob_end_clean();
+			return $retval;
+		} else
+			return NULL;
 	}
 };
 ?>
