@@ -105,6 +105,7 @@ plugins/bugs.php
 plugins/feedburner.php
 plugins/gocomics.php
 plugins/google_news.php
+plugins/htmlpurifier.php
 plugins/no-style.php
 plugins/origlink.php
 plugins/pheedo-ads.php
