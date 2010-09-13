@@ -173,7 +173,7 @@ if ($mobile &&
 foreach ($feed['items'] as &$i)
 {
 	$i['url'] = preg_replace(',^(http://www\.abcnews\.go\.com/.*)/story,',
-				 '\1/m/story,'
+				 '\1/m/story,',
 				 $i['url']);
 }
 
