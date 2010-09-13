@@ -30,18 +30,6 @@ $PARALLEL_UPDATES = 20;
  */
 //define('FEED_CACHE', "/tmp/feed-cache");
 
-/* SMARTY_DIR: where the Smarty classes are (i.e., the directory
- * containing Smarty.class.php). Must end in slash.
- */
-define('SMARTY_DIR', "/path/to/Smarty/");
-
-/* SMARTY_PATH: where to find smarty directories: cache and compiled
- * templates.
- * May be relative to the htdocs directory, or an absolute path.
- * Must end with slash.
- */
-define('SMARTY_PATH', "smarty/");	// Relative to htdocs/
-
 /* Default skin. This is the name of a directory in htdocs/skins */
 define('DEFAULT_SKIN', "default");
 
