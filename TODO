@@ -58,6 +58,11 @@
 - Bug-ish: when marking a feed as inactive, get redirected back to it.
   This is bogus.
 	Redirect to feed index.
+- ABC News iPad site:
+  Ordinary story:
+  http://abcnews.go.com/WN/militarys-policy-repealed/story?id%3D11621916
+  iPad-optimized:
+  http://abcnews.go.com/WN/militarys-policy-repealed/t/story?id=11621916
 - AJAX requests can be blocked due to authentication. Should return a
   status code of some sort, and allow the user to log in. How?
 - It'd be nice to compress files in advance. Have Apache figure out

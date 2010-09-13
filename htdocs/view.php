@@ -169,6 +169,15 @@ if ($mobile &&
 	}
 }
 
+// And one transformation that applies to iPad as well:
+foreach ($feed['items'] as &$i)
+{
+	$i['url'] = preg_replace(',^(http://www\.abcnews\.go\.com/.*)/story,',
+				 '\1/m/story,'
+				 $i['url']);
+}
+
+
 // XXX - It would be great to normalize the HTML parts of the item, to
 // protect against malformed HTML, mismatched tags, etc. The fragment
 // below tries to do this by
