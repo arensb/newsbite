@@ -821,6 +821,9 @@ function rss_element_handler(
 		    case "image":
 		    case "item":
 		    case "textInput":
+			# Clean up HTML
+			run_hooks("clean-html",
+				  array($elt_name, &$children, &$context));
 			$retval[$elt_name] = $children;
 			break;
 		    default:
@@ -858,6 +861,10 @@ function rss_element_handler(
 		switch ($parent)
 		{
 		    case "item":
+			# Clean up HTML
+			run_hooks("clean-html",
+				  array($elt_name, &$children, &$context));
+			# Run any other required hooks on the summary
 			run_hooks("summary",
 				  array($elt_name, &$children, &$context));
 			$retval[$elt_name] = &$children;
@@ -888,6 +895,9 @@ function rss_element_handler(
 		switch ($parent)
 		{
 		    case "item":
+			# Clean up HTML
+			run_hooks("clean-html",
+				  array($elt_name, &$children, &$context));
 			$retval['summary'] = $children;
 			break;
 		    default:
@@ -1039,6 +1049,7 @@ function rss_element_handler(
 
 	    case "copyright":
 	    case "docs":
+		# XXX - Clean up HTML, if we ever decide to keep this?
 		switch ($parent)
 		{
 		    case "channel":
@@ -1573,6 +1584,9 @@ function atom_element_handler(
 		    case "feed":
 		    case "entry":
 			// XXX - Make sure $children is a string.
+			# Clean up HTML
+			run_hooks("clean-html",
+				  array($elt_name, &$children, &$context));
 			$retval[$elt_name] = $children;
 			break;
 
@@ -1588,6 +1602,9 @@ function atom_element_handler(
 		{
 		    case "feed":
 			// XXX - Make sure $children is a string.
+			# Clean up HTML
+			run_hooks("clean-html",
+				  array($elt_name, &$children, &$context));
 			$retval[$elt_name] = $children;
 			break;
 
@@ -1728,6 +1745,7 @@ function atom_element_handler(
 		{
 		    case "author":
 			// XXX - Make sure $children is a string.
+			# XXX - Clean up HTML?
 			$retval[$elt_name] = $children;
 			break;
 
@@ -1840,6 +1858,10 @@ function atom_element_handler(
 		{
 		    case "entry":
 			// XXX - Make sure $children is a string.
+			# Clean up HTML
+			run_hooks("clean-html",
+				  array($elt_name, &$children, &$context));
+			# Run other summary-related hooks
 			run_hooks("summary",
 				  array($elt_name, &$children, &$context));
 			$retval['description'] = &$children;
@@ -1870,6 +1892,10 @@ function atom_element_handler(
 		switch ($parent)
 		{
 		    case "entry":
+			# Clean up HTML
+			run_hooks("clean-html",
+				  array($elt_name, &$children, &$context));
+			# Run other content-related hooks
 			run_hooks("body",
 				  array($elt_name, &$children, &$context));
 			$retval[$elt_name] = &$children;
@@ -1956,6 +1982,10 @@ function rdf_element_handler(
 	switch ($elt_name)
 	{
 	    case "title":
+		# Clean up HTML
+		run_hooks("clean-html",
+			  array($elt_name, &$children, &$context));
+
 		switch ($parent)
 		{
 		    case "channel":
@@ -1992,6 +2022,10 @@ function rdf_element_handler(
 		break;
 
 	    case "description":
+		# Clean up HTML
+		run_hooks("clean-html",
+			  array($elt_name, &$children, &$context));
+
 		switch ($parent)
 		{
 		    case "channel":
