@@ -82,9 +82,7 @@ for ($i = 0; $i < count($skin_vars['feeds']); $i++)
 		"\" id=\"feed-${feed_id}\">";
 	echo "<td class=\"icon-col\">&nbsp;</td>";
 	echo "<td class=\"title-col\">";
-#	echo "the_skin: [", $the_skin->skin, "]<br/>\n";
-#	{include file='feed-title.tpl' feed=$feed counts=$counts[$feed_id]}</td>
-	$the_skin->_include("feed-title.tpl",
+	$the_skin->_include("feed-title",
 			    array("feed" =>	$feed,
 				  "counts" =>	$skin_vars['counts'][$feed_id]
 				    )

@@ -1,5 +1,5 @@
 <?php
-/* feed-title.tpl
+/* feed-title.php
  * This template displays the feed title or nickname, plus the article
  * counts. This template is used inside the main feed display. The
  * reason it's a separate template is so that the Ajax code can update
