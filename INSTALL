@@ -9,7 +9,7 @@ Make sure you have the following sofware packages installed:
 	- MySQLi (not MySQL)
 	- XML Parser
 - MySQL 5.x
-- Smarty template engine (included with this distribution)
+- (optional) HTMLPurifier, from http://www.htmlpurifier.org/
 
 
 INSTALLATION:
@@ -47,12 +47,6 @@ INSTALLATION:
 	  to `newsbiteuser`@`localhost`
 	  identified by "newsbitepassword";
 
-- Unpack the Smarty distribution
-
-	If you already have Smarty installed, you can use that. If
-	not, there's a copy of it in the "Smarty" subdirectory of the
-	Newsbite distribution.
-
 - Quick directory overview
 
 	The main directories in the distribution include:
@@ -60,21 +54,13 @@ INSTALLATION:
 	- htdocs: PHP scripts that will be accessed by the user's
 	  browser. These need to be in the web server's DocumentRoot.
 
-	- htdocs/smarty: the distribution contains two empty
-	  directories, "configs" and "templates_c", that are used by
-	  Smarty templates.
-
-	  Since the files that will be created there will be sent back
-	  to the client, they may be put in the DocumentRoot, but need
-	  not be.
-
 	- lib: PHP files used by the scripts in "htdocs", but not
 	  accessed directly by the browser. These do not need to be in
 	  the DocumentRoot.
 
-	- Smarty: Newsbite uses the Smarty template engine, and needs
-	  to be able to find it. Smarty does not need to be installed
-	  in the DocumentRoot.
+	- plugins: PHP scripts used by the ones in "htdocs" and "lib",
+	  but not accessed directly by the browser. These do not need
+	  to be in the DocumentRoot.
 
 - Install "htdocs"
 
@@ -105,20 +91,6 @@ INSTALLATION:
 	New password: 
 	Re-type new password: 
 
-- Install "htdocs/smarty"
-
-	The directory "htdocs/smarty" does not really need to be in
-	the DocumentRoot. You can move it elsewhere if you like.
-
-	"htdocs/smarty/templates_c" needs to be writable by the user
-	that will be running the Newsbite PHP scripts (usually the
-	user that Apache runs as, e.g. "httpd").
-
-	In the shell, as root, run:
-
-	# chown httpd /path/to/smarty/templates_c
-	# chmod 755 /path/to/smarty/templates_c
-
 - Install "lib"
 
 	Copy the "lib" directory to where you want it. This does not
@@ -127,20 +99,24 @@ INSTALLATION:
 	If you're not concerned with security, you can install it
 	underneath the "htdocs" directory.
 
-- Install Smarty
+- Install "plugins"
 
-	If you already have Smarty installed, find the directory that
-	contains the file "Smarty.class.php". You'll need it later.
+	Copy the "plugins" directory to where you want it. By default,
+	this can go underneath "htdocs".
 
-	If you don't already have Smarty installed, then unpack the
-	copy that came with Newsbite (if you haven't already done so).
+- Install HTMLPurifier
 
-	Find the directory that contains the file "Smarty.class.php",
-	and copy it somewhere. This does not need to be in the
-	DocumentRoot. If you're not concerned with security, you can
-	put it underneath "htdocs".
+	HTMLPurifier tidies up poorly-written HTML in feeds that can
+	mess up the layout of the page. One side effect is that it
+	also removes non-standard or non-whitelisted HTML elements,
+	which can make the feed look different from what the author
+	intended.
 
-	Remember where you put it. You'll need it later.
+	If you want to use it, install it somewhere:
+	- Unpack the HTMLPurifier distribution
+	- Put the "library" directory somewhere
+
+	and set HTMLPURIFIER_LIB in the config file.
 
 - Edit the config file
 
@@ -161,11 +137,10 @@ INSTALLATION:
 	.htaccess file should contain
 
 	<IfModule mod_php5.c>
-		php_value include_path "/path/to/lib:/path/to/Smarty"
+		php_value include_path "/path/to/lib"
 	</IfModule>
 
 	where "/path/to/lib" is the directory where you put the lib/*
-	files, and "/path/to/Smarty" is where you put the Smarty
 	files.
 
 	If you're not running Apache, you'll have to do this some
@@ -196,9 +171,5 @@ INSTALLATION:
 
 The "CRON=true" environment variable allows the script to bypass
 authentication.
-
-- (Optional) Add a cron job to clean up old Smarty files
-
-	Or you could just delete them whenever you upgrade Newsbite.
 
 And you're finally done.
