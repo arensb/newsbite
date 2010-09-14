@@ -2,7 +2,15 @@
 /* Plugin to use HTMLpurifier to clean up HTML.
  * See http://www.htmlpurifier.org/
  */
-define(HTMLPURIFIER_LIB, "/folks/arensb/proj/newsbite/HTMLPurifier/htmlpurifier-4.1.1-lite/library");
+/* To enable this plugin, install HTMLPurifier, then add a line like
+ * the following to your config.php to say where the class files are:
+ *
+ * define(HTMLPURIFIER_LIB, "/path/to/htmlpurifier/library");
+ *
+ * This directory should be the one that contains the file
+ * "HTMLPurifier.auto.php".
+ */
+//define(HTMLPURIFIER_LIB, "/folks/arensb/proj/newsbite/HTMLPurifier/htmlpurifier-4.1.1-lite/library");
 
 if (!defined('HTMLPURIFIER_LIB'))
 	# We don't have HTMLPurifier. Abort.
