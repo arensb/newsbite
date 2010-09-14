@@ -1,30 +1,5 @@
-- Add HTMLPurifier instructions to INSTALL
+- What does HTMLPurifier remove?
 - 'make install' (or 'make upgrade') should install everything.
-- Remove ".tpl" from all skin invocations
-- Do I really need Smarty? I'm not sure it's doing anything it
-  wouldn't be just as easy to do in PHP.
-	htdocs/skins/mobile/setskin.tpl
-	htdocs/skins/mobile/feeds.tpl
-	- htdocs/skins/fancy/opml.tpl
-	- htdocs/skins/fancy/setskin.tpl
-	- htdocs/skins/fancy/abort.tpl
-	- htdocs/skins/fancy/view.tpl
-	- htdocs/skins/fancy/feeds.tpl
-	- htdocs/skins/fancy/feed-title.tpl
-	- htdocs/skins/fancy/addfeed.tpl
-	- htdocs/skins/fancy/item.tpl
-	- htdocs/skins/fancy/editfeed.tpl
-	- htdocs/skins/fancy/unsubscribe.tpl
-	- htdocs/skins/default/opml.tpl
-	- htdocs/skins/default/setskin.tpl
-	- htdocs/skins/default/abort.tpl
-	- htdocs/skins/default/view.tpl
-	- htdocs/skins/default/feeds.tpl
-	- htdocs/skins/default/feed-title.tpl
-	- htdocs/skins/default/addfeed.tpl
-	- htdocs/skins/default/item.tpl
-	- htdocs/skins/default/editfeed.tpl
-	- htdocs/skins/default/unsubscribe.tpl
 - Delete "mobile" skin?
 - Build htdocs/.htaccess file as part of 'make all'.
 - Add hook for links to mobile versions of URLs (view.php).
@@ -58,11 +33,35 @@
 - Bug-ish: when marking a feed as inactive, get redirected back to it.
   This is bogus.
 	Redirect to feed index.
-- ABC News iPad site:
-  Ordinary story:
-  http://abcnews.go.com/WN/militarys-policy-repealed/story?id%3D11621916
-  iPad-optimized:
-  http://abcnews.go.com/WN/militarys-policy-repealed/t/story?id=11621916
+- NPR news site:
+  Normal URL:
+  http://www.npr.org/templates/story/story.php?storyId=129780261
+  iPad-optimized URL:
+  http://www.npr.org/tablet/#story?storyId=129780261
+- Other iPad-optimized sites:
+  http://www.apple.com/ipad/ready-for-ipad/
+- CSS multicolumn stuff:
+  See http://www.zenelements.com/blog/css3-multiple-columns/
+  Fixed width:
+  .multicol {
+  /*	outline:		1px solid red;*/
+  /*	text-align:		justify;*/
+	-moz-column-width:	15em;
+	-webkit-column-width:	15em;
+	-moz-column-gap:	2em;
+	-webkit-column-gap:	2em;
+  }
+
+  Fixed number of columns:
+  #my_CSS3_id {
+  text-align: justify;
+  -moz-column-count: 3;
+  -moz-column-gap: 1.5em;
+  -moz-column-rule: 1px solid #c4c8cc;
+  -webkit-column-count: 3;
+  -webkit-column-gap: 1.5em;
+  -webkit-column-rule: 1px solid #c4c8cc;
+  }
 - AJAX requests can be blocked due to authentication. Should return a
   status code of some sort, and allow the user to log in. How?
 - It'd be nice to compress files in advance. Have Apache figure out
@@ -200,12 +199,6 @@
 - Firefox 2 (carrot) doesn't have getElementsByClassName.
 	Do I care? Maybe a bit.
 - Is it really worth keeping JS-specific stylesheets?
-- Is there a way to tell Smarty to build all the relevant compiled
-  templates in 'make'?
-	Presumably a command-line PHP script can do this:
-	foreach skin
-		foreach *.tpl
-			Smarty->compile($skin/$file) or something
 - Try compressing JS/CSS/etc. to save bandwidth
   - Figure out how to do this with Apache
   - 'make install' needs to compress files
@@ -220,28 +213,6 @@
   information, like when you've lost network connectivity and whatnot.
 - Use addEventListener() instead of on*=script
 - Use addEventListener("DOMContentLoaded"...) instead of "onload".
-- It might be interesting to move the "mark as read" buttons to the
-  left when reading left-handed. That is, if you turn the iPad
-  upside-down, the "mark as read" button flips to the left side.
-	window.onorientationchange = orientation_change;
-
-	function orientation_change()
-	{
-		box.innerHTML = "Orientation: " + window.orientation;
-	}
-
-  Position of the hardware button at various values of window.orientation:
-  0:	bottom
-  90:	right
-  180:	top
-  -90:	left
-	It might be useful to have the buttons on the left at one of
-  90 or -90 as well. Play around with this and see how it works.
-	While we're at it, in landscape mode it would be good to have
-  a list of other items in the feed in a box on the left.
-- The various .js and .css files are getting large enough to be
-  unmanageable. Break them up into chunks and build them with m4 or
-  something.
 - Bookmarklet to mark an article as read.
 	If I stumble across, say, a Bad Astronomy article in Twitter,
   I don't want to read it again in the normal feed. It'd be nice to
@@ -263,23 +234,6 @@
 - Search function: find words in feeds, titles, articles, etc.
 - Read this to make iPhone-friendly skins:
   http://developer.apple.com/safari/library/documentation/AppleApplications/Reference/SafariWebContent/OptimizingforSafarioniPhone/OptimizingforSafarioniPhone.html
-- On iPhone, when mark an entry as read (using fancy skin), the
-  following happens:
-	- Set both checkboxes
-	- Possibly long delay while calls markitem.php
-	- Finally item collapses
-  this is bogus: item collapse immediately, and change color only when
-  markitem has returned.
-	Sun May  2 13:18:42 2010: Not clear where this delay is coming
-  from. Doesn't seem to be my code. Apparently Safari is really slow
-  about updating the display.
-	Possible fix:
-  http://matt.might.net/articles/how-to-native-iphone-ipad-apps-in-javascript/
-  suggests that capturing touch and gesture events is faster than
-  capturing clicks. A quick replacement of "onclick=" with
-  "ontouchstart=" doesn't show any improvement.
-	Perhaps need to use addEventListener() or something rather than
-  using the "on*=" attributes.
 - Make updates smarter about updating when no network available.
   On iPhone, don't contact the network if there's no network to contact.
 - Add an entry in the 'options' table, saying which version/revision
@@ -364,28 +318,6 @@
   The latter is probably more useful.
 	That way, can go through today's stuff fairly quickly, without
   having to scroll through messages you've already seen.
-- (bug?) Bad HTML in item description/content causes parse errors in
-  XMLReader. This is going to crop up a lot, and should be fixed.
-	Worst solution: skip the entire feed, making it unusable until
-  the bad article expires. (Currently implemented.)
-	Better solution: just skip the article, and proceed with the
-  next one. Presumably this involves checkpointing when each article
-  begins, and skipping the bad ones.
-	Better solution: just skip the bad element, and somehow mark
-  it bad in a user-visible way. Again, this involves checkpointing.
-	Better solution?: Punt: bad XML is not necessarily bad HTML,
-  at least so bad that a browser can't deal with it (Firefox displays
-  "&#2;" as a gray box; Safari seems to remove them from the source
-  altogether. Try to suck out the bits between <description> and
-  </description> as a string, and leave it up to the browser to render
-  it. Unfortunately, this invites XSS attacks.
-	Hack solution: look for /&#\d{0,2};/ and fix them.
-
-	Unfortunately, XMLReader doesn't seem to support
-  checkpointing. Perhaps another XML module can deal with this more
-  gracefully? OTOH, is it a good idea to be too liberal in what we
-  accept? Isn't that an invitation to XSS? XML is supposed to be
-  really anal about syntax.
 - Should there be a module (or something) for Twitter updates?
 - There should really be a tool for testing plugins.
 	For removing ads and such: it'd be nice to plug the XML or the
@@ -668,15 +600,6 @@
 - A bunch of elements in the templates have id="..." identifiers
   (body, forms, etc.) Come up with a good naming scheme for them, to
   keep them all straight.
-- http://www.smarty.net/manual/en/template.resources.php tells how to
-  get templates from any source. Perhaps can set up "skin" scheme, so can use
-	$smarty->display("skin:item.tpl");
-  and it'll fetch "current-skin/item.tpl" if it exists, or
-  "default-skin/item.tpl" otherwise.
-	Or could allow a plugin to specify a feed-specific skin,
-  either as a record in the database, or as a string.
-	In the meantime, just require the "skins/$skin_name" directory
-  to contain every template. (Disk space is cheap, right? :-))
 - The example in TFM for php_sapi_name() is useful for determining
   whether the script is being called from the command line or as a CGI
   script.
@@ -772,8 +695,8 @@
   the distro: 'common.inc' includes that, upgrades the installation,
   then deletes itself.
 	In order to be allowed to delete itself, the script should be
-  put in a directory that the httpd user can write to: the Smarty
-  compile directory. Yes, this is a hack.
+  put in a directory that the httpd user can write to. Yes, this is a
+  hack.
 - Run timing tests with different numbers of feeds. See if there's a
   way to estimate a good number of parallel connections.
 	If there is, allow user to set $PARALLEL_UPDATES to "auto",
