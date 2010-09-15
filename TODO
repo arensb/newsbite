@@ -1,4 +1,5 @@
 - What does HTMLPurifier remove?
+	- dKos talk threads (<ul>?)
 - 'make install' (or 'make upgrade') should install everything.
 - Delete "mobile" skin?
 - Build htdocs/.htaccess file as part of 'make all'.
@@ -13,23 +14,10 @@
   feeds, since the number of articles won't grow.
 	But some active feeds aren't being cleaned out either.
   Apparently this is because the URLs are dead.
-- Bug: in cron mode, update.php should print an error to stderr if
-  something goes wrong.
-	- Can't fetch feed (error 404)
-	- Get non-RSS feed
-	- Other
 - Bug: When Ajax updates feeds, it doesn't notice updates to the list
   of feeds.
 	Perhaps when updating all, update.php should append a list of
   known feeds. If it's out of date, JS can request a full list.
-- Bug: When updates take too long, PHP terminates. 30 sec. max.
-	This is a curl error, and should be caught. Error at
-                $err = curl_multi_select($mh);
-  This doesn't seem to be a simple case of an operation exceeding a
-  timeout.
-- Bug: when collapse from bottom collapse bar, window scrolls uglily.
-  Ought to fix this: bottom edge should remain at the same place on
-  screen, if possible.
 - Bug-ish: when marking a feed as inactive, get redirected back to it.
   This is bogus.
 	Redirect to feed index.

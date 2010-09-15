@@ -146,6 +146,22 @@ INSTALLATION:
 	If you're not running Apache, you'll have to do this some
 	other way.
 
+- Configure PHP variables
+
+	max_execution_time:
+	By default, PHP scripts run for a maximum of 30 seconds. If
+	you have a lot of feeds, some scripts (notably "update.php")
+	may time out. If this happens, you can up the execution time
+	by setting the "max_execution_time" PHP variable.
+
+	Either set it in your php.ini (you're on your own), or add a
+	line to your .htaccess:
+
+	<IfModule mod_php5.c>
+		php_value include_path "/path/to/lib"
+		php_value max_execution_time	60	# Add this
+	</IfModule>
+
 - Point your browser at wherever you put the htdocs/* files.
 
 	You should be prompted for a password. Once you do, you'll see
