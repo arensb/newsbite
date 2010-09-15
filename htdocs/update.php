@@ -99,14 +99,14 @@ class console_output_handler extends feed_update_handler
 
 	function error($feed_id, $feed_title, $msg)
 	{
-		error_log($msg);
+		error_log("Error in feed $feed_title ($feed_id): $msg");
 	}
 }
 
 
 /* See what kind of output the user wants */
 
-if ($_ENV['CRON'] == "yes")
+if ($_ENV['CRON'] == "true")
 {
 	$out_fmt = "console";
 } else {
