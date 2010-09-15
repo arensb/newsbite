@@ -18,13 +18,8 @@ var mark_request = null;	// Data for marking items as read/unread
 
 function init()
 {
-//	if (document.getElementsByClassName)
-//;//		alert("have getElementsByClassName")
-//	else
-//;//		alert("don't have getElementsByClassName")
-//		// XXX - Ought to implement one. But it exists in all
-//		// the browsers I care about.
-	// XXX - Firefox 2 (carrot) doesn't have getElementsByClassName
+	// XXX - Firefox 2 (carrot) doesn't have
+	// document.getElementsByClassName()
 
 	addListenerByClass("collapse-bar", "click", toggle_pane, false);
 	addListenerByClass("expand-bar", "click", toggle_pane, false);
@@ -122,6 +117,21 @@ function set_pane(container, state)
 		replace_class(container, "show-summary", "show-content");
 	}
 	container.setAttribute("which", new_state);
+
+	/* Find the "item" container: if we collapse from the bottom
+	 * bar, we might wind up looking at the middle of a completely
+	 * unrelated article, which is surprising and annoying.
+	 * So if the top of the item is above the window border when
+	 * we collapse, scroll so that the top of the item is at the
+	 * top of the browser window.
+	 */
+	var item_div = container.parentNode;
+	while (item_div && !is_in_class(item_div, "item"))
+		item_div = item_div.parentNode;
+	if (item_div == null)
+		return;
+	if (item_div.offsetTop < window.pageYOffset)
+		window.scrollTo(0, item_div.offsetTop);
 }
 
 /* flush_queues
@@ -134,8 +144,6 @@ clrdebug();
 	// nothing; return.
 	// XXX - There should never be two flush_queues()es running at
 	// the same time.
-//	if (mark_request == null)
-//		return;
 
 	// mark_request: an object encapsulating everything we want to keep
 	// track of during this operation
@@ -172,7 +180,6 @@ clrdebug();
 	if (!request)
 	{
 		// XXX - Better error-reporting
-//		defaultStatus = "Error: can't create XMLHttpRequest";
 //debug("Error: can't create XMLHttpRequest");
 		return;
 	}
@@ -193,24 +200,22 @@ clrdebug();
 			encodeURIComponent(mark_request.read.join(",")) +
 			"&mark-unread=" +
 			encodeURIComponent(mark_request.unread.join(","));
-//debug("req_data == [" + req_data + "]");
-//p.record("before request.send");
 	request.send(req_data);
-//p.record("after request.send");
-//debug("Sent request");
 
 	return false;
 }
 
 function parse_flush_response(req)
 {
-//p.record("readyState " + req.request.readyState);
 	var err = 0;
 	var errmsg = undefined;
-// XXX - If there's an error, take all the items in req and put them
-// back in mark_read (bearing in mind that they may have been marked
-// again by the user, so don't overwrite those).
-//	debug("parse_response readyState: " + req.request.readyState);
+
+	// XXX - If there's an error, take all the items in req and
+	// put them back in mark_read (bearing in mind that they may
+	// have been marked again by the user, so don't overwrite
+	// those).
+	//	debug("parse_response readyState: " + req.request.readyState);
+
 	switch (req.request.readyState)
 	{
 	    case 0:		// Uninitialized
@@ -218,16 +223,12 @@ function parse_flush_response(req)
 		return
 	    case 2:		// Loaded
 		/* Get request status */
-//		debug("We get signal");
 
 		/* Get HTTP status */
 		try {
 			err = req.request.status;
 			errmsg = req.request.statusText;
-//			debug("request status: [" + err + "]");
-//			debug("request status text: [" + errmsg + "]");
 		} catch (e) {
-//			debug("Failed to get status: " + e);
 			err = 1;
 		}
 
@@ -236,7 +237,6 @@ function parse_flush_response(req)
 		 */
 		if (err != 200)
 		{
-//			debug("Aborting");
 			req.request.abort();
 			req.aborted = true;
 
@@ -258,11 +258,8 @@ function parse_flush_response(req)
 		}
 		return;
 	    case 3:		// Got partial text
-//		debug("Got some text. Len " + req.request.responseText.length);
 		return;
 	    case 4:		// Got all text
-//		debug("Got all text. Len " + req.request.responseText.length +", \"" + req.request.responseText+ "\"");
-//		debug("Got all text. Len " + req.request.responseText.length);
 
 		/* Check response text: if it's not a status message
 		 * from our server saying that the messages were
@@ -287,27 +284,23 @@ function parse_flush_response(req)
 				eval("l = " + line);
 				break;
 			} catch (e) {
-//				debug("Caught error " + e);
 				continue;
 			}
 		}
 		if (l.state != "ok")
 		{
-//			debug("Didn't get ok status from server.");
 			/* Put the items to be marked back on mark_read */
 			// XXX - This code is duplicated above. Consolidate
 			// into a function.
 			for (i in req.read)
 			{
 				var id = req.read[i];
-//debug("Putting back " + id + " as read");
 				if (mark_read[id] == undefined)
 					mark_read[id] = true;
 			}
 			for (i in req.unread)
 			{
 				var id = req.unread[i];
-//debug("Putting back " + id + " as unread");
 				if (mark_read[id] == undefined)
 					mark_read[id] = false;
 			}
@@ -318,7 +311,6 @@ function parse_flush_response(req)
 			return;
 		for (i in req.read)
 		{
-//debug("marking "+req.read[i]+" as read");
 			var item = document.getElementById("item-"+req.read[i]);
 			if (item == null)
 				continue;
@@ -326,14 +318,11 @@ function parse_flush_response(req)
 		}
 		for (i in req.unread)
 		{
-//debug("marking "+req.unread[i]+" as unread");
 			var item = document.getElementById("item-"+req.unread[i]);
 			if (item == null)
 				continue;
 			item.setAttribute("deleted", "no");
 		}
-//defaultStatus = "Done";
-//debug("Done");
 		break;
 	}
 }
@@ -434,21 +423,12 @@ function mark_item(ev)
 	elt.blur();
 }
 
-/* XXX - collapse_all() and expand_all() don't play nice with
- * toggle_pane(): they force a collapse/expansion, but toggle_pane()
- * looks at the "which" attribute to decide which state to move the item
- * to.
- * collapse_all() and expand_all() should probably call toggle_pane()
- * with arguments saying to force a state, or soemthing.
- */
 function collapse_all()
 {
 	var items = document.getElementsByClassName("content-panes");
 
-//	alert("Found "+items.length+" items");
 	for (var i = 0, len = items.length; i < len; i++)
 	{
-//		replace_class(items[i], "show-content", "show-summary");
 		set_pane(items[i], "summary");
 	}
 }
@@ -457,10 +437,8 @@ function expand_all()
 {
 	var items = document.getElementsByClassName("content-panes");
 
-//	alert("Found "+items.length+" items");
 	for (var i = 0, len = items.length; i < len; i++)
 	{
-//		replace_class(items[i], "show-summary", "show-content");
 		set_pane(items[i], "content");
 	}
 }
