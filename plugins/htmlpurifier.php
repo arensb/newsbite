@@ -43,7 +43,7 @@ function htmlpurify_init()
 	$purifier = new HTMLPurifier($purifier_config);
 }
 
-function htmlpurify($nodename, &$retval, &$context)
+function htmlpurify(&$retval)
 {
 	global $purifier;
 	if (!is_string($retval))
