@@ -5,6 +5,9 @@
 require_once("common.inc");
 require_once("database.inc");
 require_once("skin.inc");
+require_once("hooks.inc");
+
+load_hooks(PLUGIN_DIR);
 
 /* Try to guess whether we're viewing this on an iPhone or other
  * mobile device.
