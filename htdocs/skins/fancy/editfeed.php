@@ -10,7 +10,7 @@ $feed = &$skin_vars['feed'];
 	"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html>
 <head>
-<title>NewsBite: Editing <?=$feed['title']?></title>
+<title>NewsBite: Editing <?=htmlspecialchars($feed['title'])?></title>
 <link rel="stylesheet" type="text/css" href="skins/<?=$skin_dir?>/style.css" media="all" />
 <link rel="stylesheet" type="text/css" href="skins/<?=$skin_dir?>/editfeed.css" media="all" />
 <!-- If JavaScript is turned on, slurp in the JavaScript-specific
@@ -29,7 +29,7 @@ $feed = &$skin_vars['feed'];
 <body id="edit-feed">
 
 <? /* XXX - Links to get back to interesting places, like feed list */ ?>
-<h1>Editing feed <?=$feed['title']?></h1>
+<h1>Editing feed <?=htmlspecialchars($feed['title'])?></h1>
 
 <form name="edit-feed" method="post" action="editfeed.php">
 <?/* Feed ID */?>
@@ -46,12 +46,12 @@ $feed = &$skin_vars['feed'];
 <?/* XXX - Is it worth displaying the title? It's right above */?>
   <tr>
     <th>Title</th>
-    <td><?=$feed['title']?></td>
+    <td><?=htmlspecialchars($feed['title'])?></td>
   </tr>
 
   <tr>
     <th>Subtitle</th>
-    <td><?=$feed['subtitle'] || "&nbsp;"?></td>
+    <td><?=htmlspecialchars($feed['subtitle']) || "&nbsp;"?></td>
   </tr>
 
 <?/* User-settable nickname */ ?>
@@ -92,7 +92,12 @@ $feed = &$skin_vars['feed'];
   <tr>
     <th>Description</th>
     <td>
-      <div><?=$feed['description']?></div>
+      <div><?
+	# Sanitize description before displaying it.
+	$description = $feed['description'];
+	run_hooks("clean-html", array(&$description));
+	echo $description;
+?></div>
     </td>
   </tr>
 

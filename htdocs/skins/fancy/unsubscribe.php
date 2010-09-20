@@ -39,25 +39,23 @@ echo '<', '?xml version="1.0" encoding="UTF-8"?', ">\n";
   </tr>
 
 <? if ($feed['nickname'] != ""):
-//  {if $feed.nickname != ""}
 ?>
   <tr>
     <th>Nickname</th>
     <td><?=$feed['nickname']?>
   </tr>
 <? endif
-//  {/if}
 ?>
 
 <? if ($feed['description'] != ""):
-//  {if $feed.description != ""}
+	$description = $feed['description'];
+	run_hooks("clean-html", array(&$description));
 ?>
   <tr>
     <th>Description</th>
-    <td><?=$feed['description']?></td>
+    <td><?=$description?></td>
   </tr>
 <? endif
-//  {/if}
 ?>
 
   <tr>
