@@ -9,6 +9,9 @@
 require_once("common.inc");
 require_once("database.inc");
 require_once("skin.inc");
+require_once("hooks.inc");
+
+load_hooks(PLUGIN_DIR);
 
 $feed_id = $_REQUEST['id'];		// ID of feed to show
 /* Make sure $feed_id is an integer */
