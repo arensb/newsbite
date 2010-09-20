@@ -1,6 +1,9 @@
 <?
-/* feed.inc
+/* parse-feed.inc
  * Functions for parsing RSS (and similar) XML feed files.
+ */
+/* XXX - run_hooks("clean_html") doesn't need all the arguments that
+ * other hooks do: just a reference to the text to be sanitized.
  */
 
 require_once("hooks.inc");
@@ -183,21 +186,7 @@ $url2handler = array(		// Handlers for specific URLs
 // wfw		http://wellformedweb.org/CommentAPI/
 	);
 
-/* add_xml_handler
- * Very similar to add_hook, but for XML namespaces. Takes a namespace
- * identifier, like http://purl.org/rss/1.0/modules/content/ , and
- * sets its handler, an array of the form:
- *	array("init"	=> init_function,
- *	      "element"	=> element_handler_function,
- *	      "attribute"	=> attribute_handler_function,
- *	      "text"	=> text_handler_function);
- */
-function add_xml_handler($namespace, $handler)
-{
-	global $url2handler;
-
-	$url2handler[$namespace] = $handler;
-}
+// See lib/hooks.inc for definition of add_xml_handler()
 
 load_hooks(PLUGIN_DIR);
 
@@ -822,8 +811,7 @@ function rss_element_handler(
 		    case "item":
 		    case "textInput":
 			# Clean up HTML
-			run_hooks("clean-html",
-				  array($elt_name, &$children, &$context));
+			run_hooks("clean-html", array(&$children));
 			$retval[$elt_name] = $children;
 			break;
 		    default:
@@ -862,8 +850,7 @@ function rss_element_handler(
 		{
 		    case "item":
 			# Clean up HTML
-			run_hooks("clean-html",
-				  array($elt_name, &$children, &$context));
+			run_hooks("clean-html", array(&$children));
 			# Run any other required hooks on the summary
 			run_hooks("summary",
 				  array($elt_name, &$children, &$context));
@@ -896,8 +883,7 @@ function rss_element_handler(
 		{
 		    case "item":
 			# Clean up HTML
-			run_hooks("clean-html",
-				  array($elt_name, &$children, &$context));
+			run_hooks("clean-html", array(&$children));
 			$retval['summary'] = $children;
 			break;
 		    default:
@@ -1585,8 +1571,7 @@ function atom_element_handler(
 		    case "entry":
 			// XXX - Make sure $children is a string.
 			# Clean up HTML
-			run_hooks("clean-html",
-				  array($elt_name, &$children, &$context));
+			run_hooks("clean-html", array(&$children));
 			$retval[$elt_name] = $children;
 			break;
 
@@ -1603,8 +1588,7 @@ function atom_element_handler(
 		    case "feed":
 			// XXX - Make sure $children is a string.
 			# Clean up HTML
-			run_hooks("clean-html",
-				  array($elt_name, &$children, &$context));
+			run_hooks("clean-html", array(&$children));
 			$retval[$elt_name] = $children;
 			break;
 
@@ -1859,8 +1843,7 @@ function atom_element_handler(
 		    case "entry":
 			// XXX - Make sure $children is a string.
 			# Clean up HTML
-			run_hooks("clean-html",
-				  array($elt_name, &$children, &$context));
+			run_hooks("clean-html", array(&$children));
 			# Run other summary-related hooks
 			run_hooks("summary",
 				  array($elt_name, &$children, &$context));
@@ -1893,8 +1876,7 @@ function atom_element_handler(
 		{
 		    case "entry":
 			# Clean up HTML
-			run_hooks("clean-html",
-				  array($elt_name, &$children, &$context));
+			run_hooks("clean-html", array(&$children));
 			# Run other content-related hooks
 			run_hooks("body",
 				  array($elt_name, &$children, &$context));
@@ -1983,8 +1965,7 @@ function rdf_element_handler(
 	{
 	    case "title":
 		# Clean up HTML
-		run_hooks("clean-html",
-			  array($elt_name, &$children, &$context));
+		run_hooks("clean-html", array(&$children));
 
 		switch ($parent)
 		{
@@ -2023,8 +2004,7 @@ function rdf_element_handler(
 
 	    case "description":
 		# Clean up HTML
-		run_hooks("clean-html",
-			  array($elt_name, &$children, &$context));
+		run_hooks("clean-html", array(&$children));
 
 		switch ($parent)
 		{
