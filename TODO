@@ -1,10 +1,37 @@
+- Which database fields have limited size? HTMLPurify them before
+  displaying.
+	* Feed title (assume it's text)
+	- Feed subtitle
+	- (Feed nickname)
+	- (Site URL)
+	- (Feed URL)
+	- Feed description
+	- (URL to feed image)
+	- (Item URL)
+	- Item title
+	- Item summary
+	- Item content
+	- Item author
+	- (Item category)
+	- (Item content URL)
+	- (Item comment RSS URL)
+	- (Item GUID)
 - What does HTMLPurifier remove?
 	- dKos talk threads (<ul>?)
+	- "About" section in Strange Maps
+	  It's too long for the database, so the end gets truncated,
+	  along with various close-tags.
+	  Quick hack: invoke clean-html when displaying, rather than
+	  when updating.
 - 'make install' (or 'make upgrade') should install everything.
 - Delete "mobile" skin?
 - Build htdocs/.htaccess file as part of 'make all'.
 - Add hook for links to mobile versions of URLs (view.php).
 	Probably should add a subdirectory underneath "plugins".
+- Security bug: Sanitize all URLs from RSS feeds, to avoid injection
+  attacks.
+	Can this be done with a regexp? Does w3.org have a list of
+  allowable characters in URLs?
 - Bug?: There are some old articles in the database. Why aren't they
   being cleaned out properly?
 	db_update_feed() only cleans out whichever feed it was called

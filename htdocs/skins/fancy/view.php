@@ -23,7 +23,7 @@ echo '<', '?xml version="1.0" encoding="UTF-8"?', ">\n";
 	"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html>
 <head>
-<title>NewsBite: <?=$feed['title']?></title>
+<title>NewsBite: <?=htmlspecialchars($feed['title'])?></title>
 <link rel="stylesheet" type="text/css" href="skins/<?=$skin_dir?>/style.css" media="all" />
 <link rel="stylesheet" type="text/css" href="skins/<?=$skin_dir?>/view.css" media="all" />
 <?
@@ -79,11 +79,14 @@ else
 		"</a>";
 ?></h1>
 <?if ($feed['subtitle'] != ""):?>
-<div class="feed-subtitle"><?=$feed['subtitle']?></div>
+<div class="feed-subtitle"><?=htmlspecialchars($feed['subtitle'])?></div>
 <?endif?>
 
-<?if ($feed['description'] != ""):?>
-<div class="feed-description"><?=$feed['description']?></div>
+<?if ($feed['description'] != ""):
+	$description = $feed['description'];
+	run_hooks("clean-html", array(&$description))
+?>
+<div class="feed-description"><?=$description?></div>
 <?endif?>
 <?
 // XXX - Debugging
