@@ -58,6 +58,30 @@ function add_hook($hook, $func)
 	$hooks[$hook][] = $func;	// Append the function
 }
 
+/* add_xml_handler
+ * Very similar to add_hook, but for XML namespaces. Takes a namespace
+ * identifier, like http://purl.org/rss/1.0/modules/content/ , and
+ * sets its handler, an array of the form:
+ *	array("init"	=> init_function,
+ *	      "element"	=> element_handler_function,
+ *	      "attribute"	=> attribute_handler_function,
+ *	      "text"	=> text_handler_function);
+ */
+/* XXX - This is only used in lib/parse-feed.inc, to deal with XML
+ * elements in feeds. It lives here because there are functions in
+ * plugins/* that use it, but there are other scripts that want to use
+ * plugins.
+
+ * There probably should be a distinction between plain hooks and
+ * functions that deal with XML elements.
+ */
+function add_xml_handler($namespace, $handler)
+{
+	global $url2handler;
+
+	$url2handler[$namespace] = $handler;
+}
+
 /* run_hooks
  * Run all the functions on a given hook.
  * The first argument is name of the function to run; the second is an
