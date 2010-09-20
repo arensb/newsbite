@@ -1,11 +1,11 @@
 - Which database fields have limited size? HTMLPurify them before
   displaying.
 	* Feed title (assume it's text)
-	- Feed subtitle
+	* Feed subtitle (assume it's text)
 	- (Feed nickname)
 	- (Site URL)
 	- (Feed URL)
-	- Feed description
+	* Feed description
 	- (URL to feed image)
 	- (Item URL)
 	- Item title
