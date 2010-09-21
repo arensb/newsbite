@@ -28,7 +28,7 @@ if (isset($mobile_css))
 {
 	echo "<link rel=\"stylesheet\" type=\"text/css\" href=\"skins/$skin_vars[skin]/$mobile_css\" media=\"screen\" />\n";
 }
-?>	  
+?>
 <!-- If JavaScript is turned on, slurp in the JavaScript-specific
      stylesheet
 -->
