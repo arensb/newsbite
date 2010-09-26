@@ -17,7 +17,7 @@ if ($out_fmt != 'json' && $out_fmt != 'jsonr' && $out_fmt != "xml")
 }
 
 # Gather information about the feeds
-$feeds = db_get_feeds();
+$feeds = db_get_feeds(TRUE);
 $counts = db_get_all_feed_counts();
 
 # Collect the gathered information into one array
