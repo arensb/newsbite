@@ -48,6 +48,7 @@ INSTALL_SKINS =	${PRIV_ROOT}/skins
 
 all::
 	(cd htdocs/skins/fancy && $(MAKE))
+	(cd htdocs/skins/wings && $(MAKE))
 
 dist:	all
 	if [ ! -d dist ]; then mkdir dist; fi
