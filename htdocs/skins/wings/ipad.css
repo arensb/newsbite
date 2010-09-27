@@ -1,0 +1,8 @@
+/* iPad-specific CSS settings */
+body {
+	background-color:	#c0c0c0;
+}
+
+.feed-list li {
+	font-size:		12pt;
+}
