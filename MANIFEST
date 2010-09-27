@@ -89,6 +89,13 @@ htdocs/skins/mobile/feeds.tpl
 htdocs/skins/mobile/index.css
 htdocs/skins/mobile/setskin.css
 htdocs/skins/mobile/setskin.tpl
+htdocs/skins/wings/feeds.php
+htdocs/skins/wings/ipad.css
+htdocs/skins/wings/js/Template.js
+htdocs/skins/wings/js/debug.js
+htdocs/skins/wings/js/xhr.js
+htdocs/skins/wings/style.css
+htdocs/skins/wings/wings.jsh
 htdocs/unsubscribe.php
 htdocs/update.php
 htdocs/view.php
