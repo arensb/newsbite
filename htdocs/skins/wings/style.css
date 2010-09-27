@@ -1,0 +1,53 @@
+/* style.css
+ */
+body {
+	background-color:	#e0e0e0;
+}
+
+/* Pages */
+/* By default, pages are hidden */
+div.page {
+	display:		none;
+}
+
+/* Initially, only the index page is visible */
+div.page#index-page {
+	display:		block;
+}
+
+/* Index page: list of feeds */
+.feed-list {
+	margin-left:		0px;
+	padding-left:		0px;
+/*	list-style-type:	none;*/
+	list-style-position:	inside;
+}
+
+.feed-list li {
+	width:			100%;
+	background-color:	white;
+/*
+	outline:		2px solid blue;
+	outline-offset:		12px;
+*/
+/*
+border:	2px solid blue;
+-webkit-border-radius:	1em;
+*/
+/*
+	-moz-outline-radius:	10px;
+	-moz-outline-radius-topleft
+	-moz-outline-radius-topright
+	-moz-outline-radius-bottomleft
+	-moz-outline-radius-bottomright
+*/
+}
+
+a.feed-name:hover {
+	outline:		1px solid blue;
+	cursor:			pointer;
+}
+
+/* Feed page: contents of a single feed */
+
+/* Article page: contents of an article */
