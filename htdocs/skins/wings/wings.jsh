@@ -1,13 +1,14 @@
 /* wings.jsh
  */
+#define DEBUG	1
 #if DEBUG
 #  include "js/debug.js"
 #else
 function debug() { }
 function clrdebug() { }
 #endif	// DEBUG
-#include "js/xhr.js"
 #include "js/Template.js"
+#include "js/ItemCache.js"
 
 var feed_entry_tmpl = new Template(
 "<li><a class=\"feed-name\" onclick=\"show_feed(@id@)\">@id@: @title@</a></li>"
@@ -34,9 +35,11 @@ function init()
 	flip_to_page("index-page");
 			// Show the main page
 
+	ItemCache.scan_cache();
+
 	feeds = get_feeds();	// Get list of feeds from local storage
 	display_feeds(feeds);
-	fetch_feeds();
+	ItemCache.fetch_feeds();
 
 	/* XXX - Update the local store and see if anything needs to be
 	 * deleted.
@@ -64,12 +67,12 @@ function get_feeds()
 		// No list of feeds
 		return undefined;
 
-	/* To get the feeds, eval the string */
+	/* To get the feeds, un-JSON-ify the string */
 	var feed_list;
 	try {
-		eval("feed_list = " + feed_str);
+		feed_list = JSON.parse(feed_str);
 	} catch(e) {
-		alert("Caught an error");
+		alert("Caught an error: "+feed_str);
 	}
 
 	return feed_list;
@@ -97,38 +100,6 @@ function display_feeds(feed_list)
 	}
 	str += "</ol>";
 	feed_box.innerHTML = str;
-}
-
-/* fetch_feeds
- * Fetch latest list of feeds from the server, and save them to local
- * storage.
- */
-function fetch_feeds()
-{
-	var request = createXMLHttpRequest();
-
-	if (!request)
-		return false;
-
-	request.open('GET',
-		     "feeds.php?o=jsonr",
-		     true);
-	request.onreadystatechange =
-		function(){ fetch_feeds_callback(request) };
-	request.send(null);
-}
-
-function fetch_feeds_callback(req)
-{
-	if (req.readyState != 4)
-		return;
-
-	localStorage.setItem("feeds", req.responseText);
-
-	// XXX - Let the rest of the code know that the list of feeds
-	// has been updated. This really ought to be done by an event
-	// and a corresponding handler.
-	get_feeds();
 }
 
 function get_feed_by_id(id, feed_list)
