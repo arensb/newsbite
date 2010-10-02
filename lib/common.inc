@@ -152,11 +152,21 @@ function bare_abort($msg)
  * The returned string is all on one line.
  * In the case of assocs (which return JavaScript objects), we assume
  * that the keys are valid JavaScript identifiers.
+ *
+ * NB: Mozilla's JSON.parse() expects identifiers to be quoted as well
+ * (using double quotes). Thus:
+ *	{x:1}	fails, and
+ *	{'x':1} fails, but
+ *	{"x":1}	succeeds.
  */
+// XXX - PHP's JSON module already includes a json_encode() function.
+// So do we need this?
+
 // XXX - How to distinguish between assoc and array with an even
 // number of elements? The way we have it now, with an even number of
 // arguments indicating an assoc, is a hack. Perhaps change to
 //	jsonify($is_assoc, $arg = NULL)
+
 function jsonify($arg)
 {
 	/* See how many arguments there are, and assign $it to
@@ -188,9 +198,9 @@ function jsonify($arg)
 		$retval = ($it ? "true" : "false");
 	elseif (is_string($it))
 		/* Escape chars in $it */
-		$retval = "'" .
-			addcslashes($it, "\\\'\n\r\"") .
-			"'";
+		$retval = '"' .
+			addcslashes($it, "\\\n\r\"") .
+			'"';
 	elseif (is_array($it))
 	{
 		if (array_key_exists("0", $it))
@@ -208,7 +218,7 @@ function jsonify($arg)
 			$keys = array();
 			$retval = '{';
 			foreach ($it as $key => $value)
-				$keys[] = $key . ':' . jsonify($value);
+				$keys[] = jsonify($key) . ':' . jsonify($value);
 			$retval .= implode(',', $keys);
 			$retval .= '}';
 		}
@@ -216,14 +226,6 @@ function jsonify($arg)
 		return FALSE;
 
 	return $retval;
-}
-
-/* smarty_function_jsonify
- * Give Smarty access to jsonify().
- */
-function smarty_function_jsonify($params, Smarty &$smarty)
-{
-	return jsonify($params['var']);
 }
 
 /* xmlify
