@@ -140,6 +140,12 @@ function bare_abort($msg)
 	 exit(0);
 }
 
+if (function_exists("json_encode")):
+	function jsonify($arg)
+	{
+		return json_encode($arg);
+	}
+else:
 /* jsonify
  * Convert the arguments to a JSON string, and return it.
  * If there's one argument, and it's a string, then it is assumed to
@@ -227,6 +233,7 @@ function jsonify($arg)
 
 	return $retval;
 }
+endif;
 
 /* xmlify
  * Convert the argument to an XML document, and return it.
