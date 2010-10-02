@@ -41,14 +41,19 @@ INSTALL_PLUGINS =	${PRIV_ROOT}/plugins
 INSTALL_SKINS =	${PRIV_ROOT}/skins
 # ./htdocs/smarty/templates_c
 
+RECURSIVE_DIRS =	\
+	htdocs/skins/fancy \
+	htdocs/skins/wings
+
 # XXX - Create htdocs/.htaccess based on the directories above
 # XXX - Create lib/config.inc based on the directories above
 
 .PHONY:	dist
 
 all::
-	(cd htdocs/skins/fancy && $(MAKE))
-	(cd htdocs/skins/wings && $(MAKE))
+	for dir in ${RECURSIVE_DIRS}; do \
+		(cd "$$dir" && ${MAKE}); \
+	done
 
 dist:	all
 	if [ ! -d dist ]; then mkdir dist; fi
@@ -88,4 +93,6 @@ ChangeLog.svn:
 
 # Recursive targets
 all clean depend::
-	(cd htdocs/skins/fancy && $(MAKE) -$(MAKEFLAGS) $@)
+	for dir in ${RECURSIVE_DIRS}; do \
+		(cd "$$dir" && ${MAKE} -${MAKEFLAGS} $@); \
+	done
