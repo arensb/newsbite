@@ -1,8 +1,10 @@
 #ifndef _ItemCache_js_
 #define _ItemCache_js_
+#include "debug.js"
 /* ItemCache.js
  * Module for manipulating local storage.
  */
+#include "xhr.js"
 /* XXX - Things this module's API needs:
  * - Periodically refresh the cache from the server, either
  *	- as a worker thread (desktop browsers)
@@ -52,6 +54,60 @@
  */
 /* XXX - Ideally, should know how to use SQLite.
  * How to tell if this is available?
+ * Apparently only in Mozilla:
+ * See https://developer.mozilla.org/en/Storage
+ */
+/* XXX - Mozilla has globalStorage, which is apparently the same as
+ * localStorage, except that http://foo.tld and https://foo.tld can both
+ * access the same storage.
+ */
+/* XXX - Split this up into front end and back end. Back end
+ * communicates with the server, and issues events (or calls
+ * callbacks) when things happen.
+ * Front-end is user API: allows user to get and set data.
+ * Basically, front end is the user's interface to the data on the
+ * server. Back end acts as man-in-the-middle, caching data as it
+ * comes in.
+ */
+/* XXX - Possible API:
+ *	get_foo(key, callback);
+ * Called by the client, this specifies to get the foo-type item with
+ * key 'key'. Return what's in localStorage right now, but also set up
+ * a request to fetch the most recent version from the server, and
+ * call the callback function when the data comes in.
+ */
+/* XXX - What happens when storage exceeds its quota (5Mb in many
+ * cases)? Does setItem throw an exception?
+ * From http://dev.w3.org/html5/webstorage/:
+ *
+ * "If it couldn't set the new value, the method must raise an
+ * QUOTA_EXCEEDED_ERR exception. (Setting could fail if, e.g., the
+ * user has disabled storage for the site, or if the quota has been
+ * exceeded.)
+ *
+ * No obvious way to tell what the quota is.
+ * XXX - Should there be a function to measure its size?
+ *
+ * Exception... "Persistent storage maximum size reached" code: "1014" nsresult: "0x805303f6 (NS_ERROR_DOM_QUOTA_REACHED)" location: "http://www.ooblick.com/newsbite/foo.html Line: 23"
+ *
+ * Filling up storage to measure its size takes forever. Perhaps a
+ * better approach might be to try to measure it on the fly: store
+ * quota_min, quota_max, which give a range of possible sizes for the
+ * quota. If setItem(key, value) fails, we know that the quota is
+ * smaller than tot_storage+len(key)+len(value)+k. If it succeeds, we
+ * know that the quota is >= tot_storage+len(key)+len(value)+k. k is
+ * some additional factor, and might involve the number of keys,
+ * bookkeeping data, etc.
+ *
+ * For now, perhaps just have a loop: remove the oldest item from the
+ * cache until setItem() succeeds.
+ */
+/* XXX - Store various items like which feed/item was the user last
+ * looking at? Whether feed details etc. should be displayed?
+ */
+/* XXX - Flushing cache: need to flush cache when it gets too big,
+ * i.e., when we want to store an N-byte object, and there are <N
+ * bytes left.
  */
 
 function ItemCache()
@@ -59,9 +115,82 @@ function ItemCache()
 	// XXX
 }
 
-ItemCache.scan_cache = function()
-{
-	// XXX
-}
+ItemCache = {
+	feeds: undefined,	// Known feeds
+	items: {},		// Item index
+	foo: function()
+	{
+		alert("Hello, world!");
+	},
+
+	/* ItemCache.scan_cache
+	 * See what's in the local storage and initialize any
+	 * necessary variables. Useful when starting up with a
+	 * nonempty cache.
+	 */
+
+	scan_cache: function()
+	{
+		for (var i = 0; i < localStorage.length; i++)
+		{
+			var key = localStorage.key(i);
+			var value = localStorage[key];
+			var matches;
+
+			if (key == "feeds")
+			{
+				feeds = JSON.parse(value);
+				continue;
+			}
+			if (matches = key.match(/^item\/(\d+)$/))
+			{
+				// "item/12345"
+				// It's an article, whose ID is 12345.
+
+				// XXX - Instead of fetching the entire
+				// article from local storage, ought to parse
+				// it and stash the important bits in an
+				// index.
+
+				items[parseInt(matches[1])] = value;
+
+				continue;
+			}
+			// XXX - If we get this far, 
+		}
+	},
+
+	/* fetch_feeds
+	 * Fetch latest list of feeds from the server, and save them
+	 * to local storage.
+	 */
+	fetch_feeds: function()
+	{
+		var request = createXMLHttpRequest();
+
+		if (!request)
+			return false;
+
+		request.open('GET',
+			     "feeds.php?o=jsonr",
+			     true);
+		request.onreadystatechange =
+			function(){ ItemCache.fetch_feeds_callback(request) };
+		request.send(null);
+	},
+
+	fetch_feeds_callback: function(req)
+	{
+		if (req.readyState != 4)
+			return;
+
+		localStorage.setItem("feeds", req.responseText);
+
+		// XXX - Let the rest of the code know that the list
+		// of feeds has been updated. This really ought to be
+		// done by an event and a corresponding handler.
+		get_feeds();
+	},
+};
 
 #endif	// _ItemCache_js_
