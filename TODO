@@ -1,3 +1,32 @@
+- Security bug: Sanitize all URLs from RSS feeds, to avoid injection
+  attacks.
+	Can this be done with a regexp? Does w3.org have a list of
+  allowable characters in URLs?
+	RFC 1738, section 5: http://www.ietf.org/rfc/rfc1738.txt
+	"http://" hostport [ "/" hpath [ "?" search ]]
+	hostport       = (hostname|hostnumber) [ ":" port ]
+	hostname: [a-zA-Z0-9\.]+
+	hostnumber: [\d\.]+
+	hpath: (uchar|[;:@&=])+
+	uchar: [a-zA-Z0-9$-_.+!*'(),] | %[0-9a-fA-F]{2}
+	search: uchar|[;:@&=]
+- Bug: quote identifiers in jsonify(), for Mozilla
+- Bug?: There are some old articles in the database. Why aren't they
+  being cleaned out properly?
+	db_update_feed() only cleans out whichever feed it was called
+  with. There's nothing to clean out all feeds, including inactive
+  ones.
+	Arguably this isn't that much of a problem with inactive
+  feeds, since the number of articles won't grow.
+	But some active feeds aren't being cleaned out either.
+  Apparently this is because the URLs are dead.
+- Bug: When Ajax updates feeds, it doesn't notice updates to the list
+  of feeds.
+	Perhaps when updating all, update.php should append a list of
+  known feeds. If it's out of date, JS can request a full list.
+- Bug-ish: when marking a feed as inactive, get redirected back to it.
+  This is bogus.
+	Redirect to feed index.
 - Which database fields have limited size? HTMLPurify them before
   displaying.
 	* Feed title (assume it's text)
@@ -23,31 +52,26 @@
 	  along with various close-tags.
 	  Quick hack: invoke clean-html when displaying, rather than
 	  when updating.
+- Class for managing local storage.
+- Button to clear local cache, on a separate tool page.
+	localStorage.clear();
 - 'make install' (or 'make upgrade') should install everything.
 - Delete "mobile" skin?
+	First, save all the useful experiments.
+	- orientation, for iPad/iPhone
+	* get_json_data (could be useful)
+	- iPhone sizes, from index.css
+	- Gradients (index.css)
+- Add "$Rev$" or something to some file, so we can tell which revision
+  we should be at. Compare this to the database, and see if we need to
+  upgrade.
+	See
+  http://svnbook.red-bean.com/en/1.4/svn.advanced.props.special.keywords.html
+  which suggests using 'svnversion', because no in-file keyword gives
+  the head revision.
 - Build htdocs/.htaccess file as part of 'make all'.
 - Add hook for links to mobile versions of URLs (view.php).
 	Probably should add a subdirectory underneath "plugins".
-- Security bug: Sanitize all URLs from RSS feeds, to avoid injection
-  attacks.
-	Can this be done with a regexp? Does w3.org have a list of
-  allowable characters in URLs?
-- Bug?: There are some old articles in the database. Why aren't they
-  being cleaned out properly?
-	db_update_feed() only cleans out whichever feed it was called
-  with. There's nothing to clean out all feeds, including inactive
-  ones.
-	Arguably this isn't that much of a problem with inactive
-  feeds, since the number of articles won't grow.
-	But some active feeds aren't being cleaned out either.
-  Apparently this is because the URLs are dead.
-- Bug: When Ajax updates feeds, it doesn't notice updates to the list
-  of feeds.
-	Perhaps when updating all, update.php should append a list of
-  known feeds. If it's out of date, JS can request a full list.
-- Bug-ish: when marking a feed as inactive, get redirected back to it.
-  This is bogus.
-	Redirect to feed index.
 - NPR news site:
   Normal URL:
   http://www.npr.org/templates/story/story.php?storyId=129780261
@@ -104,6 +128,15 @@
   | Chrome   | ?              | ?            | ?        | ?    |
 - Worker threads could be useful. However, iPad doesn't seem to
   support them.
+	One way to handle this might to have synthetic events: with
+  worker threads, the worker generates an event when new data is
+  available, which calls a handler in the main thread.
+	In Mobile Safari (iPhone/iPad), we can have the
+  data-manipulation code generate synthetic events similar to the ones
+  the worker thread would. That would allow fewer differences between
+  threaded and non-threaded code.
+	See
+  http://www.davidflanagan.com/javascript5/display.php?n=17-8&f=17/DataEvent.js
 - Since all the browsers I care about seem to have the JSON object,
   use JSON.parse("...") instead of eval("...").
 - Could build an object to coordinate asynchronous activities:
