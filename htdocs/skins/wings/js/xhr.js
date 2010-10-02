@@ -129,7 +129,7 @@ function get_json_callback_batch(req, user_func, batch)
 		// Find second newline
 		off1 = req.responseText.indexOf("\n", off1+1);
 
-		// Find last newline (other than the one at the end
+		// Find last newline (other than the one at the end)
 		off2 = req.responseText.lastIndexOf("\n",
 						    req.responseText.length-2);
 		var substr = req.responseText.slice(off1, off2);
