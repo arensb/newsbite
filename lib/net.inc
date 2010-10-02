@@ -201,6 +201,8 @@ function update_all_feeds($handler)
 				// Hopefully this will never happen
 				$handler->error(NULL, NULL,
 						"couldn't find curl handle $err[handle] in pipeline");
+				$handler->error(NULL, NULL,
+						"err == [".$err."]");
 				continue;
 			}
 
