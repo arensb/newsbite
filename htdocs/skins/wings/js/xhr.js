@@ -109,31 +109,14 @@ function get_json_callback_batch(req, user_func, batch)
 		// XXX - Call handler if !batch
 		return;
 	    case 4:
-		/* The response is a JSON object wrapped inside an XML
-		 * CDATA chunk (see feeds.php): the first line is the
-		 * xml header; the second is the start of the CDATA
-		 * block; the third is the data we're interested in;
-		 * the fourth closes the CDATA block.
-		 */
+		// The response is a JSON object.
 		if (req.responseText == "")
 			// XXX - No text given. Should have better
 			// error-handling.
 			return;
 
-		var off1, off2;
-
-		// Find first newline
-		off1 = req.responseText.indexOf("\n");
-		if (off1 < 0)
-			return;
-		// Find second newline
-		off1 = req.responseText.indexOf("\n", off1+1);
-
-		// Find last newline (other than the one at the end)
-		off2 = req.responseText.lastIndexOf("\n",
-						    req.responseText.length-2);
-		var substr = req.responseText.slice(off1, off2);
-		user_func(substr);
+		var value = JSON.parse(req.responseText);
+		user_func(value);
 		break;
 	    default:
 		return;
