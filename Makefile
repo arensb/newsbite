@@ -39,7 +39,6 @@ INSTALL_LIB =	${PRIV_ROOT}/lib
 INSTALL_PLUGINS =	${PRIV_ROOT}/plugins
 # ./htdocs/skins/*
 INSTALL_SKINS =	${PRIV_ROOT}/skins
-# ./htdocs/smarty/templates_c
 
 RECURSIVE_DIRS =	\
 	htdocs/skins/fancy \
