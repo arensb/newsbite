@@ -109,12 +109,23 @@
  * i.e., when we want to store an N-byte object, and there are <N
  * bytes left.
  */
+/* XXX - All of these things are just instances of "get an item with a
+ * given key from localStorage, and cache it on the way".
+ * Just write an object for this.
+ */
+/* XXX - Perhaps rename this to StorageManager. */
 
+/* ItemCache()
+ * A do-nothing constructor.
+ */
 function ItemCache()
 {
 	// XXX
 }
 
+/* ItemCache
+ * Class methods.
+ */
 ItemCache = {
 	feeds: undefined,	// Known feeds
 	items: {},		// Item index
@@ -160,12 +171,36 @@ ItemCache = {
 		}
 	},
 
+	get_feeds: function(callback)
+	{
+		var retval = localStorage.feeds;
+			// Get the version currently in storage
+
+		if (callback)
+		{
+			// Fetch an updated version; call the callback
+			// function when it's ready
+			get_json_data("feeds.php",
+				      {"o": "jsonr"},
+				      function(value)
+				      {
+					      localStorage.feeds = value;
+					      callback(value);
+				      },
+				      true);
+		}
+
+		return retval;
+	},
+
 	/* fetch_feeds
 	 * Fetch latest list of feeds from the server, and save them
 	 * to local storage.
 	 */
 	fetch_feeds: function()
 	{
+		// XXX - Use get_json_data(). That'll allow us to get rid
+		// of fetch_feeds_callback().
 		var request = createXMLHttpRequest();
 
 		if (!request)
@@ -185,11 +220,6 @@ ItemCache = {
 			return;
 
 		localStorage.setItem("feeds", req.responseText);
-
-		// XXX - Let the rest of the code know that the list
-		// of feeds has been updated. This really ought to be
-		// done by an event and a corresponding handler.
-		get_feeds();
 	},
 };
 
