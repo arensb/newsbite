@@ -10,7 +10,6 @@
 	hpath: (uchar|[;:@&=])+
 	uchar: [a-zA-Z0-9$-_.+!*'(),] | %[0-9a-fA-F]{2}
 	search: uchar|[;:@&=]
-- Bug: quote identifiers in jsonify(), for Mozilla
 - Bug?: There are some old articles in the database. Why aren't they
   being cleaned out properly?
 	db_update_feed() only cleans out whichever feed it was called
@@ -27,6 +26,12 @@
 - Bug-ish: when marking a feed as inactive, get redirected back to it.
   This is bogus.
 	Redirect to feed index.
+- For 'update', since the animation is pretty, could have a
+  "multi-line JSON" output format. Is it worth defining another output
+  type for this ("jsonm"?)? Or should the client just assume that if
+  the text has newlines in it, that it's a series of updates?
+	Probably the former: it'd be nice to know whether to use a
+  XMLHttpRequest object that needs to follow state 3 or not.
 - Which database fields have limited size? HTMLPurify them before
   displaying.
 	* Feed title (assume it's text)
@@ -52,9 +57,6 @@
 	  along with various close-tags.
 	  Quick hack: invoke clean-html when displaying, rather than
 	  when updating.
-- Class for managing local storage.
-- Button to clear local cache, on a separate tool page.
-	localStorage.clear();
 - 'make install' (or 'make upgrade') should install everything.
 - Delete "mobile" skin?
 	First, save all the useful experiments.
