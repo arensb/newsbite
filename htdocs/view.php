@@ -35,6 +35,7 @@ switch ($_REQUEST['o'])
 	break;
     case "xml":
 	$out_fmt = "xml";
+	header("Content-type: text/xml; charset=utf-8");
 	break;
     default:
 	header("Content-type: text/html; charset=utf-8");
@@ -216,6 +217,9 @@ if ($out_fmt == "json")
 
 if ($out_fmt == "xml")
 {
+	require_once("xml-output.inc");
+				// Get print_xml() only when necessary
+
 	print_xml($feed);
 	db_disconnect(0);
 	exit(0);
