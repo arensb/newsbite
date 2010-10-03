@@ -91,6 +91,7 @@ htdocs/skins/mobile/setskin.css
 htdocs/skins/mobile/setskin.tpl
 htdocs/skins/wings/feeds.php
 htdocs/skins/wings/ipad.css
+htdocs/skins/wings/js/ItemCache.js
 htdocs/skins/wings/js/Template.js
 htdocs/skins/wings/js/debug.js
 htdocs/skins/wings/js/xhr.js
