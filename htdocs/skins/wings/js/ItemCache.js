@@ -181,7 +181,7 @@ ItemCache = {
 			// Fetch an updated version; call the callback
 			// function when it's ready
 			get_json_data("feeds.php",
-				      {"o": "jsonr"},
+				      {"o": "json"},
 				      function(value)
 				      {
 					      localStorage.feeds = value;
@@ -207,7 +207,7 @@ ItemCache = {
 			return false;
 
 		request.open('GET',
-			     "feeds.php?o=jsonr",
+			     "feeds.php?o=json",
 			     true);
 		request.onreadystatechange =
 			function(){ ItemCache.fetch_feeds_callback(request) };

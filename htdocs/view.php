@@ -27,25 +27,10 @@ if (preg_match(',Mozilla/\S+ \(iPod;,', $_SERVER['HTTP_USER_AGENT']))
 switch ($_REQUEST['o'])
 {
     case "json":
+	// XXX - If another browser comes along that can't deal with
+	// standard JSON, add a "hack" parameter or something to say
+	// how to work around it.
 	$out_fmt = "json";
-	// The "+xml" here is bogus: apparently there's a bug in
-	// Firefox (2.x) such that if the response is "text/plain", it
-	// apparently assumes that it's ISO8859-1 or US-ASCII or some
-	// such nonsense.
-	header("Content-type: text/plain+xml; charset=utf-8");
-
-	// The stupid "+xml" hack above means that Firefox will try to
-	// interpret what it sees as XML. And since JSON isn't
-	// well-formed XML, we need to wrap the JSON in very minimal
-	// XML: < ?xml ? ><![CDATA[ {json} ]]>
-	echo "<", '?xml version="1.0" encoding="UTF-8"?', ">\n";
-	echo "<![CDATA[\n";
-	break;
-    case "jsonr":	// Raw JSON
-	// XXX - A better approach would be to have a "hack" parameter
-	// that turns on the +xml hack above. Perhaps the calling
-	// script can auto-determine which hacks it needs.
-	$out_fmt = "jsonr";
 	header("Content-type: text/plain; charset=utf-8");
 	break;
     case "xml":
@@ -222,16 +207,6 @@ if ($mobile)
 #}
 
 if ($out_fmt == "json")
-{
-	echo jsonify($feed);
-	/* Close the "<![CDATA[" from above */
-	echo "\n]]>\n";
-
-	db_disconnect();
-	exit(0);
-}
-
-if ($out_fmt == "jsonr")
 {
 	echo jsonify($feed);
 
