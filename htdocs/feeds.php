@@ -53,6 +53,9 @@ if ($out_fmt == "json")
 	echo jsonify($output);
 } elseif ($out_fmt == "xml")
 {
+	require_once("xml-output.inc");
+				// Get print_xml() only when necessary
+
 	header("Content-type: text/xml; charset=utf-8");
 	print_xml($output);
 }
