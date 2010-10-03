@@ -140,12 +140,6 @@ function bare_abort($msg)
 	 exit(0);
 }
 
-if (function_exists("json_encode")):
-	function jsonify($arg)
-	{
-		return json_encode($arg);
-	}
-else:
 /* jsonify
  * Convert the arguments to a JSON string, and return it.
  * If there's one argument, and it's a string, then it is assumed to
@@ -165,9 +159,6 @@ else:
  *	{'x':1} fails, but
  *	{"x":1}	succeeds.
  */
-// XXX - PHP's JSON module already includes a json_encode() function.
-// So do we need this?
-
 // XXX - How to distinguish between assoc and array with an even
 // number of elements? The way we have it now, with an even number of
 // arguments indicating an assoc, is a hack. Perhaps change to
@@ -190,6 +181,24 @@ function jsonify($arg)
 			$it[func_get_arg($i)] = func_get_arg($i+1);
 	} else
 		$it = func_get_args();
+
+	/* Now that we've got the complete data structure in one variable,
+	 * pass it to json_encode().
+	 */
+	return json_encode($it);
+}
+
+if (!function_exists("json_encode")):
+			// Define json_encode if the JSON PHP module
+			// isn't loaded.
+	// XXX - Perhaps ought to stick this in a separate file and
+	// require() it.
+/* json_encode
+ * Helper function for jsonify: takes one argument, and returns its
+ * representation as a JSON string.
+ */
+function json_encode($it)
+{
 
 	/* At this point, $it is the thing we're converting. Decide
 	 * how to handle it, depending on whether $it is a string, an
@@ -215,16 +224,16 @@ function jsonify($arg)
 			// We need to do the silly dance with $it[0]
 			// to avoid having an extra comma in the
 			// output.
-			$retval = '[' . jsonify($it[0]);
+			$retval = '[' . json_encode($it[0]);
 			for ($i = 1; $i < count($it); $i++)
-				$retval .= ',' . jsonify($it[$i]);
+				$retval .= ',' . json_encode($it[$i]);
 			$retval .= ']';
 		} else {
 			/* Output a JavaScript object */
 			$keys = array();
 			$retval = '{';
 			foreach ($it as $key => $value)
-				$keys[] = jsonify($key) . ':' . jsonify($value);
+				$keys[] = json_encode($key) . ':' . json_encode($value);
 			$retval .= implode(',', $keys);
 			$retval .= '}';
 		}
@@ -233,7 +242,7 @@ function jsonify($arg)
 
 	return $retval;
 }
-endif;
+endif;	// !defined json_encode
 
 /* xmlify
  * Convert the argument to an XML document, and return it.
