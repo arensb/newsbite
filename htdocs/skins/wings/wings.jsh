@@ -37,9 +37,8 @@ function init()
 
 	ItemCache.scan_cache();
 
-	feeds = get_feeds();	// Get list of feeds from local storage
-	display_feeds(feeds);
-	ItemCache.fetch_feeds();
+	feed_box.innerHTML = "Loading feeds";
+	feeds = ItemCache.get_feeds(display_feeds);
 
 	/* XXX - Update the local store and see if anything needs to be
 	 * deleted.
@@ -54,28 +53,6 @@ function init()
 	 * console.warn("warn message");
 	 * console.info("info message");
 	 */
-}
-
-/* get_feeds
- * Get list of feeds from browser-side storage.
- */
-function get_feeds()
-{
-	var feed_str = localStorage.getItem("feeds");
-
-	if (feed_str == undefined)
-		// No list of feeds
-		return undefined;
-
-	/* To get the feeds, un-JSON-ify the string */
-	var feed_list;
-	try {
-		feed_list = JSON.parse(feed_str);
-	} catch(e) {
-		alert("Caught an error: "+feed_str);
-	}
-
-	return feed_list;
 }
 
 function display_feeds(feed_list)
@@ -114,7 +91,8 @@ function get_feed_by_id(id, feed_list)
 
 function show_feed(id)
 {
-	var feed = get_feed_by_id(id, feeds);
+	var feed = get_feed_by_id(id,
+				  ItemCache.get_feeds(null));
 
 	// XXX - Fill in the feed page with TOC for the feed
 	// XXX - Get articles from local cache
