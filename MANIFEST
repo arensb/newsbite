@@ -97,6 +97,7 @@ htdocs/skins/wings/js/Template.js
 htdocs/skins/wings/js/debug.js
 htdocs/skins/wings/js/xhr.js
 htdocs/skins/wings/style.css
+htdocs/skins/wings/wings.js
 htdocs/skins/wings/wings.jsh
 htdocs/unsubscribe.php
 htdocs/update.php
