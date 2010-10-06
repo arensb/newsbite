@@ -48,6 +48,8 @@ function content_element_handler(
 		 * crafted to look like RSS.
 		 */
 		// XXX - Make sure $chldren is a string?
+		# Clean up HTML
+		run_hooks("clean-html", array(&$children));
 		$retval['content'] = &$children;
 
 		// XXX - AFAIK <content:encoded> is only used in RSS
