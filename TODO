@@ -1,15 +1,3 @@
-- Security bug: Sanitize all URLs from RSS feeds, to avoid injection
-  attacks.
-	Can this be done with a regexp? Does w3.org have a list of
-  allowable characters in URLs?
-	RFC 1738, section 5: http://www.ietf.org/rfc/rfc1738.txt
-	"http://" hostport [ "/" hpath [ "?" search ]]
-	hostport       = (hostname|hostnumber) [ ":" port ]
-	hostname: [a-zA-Z0-9\.]+
-	hostnumber: [\d\.]+
-	hpath: (uchar|[;:@&=])+
-	uchar: [a-zA-Z0-9$-_.+!*'(),] | %[0-9a-fA-F]{2}
-	search: uchar|[;:@&=]
 - Bug?: There are some old articles in the database. Why aren't they
   being cleaned out properly?
 	db_update_feed() only cleans out whichever feed it was called
@@ -759,13 +747,6 @@
 	Note that the Storage interface only allows storing and
   retrieving strings, so data structures must be JSONified before
   storage.
-- Is there a way to normalize HTML? If the <![CDATA[...]]> section in
-  a feed contains mismatched tags, e.g.
-	<p><a ...><img/></p>
-  is there a way to keep the badness contained within the <div item>
-  when it's displayed, and not contaminate the rest of the page?
-	Iframes seem ugly. Perhaps one of the XML parsers can parse
-  HTML and deal with errors?
 - Perhaps class Skin can try to be a singleton: that way, if multiple
   files call 'new Skin', they'll both refer to the same object. OTOH,
   that should never happen.
