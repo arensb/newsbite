@@ -91,6 +91,7 @@ htdocs/skins/mobile/setskin.css
 htdocs/skins/mobile/setskin.tpl
 htdocs/skins/wings/feeds.php
 htdocs/skins/wings/ipad.css
+htdocs/skins/wings/js/CacheManager.js
 htdocs/skins/wings/js/ItemCache.js
 htdocs/skins/wings/js/Template.js
 htdocs/skins/wings/js/debug.js
@@ -107,6 +108,7 @@ lib/hooks.inc
 lib/net.inc
 lib/parse-feed.inc
 lib/skin.inc
+lib/xml-output.inc
 php.ini
 plugins/ads.php
 plugins/bugs.php
