@@ -8,32 +8,41 @@
  * Create a new XMLHttpRequest object, hopefully in a
  * browser-independent manner.
  */
-function createXMLHttpRequest()
+// I'm not sure why, but Chrome really wants
+//	createXMLHttpRequest = function() ...
+// rather than
+//	function createXMLHttpRequest()
+if (window.XMLHttpRequest && typeof XMLHttpRequest != "undefined")
 {
-	var request = false;
-
 	/* Firefox, Safari, etc. */
-	if (window.XMLHttpRequest)
+	createXMLHttpRequest = function()
 	{
-		if (typeof XMLHttpRequest != 'undefined')
-		{
-			try {
-				request = new XMLHttpRequest();
-			} catch (e) {
-				request = false;
-			}
+		var request = false;
+		try {
+			request = new XMLHttpRequest();
+		} catch (e) {
+			request = false;
 		}
-	} else if (window.ActiveXObject)
+		return request;
+	}
+} else if (window.ActiveXObject) {
+	/* IE */
+	createXMLHttpRequest = function()
 	{
-		/* IE */
+		var request = false;
+
 		/* Create a new ActiveX XMLHTTP object */
 		try {
 			request = new ActiveXObject('Msxml2.XMLHTTP');
 		} catch (e) {
 			request = false;
 		}
+		return request;
 	}
-	return request;
+} else {
+	// Don't define createXMLHttpRequest.
+	// Hopefully this will never happen, especially with
+	// newer browsers.
 }
 
 /* get_json_data
@@ -115,7 +124,14 @@ function get_json_callback_batch(req, user_func, batch)
 			// error-handling.
 			return;
 
-		var value = JSON.parse(req.responseText);
+		// Use a try{}, in case the server sent bad JSON.
+		var value;
+		try {
+			value = JSON.parse(req.responseText);
+		} catch (e) {
+			// XXX - Do something smarter?
+			value = undefined;
+		}
 		user_func(value);
 		break;
 	    default:
