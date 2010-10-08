@@ -27,7 +27,7 @@ distclean::	clean
 # Make.depend
 # Generate a list of which .js files depend on which source files.
 depend:	Make.depend
-Make.depend:
+Make.depend:	${JS_SRC}
 	$(RM) $@
 	for i in $(JS_SRC); do \
 		$(MAKEDEPEND) -MT `echo "$$i" | sed 's/\.jsh$$/.js/'` $$i >> $@; \
