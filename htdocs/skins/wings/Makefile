@@ -8,6 +8,7 @@ JS_SRC =	wings.jsh
 JS_FILES = 	$(patsubst %.jsh,%.js,${JS_SRC})
 
 .SUFFIXES:	.jsh .js
+.PHONY:		clean depend
 
 all:	Make.depend ${JS_FILES}
 
@@ -32,3 +33,6 @@ Make.depend:
 	for i in $(JS_SRC); do \
 		$(MAKEDEPEND) -MT `echo "$$i" | sed 's/\.jsh$$/.js/'` $$i >> $@; \
 	done
+
+clean::
+	$(RM) Make.depend
