@@ -9,6 +9,7 @@ function clrdebug() { }
 #endif	// DEBUG
 #include "js/Template.js"
 #include "js/ItemCache.js"
+#include "js/CacheManager.js"
 
 var feed_entry_tmpl = new Template(
 "<li><a class=\"feed-name\" onclick=\"show_feed(@id@)\">@id@: @title@</a></li>"
@@ -37,8 +38,14 @@ function init()
 
 	ItemCache.scan_cache();
 
-	feed_box.innerHTML = "Loading feeds";
-	feeds = ItemCache.get_feeds(display_feeds);
+	feed_box.innerHTML = "<p>Loading feeds&hellip;</p>";
+
+	feeds = CacheManager.get_feeds(
+		function(value) {
+			feeds = value;
+			display_feeds();
+		});
+	display_feeds();
 
 	/* XXX - Update the local store and see if anything needs to be
 	 * deleted.
@@ -55,20 +62,20 @@ function init()
 	 */
 }
 
-function display_feeds(feed_list)
+function display_feeds()
 {
-
 	/* Make a UL of feeds, and add it to feed_box. */
 	var str = "<ol class=\"feed-list\">";
 
-	if (feed_list == undefined)
+	if (feeds == undefined || feeds == null)
 	{
 		// XXX - Ought to do something smart
+		feed_box.innerHTML = "<p>Waiting for feeds to show up</p>";
 		return;
 	}
-	for (var i = 0; i < feed_list.length; i++)
+	for (var i = 0; i < feeds.length; i++)
 	{
-		var f = feed_list[i];
+		var f = feeds[i];
 
 		// Ignore the inactive feeds
 		if (!f.active)
