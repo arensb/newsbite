@@ -14,7 +14,6 @@
 - Bug-ish: when marking a feed as inactive, get redirected back to it.
   This is bogus.
 	Redirect to feed index.
-- How to force Make.depend to be rebuilt on 'make depend'?
 - For 'update', since the animation is pretty, could have a
   "multi-line JSON" output format. Is it worth defining another output
   type for this ("jsonm"?)? Or should the client just assume that if
