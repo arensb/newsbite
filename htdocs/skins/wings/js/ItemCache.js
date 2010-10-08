@@ -139,7 +139,6 @@ ItemCache = {
 	 * necessary variables. Useful when starting up with a
 	 * nonempty cache.
 	 */
-
 	scan_cache: function()
 	{
 		for (var i = 0; i < localStorage.length; i++)
@@ -150,7 +149,11 @@ ItemCache = {
 
 			if (key == "feeds")
 			{
-				feeds = JSON.parse(value);
+				try {
+					feeds = JSON.parse(value);
+				} catch (e) {
+//					alert("localStorage[feeds] is null or something");
+				}
 				continue;
 			}
 			if (matches = key.match(/^item\/(\d+)$/))
