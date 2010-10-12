@@ -114,18 +114,7 @@ if ($_ENV['CRON'] == "true")
 	{
 	    case "json":
 		$out_fmt = "json";
-		// The "+xml" here is bogus: apparently there's a bug in
-		// Firefox (2.x) such that if the response is "text/plain", it
-		// apparently assumes that it's ISO8859-1 or US-ASCII or some
-		// such nonsense.
-		header("Content-type: text/plain+xml; charset=utf-8");
-
-		// The stupid "+xml" hack above means that Firefox will try to
-		// interpret what it sees as XML. And since JSON isn't
-		// well-formed XML, we need to wrap the JSON in very minimal
-		// XML: < ?xml ? ><![CDATA[ {json} ]]>
-		echo "<", '?xml version="1.0" encoding="UTF-8"?', ">\n";
-		echo "<![CDATA[\n";
+		header("Content-type: text/plain; charset=utf-8");
 		break;
 	    default:
 		header("Content-type: text/html; charset=utf-8");
@@ -208,7 +197,10 @@ if (is_numeric($feed_id) && is_int($feed_id+0))
 		switch ($out_fmt)
 		{
 		    case "json":
-			// XXX - What to do?
+			echo jsonify('state',	"error",
+				     'feed_id',	$feed_id,
+				     'error',	$err['errmsg']
+				);
 			exit(1);
 		    case "console":
 			error_log($err['errmsg']);
@@ -273,8 +265,4 @@ if (is_numeric($feed_id) && is_int($feed_id+0))
 	/* Invalid feed ID. Abort with an error message */
 	abort("Invalid feed ID: $feed_id");
 }
-
-if ($out_fmt == "json")
-	/* Close the "<![CDATA[" from above */
-	echo "]]>\n";
 ?>
