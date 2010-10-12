@@ -50,4 +50,26 @@ a.feed-name:hover {
 
 /* Feed page: contents of a single feed */
 
+/* By default, don't show either the subtitle or the description.
+ * They'll be turned on by hand if they exist.
+ */
+#feed-page .feed-subtitle,
+#feed-page .feed-description {
+	display:	none;
+}
+
+/* Feed subtitle */
+#feed-page .feed-subtitle {
+	border:			1px dashed orange;
+	background-color:	yellow;
+}
+
+/* Descriptive blurb about the feed */
+#feed-page .feed-description {
+	margin:			1em;
+	padding:		0.5em;
+	border:			1px solid orange;
+	background-color:	yellow;
+}
+
 /* Article page: contents of an article */
