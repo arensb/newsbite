@@ -1,4 +1,4 @@
-/* feeds.jsh
+/* feeds.jsh					-*- JavaScript -*-
  * JavaScript functions for the feed view.
  */
 #if DEBUG
