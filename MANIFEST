@@ -95,6 +95,7 @@ htdocs/skins/wings/ipad.css
 htdocs/skins/wings/js/CacheManager.js
 htdocs/skins/wings/js/ItemCache.js
 htdocs/skins/wings/js/Template.js
+htdocs/skins/wings/js/classes.js
 htdocs/skins/wings/js/debug.js
 htdocs/skins/wings/js/xhr.js
 htdocs/skins/wings/style.css
