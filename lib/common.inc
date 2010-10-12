@@ -27,6 +27,9 @@ if (!$NO_AUTH_CHECK &&
 	if (!isset($login_cookie))
 	{
 		# XXX - Ought to allow redirect to https://...
+		// XXX - If output type is JSON, perhaps should return
+		// a JSON string saying the user isn't logged in,
+		// which would allow the app to pop up a login window.
 		redirect_to("login.php?from=" .
 			 urlencode($_SERVER['REQUEST_URI']));
 ?>
