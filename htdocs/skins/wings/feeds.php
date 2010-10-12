@@ -52,8 +52,6 @@ switch ($skin_vars['mobile'])
  -->
 <div id="feeds"></div>
 
-<div id="debug"></div>
-
 <noscript>
 <p>Sorry, but you really, really need JavaScript turned on to get anywhere
 with this skin.</p>
@@ -62,7 +60,10 @@ with this skin.</p>
 
 <div class="page" id="feed-page">
 <!-- Feed page shows the contents of a single feed -->
-<h1>Feed page title</h1>
+<h1>Feed title</h1>
+<div class="feed-subtitle">Feed subtitle</div>
+<div class="feed-description">Feed description</div>
+
 <a href="javascript:flip_to_page('index-page')">Index</a>
 
 <div id="articles"></div>
@@ -86,5 +87,6 @@ with this skin.</p>
 </ul>
 </div><!-- End of tool page -->
 </div><!-- End of page-list" -->
+<div id="debug"></div>
 </body>
 </html>
