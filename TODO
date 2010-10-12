@@ -14,6 +14,9 @@
 - Bug-ish: when marking a feed as inactive, get redirected back to it.
   This is bogus.
 	Redirect to feed index.
+- Database: delete ttl, since it doesn't seem to be used anywhere?
+  Either that, or fix update.php to check it: don't update a feed that
+  has been updated within the last $ttl minutes.
 - For 'update', since the animation is pretty, could have a
   "multi-line JSON" output format. Is it worth defining another output
   type for this ("jsonm"?)? Or should the client just assume that if

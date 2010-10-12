@@ -78,11 +78,14 @@ debug("row == "+row.firstChild);
 	}
 }
 
-/* XXX - Bug: if there's an error in the backend script or something,
- * we can get into a state where a feed's indicator is spinning, but
- * there's never been a line to stop it.
- * When get to the end of the query's text (readyState 4), ought to
- * find these and turn them off. Perhaps use an error indicator.
+/* XXX - Bug: if the backend script times out, it stops giving
+ * updates, and we can get into a state where a feed's indicator is
+ * spinning, but there's never been a line to stop it. When get to the
+ * end of the query's text (readyState 4), ought to find these and
+ * turn them off. Perhaps use an error indicator.
+ *
+ * To do this, we need to keep track of each feed and its state, so we
+ * know which feeds we have and haven't set the indicator for.
  */
 function parse_response(req)
 {
