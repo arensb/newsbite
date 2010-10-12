@@ -325,6 +325,8 @@ function parse_feed($feed_text)
 	if ($err == 0)
 	{
 		// XML Parser found an error.
+		// XXX - This ought to propagate down to callers and
+		// result in an error message.
 		$feed_err = 1;
 		$feed_errmsg = "XML Parser found an error: " .
 			xml_error_string(xml_get_error_code($xml_parser));
