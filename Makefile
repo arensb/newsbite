@@ -50,7 +50,7 @@ RECURSIVE_DIRS =	\
 .PHONY:	dist
 
 all::
-	for dir in ${RECURSIVE_DIRS}; do \
+	@for dir in ${RECURSIVE_DIRS}; do \
 		(cd "$$dir" && ${MAKE}); \
 	done
 
@@ -92,6 +92,6 @@ ChangeLog.svn:
 
 # Recursive targets
 all clean depend::
-	for dir in ${RECURSIVE_DIRS}; do \
+	@for dir in ${RECURSIVE_DIRS}; do \
 		(cd "$$dir" && ${MAKE} -${MAKEFLAGS} $@); \
 	done
