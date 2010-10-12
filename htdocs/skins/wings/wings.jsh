@@ -1,4 +1,4 @@
-/* wings.jsh
+/* wings.jsh			-*- JavaScript -*-
  */
 #define DEBUG	1
 #if DEBUG
@@ -98,13 +98,55 @@ function get_feed_by_id(id, feed_list)
 
 function show_feed(id)
 {
-	var feed = get_feed_by_id(id,
-				  ItemCache.get_feeds(null));
+	var feed;
 
+	for (var i = 0; i < feeds.length; i++)
+	{
+		if (feeds[i].id == id)
+		{
+			feed = feeds[i];
+			break;
+		}
+	}
 	// XXX - Fill in the feed page with TOC for the feed
-	// XXX - Get articles from local cache
+
+	// XXX - This business of finding the various h1s and divs
+	// that will be filled in with per-feed information should
+	// happen just once, in init().
+	// Create a hash named 'feed_page' or something, with all the
+	// information we'll need, including references to the DOM
+	// elements that need to be updated.
+	var feed_page = find_page("feed-page");
+	var h1_box = feed_page.getElementsByTagName("h1")[0];
+	var subtitle_box = feed_page.getElementsByClassName("feed-subtitle")[0];
+	var desc_box = feed_page.getElementsByClassName("feed-description")[0];
+
+	if (feed.nickname == null || feed.nickname == "")
+		h1_box.innerHTML = feed.title;
+	else
+		h1_box.innerHTML = feed.nickname;
+
+	// XXX - Rather than messing with .style.display, use class
+	// "hidden". Copy fancy skin's classes.js to do this.
+	if (feed.subtitle == null || feed.subtitle == "")
+		subtitle_box.style.display = "none";
+	else {
+		// XXX - Sanitize subtitle
+		subtitle_box.innerHTML = feed.subtitle;
+		subtitle_box.style.display = "block";
+	}
+
+	if (feed.description == null || feed.description == "")
+		desc_box.style.display = "none";
+	else {
+		// XXX - Sanitize description
+		desc_box.innerHTML = feed.description;
+		desc_box.style.display = "block";
+	}
 
 	flip_to_page('feed-page');
+
+	// XXX - Get articles from local cache
 
 	// XXX - Get latest articles from the server
 }
@@ -122,4 +164,23 @@ function flip_to_page(page)
 		else
 			p.style.display = "none";
 	}
+}
+
+/* find_page
+ * Look through 'pages' (which should have been initialized by now)
+ * and find the element whose id is 'name'.
+ * Returns a reference to that page (a DOM element), or null if the
+ * page couldn't be found.
+ */
+function find_page(name)
+{
+	for (var i = 0; i < pages.length; i++)
+	{
+		if (pages[i].id == name)
+		{
+			return pages[i];
+		}
+	}
+
+	return null;
 }
