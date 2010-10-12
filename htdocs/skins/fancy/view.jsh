@@ -1,3 +1,4 @@
+/*						-*- JavaScript -*- */
 #if DEBUG
 #  include "js/debug.js"
 #else
