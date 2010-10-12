@@ -404,6 +404,8 @@ function _save_handle($feed_id, &$feed_text)
 	/* Parse the feed */
 	$feed = parse_feed($feed_text);
 	if (!$feed)
+		// XXX - When parse_feed() fails, it sets $feed_errmsg.
+		// Make this propagate down to caller somehow.
 		return FALSE;
 
 	/* See when the feed was last updated, i.e., when the most
