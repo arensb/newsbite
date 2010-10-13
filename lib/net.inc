@@ -20,13 +20,13 @@ function update_feed($feed_id, $feed = NULL)
 {
 	global $out_fmt;
 	global $fetch_error;
+	global $_save_handle_error;
 
 	/* Get the feed from the database */
 	if ($feed == NULL)
 	{
 		$feed = db_get_feed($feed_id);
 		if (!$feed)
-			// XXX - Should note what went wrong: no such feed
 			return array('status'	=> -1,
 				     'errmsg'	=> "No such feed: $feed_id"
 				);
@@ -48,7 +48,7 @@ function update_feed($feed_id, $feed = NULL)
 		// array on success
 	if (!$err)
 		return array('status'	=> -1,
-			     'errmsg'	=> "_save_handle(id $feed_id) failed"
+			     'errmsg'	=> "_save_handle(id $feed_id) failed: $_save_handle_error"
 			);
 
 	// Get updated version of feed, to return to caller.
@@ -385,6 +385,11 @@ function _open_curl_handle($url, $username = NULL, $passwd = NULL)
 
 function _save_handle($feed_id, &$feed_text)
 {
+	global $_save_handle_error;	# Error message saying why this
+					# failed.
+	global $feed_errmsg;		# Set in lib/parse-feed.inc, when
+					# parse_feed() fails.
+
 	$retval = array();
 
 	/* Save a copy of the feed text for debugging */
@@ -404,9 +409,12 @@ function _save_handle($feed_id, &$feed_text)
 	/* Parse the feed */
 	$feed = parse_feed($feed_text);
 	if (!$feed)
+	{
 		// XXX - When parse_feed() fails, it sets $feed_errmsg.
 		// Make this propagate down to caller somehow.
+		$_save_handle_error = $feed_errmsg;
 		return FALSE;
+	}
 
 	/* See when the feed was last updated, i.e., when the most
 	 * recent article was posted.
@@ -443,6 +451,7 @@ function _save_handle($feed_id, &$feed_text)
 //	}
 
 //	return db_update_feed($feed_id, $feed);
+	$_save_handle_error = "OK";
 	return $feed;
 }
 
