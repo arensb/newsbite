@@ -6,7 +6,10 @@ $skin_dir = $skin_vars['skin'];
 ?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
 	"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xml:lang="en"
+      lang="en"
+      manifest="skins/<?=$skin_dir?>/wings.manifest">
 <head>
 <title>NewsBite</title>
 <link rel="stylesheet" type="text/css" href="skins/<?=$skin_dir?>/style.css" media="all" />
@@ -33,6 +36,8 @@ switch ($skin_vars['mobile'])
 	echo "<link rel=\"stylesheet\" type=\"text/css\" href=\"skins/$skin_vars[skin]/$mobile_css\" media=\"screen\" />\n";
 }
 ?>
+<meta name="apple-mobile-web-app-capable" content="yes" />
+<meta name="apple-mobile-web-app-status-bar-style" content="black" />
 </head>
 <body>
 
@@ -61,7 +66,7 @@ with this skin.</p>
 <div class="page" id="feed-page">
 <!-- Feed page shows the contents of a single feed -->
 <h1>Feed title</h1>
-<div class="feed-subtitle">Feed subtitle</div>
+<h2 class="feed-subtitle">Feed subtitle</h2>
 <div class="feed-description">Feed description</div>
 
 <a href="javascript:flip_to_page('index-page')">Index</a>
