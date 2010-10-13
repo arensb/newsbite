@@ -11,9 +11,17 @@
   of feeds.
 	Perhaps when updating all, update.php should append a list of
   known feeds. If it's out of date, JS can request a full list.
+- Bug?: It's possible to get to the various skins' PHP scripts and
+  whatnot directly, bypassing the login mechanism.
+	Is this a bad thing? For some parts (auxiliary PHP scripts),
+  it's possible to just put those parts outside of the DocumentRoot.
+  For others (images, CSS files), it's not. But those files need to be
+  sent to the browser anyway.
 - Bug-ish: when marking a feed as inactive, get redirected back to it.
   This is bogus.
 	Redirect to feed index.
+- Mobile app: create a static standalone page, to see how it's done.
+  Currently, Newsbite won't run without a network.
 - Database: delete ttl, since it doesn't seem to be used anywhere?
   Either that, or fix update.php to check it: don't update a feed that
   has been updated within the last $ttl minutes.
@@ -809,6 +817,20 @@
   http://developer.apple.com/safari/library/documentation/AppleApplications/Reference/SafariWebContent/Client-SideStorage/Client-SideStorage.html
   Can also set up a manifest file, so that the app will download
   images and whatnot to be used when the device is offline.
+	For skin/wings:
+	/?skin=wings (or equivalent)
+	skins/wings/style.css
+	skins/wings/style.js
+	skins/wings/gray-bg.jpg
+	/favicon.ico
+  See
+  http://www.thecssninja.com/javascript/how-to-create-offline-webapps-on-the-iphone
+  for a possibly-useful tutorial.
+- Mobile Safari (and presumably other mobile browsers) allows looking
+  up the current location using GPS or whatever. This means that it
+  should, in principle, be possible to have location-based profiles.
+  For instance, when reading news at work, don't include webcomics;
+  when reading at home, don't include work-related feeds.
 - CSS allows the device to decide whether it considers itself a
   handheld device:
   http://www.boutell.com/newfaq/creating/iphone.html
