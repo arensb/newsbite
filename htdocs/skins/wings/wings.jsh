@@ -1,5 +1,17 @@
 /* wings.jsh			-*- JavaScript -*-
  */
+/* XXX - Need a way to link directly to a specific feed, or a
+ * specific, article, so that tabbed browsing will continue to work.
+ * Presumably can accept "fid=1234" argument to display a specific
+ * feed, and "id=12345" to display a specific article.
+ *
+ * Should these be full copies of the entire app, or just
+ * stripped-down versions with only the information requested? And if
+ * the former, how can it be made fast? For one thing, can start by
+ * initializing the page the user wants. The other pages can be
+ * initialized in the background, or after the user has something to
+ * read.
+ */
 #define DEBUG	1
 #if DEBUG
 #  include "js/debug.js"
@@ -25,13 +37,15 @@ var current_page;	// Currently-visible page
 
 function init()
 {
-	/* XXX - Console logging */
-
+	/* Get the list of available pages */
 	pages = document.getElementById("page-list").
 		getElementsByClassName("page");
-			// Get the list of available pages
 
+	/* Initialize the index page */
 	feed_box = document.getElementById("feeds");
+
+	/* XXX - Initialize the feed page */
+	/* XXX - Initialize the article page */
 
 	flip_to_page("index-page");
 			// Show the main page
@@ -153,6 +167,8 @@ function show_feed(id)
 
 /* flip_to_page
  * Hide the currently visible page, and display the one named by 'page'.
+ */
+/* XXX - It'd be cool if these could slide back and forth in webkit.
  */
 function flip_to_page(page)
 {
