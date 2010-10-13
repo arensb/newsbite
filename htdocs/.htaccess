@@ -16,3 +16,5 @@ AuthUserFile /folks/htdocs/newsbite/.digest_pw
 	php_value include_path ".:./lib"
 </IfModule>
 
+# Safari app manifest files
+AddType text/cache-manifest .manifest
