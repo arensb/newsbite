@@ -91,6 +91,7 @@ htdocs/skins/mobile/setskin.css
 htdocs/skins/mobile/setskin.tpl
 htdocs/skins/wings/Makefile
 htdocs/skins/wings/feeds.php
+htdocs/skins/wings/gray-bg.jpg
 htdocs/skins/wings/ipad.css
 htdocs/skins/wings/js/CacheManager.js
 htdocs/skins/wings/js/ItemCache.js
@@ -101,6 +102,7 @@ htdocs/skins/wings/js/xhr.js
 htdocs/skins/wings/style.css
 htdocs/skins/wings/wings.js
 htdocs/skins/wings/wings.jsh
+htdocs/skins/wings/wings.manifest
 htdocs/unsubscribe.php
 htdocs/update.php
 htdocs/view.php
