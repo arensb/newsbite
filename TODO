@@ -17,15 +17,6 @@
   it's possible to just put those parts outside of the DocumentRoot.
   For others (images, CSS files), it's not. But those files need to be
   sent to the browser anyway.
-- Bug:
-	[Tue Oct 12 13:53:33 2010] [error] [client 128.8.87.14] File does not exist: /folks/htdocs/newsbite/skins/style.css, referer: http://www.ooblick.com/newsbite/update.php?id=249
-	[Tue Oct 12 13:53:33 2010] [error] [client 128.8.87.14] File does not exist: /folks/htdocs/newsbite/skins/abort.css, referer: http://www.ooblick.com/newsbite/update.php?id=249
-- Bug? With lots of feeds, it's possible that some feeds won't get
-  updated because update.php will time out. Assuming that the user
-  can't or doesn't want to increase the PHP max run time, one way to
-  get around this is to shuffle the array of feeds, so as to fetch
-  different feeds at different times.
-	The built-in shuffle() function can help.
 - Bug-ish: when marking a feed as inactive, get redirected back to it.
   This is bogus.
 	Redirect to feed index.
