@@ -148,7 +148,13 @@ INSTALLATION:
 
 - Configure PHP variables
 
-	max_execution_time:
+	- date.timezone:
+	Some of the time-related functions really want to know the
+	local time zone. Make sure it's set in php.ini:
+
+	date.timezone = America/New_York
+
+	- max_execution_time:
 	By default, PHP scripts run for a maximum of 30 seconds. If
 	you have a lot of feeds, some scripts (notably "update.php")
 	may time out. If this happens, you can up the execution time
