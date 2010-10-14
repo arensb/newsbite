@@ -1,6 +1,3 @@
-- Mention the time zone thing in the INSTALL file.
-	Need to explicitly set the time zone, or else parsedate() will
-  complain.
 - Bug?: There are some old articles in the database. Why aren't they
   being cleaned out properly?
 	db_update_feed() only cleans out whichever feed it was called
