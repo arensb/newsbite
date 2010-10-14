@@ -95,6 +95,12 @@ function update_all_feeds($handler)
 	$feeds = db_get_feeds();
 		// XXX - Error-checking
 
+	/* Shuffle the feeds. This way, if the PHP execution timeout
+	 * is too short to allow all feeds to update, they all have a
+	 * crack at being updated before the script times out.
+	 */
+	shuffle($feeds);
+
 	/* XXX - Hack: the code below doesn't work if
 	 * $PARALLEL_UPDATES is set to 1. If someone tries to disable
 	 * parallel updates by setting it to 1, oblige them by doing
@@ -105,6 +111,7 @@ function update_all_feeds($handler)
 		foreach ($feeds as $f)
 			update_feed($f['id']);
 			// XXX - Error-checking
+		return;	// XXX - Return something intelligent
 	}
 
 	/* Initialize curl_multi and some variables */
