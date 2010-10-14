@@ -60,11 +60,6 @@ if (isset($mobile_css))
 <?endif?>
 </head>
 <body id="view-body">
-<!--
-<p><a onclick="p.report(); false">Profiling report</a></p>
-<pre id="profiler" style="clear:both"></pre>
--->
-<!--<p id="thekey">No keys yet.</p>-->
 
 <?if ($feed['image'] != ""): ?>
 <img class="feed-icon" src="<?=$feed['image']?>"/>
