@@ -5,8 +5,6 @@ AuthDigestDomain /newsbite/
 AuthDigestProvider
 AuthUserFile /folks/htdocs/newsbite/.digest_pw
 
-#Require valid-user
-
 <Files "login.php">
 	Require valid-user
 </Files>
