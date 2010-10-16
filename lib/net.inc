@@ -253,12 +253,6 @@ function update_all_feeds($handler)
 						$handler->end_feed($handle['feed']);
 					}
 				}
-
-				/* We're done with this handle. */
-				curl_multi_remove_handle(
-					$mh,
-						$handle['ch']);
-				curl_close($handle['ch']);
 			} else {
 				$handler->error($handle['feed']['id'],
 						$handle['feed']['title'],
@@ -267,6 +261,12 @@ function update_all_feeds($handler)
 						": " .
 						curl_error($handle['ch']));
 			}
+
+			/* We're done with this handle. */
+			curl_multi_remove_handle(
+				$mh,
+				$handle['ch']);
+			curl_close($handle['ch']);
 
 			/* See if there's another URL to fetch */
 			if (list ($idx, $feed) = each($feeds))
