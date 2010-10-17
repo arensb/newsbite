@@ -1,3 +1,6 @@
+- Bug: in fancy skin, 'C' to collapse all, followed by 'E' to expand
+  all; after which, articles without any text.
+	Can't reproduce on moist.
 - Bug?: There are some old articles in the database. Why aren't they
   being cleaned out properly?
 	db_update_feed() only cleans out whichever feed it was called
@@ -7,8 +10,8 @@
   feeds, since the number of articles won't grow.
 	But some active feeds aren't being cleaned out either.
   Apparently this is because the URLs are dead.
-- Bug: When Ajax updates feeds, it doesn't notice updates to the list
-  of feeds.
+- Bug: fancy skin: when Ajax updates feeds, it doesn't notice updates
+  to the list of feeds.
 	Perhaps when updating all, update.php should append a list of
   known feeds. If it's out of date, JS can request a full list.
 - Bug?: It's possible to get to the various skins' PHP scripts and
@@ -58,7 +61,44 @@
 	  along with various close-tags.
 	  Quick hack: invoke clean-html when displaying, rather than
 	  when updating.
+- RSS feeds can contain a link to themselves (I think). It's possible
+  that when a site moves, it forwards the RSS feed to the new site for
+  a while. The code should compare the URL in the feed, to the URL in
+  the database, and at least spit out a message saying that something
+  has changed. Perhaps update the feed URL automatically.
+	For that matter, perhaps it could generate a synthetic article
+  in the feed, saying that the feed URL has changed.
+- Functions and scripts that take a feed ID should also take a group.
+  In particular, "all" should be considered a group, not a special
+  feed ID (though it can be considered a special group).
 - 'make install' (or 'make upgrade') should install everything.
+- Upgrade/make install should generate new server key. This forces the
+  user to re-login. And while we're at it, we can check to see whether
+  anything needs to be upgraded.
+- Template class:
+  Fix htdocs/skins/wings/js/Template.js:
+	  The Template class is a bit of a hack. Turns out that
+  String.replace() can take a function as its second (replacement)
+  argument, which acts like /e in perl. This function takes a "match"
+  array: the first argument is $&, the second is $1, and so on.
+
+	var tmpl = "xxx@foo@yyy@bar@zzz";
+
+	var keys = {
+		"foo": "First substitution",
+		"bar": "Second substitution",
+	};
+
+	function substitute(m0, m1)
+	{
+		if (keys[m1] == undefined)
+			return "";
+		else
+			return keys[m1];
+	}
+
+	var str = tmpl.replace(/@(\w+)\@/g, substitute);
+	document.write(tmpl+"<br/>"+str+"<br/>");
 - Delete "mobile" skin?
 	First, save all the useful experiments.
 	- orientation, for iPad/iPhone
@@ -170,7 +210,8 @@
 	Should also have a NEWS file with changes users might care
   about.
 - On iPod/iPad, perhaps item titles should open in a new window.
-- When an RSS URL gets redirected, this should cause a visible warning.
+- When an RSS URL gets redirected, this should cause a visible
+  warning.
 - Washington Post World feed starts with
 	<?xml version="1.0" encoding="iso-8859-1"?>
   But content is really UTF-8. Can this be fixed in a hook? Can this
@@ -413,14 +454,17 @@
   categories. By default, all feeds go in a " root" folder (the
   leading space marks this as special; strip space from user-defined
   folders).
-	Folders can contain subfolders, and so on. So each folder
-  needs a pointer to its parent folder. Better yet: for each group,
-  list the group's contents. That way, a feed can be in multiple
-  groups. (Though will need to make sure to avoid loops, e.g., groups
-  containing themselves (perhaps indirectly), or at least avoiding
-  infinite loops/recursion.)
+	Folders can contain subfolders, and so on. Add a table saying
+  which feeds and folders belong to which other folders, much like
+  /etc/group. That way, a feed can be in multiple groups. (Though will
+  need to make sure to avoid loops, e.g., groups containing themselves
+  (perhaps indirectly), or at least avoiding infinite
+  loops/recursion.)
+	Need a function to figure out the reverse: given a group,
+  figure out which feeds are in it (is this worth caching?).
 	AFS's pts uses negative UIDs to represent groups. Perhaps the
-  same can be done here.
+  same can be done here, in the table that says which feeds/groups are
+  in which groups.
 - Ajax: user should also be able to drag feeds around, so they're
   listed in arbitrary order. Need an "nth" field somewhere, giving the
   numeric order in which the feed is listed.
@@ -847,6 +891,13 @@
   themselves handheld devices. Go figure.
 - CSS media queries described at
   http://www.w3.org/TR/2002/CR-css3-mediaqueries-20020708/
+- CSS3 supports "target" attributes for opening links in new
+  windows/tabs:
+  http://www.w3.org/TR/css3-hyperlinks/
+	target-name:		new;
+	target-new:		window !important;
+	target-position:	above;
+  But none of the browsers I currently use support this.
 - Might be fun to set a background that changes over the course of a
   day.
 - Add a customized error page for when can't authenticate?

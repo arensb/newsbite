@@ -545,6 +545,17 @@ function _http_status(&$text)
 			// 301 Moved permanently (followed by another header)
 			// 302 Moved temporarily (followed by another header)
 			// 401 Authentication required (followed by another header)
+
+			// XXX - For status 301 (but not 302), look
+			// for a "Location: $url" header in $header.
+			// Use this to update the database to point to
+			// the new location. Or at least suggest a new
+			// location to the user.
+
+			// How to pass the location down to the
+			// caller? Just return a 3d element to the
+			// caller, which has access to the feed
+			// information and can do something about it?
 		}
 	} while (substr($text, 0, 5) == "HTTP/");
 
