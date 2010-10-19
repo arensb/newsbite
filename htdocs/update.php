@@ -6,9 +6,17 @@ require_once("common.inc");
 require_once("net.inc");
 require_once("skin.inc");
 
-// XXX - Perhaps could use the {html,json}_output_handler classes
-// throughout, so we can eliminate a bunch of "switch ($out_fmt)"
-// statements.
+// XXX - Use the {html,json}_output_handler classes throughout, so we
+// can eliminate a bunch of "switch ($out_fmt)" statements.
+
+// XXX - Perhaps register a shutdown function with
+// register_shutdown_function(). Inside it,
+// connection_status() & 2 == 1 if the script timed out.
+// This could be used to tell the user that it's probably a good idea
+// to increase the max run time.
+// Feeds are updated in the database as soon as they're fetched, so if
+// the script times out, we've lost at most one update.
+// See http://www.php.net/manual/en/features.connection-handling.php
 
 /* html_output_handler
  * Used by update_all_feeds() to handle HTML output. Subclass of
@@ -132,6 +140,8 @@ if (is_numeric($feed_id) && is_int($feed_id+0))
 	/* XXX - In HTML mode, probably shouldn't print anything
 	 * unless there's an error. That way, can redirect back to the
 	 * feed.
+	 * Except that I normally only use HTML mode to see progress and
+	 * error messages.
 	 */
 	/* XXX - Would this be desirable in "update all feeds" mode?
 	 * Maybe not. Just try one-feed mode for now.
