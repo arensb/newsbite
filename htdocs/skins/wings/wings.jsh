@@ -20,7 +20,7 @@ function debug() { }
 function clrdebug() { }
 #endif	// DEBUG
 #include "js/Template.js"
-#include "js/ItemCache.js"
+//#include "js/ItemCache.js"
 #include "js/CacheManager.js"
 
 var feed_entry_tmpl = new Template(
@@ -50,7 +50,7 @@ function init()
 	flip_to_page("index-page");
 			// Show the main page
 
-	ItemCache.scan_cache();
+//	ItemCache.scan_cache();
 
 	feed_box.innerHTML = "<p>Loading feeds&hellip;</p>";
 
@@ -83,7 +83,7 @@ function display_feeds()
 
 	if (feeds == undefined || feeds == null)
 	{
-		// XXX - Ought to do something smart
+		// XXX - Ought to do something smart.
 		feed_box.innerHTML = "<p>Waiting for feeds to show up</p>";
 		return;
 	}
