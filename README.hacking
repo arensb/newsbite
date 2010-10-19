@@ -13,3 +13,18 @@
   existing articles.
 	It's okay to display new articles after the user presses a
   "refresh" button or something.
+
+- Notes on DOM::Storage:
+  http://dev.w3.org/html5/webstorage/
+	Note that the Storage interface only allows storing and
+  retrieving strings, so data structures must be JSONified before
+  storage.
+  https://developer.mozilla.org/en/storage
+  http://developer.apple.com/safari/library/documentation/iphone/conceptual/safarijsdatabaseguide/usingthejavascriptdatabase/usingthejavascriptdatabase.html
+
+  |          | sessionStorage | localStorage | database | JSON |
+  | FF 3.5   | Yes            | Yes          | No       | Yes  |
+  | FF 3.6   | Yes            | Yes          | No       | Yes  |
+  | iPod     | Yes            | Yes          | Yes      | Yes  |
+  | Safari 5 | Yes            | Yes          | No?      | Yes  |
+  | Chrome   | ?              | ?            | ?        | ?    |
