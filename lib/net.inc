@@ -85,6 +85,7 @@ abstract class feed_update_handler
  * As the name implies, this updates all the feeds listed in the
  * database.
  */
+// XXX - This code is way too complicated. Can it be simplified?
 // XXX - Ought to try to avoid refreshing feeds too often. Add a bool
 // $force argument to force an update.
 function update_all_feeds($handler)
@@ -451,13 +452,6 @@ function _save_handle($feed_id, &$feed_text)
 	$counts = db_update_feed($feed_id, $feed);
 	$feed['counts'] = $counts;
 
-//	/* Add feed counts to the return value */
-//	foreach ($counts as $key => $value)
-//	{
-//		$feed[$key] = $value;
-//	}
-
-//	return db_update_feed($feed_id, $feed);
 	$_save_handle_error = "OK";
 	return $feed;
 }
