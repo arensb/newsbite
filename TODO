@@ -1,6 +1,3 @@
-- Bug: in fancy skin, 'C' to collapse all, followed by 'E' to expand
-  all; after which, articles without any text.
-	Can't reproduce on moist.
 - Bug?: There are some old articles in the database. Why aren't they
   being cleaned out properly?
 	db_update_feed() only cleans out whichever feed it was called
@@ -14,17 +11,26 @@
   to the list of feeds.
 	Perhaps when updating all, update.php should append a list of
   known feeds. If it's out of date, JS can request a full list.
-- Bug?: It's possible to get to the various skins' PHP scripts and
-  whatnot directly, bypassing the login mechanism.
-	Is this a bad thing? For some parts (auxiliary PHP scripts),
-  it's possible to just put those parts outside of the DocumentRoot.
-  For others (images, CSS files), it's not. But those files need to be
-  sent to the browser anyway.
 - Bug-ish: when marking a feed as inactive, get redirected back to it.
   This is bogus.
 	Redirect to feed index.
-- Handling timeouts: this might help:
-  http://www.php.net/manual/en/features.connection-handling.php
+- Bug: in fancy skin, 'C' to collapse all, followed by 'E' to expand
+  all; after which, articles without any text.
+	Can't reproduce on moist.
+- Makefile: gzip all static files. If possible, allow the end-user to
+  turn this off if they don't have mod_mime turned on.
+	Not sure whether this should be done by 'make dist' or 'make
+  install'.
+	Perhaps easiest if one can 'make compress' after 'make
+  install'.
+
+	For testing:
+  wget -S --header="Accept-Encoding: gzip,deflate" http://www.ooblick.com/foo/stuff.php
+  Apparently sufficient to add
+	zlib.output_compression = On
+  to php.ini.
+	Don't turn on both mod_mime and zlib.output_compression, lest
+  you wind up with double-gzipped output from PHP scripts.
 - Mobile app: create a static standalone page, to see how it's done.
   Currently, Newsbite won't run without a network.
 - Database: delete ttl, since it doesn't seem to be used anywhere?
@@ -61,11 +67,10 @@
 	  along with various close-tags.
 	  Quick hack: invoke clean-html when displaying, rather than
 	  when updating.
-- RSS feeds can contain a link to themselves (I think). It's possible
-  that when a site moves, it forwards the RSS feed to the new site for
-  a while. The code should compare the URL in the feed, to the URL in
-  the database, and at least spit out a message saying that something
-  has changed. Perhaps update the feed URL automatically.
+- RSS feeds can be redirected. It's possible that when a site moves,
+  it forwards the RSS feed to the new site for a while. The code
+  should detect this, and at least spit out a message saying that
+  something has changed. Perhaps update the feed URL automatically.
 	For that matter, perhaps it could generate a synthetic article
   in the feed, saying that the feed URL has changed.
 - Functions and scripts that take a feed ID should also take a group.
@@ -120,8 +125,14 @@
   http://www.npr.org/templates/story/story.php?storyId=129780261
   iPad-optimized URL:
   http://www.npr.org/tablet/#story?storyId=129780261
-- Other iPad-optimized sites:
+	Other iPad-optimized sites:
   http://www.apple.com/ipad/ready-for-ipad/
+- For error messages, and any other time when the app needs to talk to
+  the user: could create a synthetic feed. This could include error
+  messages from update.php, warnings that a feed has been redirected
+  (perhaps including a link to update the feed config), and anything
+  else.
+	Could perhaps use "internal:" as the URL for these feeds.
 - CSS multicolumn stuff:
   See http://www.zenelements.com/blog/css3-multiple-columns/
   Fixed width:
@@ -149,26 +160,9 @@
 - It'd be nice to compress files in advance. Have Apache figure out
   that if the user is asking for "foo.css", and the browser accepts
   gzipped compression, and "foo.css.gz" exists, then just return that.
-- Figure out DOM::Storage interface
-	Need a way to store feeds, items in a way that can be
-  retrieved.
-	Write a module for this.
-	Unfortunately, storage is just a hash mapping strings to
-  strings. So need to build structure on top of that.
-	Need a way to serialize/unserialize strings. Perhaps rewrite
-  jsonify() in JS.
-	"typeof" operator might be useful.
-  See
-	https://developer.mozilla.org/en/storage
-	http://developer.apple.com/safari/library/documentation/iphone/conceptual/safarijsdatabaseguide/usingthejavascriptdatabase/usingthejavascriptdatabase.html
-  (for database storage in Safari)
-
-  |          | sessionStorage | localStorage | database | JSON |
-  | FF 3.5   | Yes            | Yes          | No       | Yes  |
-  | FF 3.6   | Yes            | Yes          | No       | Yes  |
-  | iPod     | Yes            | Yes          | Yes      | Yes  |
-  | Safari 5 | Yes            | Yes          | No?      | Yes  |
-  | Chrome   | ?              | ?            | ?        | ?    |
+	This doesn't work for actual data feeds, like JSON requests
+  for articles. For that, need to have PHP gzip the content and set
+  the headers appropriately.
 - Worker threads could be useful. However, iPad doesn't seem to
   support them.
 	One way to handle this might to have synthetic events: with
@@ -405,7 +399,6 @@
   text. Text is sometimes truncated in the middle of a line, resulting
   in parse errors.
 - Should be able to read both read and unread articles.
-- Limit size of articles (to one N810 screenful?)
 - Would be nice to have either "new" flag or a "saved for later" flag.
   The latter is probably more useful.
 	That way, can go through today's stuff fairly quickly, without
@@ -418,12 +411,8 @@
 	It'd also be nice to add a pile of monitoring, to be able to
   see what happens when, to optimize properly.
 	Perhaps use syslog? I think it's a core function in PHP.
-- Make a list of conditions for calling it version 2.0
-	- Fully-functional Ajax skin
-		- XXX - Meaning what, exactly?
 - Makefile:
 	Run tests:
-		php -l <everything>
 		Try to call various functions and make sure they return
 		correct results
 		php-cgi -c php.ini <script>
@@ -488,8 +477,6 @@
   the schema for both feeds and items that this isn't practical. Start
   out with naive implementation, and see if anyone starts using it on
   a multi-user system.
-- Deal with malformed text in the RSS feed, e.g., unescaped or
-  poorly-escaped entities, and the like.
 - Killfile: automatically mark as read messages that match certain
   criteria.
 	Perhaps this should have a scoring system or something: I'd
@@ -563,6 +550,8 @@
 	Unfortunately, this doesn't seem possible.
 - Ajax: keybindings for articles:
 	'm'	(more) when viewing preview, show full article
+		If feed doesn't have a content section, or if already
+		displaying the content, browse to the full article.
 	'j'	move to next item (vi key)
 	'k'	move to previous item (vi key)
 	'd'	mark item as read, and skip to next item
@@ -578,23 +567,6 @@
 	Perhaps can attach "mouseover" and "mouseout" listeners to
   individual items: the last one that gets a mouseover is the current
   item.
-
-	Probably best to have a keytab that maps keycodes to
-  functions, in Emacs fashion. Probably easiest to have 4 (or 8, or
-  32) keytabs, indexed by modifier key:
-	keytab[0] => bindings where Meta == false
-	keytab[0][1] => bindings where Meta == false, Ctrl == true
-	keytab[0][1][0][90] =>
-		binding for Meta == false, Ctrl == true, Shift == false,
-		keycode == 90.
-  Apparently booleans can be used as integers, so this should work.
-	Of course, by the same token, we could just have a 2-D array:
-		keytab[modifiers][keycode]
-  where
-	modifiers == shiftKey +
-		(ctrlKey << 1) +
-		(altKey << 2) +
-		(metaKey << 3);
 - Handle attachments (e.g., <media:content>,
   <feedburner:origEnclosureLink>) kind of like a mail reader would:
   put a list at the bottom of the message.
@@ -797,20 +769,11 @@
 	If there is, allow user to set $PARALLEL_UPDATES to "auto",
   and have it be computed automatically.
 - How should abort() deal with JSON/XML/whatever non-HTML output?
-- Ajax/Firefox: use client-side storage (DOM::Storage) to cache
-  articles.
-  See also
-  http://dev.w3.org/html5/webstorage/
-	Note that the Storage interface only allows storing and
-  retrieving strings, so data structures must be JSONified before
-  storage.
 - Perhaps class Skin can try to be a singleton: that way, if multiple
   files call 'new Skin', they'll both refer to the same object. OTOH,
   that should never happen.
 - Perhaps expand the notion of "feed": could show email, current
   weather conditions, Nagios alerts, etc.
-- Perhaps add a "collapse all" button in view.tpl that'll collapse all
-  displayed items.
 - In main view: have a button to toggle displaying feeds with no
   unread items. This could be difficult, since the color of rows is
   set by their class, which in turn is in the .tpl file.
