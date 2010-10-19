@@ -173,40 +173,6 @@ if ($mobile)
 	}
 }
 
-// XXX - It would be great to normalize the HTML parts of the item, to
-// protect against malformed HTML, mismatched tags, etc. The fragment
-// below tries to do this by
-//	- Load the HTML fragment as a DOMDocument
-//	- (Let DOMDocument worry about errors)
-//	- Dump the DOMDocument back to HTML
-
-// However, there are several problems:
-// 1) It adds DOCTYPE, <html>, and <body> tags. These can easily be
-// stripped out, though.
-// 2) It apparently assumes that the original HTML document uses
-// ISO-8859-1 encoding, and so any UTF-8 characters get mangled. I
-// haven't found a workaround for this.
-// XXX - Should normalization be done when the item is added to the
-// database?
-#$doc = new DOMDocument('1.0', 'utf-8');
-#foreach ($feed['items'] as &$i)
-#{
-#	if ($i['content'] != "")
-#	{
-##		$doc = new DOMDocument('1.0', 'utf-8');
-#		@$doc->loadHTML($i['content']);
-#		# Remove unwanted HTML parts.
-#		$i['content'] = preg_replace('{^.*?<body>(.*)</body>.*?$}s', '\1', $doc->saveHTML());
-#	}
-#	if ($i['summary'] != "")
-#	{
-##		$doc = new DOMDocument('1.0', 'utf-8');
-#		@$doc->loadHTML($i['summary']);
-#		# Remove unwanted HTML parts.
-#		$i['summary'] = preg_replace('{^.*?<body>(.*)</body>.*?$}s', '\1', $doc->saveHTML());
-#	}
-#}
-
 if ($out_fmt == "json")
 {
 	echo jsonify($feed);
