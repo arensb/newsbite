@@ -36,6 +36,25 @@ switch ($skin_vars['mobile'])
 	echo "<link rel=\"stylesheet\" type=\"text/css\" href=\"skins/$skin_vars[skin]/$mobile_css\" media=\"screen\" />\n";
 }
 ?>
+<!-- Icon for standalone app -->
+<link rel="apple-touch-icon" href="skins/<?=$skin_dir?>/images/icon.png"/>
+<!-- Splash screen for standalone app -->
+<link rel="apple-touch-startup-image"
+      href="skins/<?=$skin_dir?>/images/splash.png"
+      media="screen
+      and (max-device-width: 480)"/>
+<link rel="apple-touch-startup-image"
+      href="skins/<?=$skin_dir?>/images/splash-ipad.png"
+      media="screen
+      and (min-device-width: 481) and (orientation: portrait)"/>
+<link rel="apple-touch-startup-image"
+      href="skins/<?=$skin_dir?>/images/splash-ipad-landscape.png"
+      media="screen
+      and (min-device-width: 481) and (orientation: landscape)"/>
+<meta name="viewport"
+      content="width = device-width,
+                initial-scale = 1.0,
+                user-scalable = yes"/>
 <meta name="apple-mobile-web-app-capable" content="yes" />
 <meta name="apple-mobile-web-app-status-bar-style" content="black" />
 </head>
@@ -69,7 +88,10 @@ with this skin.</p>
 <h2 class="feed-subtitle">Feed subtitle</h2>
 <div class="feed-description">Feed description</div>
 
-<a href="javascript:flip_to_page('index-page')">Index</a>
+<ul>
+<li><a href="javascript:flip_to_page('index-page')">Index</a></li>
+<li><a href="javascript:foo()">Get some items</a></li><!-- XXX - Temporary -->
+</ul>
 
 <div id="articles"></div>
 </div><!-- End of feed page -->
