@@ -34,6 +34,7 @@ var feed_box;		// Div listing available feeds
 var feeds;		// List of known feeds
 var pages;		// List of page divs
 var current_page;	// Currently-visible page
+var current_feed_id;	// The ID of the feed we're currently reading
 
 function init()
 {
@@ -122,6 +123,9 @@ function show_feed(id)
 			break;
 		}
 	}
+
+	current_feed_id = id;
+
 	// XXX - Fill in the feed page with TOC for the feed
 
 	// XXX - This business of finding the various h1s and divs
@@ -163,6 +167,12 @@ function show_feed(id)
 	// XXX - Get articles from local cache
 
 	// XXX - Get latest articles from the server
+}
+
+function foo()
+{
+	var items = CacheManager.get_items(current_feed_id,
+					   null);
 }
 
 /* flip_to_page
