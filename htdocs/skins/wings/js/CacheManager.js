@@ -114,4 +114,38 @@ CacheManager._get_feeds_callback = function(value, callback)
 		callback(value);
 }
 
+CacheManager.get_items = function(id, callback)
+{
+	var retval;
+
+	// XXX - Get the current most recent item in this feed
+
+	/* Start a request for new values */
+	get_json_data("view.php",
+		      { "id": id,
+		        "o": "json"
+		      },
+		      function(value)
+		      {
+			      CacheManager._get_items_callback(value, callback)
+		      },
+		      true);
+
+	/* Return the current version */
+	return retval;
+}
+
+CacheManager._get_items_callback = function(value, callback)
+{
+//alert("value: ["+value+"]");
+	for (var i = 0; i < value.items.length; i++)
+	{
+		var item = value.items[i];
+//debug("Found item "+item.id+", ["+item.title+"]");
+		localStorage["items/"+id] = JSON.stringify(item);
+			// XXX - This might fail. If so, probably need
+			// to expire cache.
+	}
+}
+
 #endif	// _CacheManager_js_
