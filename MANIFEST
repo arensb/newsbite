@@ -91,7 +91,11 @@ htdocs/skins/mobile/setskin.css
 htdocs/skins/mobile/setskin.tpl
 htdocs/skins/wings/Makefile
 htdocs/skins/wings/feeds.php
-htdocs/skins/wings/gray-bg.jpg
+htdocs/skins/wings/images/gray-bg.jpg
+htdocs/skins/wings/images/icon.png
+htdocs/skins/wings/images/splash-ipad-landscape.png
+htdocs/skins/wings/images/splash-ipad.png
+htdocs/skins/wings/images/splash.png
 htdocs/skins/wings/ipad.css
 htdocs/skins/wings/js/CacheManager.js
 htdocs/skins/wings/js/ItemCache.js
