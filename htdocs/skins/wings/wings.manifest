@@ -1,5 +1,36 @@
 CACHE MANIFEST
+# Must begin with the "CACHE MANIFEST" line.
+# Manifest version 7
+# IMPORTANT: Must increment the number (or make some change) to
+# trigger a reload
+
+# All of the following (relative) URLs will be cached locally:
 skins/wings/style.css
-skins/wings/style.js
-skins/wings/gray-bg.jpg
+skins/wings/wings.js
+skins/wings/images/gray-bg.jpg
+skins/wings/images/newsbite-splash.png
+skins/wings/images/newsbite-splash-ipad.png
+skins/wings/images/newsbite-splash-ipad-landscape.png
+skins/wings/images/newsbite-icon.png
 /favicon.ico
+
+# (mandatory) URLs that match the following prefixes will be whitelisted:
+#NETWORK:
+#http://www.ooblick.com/app/
+
+# More cache entries after network entries:
+CACHE:
+
+# Fallback section. Each line contains two URLs. If the first one is
+# inaccessible, use the second one instead.
+FALLBACK:
+#/files/projects        /projects
+
+# What Safari on fromage thinks this page contains:
+#CACHE:
+#http://www.ooblick.com/newsbite/?skin=wings
+#skins/wings/style.css
+#skins/wings/wings.js
+#skins/wings/images/gray-bg.jpg
+#http://www.ooblick.com/favicon.ico
+#feeds.php
