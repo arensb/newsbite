@@ -1,3 +1,15 @@
+- Bug: Quota exceeded
+	In iPad Safari:
+	JavaScript Error on Line 204(*)
+	http://www.ooblick.com/newsbite/skins/wings/wings.js
+	Error: QUOTA_EXCEEDED_ERR: DOM Exception 22
+  (*) "localStorage["feeds"] = JSON.stringify(value);" in
+  _get_feeds_callback()
+
+  http://stackoverflow.com/questions/2603682/is-anyone-else-receiving-a-quota-exceeded-err-on-their-ipad-when-accessing-locals
+  suggests removing the key before setting it:
+	sessionStorage.removeItem(key)
+	sessionStorage.setItem(key, val);
 - Bug?: There are some old articles in the database. Why aren't they
   being cleaned out properly?
 	db_update_feed() only cleans out whichever feed it was called
@@ -847,6 +859,13 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="black" />
   Can set to "default", "black", or "black-translucent".
 	I think this only works on full-on mobile apps, though.
+- HTML5 database:
+  http://dev.w3.org/html5/webdatabase/
+	window.openDatabase()
+  openDatabase works in Chrome, desktop and mobile Safari, but not
+  Firefox 3.5 or 3.6
+	Perhaps use js/load_module to load a class that'll store and
+  retrieve stuff in local storage.
 - Storing data on iPhone:
   http://developer.apple.com/safari/library/documentation/AppleApplications/Reference/SafariWebContent/Client-SideStorage/Client-SideStorage.html
   Can also set up a manifest file, so that the app will download
