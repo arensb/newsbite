@@ -41,11 +41,13 @@ function add_class(elem, cls)
 	{
 		if (classes[i] == cls)
 			// Element already has this class
-			return;
+			return true;
 	}
 
 	// Need to add the class
 	elem.className = classes.concat([cls]).join(" ");
+
+	return true;	// Success
 }
 
 /* remove_class
@@ -75,6 +77,8 @@ function remove_class(elem, cls)
 
 	// The new class list is whatever we're left with.
 	elem.className = new_classes.join(" ");
+
+	return true;	// Success
 }
 
 /* replace_class
@@ -116,6 +120,8 @@ function replace_class(elem, old_class, new_class)
 
 	// The new class list is whatever we're left with.
 	elem.className = new_classes.join(" ");
+
+	return true;	// Success
 }
 
 /* toggle_class
@@ -173,6 +179,8 @@ function toggle_class(elem, classA, classB)
 
 	// The new class list is whatever we're left with.
 	elem.className = new_classes.join(" ");
+
+	return true;	// Success
 }
 
 #endif	// _classes_js_
