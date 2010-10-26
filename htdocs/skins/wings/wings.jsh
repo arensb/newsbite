@@ -30,23 +30,40 @@ var feed_entry_tmpl = new Template(
 document.addEventListener("DOMContentLoaded", init, false);
 			// Perform initialization once the DOM is loaded
 
+var cm;			// Cache manager
 var feed_box;		// Div listing available feeds
-var feeds;		// List of known feeds
+//var feeds;		// List of known feeds
 var pages;		// List of page divs
 var current_page;	// Currently-visible page
 var current_feed_id;	// The ID of the feed we're currently reading
+var current_item_id;	// The ID of the item currently displayed
+
+var index_page = {
+};
+
+var feed_page = {
+};
+
+var article_page = {
+}
 
 function init()
 {
+	cm = new CacheManager;
+
 	/* Get the list of available pages */
 	pages = document.getElementById("page-list").
 		getElementsByClassName("page");
 
 	/* Initialize the index page */
+	// XXX - Put this in index_page
 	feed_box = document.getElementById("feeds");
 
 	/* XXX - Initialize the feed page */
 	/* XXX - Initialize the article page */
+
+	// XXX - Perhaps each page should be an object with its own
+	// initialization function and whatnot?
 
 	flip_to_page("index-page");
 			// Show the main page
@@ -55,12 +72,13 @@ function init()
 
 	feed_box.innerHTML = "<p>Loading feeds&hellip;</p>";
 
-	feeds = CacheManager.get_feeds(
-		function(value) {
-			feeds = value;
-			display_feeds();
-		});
-	display_feeds();
+//	feeds = CacheManager.get_feeds(
+//		function(value) {
+//			feeds = value;
+//			display_feeds();
+//		});
+	display_feeds(null);
+	cm.get_feeds(display_feeds);
 
 	/* XXX - Update the local store and see if anything needs to be
 	 * deleted.
@@ -77,18 +95,26 @@ function init()
 	 */
 }
 
-function display_feeds()
+function display_feeds(feeds)
 {
+debug("Inside display_feeds("+feeds+")");
 	/* Make a UL of feeds, and add it to feed_box. */
 	var str = "<ol class=\"feed-list\">";
 
 	if (feeds == undefined || feeds == null)
+		feeds = cm.feeds;
+
+	if (feeds.length == 0)
 	{
 		// XXX - Ought to do something smart.
 		feed_box.innerHTML = "<p>Waiting for feeds to show up</p>";
 		return;
 	}
-	for (var i = 0; i < feeds.length; i++)
+
+	// XXX - Sort feeds
+	feeds.sort(function(a,b){return a.id - b.id});
+
+	for (var i in feeds)
 	{
 		var f = feeds[i];
 
@@ -115,16 +141,20 @@ function show_feed(id)
 {
 	var feed;
 
-	for (var i = 0; i < feeds.length; i++)
-	{
-		if (feeds[i].id == id)
-		{
-			feed = feeds[i];
-			break;
-		}
-	}
+debug("showing feed "+id);
+//	for (var i = 0; i < cm.feeds.length; i++)
+//	{
+//		if (cm.feeds[i].id == id)
+//		{
+//			feed = cm.feeds[i];
+//			break;
+//		}
+//	}
+	feed = cm.feeds[id];
+	// XXX - Is it safe to assume that 'feed' is set?
 
 	current_feed_id = id;
+	current_item_id = null;
 
 	// XXX - Fill in the feed page with TOC for the feed
 
@@ -138,6 +168,7 @@ function show_feed(id)
 	var h1_box = feed_page.getElementsByTagName("h1")[0];
 	var subtitle_box = feed_page.getElementsByClassName("feed-subtitle")[0];
 	var desc_box = feed_page.getElementsByClassName("feed-description")[0];
+	var art_list_box = feed_page.getElementById("articles");
 
 	if (feed.nickname == null || feed.nickname == "")
 		h1_box.innerHTML = feed.title;
@@ -165,13 +196,40 @@ function show_feed(id)
 	flip_to_page('feed-page');
 
 	// XXX - Get articles from local cache
+	show_first_item();
 
 	// XXX - Get latest articles from the server
 }
 
+function show_first_item()
+{
+	// XXX - Find the first item in this feed
+	var feed_items;
+
+	feed_items = cm.get_items(current_feed_id, new_items_callback);
+var str = "Got cached items: ";
+for (var i in feed_items)
+{
+//str += "["+feed_items[i].title+"] ";
+debug("Cached item: "+feed_items[i].title);
+}
+//debug(str);
+
+	// XXX - Fill in its contents in the feed page.
+}
+
+function new_items_callback(feed_id, items)
+{
+debug("New items have arrived in feed "+feed_id);
+for (var i in items)
+{
+debug("New item: "+items[i].title);
+}
+}
+
 function foo()
 {
-	var items = CacheManager.get_items(current_feed_id,
+	var items = cm.get_items(current_feed_id,
 					   null);
 }
 
