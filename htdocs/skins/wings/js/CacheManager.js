@@ -168,11 +168,12 @@ CacheManager.prototype.get_feeds = function(callback)
 
 	/* Start a request for an updated version */
 	// XXX - Unless we're offline?
+	var cm2 = this;		// So the callback can call an object method
 	get_json_data("feeds.php",
 		      { "o": "json" },
 		      function(value)
 		      {
-			CacheManager._get_feeds_callback(value, callback)
+			CacheManager._get_feeds_callback(cm2, value, callback)
 		      },
 		      true);
 
@@ -180,7 +181,7 @@ CacheManager.prototype.get_feeds = function(callback)
 	return retval;
 };
 
-CacheManager._get_feeds_callback = function(value, callback)
+CacheManager._get_feeds_callback = function(cm, value, callback)
 {
 	/* Save the new version */
 	// XXX - Should have a separate function for storing locally,
@@ -190,6 +191,17 @@ CacheManager._get_feeds_callback = function(value, callback)
 			// sometimes complains of exceeded quota when
 			// we write the new value.
 	localStorage["feeds"] = JSON.stringify(value);
+
+	/* Store the value in cm.feeds */
+	for (var f in value)
+	{
+		var feed = value[f];
+
+		// XXX - Check whether cm.feeds[feed.id] is already
+		// set. If so, we might need to call a handler to redraw
+		// the window or something.
+		cm.feeds[feed.id] = feed;
+	}
 
 	if (callback)
 		callback(value);
