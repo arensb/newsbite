@@ -24,7 +24,7 @@ function clrdebug() { }
 #include "js/CacheManager.js"
 
 var feed_entry_tmpl = new Template(
-"<li><a class=\"feed-name\" onclick=\"show_feed(@id@)\">@id@: @title@</a></li>"
+"<li><a class=\"feed-name\" onclick=\"show_feed(@id@)\">@id@: @title@</a> (@num_unread@)</li>"
 );
 
 document.addEventListener("DOMContentLoaded", init, false);
@@ -97,7 +97,6 @@ function init()
 
 function display_feeds(feeds)
 {
-debug("Inside display_feeds("+feeds+")");
 	/* Make a UL of feeds, and add it to feed_box. */
 	var str = "<ol class=\"feed-list\">";
 
@@ -112,7 +111,12 @@ debug("Inside display_feeds("+feeds+")");
 	}
 
 	// XXX - Sort feeds
-	feeds.sort(function(a,b){return a.id - b.id});
+//	feeds.sort(function(a,b){return a.id - b.id});
+	feeds.sort(function(a,b) {
+			if (a.title == b.title) return 0;
+			if (a.title <  b.title) return -1;
+			return 1;
+		});
 
 	for (var i in feeds)
 	{
@@ -168,7 +172,7 @@ debug("showing feed "+id);
 	var h1_box = feed_page.getElementsByTagName("h1")[0];
 	var subtitle_box = feed_page.getElementsByClassName("feed-subtitle")[0];
 	var desc_box = feed_page.getElementsByClassName("feed-description")[0];
-	var art_list_box = feed_page.getElementById("articles");
+	var art_list_box = document.getElementById("articles");
 
 	if (feed.nickname == null || feed.nickname == "")
 		h1_box.innerHTML = feed.title;
