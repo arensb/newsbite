@@ -12,6 +12,7 @@
 //	createXMLHttpRequest = function() ...
 // rather than
 //	function createXMLHttpRequest()
+var createXMLHttpRequest = undefined;
 if (window.XMLHttpRequest && typeof XMLHttpRequest != "undefined")
 {
 	/* Firefox, Safari, etc. */
