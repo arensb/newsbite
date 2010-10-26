@@ -274,10 +274,11 @@ EOT;
 		// XXX - Error-checking
 		$feed_id = $row['feed_id'];
 		$retval[$feed_id]['latest_pub_date'] =
-			strtotime($row['latest_pub_date']);
+			$row['latest_pub_date'];
 		$retval[$feed_id]['latest_update'] =
-			strtotime($row['latest_update']);
+			$row['latest_update'];
 	}
+
 	return $retval;
 }
 
