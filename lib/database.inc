@@ -160,8 +160,8 @@ EOT
 	 * updated.
 	 */
 	$query = sprintf(<<<EOT
-SELECT		MAX(`pub_date`) as `latest_pub_date`,
-		MAX(`last_update`) as `latest_update`
+SELECT		UNIX_TIMESTAMP(MAX(`pub_date`)) as `latest_pub_date`,
+		UNIX_TIMESTAMP(MAX(`last_update`)) as `latest_update`
 FROM		items
 WHERE		feed_id = %d
 EOT
@@ -179,8 +179,8 @@ EOT
 	$row = $result->fetch_assoc();
 		// XXX - Error-checking
 
-	$retval['latest_pub_date'] = strtotime($row['latest_pub_date']);
-	$retval['latest_update']   = strtotime($row['latest_update']);
+	$retval['latest_pub_date'] = $row['latest_pub_date'];
+	$retval['latest_update']   = $row['latest_update'];
 
 	return $retval;
 }
@@ -246,11 +246,13 @@ EOT;
 	// there's got to be a better way.
 	$query = <<<EOT
 SELECT		feeds.id AS `feed_id`,
-		IFNULL(MAX(items.`pub_date`),
-		       "0000-00-00 00:00:00")
+		UNIX_TIMESTAMP(
+			IFNULL(MAX(items.`pub_date`),
+			       "0000-00-00 00:00:00"))
 			AS `latest_pub_date`,
-		IFNULL(MAX(items.`last_update`),
-		       "0000-00-00 00:00:00")
+		UNIX_TIMESTAMP(
+			IFNULL(MAX(items.`last_update`),
+			       "0000-00-00 00:00:00"))
 			AS `latest_update`
 FROM		feeds
 LEFT JOIN	items
