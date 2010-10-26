@@ -49,6 +49,16 @@
   http://commons.wikimedia.org/wiki/File:Newspaper_Cover.svg
   http://commons.wikimedia.org/wiki/RSS
   Perhaps use the RSS logo as a background, with the newspaper in front.
+- Differences between various versions:
+  * Article title links
+	- Desktop: regular <a>. Middle-click to open in new tab
+	- iPhone/iPad, in Safari: open in new window
+	- iPhone/iPad, standalone: Open in an iframe or something.
+	  Don't launch Safari.
+  * manifest:
+	- Desktop: don't include. Or not yet
+	- iPhone: include iPhone-specific files
+	- iPad: include iPad-specific files
 - In the mobile app manifest, is the network whitelist really
   mandatory? Does it take relative URLs? If not, then add this to the
   INSTALL instructions. Either that, or generate the manifest during
