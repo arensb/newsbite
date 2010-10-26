@@ -1,5 +1,3 @@
-- Bug: htdocs/feeds.php o=json
-	Apparenty num_read, num_unread is always null.
 - Bug: db_get_all_feed_counts() sometimes returns negative value for
   latest_pub_date, latest_update.
 - Bug?: There are some old articles in the database. Why aren't they
