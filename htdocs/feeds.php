@@ -38,10 +38,10 @@ foreach ($feeds as $id => $data)
 	$desc['last_update']     = $data['last_update'];
 	$desc['image']           = $data['image'];
 	$desc['active']          = $data['active'];
-	$desc['num_read']        = $counts['num_read'];
-	$desc['num_unread']      = $counts['num_unread'];
-	$desc['latest_pub_date'] = $counts['latest_pub_date'];
-	$desc['latest_update']   = $counts['latest_update'];
+	$desc['num_read']        = $counts[$id]['read'];
+	$desc['num_unread']      = $counts[$id]['unread'];
+	$desc['latest_pub_date'] = $counts[$id]['latest_pub_date'];
+	$desc['latest_update']   = $counts[$id]['latest_update'];
 
 	$output[] = $desc;
 }
