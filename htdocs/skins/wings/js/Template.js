@@ -3,14 +3,7 @@
 
 function Template(tmpl)
 {
-	/* Look for sequences of the form @VAR@. These are the variables
-	 * that will be replaced in the template.
-	 * split() is perfect for this, since a template is by definition
-	 * a series of strings punctuated by variables to be expanded.
-	 * Thus we know that the even-numbered elements (0, 2, 4, ...) are
-	 * strings, and the odd-numbered ones are names of variables.
-	 */
-	this.template = tmpl.split(/@(\w+)@/);
+	this.template = tmpl;	// Text of the template
 }
 
 /* Template.expand
@@ -19,23 +12,12 @@ function Template(tmpl)
  */
 Template.prototype.expand = function(values)
 {
-	var retval = "";
-	var n = this.template.length;
-
-	for (var i = 0; i < n; i += 2)
-	{
-		// We're looking at a plain string. Append it to retval
-		retval += this.template[i];
-
-		// See if this string is followed by a variable name.
-		// If so, expand it.
-		if (i+1 < n)
-		{
-			retval += values[this.template[i+1]];
-		}
-	}
-
-	return retval;
+	return this.template.replace(/@(\w+)@/g,
+		       function(dummy, match) {
+			       if (values[match] == undefined)
+				       return "";
+			       return values[match];
+		       });
 }
 
 #endif	// _template_js_
