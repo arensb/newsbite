@@ -25,6 +25,16 @@
 	htdocs/skins/default/view.php
 	htdocs/feeds.php
 	lib/database.inc
+
+	Database tables:
+	feeds.last_update
+	items.pub_date
+	items.last_update
+
+  Make sure that whenever they're pulled from the database in
+  lib/database.inc, they're in Unix format (be sure to check for
+  "select *"). Then, see which functions call the lib/database.inc
+  functions, what calls those functions, and so on.
 - plugins/thumbnail.php: Move this to plugins/xml-media.php, since
   it's all the same thing.
 - plugins/xml-media.php:
@@ -106,6 +116,8 @@
 	- (Item content URL)
 	- (Item comment RSS URL)
 	- (Item GUID)
+  Hack to see what I've missed: have HTMLpurify put a distinctive
+  marker around the purified parts, like "foo" => "@[foo]@".
 - What does HTMLPurifier remove?
 	- dKos talk threads (<ul>?)
 	- "About" section in Strange Maps

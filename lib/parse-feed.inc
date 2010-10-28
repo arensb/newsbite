@@ -48,6 +48,13 @@ require_once("hooks.inc");
 // links or images are relative, try to make them absolute. Or maybe
 // there's a way in HTML/XHTML to specify a base URL.
 
+// XXX - Before calling clean-html hooks, see if there's a base URL
+// with which to resolve relative links.
+
+// XXX - It might be best to call clean-html at the end, when the
+// entire feed (or at least the entire item) has been read, and we
+// know what other fields might be around.
+
 // Element-to-field mapping:
 // RSS:			Atom:			field
 // <item>		<entry>			items[]
