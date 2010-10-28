@@ -1,7 +1,12 @@
 <?
 /* Hook for parsing the media XML namespace:
  * http://search.yahoo.com/mrss/
+ *
+ * There are two parts: one to recognize the "media" namespace in RSS
+ * feeds, and another to do something useful with the results.
  */
+
+/********************* RSS element part ********************/
 
 function media_element_handler(
 	$ns_url,	// URL of this element's namespace
@@ -54,4 +59,32 @@ add_xml_handler("http://search.yahoo.com/mrss/",
 		"element"	=> media_element_handler,
 		)
 	);
+
+/********************* Plugin part ********************/
+
+/* thumbnail_hook
+ * If the article contains a thumbnail image, attach it to the displayed
+ * version.
+ */
+function thumbnail_hook($nodename, &$retval, &$context)
+{
+	if (!isset($retval['media:thumbnail']))
+		return;
+
+	$thumb = "<img class=\"thumbnail\" src=\"".
+		$retval['media:thumbnail'] .
+		"\"/>\n";
+
+	if (isset($retval['content']))
+		$retval['content'] = $thumb . $retval['content'];
+	if (isset($retval['summary']))
+		$retval['content'] = $thumb . $retval['summary'];
+	if (isset($retval['description']))
+		$retval['content'] = $thumb . $retval['description'];
+
+	return true;
+}
+
+add_hook("item", "thumbnail_hook");
+
 ?>
