@@ -182,7 +182,7 @@ clrdebug();
 	{
 		// XXX - Better error-reporting
 //debug("Error: can't create XMLHttpRequest");
-		return;
+		return true;
 	}
 
 	var err;
