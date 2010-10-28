@@ -26,13 +26,14 @@ function clrdebug() { }
 var feed_entry_tmpl = new Template(
 "<li><a class=\"feed-name\" onclick=\"show_feed(@id@)\">@id@: @title@</a> (@num_unread@)</li>"
 );
+var item_entry_tmpl = new Template(
+"<li>@id@: @title@</li>"
+);
 
 document.addEventListener("DOMContentLoaded", init, false);
 			// Perform initialization once the DOM is loaded
 
 var cm;			// Cache manager
-var feed_box;		// Div listing available feeds
-//var feeds;		// List of known feeds
 var pages;		// List of page divs
 var current_page;	// Currently-visible page
 var current_feed_id;	// The ID of the feed we're currently reading
@@ -56,8 +57,7 @@ function init()
 		getElementsByClassName("page");
 
 	/* Initialize the index page */
-	// XXX - Put this in index_page
-	feed_box = document.getElementById("feeds");
+	index_page.feed_box = document.getElementById("feeds");
 
 	/* XXX - Initialize the feed page */
 	/* XXX - Initialize the article page */
@@ -68,15 +68,8 @@ function init()
 	flip_to_page("index-page");
 			// Show the main page
 
-//	ItemCache.scan_cache();
+	index_page.feed_box.innerHTML = "<p>Loading feeds&hellip;</p>";
 
-	feed_box.innerHTML = "<p>Loading feeds&hellip;</p>";
-
-//	feeds = CacheManager.get_feeds(
-//		function(value) {
-//			feeds = value;
-//			display_feeds();
-//		});
 	display_feeds(null);
 	cm.get_feeds(display_feeds);
 
@@ -97,7 +90,7 @@ function init()
 
 function display_feeds(feeds)
 {
-	/* Make a UL of feeds, and add it to feed_box. */
+	/* Make a UL of feeds, and add it to index_page.feed_box. */
 	var str = "<ol class=\"feed-list\">";
 
 	if (feeds == undefined || feeds == null)
@@ -106,12 +99,20 @@ function display_feeds(feeds)
 	if (feeds.length == 0)
 	{
 		// XXX - Ought to do something smart.
-		feed_box.innerHTML = "<p>Waiting for feeds to show up</p>";
+
+		// XXX - There are several ways feeds could be the
+		// empty list: 1) we're just starting up, with no
+		// cached feeds, and waiting for data from the server.
+		// 2) The user hasn't subscribed to any feeds.
+		// Distinguish between these two cases and display an
+		// appropriate message.
+		index_page.feed_box.innerHTML = "<p>Waiting for feeds to show up</p>";
 		return;
 	}
 
-	// XXX - Sort feeds
-//	feeds.sort(function(a,b){return a.id - b.id});
+	// Sort feeds by title
+	// XXX - Ought to be smarter: "The Foo" and "A Foo" get sorted
+	// under T and A, respectively, instead of under F.
 	feeds.sort(function(a,b) {
 			if (a.title == b.title) return 0;
 			if (a.title <  b.title) return -1;
@@ -128,7 +129,7 @@ function display_feeds(feeds)
 		str += feed_entry_tmpl.expand(f);
 	}
 	str += "</ol>";
-	feed_box.innerHTML = str;
+	index_page.feed_box.innerHTML = str;
 }
 
 function get_feed_by_id(id, feed_list)
@@ -145,15 +146,7 @@ function show_feed(id)
 {
 	var feed;
 
-debug("showing feed "+id);
-//	for (var i = 0; i < cm.feeds.length; i++)
-//	{
-//		if (cm.feeds[i].id == id)
-//		{
-//			feed = cm.feeds[i];
-//			break;
-//		}
-//	}
+//debug("showing feed "+id);
 	feed = cm.feeds[id];
 	// XXX - Is it safe to assume that 'feed' is set?
 
@@ -200,35 +193,61 @@ debug("showing feed "+id);
 	flip_to_page('feed-page');
 
 	// XXX - Get articles from local cache
-	show_first_item();
+	show_first_item(null);
+	cm.get_items(current_feed_id, show_first_item);
 
 	// XXX - Get latest articles from the server
 }
 
-function show_first_item()
+// XXX - This shouldn't be "show_first_item", but "show_items", since
+// we want to show the list of what's available.
+function show_first_item(items)
 {
 	// XXX - Find the first item in this feed
-	var feed_items;
+	var feed_items = cm.items;
 
-	feed_items = cm.get_items(current_feed_id, new_items_callback);
-var str = "Got cached items: ";
-for (var i in feed_items)
-{
-//str += "["+feed_items[i].title+"] ";
-debug("Cached item: "+feed_items[i].title);
-}
-//debug(str);
+//	feed_items = cm.get_items(current_feed_id, new_items_callback);
+//var str = "Got cached items: ";
+//for (var i in feed_items)
+//{
+////str += "["+feed_items[i].title+"] ";
+//debug("Cached item: "+feed_items[i].title);
+//}
+////debug(str);
+
+	// XXX - Sort feed_items by newest-first.
+	// XXX - Delete read items, if necessary.
 
 	// XXX - Fill in its contents in the feed page.
+	var thelist = '<ol class="item-list">';
+	for (var i in feed_items)
+	{
+		item = feed_items[i];
+
+		// XXX - This next bit is a hack. Clean it up
+		if (item.feed_id != current_feed_id)
+			continue;
+		if (item.summary == undefined)
+		{
+			item = JSON.parse(localStorage["item/"+item.id]);
+		}
+
+		thelist += item_entry_tmpl.expand(item);
+	}
+	thelist += "</ul>";
+
+	// XXX - This should be cached in feed_page.
+	var art_list_box = document.getElementById("articles");
+	art_list_box.innerHTML = thelist;
 }
 
 function new_items_callback(feed_id, items)
 {
-debug("New items have arrived in feed "+feed_id);
-for (var i in items)
-{
-debug("New item: "+items[i].title);
-}
+//debug("New items have arrived in feed "+feed_id);
+//for (var i in items)
+//{
+//debug("New item: "+items[i].title);
+//}
 }
 
 function foo()
