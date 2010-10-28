@@ -102,6 +102,7 @@ htdocs/skins/wings/js/ItemCache.js
 htdocs/skins/wings/js/Template.js
 htdocs/skins/wings/js/classes.js
 htdocs/skins/wings/js/debug.js
+htdocs/skins/wings/js/load_module.js
 htdocs/skins/wings/js/xhr.js
 htdocs/skins/wings/style.css
 htdocs/skins/wings/wings.js
