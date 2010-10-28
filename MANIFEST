@@ -130,7 +130,6 @@ plugins/no-style.php
 plugins/origlink.php
 plugins/pheedo-ads.php
 plugins/slashdot.php
-plugins/thumbnail.php
 plugins/wordpress.php
 plugins/xml-content.php
 plugins/xml-dc.php
