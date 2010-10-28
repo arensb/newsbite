@@ -245,7 +245,6 @@ CacheManager.prototype.get_items = function(feed_id, callback)
 
 CacheManager._get_items_callback = function(cm, value, callback)
 {
-debug("Inside _get_items_callback, cm == "+cm);
 
 	for (var i = 0; i < value.items.length; i++)
 	{
@@ -254,10 +253,8 @@ debug("Inside _get_items_callback, cm == "+cm);
 		// XXX - Update entries in cm.items
 		if (cm.items[item.id])
 		{
-debug("Updating item "+item.id);
 			// XXX - Do something smart
 		} else {
-debug("New item "+item.id);
 			// XXX - This is a new item. Remember it
 			cm.items[item.id] =
 				{
