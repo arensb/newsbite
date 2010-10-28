@@ -83,3 +83,10 @@ a.feed-name:hover {
 }
 
 /* Article page: contents of an article */
+#article-page #article-summary {
+	outline:		1px solid red;
+}
+
+#article-page #article-content {
+	outline:		1px solid blue;
+}

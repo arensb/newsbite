@@ -27,7 +27,7 @@ var feed_entry_tmpl = new Template(
 "<li><a class=\"feed-name\" onclick=\"show_feed(@id@)\">@id@: @title@</a> (@num_unread@)</li>"
 );
 var item_entry_tmpl = new Template(
-"<li>@id@: @title@</li>"
+"<li><a class=\"article-title\" onclick=\"show_item(@id@)\">@id@: @title@</a></li>"
 );
 
 document.addEventListener("DOMContentLoaded", init, false);
@@ -61,6 +61,13 @@ function init()
 
 	/* XXX - Initialize the feed page */
 	/* XXX - Initialize the article page */
+	var page = find_page("article-page");
+	article_page.h1_box = page.getElementsByTagName("h1")[0];
+	article_page.author_box = document.getElementById("author-name");
+	article_page.pubdate_box = document.getElementById("article-pubdate");
+	article_page.lastupdate_box = document.getElementById("article-lastupdate");
+	article_page.summary_box = document.getElementById("article-summary");
+	article_page.content_box = document.getElementById("article-content");
 
 	// XXX - Perhaps each page should be an object with its own
 	// initialization function and whatnot?
@@ -222,7 +229,7 @@ function show_first_item(items)
 	var thelist = '<ol class="item-list">';
 	for (var i in feed_items)
 	{
-		item = feed_items[i];
+		var item = feed_items[i];
 
 		// XXX - This next bit is a hack. Clean it up
 		if (item.feed_id != current_feed_id)
@@ -248,6 +255,31 @@ function new_items_callback(feed_id, items)
 //{
 //debug("New item: "+items[i].title);
 //}
+}
+
+function show_item(id)
+{
+debug("Inside show_item("+id+")");
+	var item = JSON.parse(localStorage["item/"+id]);
+		// XXX - Probably shouldn't suck stuff out of localStorage
+		// quite so directly.
+
+	// XXX - Initialize the feed page stuff
+
+	article_page.h1_box.innerHTML = item.title;
+	article_page.author_box.innerHTML = item.author;
+	article_page.pubdate_box.innerHTML = item.pub_date;
+	article_page.lastupdate_box.innerHTML = item.last_update;
+	if (item.summary == "")
+		article_page.summary_box.innerHTML = "No summary";
+	else
+		article_page.summary_box.innerHTML = item.summary;
+	if (item.content == "")
+		article_page.content_box.innerHTML = "No content";
+	else
+		article_page.content_box.innerHTML = item.content;
+
+	flip_to_page("article-page");
 }
 
 function foo()

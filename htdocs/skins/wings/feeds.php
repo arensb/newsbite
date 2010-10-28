@@ -106,6 +106,16 @@ with this skin.</p>
 <h1>Article title</h1>
 <a href="javascript:flip_to_page('feed-page')">Feed list</a> |
 <a href="javascript:flip_to_page('index-page')">Index</a>
+
+<div>
+<p>Author: <span id="author-name"></span></p>
+<p>Pub date: <span id="article-pubdate"></span></p>
+<p>Last update: <span id="article-lastupdate"></span></p>
+</div>
+
+<div id="article-summary"></div>
+<div id="article-content"></div>
+
 </div><!-- End of article page -->
 
 <div class="page" id="tool-page">
