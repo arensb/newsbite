@@ -12,6 +12,9 @@
  */
 //define(HTMLPURIFIER_LIB, "/folks/arensb/proj/newsbite/HTMLPurifier/htmlpurifier-4.1.1-lite/library");
 
+# XXX - Should accept a base URL with which to expand relative URLs.
+# See %URI.Base and %URI.MakeAbsolute.
+
 if (!defined('HTMLPURIFIER_LIB'))
 	# We don't have HTMLPurifier. Abort.
 	return;
