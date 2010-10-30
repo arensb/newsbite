@@ -153,7 +153,6 @@ function show_feed(id)
 {
 	var feed;
 
-//debug("showing feed "+id);
 	feed = cm.feeds[id];
 	// XXX - Is it safe to assume that 'feed' is set?
 
@@ -200,27 +199,16 @@ function show_feed(id)
 	flip_to_page('feed-page');
 
 	// XXX - Get articles from local cache
-	show_first_item(null);
-	cm.get_items(current_feed_id, show_first_item);
+	show_items(null);
+	cm.get_items(current_feed_id, show_items);
 
 	// XXX - Get latest articles from the server
 }
 
-// XXX - This shouldn't be "show_first_item", but "show_items", since
-// we want to show the list of what's available.
-function show_first_item(items)
+function show_items(items)
 {
 	// XXX - Find the first item in this feed
 	var feed_items = cm.items;
-
-//	feed_items = cm.get_items(current_feed_id, new_items_callback);
-//var str = "Got cached items: ";
-//for (var i in feed_items)
-//{
-////str += "["+feed_items[i].title+"] ";
-//debug("Cached item: "+feed_items[i].title);
-//}
-////debug(str);
 
 	// XXX - Sort feed_items by newest-first.
 	// XXX - Delete read items, if necessary.
@@ -239,6 +227,9 @@ function show_first_item(items)
 			item = JSON.parse(localStorage["item/"+item.id]);
 		}
 
+		if (item.title == null ||
+		    item.title.match(/^\s*$/))
+			item.title = "[no title]";
 		thelist += item_entry_tmpl.expand(item);
 	}
 	thelist += "</ul>";
@@ -259,7 +250,7 @@ function new_items_callback(feed_id, items)
 
 function show_item(id)
 {
-debug("Inside show_item("+id+")");
+//debug("Inside show_item("+id+")");
 	var item = JSON.parse(localStorage["item/"+id]);
 		// XXX - Probably shouldn't suck stuff out of localStorage
 		// quite so directly.
