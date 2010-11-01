@@ -1,3 +1,8 @@
+- Bug: When wings loads an article with images, the images don't get
+  loaded.
+	Only on iPod, iPad. Firefox, Safari, Chrome work right.
+	Hm. Now iPod and iPad work right.
+- Bug: wings: when article doesn't have title, displays a blank line.
 - Bug?: There are some old articles in the database. Why aren't they
   being cleaned out properly?
 	db_update_feed() only cleans out whichever feed it was called
@@ -18,6 +23,10 @@
   all; after which, articles without any text.
 	Find an article with summary, but no body. 'C' to collapse all,
   then 'E' to expand all. Summary doesn't show up.
+- fancy/view.php, fancy/item.php: Escape URLs with
+	htmlchars($url)
+  xmllint complains about "x=1&y=2" in URLs. It really prefers
+  "x=1&amp;y=2".
 - view.php: should get dates and times as Unix time_ts, not raw MySQL
   strings.
 	See
@@ -35,6 +44,21 @@
   lib/database.inc, they're in Unix format (be sure to check for
   "select *"). Then, see which functions call the lib/database.inc
   functions, what calls those functions, and so on.
+- wings: should have a popup box at the top to display notifications:
+  getting feeds, gone offline, gone online
+- wings: should behave differently when on- and off-line.
+	Don't bother 
+- wings: Buttons to move up, down in the list.
+	Should distinguish between "mark this as read and move on" and
+  "go to the next item without marking this one as read".
+	When marking article as read, remove its entry from local
+  storage? Or wait for garbage collection?
+- wings: scroll past the bottom?
+	Is it possible to attach an "on-finger-up" event handler, such
+  that if the user has dragged the page past the bottom of the screen,
+  it loads the next item in the feed?
+- wings: the page divs should go all the way to the top. This might help:
+	http://www.communitymx.com/content/article.cfm?cid=BAD95
 - plugins/xml-media.php:
 	<media:group> indicates a group of <media:content> items that
   all represent the same thing, in one form or another.
@@ -90,6 +114,10 @@
   i.e., with a space at the beginning of the line.
 	A quick and dirty hack would be to use
 	cpp -P -o - manifest.h | sed 's/^ #/#/' > manifest
+
+	Brian finds that one can also just use
+	## This is a comment
+  which goes through unchanged.
 - Mobile app: is it possible to interrupt an update?
 	swapCache() updates the cache (switches to the most recent
   application cache). However, it doesn't reload resources from the
