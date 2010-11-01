@@ -18,6 +18,10 @@ div.page {
 }
 
 /* Initially, only the index page is visible */
+#index-page {
+	background-color:	cyan;
+}
+
 div.page#index-page {
 	display:		block;
 }
@@ -57,6 +61,9 @@ a.feed-name:hover {
 }
 
 /* Feed page: contents of a single feed */
+#feed-page {
+	background-color:	pink;
+}
 
 /* By default, don't show either the subtitle or the description.
  * They'll be turned on by hand if they exist.
@@ -82,11 +89,24 @@ a.feed-name:hover {
 	background-color:	yellow;
 }
 
+#feed-page #articles li {
+	background-color:	white;
+}
+
 /* Article page: contents of an article */
+#article-page #article-summary,
+#article-page #article-content {
+	background-color:	white;
+	padding-left:		0.5em;
+	padding-right:		0.5em;
+}
+
 #article-page #article-summary {
 	outline:		1px solid red;
+	display:		block;
 }
 
 #article-page #article-content {
 	outline:		1px solid blue;
+/*	display:		none;*/
 }
