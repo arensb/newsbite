@@ -227,6 +227,7 @@ function show_items(items)
 			item = JSON.parse(localStorage["item/"+item.id]);
 		}
 
+		// Make sure the item has a title that can be clicked
 		if (item.title == null ||
 		    item.title.match(/^\s*$/))
 			item.title = "[no title]";
