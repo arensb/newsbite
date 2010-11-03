@@ -106,6 +106,8 @@ with this skin.</p>
 
 <div class="page" id="article-page">
 <!-- Article page shows the contents of a single article -->
+<!-- XXX - Need link to article on the web -->
+<!-- XXX - Link to earlier, later article -->
 <h1>Article title</h1>
 <a href="javascript:flip_to_page('feed-page')">Feed list</a> |
 <a href="javascript:flip_to_page('index-page')">Index</a>
