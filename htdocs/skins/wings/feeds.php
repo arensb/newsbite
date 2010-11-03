@@ -64,6 +64,9 @@ switch ($skin_vars['mobile'])
 <meta name="apple-mobile-web-app-status-bar-style" content="black" />
 </head>
 <body>
+<div id="status-bar">
+<span id="popup-status" class="hidden">Here is some status</span>
+</div>
 
 <div class="page-list" id="page-list">
 <div class="page" id="index-page">

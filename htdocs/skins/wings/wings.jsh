@@ -19,6 +19,7 @@
 function debug() { }
 function clrdebug() { }
 #endif	// DEBUG
+#include "js/classes.js"
 #include "js/Template.js"
 //#include "js/ItemCache.js"
 #include "js/CacheManager.js"
@@ -39,18 +40,27 @@ var current_page;	// Currently-visible page
 var current_feed_id;	// The ID of the feed we're currently reading
 var current_item_id;	// The ID of the item currently displayed
 
+/* Data pertaining to the index page */
 var index_page = {
 };
 
+/* Data pertaining to the feed page */
 var feed_page = {
 };
 
+/* Data pertaining to the article page */
 var article_page = {
 }
+
+var status_popup = {
+};
 
 function init()
 {
 	cm = new CacheManager;
+
+	/* Get the status popup */
+	status_popup.box = document.getElementById("popup-status");
 
 	/* Get the list of available pages */
 	pages = document.getElementById("page-list").
@@ -74,6 +84,8 @@ function init()
 
 	flip_to_page("index-page");
 			// Show the main page
+//status_msg("Initialized the DOM", 3000);
+//setTimeout(function(){status_msg("Here's another message!", 1000)}, 1000);;
 
 	index_page.feed_box.innerHTML = "<p>Loading feeds&hellip;</p>";
 
@@ -314,4 +326,31 @@ function find_page(name)
 	}
 
 	return null;
+}
+
+function status_msg(msg, duration)
+{
+	/* Set default timeout */
+	if (duration == null)
+		// XXX - Should set a timeout based on the length of the
+		// string.
+		duration = 1000;
+
+	/* Display the message */
+	status_popup.box.innerHTML = msg;
+	replace_class(status_popup.box, "hidden", "active");
+
+	/* Set a timeout to hide the popup box after the duration
+	 * expires
+	 */
+	if (status_popup.timer != null)
+		// Cancel any previous alarm
+		clearTimeout(status_popup.timer);
+
+	status_popup.timer = setTimeout(hide_status_msg, duration);
+}
+
+function hide_status_msg()
+{
+	replace_class(status_popup.box, "active", "hidden");
 }
