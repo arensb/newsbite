@@ -11,6 +11,42 @@ body h1 {
 	text-align:		center;
 }
 
+/* Bar at the top that holds the popup status message */
+#status-bar {
+	position:		absolute;
+	top:			0px;
+	left:			0px;
+	width:			100%;
+	text-align:		center;
+	padding-top:		0.5em;
+	padding-bottom:		0.5em;
+		/* NB: Must match #popup-status padding,
+		 * for things to align properly.
+		 */
+}
+
+/* Box displaying the status message */
+#popup-status {
+	background-color:	rgba(0, 0, 0, 0.75);
+	color:			white;
+	padding:		0.5em;
+
+	-moz-border-radius-bottomleft:		0.5em;
+	-moz-border-radius-bottomright:		0.5em;
+	-webkit-border-bottom-left-radius:	0.5em;
+	-webkit-border-bottom-right-radius:	0.5em;
+
+	font-family:		Helvetica, sans-serif;
+}
+
+#popup-status.active {
+	display:		block;
+}
+
+#popup-status.hidden {
+	display:		none;
+}
+
 /* Pages */
 /* By default, pages are hidden */
 div.page {
