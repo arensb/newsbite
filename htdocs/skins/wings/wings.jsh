@@ -79,13 +79,18 @@ function init()
 	article_page.summary_box = document.getElementById("article-summary");
 	article_page.content_box = document.getElementById("article-content");
 
-	// XXX - Perhaps each page should be an object with its own
-	// initialization function and whatnot?
+	/* Listen for events saying we've gone on/offline */
+	window.addEventListener("offline",
+				function() { status_msg("Offline", null) },
+				false)
+	window.addEventListener("online",
+				function() { status_msg("Online", null) },
+				false)
 
 	flip_to_page("index-page");
 			// Show the main page
 //status_msg("Initialized the DOM", 3000);
-//setTimeout(function(){status_msg("Here's another message!", 1000)}, 1000);;
+//setTimeout(function(){status_msg("Here's another message!", 1000)}, 4000);;
 
 	index_page.feed_box.innerHTML = "<p>Loading feeds&hellip;</p>";
 
@@ -267,6 +272,10 @@ function show_item(id)
 	var item = JSON.parse(localStorage["item/"+id]);
 		// XXX - Probably shouldn't suck stuff out of localStorage
 		// quite so directly.
+
+	if (item.title == null ||
+	    item.title.match(/^\s*$/))
+		item.title = "[no title]";
 
 	// XXX - Initialize the feed page stuff
 
