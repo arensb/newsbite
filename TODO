@@ -2,7 +2,6 @@
   loaded.
 	Only on iPod, iPad. Firefox, Safari, Chrome work right.
 	Hm. Now iPod and iPad work right.
-- Bug: wings: when article doesn't have title, displays a blank line.
 - Bug?: There are some old articles in the database. Why aren't they
   being cleaned out properly?
 	db_update_feed() only cleans out whichever feed it was called

@@ -39,12 +39,35 @@ body h1 {
 	font-family:		Helvetica, sans-serif;
 }
 
+/* XXX - Should probably put this transition-related stuff in a webkit-only
+ * CSS file.
+ */
 #popup-status.active {
-	display:		block;
+	display:		inline;
+	opacity:		1.0;
+	z-index:		10;
 }
 
 #popup-status.hidden {
-	display:		none;
+	z-index:		-1;
+/*	display:		none;*/
+	opacity:		0;
+	height:			0px;
+
+	/* Define two transitions when this element becomes hidden:
+	 * opacity: wait 0 sec, then transition over 1.5sec.
+	 * z-index: wait 1.5sec, then transition over 0sec.
+	 */
+	/* XXX - Just for cleanliness's sake, it'd be nice to set
+	 * "display: none", but that messes up the animation.
+	 * But we can add a listener that kicks in when the transition is
+	 * done:
+	 * box.addEventListener( 'webkitTransitionEnd', function( event ) { alert( "Finished transition!" ); }, false );
+	 * See http://developer.apple.com/library/safari/#documentation/InternetWeb/Conceptual/SafariVisualEffectsProgGuide/Transitions/Transitions.html#//apple_ref/doc/uid/TP40008032-CH4-SW1
+	 */
+	-webkit-transition-property:	opacity, z-index;
+	-webkit-transition-duration:	1.5s, 0;
+	-webkit-transition-delay:	0, 1.5s;
 }
 
 /* Pages */
