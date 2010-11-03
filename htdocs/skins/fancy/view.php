@@ -70,7 +70,10 @@ if (isset($mobile_css))
 if ($feed['url'] == "")
 	echo htmlspecialchars($feed['title']);
 else
-	echo "<a href=\"$feed[url]\">", htmlspecialchars($feed['title']),
+	echo "<a href=\"",
+		htmlspecialchars($feed['url']),
+		"\">",
+		htmlspecialchars($feed['title']),
 		"</a>";
 ?></h1>
 <?if ($feed['subtitle'] != ""):?>

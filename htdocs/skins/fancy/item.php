@@ -47,13 +47,17 @@ if ($item['title'] == "")
 	if ($item['url'] == "")
 		echo $item['title'];
 	else
-		echo "<a href=\"$item[url]\">$item[title]</a>";
+		echo "<a href=\"",
+			htmlspecialchars($item['url']),
+			"\">",
+			htmlspecialchars($item['title']),
+			"</a>";
 ?>
         </h3>
 <?	// Link to original site
         if ($skin_vars['feeds'] != ""): ?>
           <h3 class="feed-title">
-            <a href="<?=$skin_vars['feeds'][$item['feed_id']]['url']?>">
+            <a href="<?=htmlspecialchars($skin_vars['feeds'][$item['feed_id']]['url'])?>">
               <?=$skin_vars['feeds'][$item['feed_id']]['title']?>
             </a>
           </h3>
@@ -159,15 +163,15 @@ if ($item['summary'] == "")
 	    $item['content'] == "" &&
 	    $item['url'] != ""):
 ?>
-            <li><a href="<?=$item['url']?>">Read more</a></li>
+            <li><a href="<?=htmlspecialchars($item['url'])?>">Read more</a></li>
 <?	endif;
 	if (isset($item['comment_url'])): 
 ?>
-            <li><a href="<?=$item['comment_url']?>">Comments</a></li>
+            <li><a href="<?=htmlspecialchars($item['comment_url'])?>">Comments</a></li>
 <?	endif;
 	if (isset($item['comment_rss'])):
 ?>
-            <li><a href="<?=$item['comment_rss']?>">(feed)</a></li>
+            <li><a href="<?=htmlspecialchars($item['comment_rss'])?>">(feed)</a></li>
 <?	endif ?>
         </ul>
       </td>
