@@ -139,7 +139,9 @@ function display_feeds(feeds)
 	// XXX - Ought to be smarter: "The Foo" and "A Foo" get sorted
 	// under T and A, respectively, instead of under F.
 	feeds.sort(function(a,b) {
-			if (a.title == b.title) return 0;
+			if (a.title == b.title) return  0;
+			if (a.title == null)	return  1;
+			if (b.title == null)	return -1;
 			if (a.title <  b.title) return -1;
 			return 1;
 		});
@@ -151,6 +153,8 @@ function display_feeds(feeds)
 		// Ignore the inactive feeds
 		if (!f.active)
 			continue;
+		if (f.title == null || f.title == "")
+			f.title = "[no title]";
 		str += feed_entry_tmpl.expand(f);
 	}
 	str += "</ol>";
