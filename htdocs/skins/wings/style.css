@@ -76,13 +76,12 @@ div.page {
 	display:		none;
 }
 
-/* Initially, only the index page is visible */
-#index-page {
-	background-color:	cyan;
+div.page.visible {
+	display:		block;
 }
 
-div.page#index-page {
-	display:		block;
+#index-page {
+	background-color:	cyan;
 }
 
 /* Index page: list of feeds */
