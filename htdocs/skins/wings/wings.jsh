@@ -88,6 +88,7 @@ function init()
 				false)
 
 	flip_to_page("index-page");
+//setTimeout(function(){window.scrollTo(0, 20)}, 1);
 			// Show the main page
 //status_msg("Initialized the DOM", 3000);
 //setTimeout(function(){status_msg("Here's another message!", 1000)}, 4000);;
@@ -283,11 +284,13 @@ function show_item(id)
 	article_page.author_box.innerHTML = item.author;
 	article_page.pubdate_box.innerHTML = item.pub_date;
 	article_page.lastupdate_box.innerHTML = item.last_update;
-	if (item.summary == "")
+	if (item.summary == null ||
+	    item.summary == "")
 		article_page.summary_box.innerHTML = "No summary";
 	else
 		article_page.summary_box.innerHTML = item.summary;
-	if (item.content == "")
+	if (item.content == null ||
+	    item.content == "")
 		article_page.content_box.innerHTML = "No content";
 	else
 		article_page.content_box.innerHTML = item.content;
@@ -308,14 +311,54 @@ function foo()
  */
 function flip_to_page(page)
 {
+	/* Remember the current scroll position */
+	// XXX - Actually, memorizing the position should only work one
+	// way: if we're flipping forward, remember the old page's
+	// position, then return to it when flipping backward.
+	// But when flipping forward, don't scroll to the old position.
+	// Otherwise, might:
+	//	- flip from feed to a long article
+	//	- get to the bottom of the article
+	//	- flip back to the feed page
+	//	- flip forward to a second long article
+	//	- wind up in the middle of the second article
+	if (current_page != undefined)
+	{
+		current_page.x_offset = window.pageXOffset;
+		current_page.y_offset = window.pageYOffset;
+	}
+debug("page offset: x: "+window.pageXOffset+", y: "+window.pageYOffset);
+
+	/* Go through the list of pages. Add the "visible" class to
+	 * the page we're flipping to, and remove it from all other
+	 * pages.
+	 */
 	for (var i = 0; i < pages.length; i++)
 	{
 		var p = pages[i];
 		if (p.id == page)
-			p.style.display = "block";
-		else
-			p.style.display = "none";
+		{
+			current_page = p;
+			add_class(p, "visible");
+		} else
+			remove_class(p, "visible");
 	}
+
+	/* Scroll to the previous vertical position on the current page */
+	if (current_page.x_offset != null &&
+	    current_page.y_offset != null)
+
+// XXX - It may be the case that in Mobile Safari, need to wait until
+// the screen has been drawn before scrolling it. Hence the
+// setTimeout, which delays the scrolling until other things have had
+// a chance to run.
+{setTimeout(function(){
+//	debug("scrolling back to x: "+current_page.x_offset+", y: "+current_page.y_offset);
+	window.scrollTo(current_page.x_offset,
+				current_page.y_offset);
+	},
+	1);
+}
 }
 
 /* find_page
