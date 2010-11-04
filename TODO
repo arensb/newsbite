@@ -1,3 +1,9 @@
+- Bug: wings doesn't remember position in page correctly.
+	Scroll down to one of the last feeds in the index. Pick a
+  feed. Click on "Index" to go back. It returns to the top of the
+  index page, not to the last position.
+	flip_to_page() should remember current position, and scroll
+  down to it when returning to it.
 - Bug: When wings loads an article with images, the images don't get
   loaded.
 	Only on iPod, iPad. Firefox, Safari, Chrome work right.
@@ -22,10 +28,10 @@
   all; after which, articles without any text.
 	Find an article with summary, but no body. 'C' to collapse all,
   then 'E' to expand all. Summary doesn't show up.
-- fancy/view.php, fancy/item.php: Escape URLs with
-	htmlchars($url)
-  xmllint complains about "x=1&y=2" in URLs. It really prefers
-  "x=1&amp;y=2".
+- Standalone app: put up a spinner or something when updating cache.
+	See downspout:/folks/htdocs/app/app.js
+  Could perhaps use u256d-u2570 (probably not, though), or u2596-u259f,
+  u25d0-u25d3, u25d4-u25d7, u25dc-u25df, u25f4-u25f7
 - view.php: should get dates and times as Unix time_ts, not raw MySQL
   strings.
 	See
@@ -950,3 +956,7 @@
 	iPad
 	SunOS sun4u
 	MacPPC
+- Might be cool to make this run on a digital picture frame: generate
+  a set of images that will be cycled through by a digital picture
+  frame or screen saver.
+	Need to format multiple stories in one image, so do layout.
