@@ -12,7 +12,8 @@ $item = &$skin_vars['item'];
 $item_id = $item['id'];
 
 // Set default title
-if ($item['title'] == "")
+if ($item['title'] == "" ||
+    preg_match('/^\s*$/', $item['title']))
 	$item['title'] = "[no title]";
 
 /* XXX - Perhaps add a 'feed=<feed_id>', so we can have different colors
