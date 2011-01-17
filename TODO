@@ -28,6 +28,10 @@
   all; after which, articles without any text.
 	Find an article with summary, but no body. 'C' to collapse all,
   then 'E' to expand all. Summary doesn't show up.
+- CacheManager.js: using item ID and feed ID as key in local memory
+  seems intuitive, but I think JS interprets them as integers, and
+  assumes that it's dealing with an array. Perhaps use "f123" and
+  "i123456" to force them to be strings.
 - Standalone app: put up a spinner or something when updating cache.
 	See downspout:/folks/htdocs/app/app.js
   Could perhaps use u256d-u2570 (probably not, though), or u2596-u259f,
