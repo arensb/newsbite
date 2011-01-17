@@ -229,17 +229,39 @@ function show_feed(id)
 
 function show_items(items)
 {
+//debug("Got "+cm.items.length+" new items");
+//for (var i in cm.items)
+//{
+//if (cm.items[i] == undefined)
+//continue;
+//debug(i+": "+cm.items[i]);
+//}
+var n = 0;
+for (var i in cm.items)
+{
+//debug(i+": "+cm.items[i].feed_id+", "+cm.items[i].title);
+n++;
+}
+debug("or got "+n+" new items");
 	// XXX - Find the first item in this feed
-	var feed_items = cm.items;
+	feed_page.feed_items = cm.items;
 
 	// XXX - Sort feed_items by newest-first.
+	feed_page.feed_items.sort(function(a, b) {
+			if (a.last_update <  b.last_update)
+				return -1;
+			if (a.last_update == b.last_update)
+				return 0;
+			return 1;
+		});
+
 	// XXX - Delete read items, if necessary.
 
 	// XXX - Fill in its contents in the feed page.
 	var thelist = '<ol class="item-list">';
-	for (var i in feed_items)
+	for (var i in feed_page.feed_items)
 	{
-		var item = feed_items[i];
+		var item = feed_page.feed_items[i];
 
 		// XXX - This next bit is a hack. Clean it up
 		if (item.feed_id != current_feed_id)
@@ -264,7 +286,7 @@ function show_items(items)
 
 function new_items_callback(feed_id, items)
 {
-//debug("New items have arrived in feed "+feed_id);
+debug("New items have arrived in feed "+feed_id);
 //for (var i in items)
 //{
 //debug("New item: "+items[i].title);
@@ -302,10 +324,26 @@ function show_item(id)
 	flip_to_page("article-page");
 }
 
+// show_next_item
+// XXX - Show the next item after 'id' (earlier in time). If 'mark_read'
+// is true, mark 'id' as read.
+function show_next_item(id, mark_read)
+{
+	// XXX
+}
+
+// show_prev_item
+// XXX - Show the previous item before 'id' (later in time). If 'mark_read'
+// is true, mark 'id' as read.
+function show_prev_item(id, mark_read)
+{
+	// XXX
+}
+
 function foo()
 {
 	var items = cm.get_items(current_feed_id,
-					   null);
+					   show_items);
 }
 
 /* flip_to_page
@@ -331,7 +369,6 @@ function flip_to_page(page)
 		current_page.x_offset = window.pageXOffset;
 		current_page.y_offset = window.pageYOffset;
 	}
-debug("page offset: x: "+window.pageXOffset+", y: "+window.pageYOffset);
 
 	/* Go through the list of pages. Add the "visible" class to
 	 * the page we're flipping to, and remove it from all other
