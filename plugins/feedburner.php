@@ -15,6 +15,9 @@ function feedburner_hook($nodename, &$retval, &$context)
 	$retval = preg_replace('{<div class="feedflare">.*?</div>}s',
 			       '',
 			       $retval);
+	$retval = preg_replace('{<p><a href="http://feedads.g.doubleclick.net.*?</p>}',
+			       '',
+			       $retval);
 #echo "(feedburner) after 1: <pre>[", htmlentities($retval), "]</pre>\n";
 	$retval = preg_replace('{<img src="http://feeds\d*.feedburner.com/[^\"]*" height="1" width="1"/>\r?\n?}',
 			       '',
