@@ -815,7 +815,10 @@ function rss_element_handler(
 		    case "item":
 		    case "textInput":
 			# Clean up HTML
+# Seems useful
+#echo "Clean-html 1 ($parent) [$children]<br/>\n";
 			run_hooks("clean-html", array(&$children));
+#echo "After clean-html 1 [$children]<br/>\n";
 			$retval[$elt_name] = $children;
 			break;
 		    default:
@@ -854,7 +857,10 @@ function rss_element_handler(
 		{
 		    case "item":
 			# Clean up HTML
+# Cleans body HTML. Needed.
+#echo "Clean-html 2 [$children]<br/>\n";
 			run_hooks("clean-html", array(&$children));
+#echo "After clean-html 2 [$children]<br/>\n";
 			# Run any other required hooks on the summary
 			run_hooks("summary",
 				  array($elt_name, &$children, &$context));
@@ -887,7 +893,9 @@ function rss_element_handler(
 		{
 		    case "item":
 			# Clean up HTML
+#echo "Clean-html 3 [$children]<br/>\n";
 			run_hooks("clean-html", array(&$children));
+#echo "After clean-html 3 [$children]<br/>\n";
 			$retval['summary'] = $children;
 			break;
 		    default:
@@ -1575,7 +1583,10 @@ function atom_element_handler(
 		    case "entry":
 			// XXX - Make sure $children is a string.
 			# Clean up HTML
+# Useful.
+#echo "Clean-html 4 [$children]<br/>\n";
 			run_hooks("clean-html", array(&$children));
+#echo "After clean-html 4 [$children]<br/>\n";
 			$retval[$elt_name] = $children;
 			break;
 
@@ -1592,7 +1603,9 @@ function atom_element_handler(
 		    case "feed":
 			// XXX - Make sure $children is a string.
 			# Clean up HTML
+#echo "Clean-html 5 [$children]<br/>\n";
 			run_hooks("clean-html", array(&$children));
+#echo "After clean-html 5 [$children]<br/>\n";
 			$retval[$elt_name] = $children;
 			break;
 
@@ -1847,7 +1860,9 @@ function atom_element_handler(
 		    case "entry":
 			// XXX - Make sure $children is a string.
 			# Clean up HTML
+#echo "Clean-html 6 [$children]<br/>\n";
 			run_hooks("clean-html", array(&$children));
+#echo "After clean-html 6 [$children]<br/>\n";
 			# Run other summary-related hooks
 			run_hooks("summary",
 				  array($elt_name, &$children, &$context));
@@ -1880,7 +1895,10 @@ function atom_element_handler(
 		{
 		    case "entry":
 			# Clean up HTML
+# Clean up HTML body. Necessary.
+#echo "Clean-html 7 [$children]<br/>\n";
 			run_hooks("clean-html", array(&$children));
+#echo "After clean-html 7 [$children]<br/>\n";
 			# Run other content-related hooks
 			run_hooks("body",
 				  array($elt_name, &$children, &$context));
@@ -1969,7 +1987,9 @@ function rdf_element_handler(
 	{
 	    case "title":
 		# Clean up HTML
+#echo "Clean-html 8 [$children]<br/>\n";
 		run_hooks("clean-html", array(&$children));
+#echo "After clean-html 8 [$children]<br/>\n";
 
 		switch ($parent)
 		{
@@ -2008,7 +2028,9 @@ function rdf_element_handler(
 
 	    case "description":
 		# Clean up HTML
+#echo "Clean-html 9 [$children]<br/>\n";
 		run_hooks("clean-html", array(&$children));
+#echo "After clean-html 9 [$children]<br/>\n";
 
 		switch ($parent)
 		{
