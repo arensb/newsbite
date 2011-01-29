@@ -69,7 +69,7 @@ install::
 clean::
 	rm -rf dist
 
-check:	missing syntax-check
+test check:	missing syntax-check
 
 # Look for files missing from the manifest
 missing:
