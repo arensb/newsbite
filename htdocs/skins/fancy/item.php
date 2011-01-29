@@ -11,6 +11,19 @@
 $item = &$skin_vars['item'];
 $item_id = $item['id'];
 
+// Adjustments for mobile devices
+switch ($skin_vars['mobile'])
+{
+    case 'iPhone':
+    case 'iPad':
+	// On iPhone/iPad, open articles in a new window.
+	$title_link_attribs = ' target="new"';	# Note space
+	break;
+    default:
+	$title_link_attribs = '';
+	break;
+}
+
 // Set default title
 if ($item['title'] == "" ||
     preg_match('/^\s*$/', $item['title']))
@@ -50,7 +63,7 @@ if ($item['title'] == "" ||
 	else
 		echo "<a href=\"",
 			htmlspecialchars($item['url']),
-			"\">",
+			"\"$title_link_attribs>",
 			htmlspecialchars($item['title']),
 			"</a>";
 ?>
