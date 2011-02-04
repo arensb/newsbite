@@ -26,10 +26,17 @@ if (!$NO_AUTH_CHECK &&
 	# to avoid infinite recursion of #includes.
 	if (!isset($login_cookie))
 	{
+		// If output type is JSON, return a JSON string saying
+		// the user isn't logged in.
+		if ($_REQUEST['o'] == "json")
+		{
+			header("Content-type: text/plain; charset=utf-8");
+			echo jsonify('state',	"error",
+				     'error',	"You are not logged in.");
+			exit(0);
+		}
+
 		# XXX - Ought to allow redirect to https://...
-		// XXX - If output type is JSON, perhaps should return
-		// a JSON string saying the user isn't logged in,
-		// which would allow the app to pop up a login window.
 		redirect_to("login.php?from=" .
 			 urlencode($_SERVER['REQUEST_URI']));
 ?>
