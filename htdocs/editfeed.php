@@ -133,6 +133,9 @@ function update_feed_info($feed_id)
 		// XXX - Error-checking
 
 	/* Redirect to the feed view page */
-	redirect_to("view.php?id=$feed_id");
+	if ($new['active'])
+		redirect_to("view.php?id=$feed_id");
+	else
+		redirect_to("index.php");
 }
 ?>
