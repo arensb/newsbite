@@ -131,9 +131,6 @@ if ($mobile &&
 		$m_wund = "m.wund.com";		# Generic mobile site
 	foreach ($feed['items'] as &$i)
 	{
-		$i['url'] = preg_replace(',^http://www\.lemonde\.fr/,',
-					 'http://mobile.lemonde.fr/',
-					 $i['url']);
 		// WaPo stuff is ugly.
 		// "spf=1" is to show the full article. Leave it off
 		// to show only the first page.
@@ -163,6 +160,9 @@ if ($mobile)
 	// Other transformations that apply to iPad as well.
 	foreach ($feed['items'] as &$i)
 	{
+		$i['url'] = preg_replace(',^http://www\.lemonde\.fr/,',
+					 'http://mobile.lemonde.fr/',
+					 $i['url']);
 		$i['url'] = preg_replace(',^(http://www\.abcnews\.go\.com/.*)/story,',
 					 '\1/m/story,',
 					 $i['url']);
