@@ -28,6 +28,8 @@
   all; after which, articles without any text.
 	Find an article with summary, but no body. 'C' to collapse all,
   then 'E' to expand all. Summary doesn't show up.
+- Should the username and password be stored locally, so that the
+  cookie can be renewed automatically as needed?
 - CacheManager.js: using item ID and feed ID as key in local memory
   seems intuitive, but I think JS interprets them as integers, and
   assumes that it's dealing with an array. Perhaps use "f123" and
