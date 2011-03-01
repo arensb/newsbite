@@ -67,5 +67,5 @@ define('AUTH_COOKIE_DURATION', 87600*7);
 /* If you want to use the htmlpurifier plugin, uncomment the next line
  * and set it to where you installed the HTMLPurifier library.
  */
-//define(HTMLPURIFIER_LIB, "/path/to/htmlpurifier/library");
+//define('HTMLPURIFIER_LIB', "/path/to/htmlpurifier/library");
 ?>
