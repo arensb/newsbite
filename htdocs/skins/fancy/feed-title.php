@@ -38,3 +38,4 @@ if (!is_int($counts['read']+0))
 &nbsp;(<a href="<?=$feed['url']?>">site</a>)
 &nbsp;(<a href="<?=$feed['feed_url']?>">RSS</a>)
 </span>
+<span class="hide-details"> (<?=$counts['unread']?>)</span>
