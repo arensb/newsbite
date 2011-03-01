@@ -21,9 +21,6 @@
   to the list of feeds.
 	Perhaps when updating all, update.php should append a list of
   known feeds. If it's out of date, JS can request a full list.
-- Bug-ish: when marking a feed as inactive, get redirected back to it.
-  This is bogus.
-	Redirect to feed index.
 - Bug: in fancy skin, 'C' to collapse all, followed by 'E' to expand
   all; after which, articles without any text.
 	Find an article with summary, but no body. 'C' to collapse all,
@@ -401,6 +398,8 @@
 	4) Check the list again; http://pharyngula.org/some-post still
   doesn't exist in the database.
 - Search function: find words in feeds, titles, articles, etc.
+- Create full-text index on summary, content. Perhaps title.
+	CREATE FULLTEXT INDEX tbl_index ON tbl (col, col...);
 - Read this to make iPhone-friendly skins:
   http://developer.apple.com/safari/library/documentation/AppleApplications/Reference/SafariWebContent/OptimizingforSafarioniPhone/OptimizingforSafarioniPhone.html
 - Make updates smarter about updating when no network available.
