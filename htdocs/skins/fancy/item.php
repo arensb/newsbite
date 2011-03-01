@@ -64,7 +64,7 @@ if ($item['title'] == "" ||
 		echo "<a href=\"",
 			htmlspecialchars($item['url']),
 			"\"$title_link_attribs>",
-			htmlspecialchars($item['title']),
+			$item['title'],
 			"</a>";
 ?>
         </h3>
