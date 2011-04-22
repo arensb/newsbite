@@ -815,9 +815,9 @@ function rss_element_handler(
 		    case "item":
 		    case "textInput":
 			# Clean up HTML
-# Seems useful
+# Seems useful (or not)
 #echo "Clean-html 1 ($parent) [$children]<br/>\n";
-			run_hooks("clean-html", array(&$children));
+#			run_hooks("clean-html", array(&$children));
 #echo "After clean-html 1 [$children]<br/>\n";
 			$retval[$elt_name] = $children;
 			break;
@@ -840,8 +840,12 @@ function rss_element_handler(
 		    case "image":
 			$retval['link'] = $children;
 			break;
-		    case "channel":
 		    case "item":
+			# Give hooks a chance to clean up the link to the
+			# article.
+			run_hooks("post_link", array(&$children));
+			$retval['url'] = $children;
+		    case "channel":
 		    case "textInput":
 			$retval['url'] = $children;
 			break;
