@@ -44,8 +44,8 @@ function update_feed($feed_id, $feed = NULL)
 	 * parse it, and add it to the database.
 	 */
 	$err = _save_handle($feed_id, $feed_text);
-		// XXX - Error-handling: returns FALSE on error, or
-		// array on success
+		// Error-handling: returns FALSE on error, or array on
+		// success
 	if (!$err)
 		return array('status'	=> -1,
 			     'errmsg'	=> "_save_handle(id $feed_id) failed: $_save_handle_error"
@@ -233,7 +233,8 @@ function update_all_feeds($handler)
 							"Couldn't get content");
 				} else {
 					list($fetch_http_status,
-					     $fetch_http_error) =
+					     $fetch_http_error,
+					     $fetch_http_extra) =
 						_http_status($feed_text);
 						// XXX - Error-checking
 					if ($fetch_http_status != "200")
@@ -242,6 +243,10 @@ function update_all_feeds($handler)
 								$handle['feed']['title'],
 								"HTTP Error $fetch_http_status: $fetch_http_error");
 					} else {
+						# XXX - Check whether
+						# $fetch_http_extra is set,
+						# and if so, do something
+						# intelligent.
 						$err = _save_handle(
 							$handle['feed']['id'],
 							$feed_text);
@@ -310,6 +315,8 @@ function update_all_feeds($handler)
 	 */
 	// XXX - Can't figure out how to deal with the last handle in
 	// the code above. Hence this special addition at the end.
+	// XXX - Do we need to worry about "Location:" redirect
+	// headers at this point?
 	for ($i = 0; $i < count($pipeline); $i++)
 	{
 		if (isset($pipeline[$i]))
@@ -409,9 +416,12 @@ function _save_handle($feed_id, &$feed_text)
 		// XXX - OTOH, the error messages arguably mess up
 		// JSON output. Should this be inside a try {} block
 		// or something?
-		$fh = fopen(FEED_CACHE . "/$feed_id", "w");
-		fwrite($fh, $feed_text);
-		fclose($fh);
+		@$fh = fopen(FEED_CACHE . "/$feed_id", "w");
+		if ($fh)
+		{
+			fwrite($fh, $feed_text);
+			fclose($fh);
+		}
 	}
 
 	/* Parse the feed */
@@ -485,10 +495,15 @@ function fetch_url($url, $username = NULL, $passwd = NULL)
 		return false;
 	}
 
-	list($fetch_http_status, $fetch_http_error) = _http_status($feed_text);
+	list($fetch_http_status,
+	     $fetch_http_error,
+	     $fetch_http_extra) = _http_status($feed_text);
 	if ($fetch_http_status != "200")
 	{
-		$fetch_error = "HTTP error $fetch_http_status: $fetch_http_error";
+		// XXX - Check whether $fetch_http_extra is set and
+		// return it somehow. Perhaps accept an optional
+		// pass-by-reference argument, and write to that?
+		$fetch_error = "HTTP error $fetch_http_status in [$url]: $fetch_http_error";
 		curl_close($ch);
 		return false;
 	}
@@ -499,6 +514,9 @@ function fetch_url($url, $username = NULL, $passwd = NULL)
 
 function _http_status(&$text)
 {
+	$extra = array();	# Extra data we might return.
+				# Only the location of the redirect, so far.
+
 	/* Get the HTTP header(s), for the status code, so we can find
 	 * out whether something went wrong.
 	 * A header is a set of CR-LF-terminated lines of the form
@@ -550,9 +568,18 @@ function _http_status(&$text)
 			// caller? Just return a 3d element to the
 			// caller, which has access to the feed
 			// information and can do something about it?
+
+			if ($http_status[0] == "3" &&	# It's a 3xx status
+			    preg_match('{^Location: (.*?)\r?\n}m',
+				       $header,
+				       $match))
+			{
+				$extra["redirect"] = $match[1];
+error_log("Redirected to [$extra[redirect]]");
+			}
 		}
 	} while (substr($text, 0, 5) == "HTTP/");
 
-	return array($http_status, $http_error);
+	return array($http_status, $http_error, $extra);
 }
 ?>
