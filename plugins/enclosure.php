@@ -11,6 +11,8 @@ function enclosure_hook($nodename, &$retval, &$context)
 
 	foreach ($retval['enclosure'] as $enc)
 	{
+		$before = FALSE;	# Should enclosure come before text?
+
 #		if (preg_match(',^video/,', $enc['type']))
 #			// XXX - Embedding video seems to slow things
 #			// down. Turn it off for now.
@@ -20,15 +22,27 @@ function enclosure_hook($nodename, &$retval, &$context)
 		// audio and video, or something.
 		if (preg_match(',image/,', $enc['type']))
 		{
-			$newtext = "<hr/><img src=\"$enc[url]\"/>";
+#			$newtext = "<hr/><img src=\"$enc[url]\"/>";
+			$newtext = "<img src=\"$enc[url]\"/>\n";
+			$before = TRUE;
 		} else {
 			$newtext = "<hr/>$enc[type]: <a href=\"$enc[url]\">$enc[url]</a>";
 		}
 
 		if (isset($retval['description']))
-			$retval['description'] .= $newtext;
+		{
+			if ($before)
+				$retval['description'] = $newtext . $retval['description'];
+			else
+				$retval['description'] .= $newtext;
+		}
 		if (isset($retval['content']))
-			$retval['content'] .= $newtext;
+		{
+			if ($before)
+				$retval['content'] = $newtext . $retval['content'];
+			else
+				$retval['content'] .= $newtext;
+		}
 	}
 }
 
