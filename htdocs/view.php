@@ -163,9 +163,26 @@ if ($mobile)
 		$i['url'] = preg_replace(',^http://www\.lemonde\.fr/,',
 					 'http://mobile.lemonde.fr/',
 					 $i['url']);
-		$i['url'] = preg_replace(',^(http://www\.abcnews\.go\.com/.*)/story,',
-					 '\1/m/story,',
-					 $i['url']);
+		# ABC News URLs:
+		# Google News link:
+	  	# http://news.google.com/news/url?sa=t&fd=R&usg=AFQjCNGhqEe8eCdraXpBBGJwMHdr9LLqdA&url=http://abcnews.go.com/US/nantucket-massachusetts-mom-accused-killing-toddler-daughter-exorcism/story?id%3D13158775
+		#
+		# Plain link:
+		# http://abcnews.go.com/US/nantucket-massachusetts-mom-accused-killing-toddler-daughter-exorcism/story?id%3D13158775
+		#
+		# iPad link:
+		# http://abcnews.go.com/US/nantucket-massachusetts-mom-accused-killing-toddler-daughter-exorcism/t/story?id=13158775
+		#
+		# iPhone link:
+		# http://abcnews.go.com/m/story?id=13158775
+		if ($mobile == "iPad")
+			$i['url'] = preg_replace(',(http://abcnews\.go\.com/.*)/story,',
+						 '\1/t/story',
+						 $i['url']);
+		else
+			$i['url'] = preg_replace(',http://abcnews\.go\.com/.*/story,',
+						 'http://abcnews.go.com/m/story',
+						 $i['url']);
 
 		$i['url'] = preg_replace(',^http://(www\.)?npr\.org/templates/story/story.php?storyId=(129780261),',
 					 'http://www.npr.org/tablet/#story?storyId=\2',
