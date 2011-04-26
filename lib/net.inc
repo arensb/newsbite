@@ -243,10 +243,24 @@ function update_all_feeds($handler)
 								$handle['feed']['title'],
 								"HTTP Error $fetch_http_status: $fetch_http_error");
 					} else {
-						# XXX - Check whether
+						# Check whether
 						# $fetch_http_extra is set,
-						# and if so, do something
-						# intelligent.
+						# and if so, update the feed
+						# URL.
+						if (isset($fetch_http_extra['redirect']))
+						{
+							// XXX - The feed URL doesn't get redirected.
+
+							// XXX - This only
+							// works for "update
+							// all feeds". Need
+							// the same thing when
+							// updating a single
+							// feed.
+
+#echo "Ought to update feed_url ["; print_r($handle['feed']['feed_url']); echo "] to [$fetch_http_extra[redirect]]<br/>\n";
+							$handle['feed']['feed_url'] = $fetch_http_extra['redirect'];
+						}
 						$err = _save_handle(
 							$handle['feed']['id'],
 							$feed_text);

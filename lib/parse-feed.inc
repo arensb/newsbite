@@ -1623,12 +1623,33 @@ function atom_element_handler(
 	    case "link":
 		switch ($parent)
 		{
+		    case "channel":
+			# XXX - Could be a <link rel='self'> link inside
+			# an RSS channel.
+			switch ($attrs['rel'])
+			{
+			    case "self":
+				// XXX - Check for
+				// 'type="application/rss+xml" or
+				// equivalent?
+#echo "Found a self-link: parent [$parent]; [<pre>"; print_r($attrs); echo "</pre>]<br/>\n";
+				$retval['feed_url'] = $attrs['href'];
+				break;
+			}
+			break;
 		    case "feed":
 			switch ($attrs['rel'])
 			{
+			    case "self":
+#echo "Found a self-link: parent [$parent]; [<pre>"; print_r($attrs); echo "</pre>]<br/>\n";
 			    case "alternate":
 				// Real page for this feed
-				$retval['url'] = $attrs['href'];
+				// XXX - "self" should take precedence
+				// over "alternate".
+				// XXX - Check for
+				// 'type="application/rss+xml" or
+				// equivalent?
+				$retval['feed_url'] = $attrs['href'];
 				break;
 
 			    case "replies":
@@ -1652,15 +1673,6 @@ function atom_element_handler(
 				// Apparently this is nonstandard. In
 				// blogspot.com feeds, this points to
 				// the next 25 items. Ignore it.
-				break;
-
-			    case "self":
-				// Link to the Atom feed itself.
-				// Ignore it.
-
-				// XXX - Or perhaps ought to save it,
-				// in case the feed changes, and
-				// update the database automatically.
 				break;
 
 			    case "license":
