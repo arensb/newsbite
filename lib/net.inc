@@ -260,12 +260,15 @@ function update_all_feeds($handler)
 
 #echo "Ought to update feed_url ["; print_r($handle['feed']['feed_url']); echo "] to [$fetch_http_extra[redirect]]<br/>\n";
 							$handle['feed']['feed_url'] = $fetch_http_extra['redirect'];
+							db_update_feed($handle['feed']['id'], $handle['feed']);
 						}
+
 						$err = _save_handle(
 							$handle['feed']['id'],
 							$feed_text);
 							// XXX - Error-handling: returns FALSE
 							// on error, array on success.
+
 						// Refresh feed from database, and get article counts
 						$handle['feed'] = db_get_feed($handle['feed']['id']);
 						$counts = db_get_feed_counts($handle['feed']['id']);
@@ -276,7 +279,7 @@ function update_all_feeds($handler)
 			} else {
 				$handler->error($handle['feed']['id'],
 						$handle['feed']['title'],
-"\$err[result] == [$err[result]], curl error " .
+						"\$err[result] == [$err[result]], curl error " .
 						curl_errno($handle['ch']) .
 						": " .
 						curl_error($handle['ch']));
@@ -514,13 +517,13 @@ function fetch_url($url, $username = NULL, $passwd = NULL)
 	     $fetch_http_extra) = _http_status($feed_text);
 	if ($fetch_http_status != "200")
 	{
-		// XXX - Check whether $fetch_http_extra is set and
-		// return it somehow. Perhaps accept an optional
-		// pass-by-reference argument, and write to that?
 		$fetch_error = "HTTP error $fetch_http_status in [$url]: $fetch_http_error";
 		curl_close($ch);
 		return false;
 	}
+	// XXX - Check whether $fetch_http_extra is set and return it
+	// somehow. Perhaps accept an optional pass-by-reference
+	// argument, and write to that?
 
 	curl_close($ch);
 	return $feed_text;
