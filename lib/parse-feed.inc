@@ -1646,10 +1646,13 @@ function atom_element_handler(
 				// Real page for this feed
 				// XXX - "self" should take precedence
 				// over "alternate".
-				// XXX - Check for
-				// 'type="application/rss+xml" or
-				// equivalent?
-				$retval['feed_url'] = $attrs['href'];
+
+				// Make sure the type is correct:
+				// <link rel=alternate type=text/html ...>
+				// refers to a human-readable page.
+				if (preg_match(',^application/(rss|atom)\+xml$,',
+					       $attrs['type']))
+					$retval['feed_url'] = $attrs['href'];
 				break;
 
 			    case "replies":
