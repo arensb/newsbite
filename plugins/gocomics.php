@@ -1,5 +1,5 @@
 <?
-// XXX - This should go in a separate plugin
+// XXX - Try to make this work with the current incarnation of gocomics?
 /* gocomics_hook
  * GoComics.com feeds don't include the comic image. This hook guesses
  * the image from the feed URL, and inserts it into the body of each
@@ -65,5 +65,5 @@ function gocomics_hook($nodename, &$retval, &$context)
 	}
 }
 
-add_hook("feed", "gocomics_hook");
+#add_hook("feed", "gocomics_hook");
 ?>
