@@ -25,6 +25,7 @@
   all; after which, articles without any text.
 	Find an article with summary, but no body. 'C' to collapse all,
   then 'E' to expand all. Summary doesn't show up.
+- Figure out why some feeds show up stale when they have recent articles.
 - Should the username and password be stored locally, so that the
   cookie can be renewed automatically as needed?
 - CacheManager.js: using item ID and feed ID as key in local memory
