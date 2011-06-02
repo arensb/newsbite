@@ -19,7 +19,7 @@ require_once("hooks.inc");
  * be smart, or something): apparently it thinks that "thu" is
  * _relative_ to "11 July 2008 00:00:00 -0800". That is, if someone
  * says, on Jul 11, "let's meet on Thursday", they obviously don't
- * mean "let's meet today", they mean "let's meet in six days". So
+ * mean "let's meet yesterday", they mean "let's meet in six days". So
  * strtotime() adds six days to the date.
  *
  * This is not a bug in this code, and therefore will not be fixed.
@@ -1226,6 +1226,15 @@ function rss_element_handler(
 		switch ($parent)
 		{
 		    case "rss":
+			// Set the last_update time to either the
+			// build_time (preferred) or the pub_time
+			// (fallback), so that staleness can be
+			// computed properly.
+			if (isset($children['build_time']))
+				$children['last_update'] = $children['build_time'];
+			elseif (isset($children['pub_time']))
+				$children['last_update'] = $children['pub_time'];
+
 			// Hooks for when we've seen the entire channel
 			run_hooks("feed",
 				  array($elt_name,
