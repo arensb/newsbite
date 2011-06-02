@@ -691,10 +691,12 @@ function db_update_feed($feed_id, $feed)
 		$query = <<<EOT
 INSERT INTO	items
 		(feed_id, url, title, summary, content, author, category,
-		 comment_url, comment_rss, guid, pub_date,
-		 last_update, is_read)
-VALUES		(?, ?, ?, ?, ?, ?, ?,
-		 ?, ?, ?,
+		 comment_url, comment_rss, guid,
+		 pub_date,
+		 last_update,
+		 is_read)
+VALUES		(?,       ?,   ?,     ?,       ?,       ?,      ?,
+		 ?,           ?,           ?,
 		 IFNULL(FROM_UNIXTIME(?), NOW()),
 		 NOW(),
 		 FALSE)
