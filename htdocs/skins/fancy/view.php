@@ -36,6 +36,9 @@ switch ($skin_vars['mobile'])
     case 'iPad':
 	$mobile_css = "ipad.css";
 	break;
+    case 'Android':
+	$mobile_css = "android.css";
+	break;
     default:
 	break;
 }
@@ -56,7 +59,10 @@ if (isset($mobile_css))
 </noscript>
 <script type="text/javascript" src="skins/<?=$skin_dir?>/view.js"></script>
 <?if ($skin_vars['mobile'] == "iPhone"):?>
-<meta name="viewport" content="width = device-width, initial-scale=0.5">
+<meta name="viewport" content="width = device-width, initial-scale=0.5" />
+<?endif?>
+<?if ($skin_vars['mobile'] == "Android"):?>
+<meta name="viewport" content="width = device-width, initial-scale=1.0" />
 <?endif?>
 </head>
 <body id="view-body">
