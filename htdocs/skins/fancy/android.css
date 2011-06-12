@@ -1,0 +1,84 @@
+/* android.css
+ * Specialized settings for Android.
+ *
+ * Background images and webkit gradients slow the iPad/iPhone down
+ * considerably, and probably the same for the Droid. So try to avoid
+ * them.
+ */
+body {
+	font-size:		12pt;
+	background-color:	#8080c0;
+	background-image:	none;
+		/* Graphics slow things down */
+/*	background-repeat:	no-repeat;*/
+/*	background-attachment:	fixed;*/
+/*	color:			black;*/
+	margin-left:		0px;
+	margin-right:		0px;
+}
+
+h1 {
+	font-size		24pt;
+}
+
+.button-box {
+/*	font-size:	1pt;*/
+}
+
+.button-box input {
+	font-size:	9pt;
+	padding-left:	2px;
+	padding-right:	2px;
+	margin-left:	2px;
+	margin-right:	2px;
+}
+
+.item .item-summary,
+.item .item-content {
+	font-family:		Helvetica, sans-serif;
+}
+
+.item .item-header {
+/*	background-image:	none;*/
+		/* Graphics slow things down */
+	border-top-color:	blue;
+	border-bottom-color:	navy;
+}
+
+.item-header .item-title { font-size: 120%; }
+.item-header .feed-title { font-size: 100%; }
+
+.item-header .icon-box {
+	width:	2.5em;
+}
+
+.item .mark-read {
+	display:		none;
+}
+
+input[type="checkbox"] {
+/*	background:	yellow;
+	color:		red;*/
+	width:		1em;
+	border:		3px dashed green outset;
+	outline:	3px dashed pink outset;
+	-webkit-appearance:	checkbox;
+}
+
+input[type="checkbox"].mark-check {
+	width:			3.0em;
+	height:			3.0em;
+}
+
+input[type="submit"],
+input[type="reset"] {
+/*	font-size:		80%;*/
+}
+
+/***** items ************************************/
+blockquote {
+	border:			1px solid #c0c0c0;
+	margin-left:		0.5em;
+	margin-right:		0.5em;
+	padding-left:		0.25em;
+}

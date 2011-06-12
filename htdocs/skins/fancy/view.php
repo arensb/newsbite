@@ -17,17 +17,7 @@ $feed = &$skin_vars['feed'];
 $feed_id = $feed['id'];
 $items = &$skin_vars['items'];
 
-echo '<', '?xml version="1.0" encoding="UTF-8"?', ">\n";
-?>
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
-	"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
-<html>
-<head>
-<title>NewsBite: <?=htmlspecialchars($feed['title'])?></title>
-<link rel="stylesheet" type="text/css" href="skins/<?=$skin_dir?>/style.css" media="all" />
-<link rel="stylesheet" type="text/css" href="skins/<?=$skin_dir?>/view.css" media="all" />
-<?
-/* Include a mobile device-specific stylesheet. */
+/* Figure out which mobile device, if any, we're on */
 switch ($skin_vars['mobile'])
 {
     case 'iPhone':
@@ -42,6 +32,23 @@ switch ($skin_vars['mobile'])
     default:
 	break;
 }
+
+echo '<', '?xml version="1.0" encoding="UTF-8"?', ">\n";
+?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+	"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html>
+<head>
+<? /* Include a device-specific viewport, if necessary */
+if ($skin_vars['mobile'] == "iPhone")
+	echo '<meta name="viewport" content="width = device-width, initial-scale=0.5" />', "\n";
+elseif ($skin_vars['mobile'] == "Android")
+	echo '<meta name="viewport" content="width = device-width, initial-scale=1.0" />', "\n";
+?>
+<title>NewsBite: <?=htmlspecialchars($feed['title'])?></title>
+<!-- <link rel="stylesheet" type="text/css" href="skins/<?=$skin_dir?>/style.css" media="all" /> -->
+<link rel="stylesheet" type="text/css" href="skins/<?=$skin_dir?>/view.css" media="all" />
+<?
 if (isset($mobile_css))
 	echo "<link rel=\"stylesheet\" type=\"text/css\" href=\"skins/$skin_dir/$mobile_css\" media=\"screen\" />\n";
 ?>	  
@@ -58,12 +65,6 @@ if (isset($mobile_css))
   <link rel="stylesheet" type="text/css" href="skins/<?=$skin_dir?>/style-nojs.css" media="all" />
 </noscript>
 <script type="text/javascript" src="skins/<?=$skin_dir?>/view.js"></script>
-<?if ($skin_vars['mobile'] == "iPhone"):?>
-<meta name="viewport" content="width = device-width, initial-scale=0.5" />
-<?endif?>
-<?if ($skin_vars['mobile'] == "Android"):?>
-<meta name="viewport" content="width = device-width, initial-scale=1.0" />
-<?endif?>
 </head>
 <body id="view-body">
 
