@@ -1,3 +1,5 @@
+- Fix things to work with Android.
+	Mozilla/5.0 (Linux; U; Android 2.2; en-us; DROID2 GLOBAL Build/S273) AppleWebKit/533.1 (KHTML, like Gecko) Version/4.0 Mobile Safari/533.1
 - Bug: wings doesn't remember position in page correctly.
 	Scroll down to one of the last feeds in the index. Pick a
   feed. Click on "Index" to go back. It returns to the top of the
@@ -25,6 +27,13 @@
   all; after which, articles without any text.
 	Find an article with summary, but no body. 'C' to collapse all,
   then 'E' to expand all. Summary doesn't show up.
+- Move device recognition (iPhone/iPad/Android) to common.inc. Have it
+  set $mobile.
+	While we're at it, have 'o' be a common option for requesting
+  output style, and move output language recognition to common.inc as
+  well.
+- Perhaps just assume that any device worth developing for is going to
+  have JavaScript enabled?
 - Figure out why some feeds show up stale when they have recent articles.
 - Should the username and password be stored locally, so that the
   cookie can be renewed automatically as needed?
