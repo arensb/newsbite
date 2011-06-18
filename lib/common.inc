@@ -1,9 +1,26 @@
 <?php
 /* common.inc
  * Widely-useful functions that don't fit anywhere else.
+ * Also common startup stuff that gets done on every request.
  */
 
 require_once("config.inc");
+
+/* Try to guess whether we're viewing this on an iPhone or other
+ * mobile device.
+ */
+$mobile = false;
+if (preg_match(',Mozilla/\S+ \(iPod;,', $_SERVER['HTTP_USER_AGENT']))
+{
+	$mobile = "iPhone";
+} else if (preg_match(',Mozilla/\S+ \(iPad;,', $_SERVER['HTTP_USER_AGENT']))
+{
+	$mobile = "iPad";
+} else if (preg_match(',Mozilla/\S+ .*Android,', $_SERVER['HTTP_USER_AGENT']))
+{
+	$mobile = "Android";
+}
+else $mobile = "none";
 
 /* Check to make sure the user is properly logged in. We put this here
  * because common.php is included by every script.
