@@ -149,8 +149,10 @@ foreach ($skin_vars as $k => $v)
 ?>
 <form name="mark-items" method="post" action="markitems.php">
 <div class="button-box">
+<!--
   <input type="reset" name="clearit" value="Clear changes"/>
   <input type="submit" name="mark-all" value="Mark all as read"/>
+-->
   <input type="submit" name="doit" value="Apply changes"/>
 </div>
 <?
@@ -171,14 +173,18 @@ foreach ($items as $i)
 ?>
 
 <div class="button-box">
+<!--
   <input type="reset" name="clearit" value="Clear changes"/>
+-->
 <?
   /* When displaying read items, should this say "Mark all as unread"?
    * Should there be separate "Mark all as read" and "Mark all as
    * unread" buttons?
    */
 ?>
+<!--
   <input type="submit" name="mark-all" value="Mark all as read"/>
+-->
   <input type="submit" name="doit" value="Apply changes"/>
 </div>
 </form>
