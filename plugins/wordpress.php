@@ -10,7 +10,7 @@ function wordpress_noise_hook($nodename, &$retval, &$context)
 		return;
 #echo "wordpress before: <pre>", htmlentities($retval), "</pre>\n";
 	# Image links
-	$retval = preg_replace('{\s*<a rel="nofollow" href="http://feeds.wordpress.com/1.0/[^\"]*"><img alt="" border="0" src="http://feeds.wordpress.com/1.0/[^\"]*" /></a>}',
+	$retval = preg_replace('{\s*<a href="http://feeds.wordpress.com/1.0/[^\"]*"><img alt="" border="0" src="http://feeds.wordpress.com/1.0/[^\"]*" /></a>}',
 			       '',
 			       $retval);
 #echo "wordpress after 1: <pre>", htmlentities($retval), "</pre>\n";
