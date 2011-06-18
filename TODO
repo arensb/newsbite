@@ -27,6 +27,7 @@
   all; after which, articles without any text.
 	Find an article with summary, but no body. 'C' to collapse all,
   then 'E' to expand all. Summary doesn't show up.
+- Get rid of "Mark all as read" button?
 - Move device recognition (iPhone/iPad/Android) to common.inc. Have it
   set $mobile.
 	While we're at it, have 'o' be a common option for requesting
@@ -62,6 +63,41 @@
   lib/database.inc, they're in Unix format (be sure to check for
   "select *"). Then, see which functions call the lib/database.inc
   functions, what calls those functions, and so on.
+- Smart ordering: The system potentially has access to a lot of
+  information about reading habits:
+  - how often a given feed gets updated
+  - length of summary and content
+  - whether there are images in posts
+  - when an article is visible in the window (maybe not on mobile devices?)
+    - whether article is fully visible
+    - whether the entire article was ever shown
+  - which button was used to mark article as read (top or bottom)
+  - when an article was marked read:
+    - time since the last article was marked
+    - time of day when the article was marked
+    - day of week when the article was marked
+  - location where the article was marked
+  - keywords in the article
+    - title
+    - summary
+    - content
+    - other meta keywords
+
+	All of this could potentially be used as input to a
+  machine-learning system to figure out what I want to read, in what
+  order, and let articles bubble to the top accordingly (e.g., it'd be
+  nice if it could figure out that I want to catch up on comics; let
+  rarely-updated friend blogs bubble up to the top, and so on).
+	Problem is figuring out how to tell whether it's doing a good
+  job or not, i.e., whether I've actually read an article or not.
+	If I mark a long article as read, one second after marking the
+  previous one, then presumably that means that I didn't read it. But
+  how to tell whether I've read an article?
+- Perhaps put SVN rev in authentication cookie? That way, when the
+  back-end is updated, can run the update script or whatever needs to
+  be done.
+	Or maybe just set another cookie with the version, and check
+  that in common.inc.
 - wings: should have a popup box at the top to display notifications:
   getting feeds, gone offline, gone online
 - wings: should behave differently when on- and off-line.
