@@ -13,7 +13,7 @@ if (preg_match(',Mozilla/\S+ \(iPod;,', $_SERVER['HTTP_USER_AGENT']))
 } else if (preg_match(',Mozilla/\S+ \(iPad;,', $_SERVER['HTTP_USER_AGENT']))
 {
 	$mobile = "iPad";
-} else if (preg_match(',Mozilla/\S+ \(Linux; U; Android', $_SERVER['HTTP_USER_AGENT']))
+} else if (preg_match(',Mozilla/\S+ \(Linux; U; Android,', $_SERVER['HTTP_USER_AGENT']))
 {
 	$mobile = "Android";
 }
