@@ -9,23 +9,6 @@ require_once("hooks.inc");
 
 load_hooks(PLUGIN_DIR);
 
-/* Try to guess whether we're viewing this on an iPhone or other
- * mobile device.
- * XXX - Should this go in common.php? It should probably be at the
- * top of any page that displays output.
- */
-$mobile = false;
-if (preg_match(',Mozilla/\S+ \(iPod;,', $_SERVER['HTTP_USER_AGENT']))
-{
-	$mobile = "iPhone";
-} else if (preg_match(',Mozilla/\S+ \(iPad;,', $_SERVER['HTTP_USER_AGENT']))
-{
-	$mobile = "iPad";
-} else if (preg_match(',Mozilla/\S+ .*Android,', $_SERVER['HTTP_USER_AGENT']))
-{
-	$mobile = "Android";
-}
-
 /* See what kind of output the user wants */
 switch ($_REQUEST['o'])
 {
