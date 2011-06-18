@@ -6,7 +6,7 @@
  * them.
  */
 body {
-	font-size:		12pt;
+	font-size:		11pt;
 	background-color:	#8080c0;
 	background-image:	none;
 		/* Graphics slow things down */
@@ -15,10 +15,6 @@ body {
 /*	color:			black;*/
 	margin-left:		0px;
 	margin-right:		0px;
-}
-
-h1 {
-	font-size		24pt;
 }
 
 .button-box {
