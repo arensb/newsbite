@@ -25,6 +25,12 @@
   all; after which, articles without any text.
 	Find an article with summary, but no body. 'C' to collapse all,
   then 'E' to expand all. Summary doesn't show up.
+	This happens (at least) in articles where there's a summary,
+  but no content, e.g., DailyKos.
+- Function to add an article to a phony feed. This can be used to give
+  status reports on update, and stuff like that.
+	Can use internal-rss.php or some such to generate a bogus RSS
+  feed, or something. Or even flag them in the database.
 - Failblog (and others?) have tracking bug images that add
   significantly to load time. Add plugin to remove them.
 - Plugin API: perhaps should have a standard return status indicating
@@ -36,11 +42,8 @@
   collect statistics and see which plugins run when. In particular, we
   want to see when a plugin stops working because the feed changed the
   format of its web bugs or whatever.
-- Move device recognition (iPhone/iPad/Android) to common.inc. Have it
-  set $mobile.
-	While we're at it, have 'o' be a common option for requesting
-  output style, and move output language recognition to common.inc as
-  well.
+- Have 'o' be a common option for requesting output style, and move
+  output language recognition to common.inc as well.
 - Perhaps just assume that any device worth developing for is going to
   have JavaScript enabled?
 - Figure out why some feeds show up stale when they have recent articles.
@@ -50,6 +53,8 @@
   seems intuitive, but I think JS interprets them as integers, and
   assumes that it's dealing with an array. Perhaps use "f123" and
   "i123456" to force them to be strings.
+	Or more generally: <type>:<id>, where <type> is a string like
+  "feed" or "item", and <id> is the integer ID.
 - Standalone app: put up a spinner or something when updating cache.
 	See downspout:/folks/htdocs/app/app.js
   Could perhaps use u256d-u2570 (probably not, though), or u2596-u259f,
@@ -234,9 +239,6 @@
   In particular, "all" should be considered a group, not a special
   feed ID (though it can be considered a special group).
 - 'make install' (or 'make upgrade') should install everything.
-- Upgrade/make install should generate new server key. This forces the
-  user to re-login. And while we're at it, we can check to see whether
-  anything needs to be upgraded.
 - Delete "mobile" skin?
 	First, save all the useful experiments.
 	- orientation, for iPad/iPhone
@@ -1015,7 +1017,3 @@
 	iPad
 	SunOS sun4u
 	MacPPC
-- Might be cool to make this run on a digital picture frame: generate
-  a set of images that will be cycled through by a digital picture
-  frame or screen saver.
-	Need to format multiple stories in one image, so do layout.
