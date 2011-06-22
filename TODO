@@ -21,12 +21,6 @@
   to the list of feeds.
 	Perhaps when updating all, update.php should append a list of
   known feeds. If it's out of date, JS can request a full list.
-- Bug: in fancy skin, 'C' to collapse all, followed by 'E' to expand
-  all; after which, articles without any text.
-	Find an article with summary, but no body. 'C' to collapse all,
-  then 'E' to expand all. Summary doesn't show up.
-	This happens (at least) in articles where there's a summary,
-  but no content, e.g., DailyKos.
 - Function to add an article to a phony feed. This can be used to give
   status reports on update, and stuff like that.
 	Can use internal-rss.php or some such to generate a bogus RSS

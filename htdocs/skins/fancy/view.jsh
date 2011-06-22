@@ -424,25 +424,33 @@ function mark_item(ev)
 	elt.blur();
 }
 
-// XXX - collapse_all() and expand_all() are too simplistic:
-// can't just switch from summary to content or vice-versa, because
-// not all items have both. Need to check attr. collapsible=yes.
+/* collapse_all
+ * Collapse all collapsible items, displaying only the summary.
+ */
 function collapse_all()
 {
 	var items = document.getElementsByClassName("content-panes");
 
 	for (var i = 0, len = items.length; i < len; i++)
 	{
+		if (items[i].getAttribute("collapsible") != "yes")
+			continue;
 		set_pane(items[i], "summary");
 	}
 }
 
+/* expand_all
+ * Expand all collapsible items, displaying the content rather than the
+ * summary.
+ */
 function expand_all()
 {
 	var items = document.getElementsByClassName("content-panes");
 
 	for (var i = 0, len = items.length; i < len; i++)
 	{
+		if (items[i].getAttribute("collapsible") != "yes")
+			continue;
 		set_pane(items[i], "content");
 	}
 }
