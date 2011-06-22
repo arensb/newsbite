@@ -52,6 +52,7 @@ htdocs/skins/fancy/abort.css
 htdocs/skins/fancy/abort.php
 htdocs/skins/fancy/addfeed.css
 htdocs/skins/fancy/addfeed.php
+htdocs/skins/fancy/android.css
 htdocs/skins/fancy/blue-bg.jpg
 htdocs/skins/fancy/editfeed.css
 htdocs/skins/fancy/editfeed.php
@@ -122,6 +123,7 @@ lib/xml-output.inc
 php.ini
 plugins/ads.php
 plugins/bugs.php
+plugins/enclosure.php
 plugins/feedburner.php
 plugins/gocomics.php
 plugins/google_news.php
