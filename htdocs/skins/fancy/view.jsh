@@ -1,4 +1,4 @@
-/*						-*- JavaScript -*- */
+/*						-*- JS2 -*- */
 #if DEBUG
 #  include "js/debug.js"
 #else
@@ -424,6 +424,9 @@ function mark_item(ev)
 	elt.blur();
 }
 
+// XXX - collapse_all() and expand_all() are too simplistic:
+// can't just switch from summary to content or vice-versa, because
+// not all items have both. Need to check attr. collapsible=yes.
 function collapse_all()
 {
 	var items = document.getElementsByClassName("content-panes");
