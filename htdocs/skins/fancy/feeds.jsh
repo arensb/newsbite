@@ -167,7 +167,7 @@ debug("feed id "+l.feed_id+", state "+l.state);
 				// to use a CSS-based tooltip.
 				status_cell.innerHTML =
 					'<img src="' +
-					skin_dir + 
+					skin_dir +
 					'/Attention_niels_epting.png" title="' +
 					l.error +
 					'" alt="' +
