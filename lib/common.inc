@@ -20,7 +20,7 @@ if (preg_match(',Mozilla/\S+ \(iPod;,', $_SERVER['HTTP_USER_AGENT']))
 {
 	$mobile = "Android";
 }
-else $mobile = "none";
+else $mobile = FALSE;
 
 /* Check to make sure the user is properly logged in. We put this here
  * because common.php is included by every script.
