@@ -435,6 +435,10 @@ input[type="checkbox"].mark-check {
 	-webkit-border-bottom-right-radius:	20px;
 }
 
+#text {
+	background-color:	cyan;
+}
+
 .item-footer a {
 	/* Want links to show up against navy background */
 	color:			cyan;

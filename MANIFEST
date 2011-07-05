@@ -70,6 +70,7 @@ htdocs/skins/fancy/js/debug.js
 htdocs/skins/fancy/js/defer.js
 htdocs/skins/fancy/js/keybindings.js
 htdocs/skins/fancy/js/load_module.js
+htdocs/skins/fancy/js/status-msg.js
 htdocs/skins/fancy/js/xhr.js
 htdocs/skins/fancy/opml.css
 htdocs/skins/fancy/opml.php

@@ -1,3 +1,20 @@
+- Bug: Why does Firefox keep autocompleting username and password in
+  editfeed.php?
+- Bug: Jesus & Mo keeps redirecting back and forth. Perhaps add a
+  flag to not update the database on redirect.
+- Bug: fancy skin: when Ajax updates feeds, it doesn't notice updates
+  to the list of feeds.
+	Perhaps when updating all, update.php should append a list of
+  known feeds. If it's out of date, JS can request a full list.
+- Bug?: There are some old articles in the database. Why aren't they
+  being cleaned out properly?
+	db_update_feed() only cleans out whichever feed it was called
+  with. There's nothing to clean out all feeds, including inactive
+  ones.
+	Arguably this isn't that much of a problem with inactive
+  feeds, since the number of articles won't grow.
+	But some active feeds aren't being cleaned out either.
+  Apparently this is because the URLs are dead.
 - Bug: wings doesn't remember position in page correctly.
 	Scroll down to one of the last feeds in the index. Pick a
   feed. Click on "Index" to go back. It returns to the top of the
@@ -8,19 +25,14 @@
   loaded.
 	Only on iPod, iPad. Firefox, Safari, Chrome work right.
 	Hm. Now iPod and iPad work right.
-- Bug?: There are some old articles in the database. Why aren't they
-  being cleaned out properly?
-	db_update_feed() only cleans out whichever feed it was called
-  with. There's nothing to clean out all feeds, including inactive
-  ones.
-	Arguably this isn't that much of a problem with inactive
-  feeds, since the number of articles won't grow.
-	But some active feeds aren't being cleaned out either.
-  Apparently this is because the URLs are dead.
-- Bug: fancy skin: when Ajax updates feeds, it doesn't notice updates
-  to the list of feeds.
-	Perhaps when updating all, update.php should append a list of
-  known feeds. If it's out of date, JS can request a full list.
+- dKos text looks funny: first paragraph is indented less than
+  subsequent ones. Is this something that can be fixed?
+	It has
+		text text
+		<p>More text</p>
+		<p>yet more text</p>
+  IOW non-paragraph text isn't being indented. Should HTMLPurify clean
+  this?
 - Function to add an article to a phony feed. This can be used to give
   status reports on update, and stuff like that.
 	Can use internal-rss.php or some such to generate a bogus RSS
@@ -123,8 +135,8 @@
 - plugins/xml-media.php:
 	<media:group> indicates a group of <media:content> items that
   all represent the same thing, in one form or another.
-- Makefile: gzip all static files. If possible, allow the end-user to
-  turn this off if they don't have mod_mime turned on.
+- Makefile: gzip all static files (*.js, *.css). If possible, allow
+  the end-user to turn this off if they don't have mod_mime turned on.
 	Not sure whether this should be done by 'make dist' or 'make
   install'.
 	Perhaps easiest if one can 'make compress' after 'make
@@ -137,6 +149,10 @@
   to php.ini.
 	Don't turn on both mod_mime and zlib.output_compression, lest
   you wind up with double-gzipped output from PHP scripts.
+- Minify CSS, JS: there are various minification tools out there that
+  will strip comments, extraneous whitespace, etc. from CSS or JS
+  files.
+	Like compressing, this should be done at install time.
 - Create icon, startup images for mobile app
   http://commons.wikimedia.org/wiki/File:Newspaper_Cover.svg
   http://commons.wikimedia.org/wiki/RSS
@@ -326,6 +342,7 @@
   and start marking articles there; then the mobile device finds the
   network and sends the updates it had cached), the back-end can use
   only the latest update.
+	Perhaps add this to 'feeds' and any other tables as well?
 - It'd be nice if PLUGIN_DIR could optionally be an array.
   Unfortunately, PHP constants have to be scalars.
 - Maybe just give up on maintaining ChangeLog. Just use 'svn log -r
@@ -333,9 +350,6 @@
   year's changes.
 	Should also have a NEWS file with changes users might care
   about.
-- On iPod/iPad, perhaps item titles should open in a new window.
-- When an RSS URL gets redirected, this should cause a visible
-  warning.
 - Washington Post World feed starts with
 	<?xml version="1.0" encoding="iso-8859-1"?>
   But content is really UTF-8. Can this be fixed in a hook? Can this
@@ -412,8 +426,6 @@
 - Can Rhino be used to check JS syntax and whatnot?
   https://developer.mozilla.org/en/Rhino
 	What about profiling?
-- Firefox 2 (carrot) doesn't have getElementsByClassName.
-	Do I care? Maybe a bit.
 - Is it really worth keeping JS-specific stylesheets?
 - Try compressing JS/CSS/etc. to save bandwidth
   - Figure out how to do this with Apache
@@ -535,6 +547,11 @@
   The latter is probably more useful.
 	That way, can go through today's stuff fairly quickly, without
   having to scroll through messages you've already seen.
+	Perhaps make this a pseudo-feed (for which need support for
+  pseudo-feeds). Add a "star INT" field to the database, perhaps?
+  Don't display starred items in normal view. Having "star" be an int
+  allows defining multiple star types (to mark articles in different
+  ways).
 - Should there be a module (or something) for Twitter updates?
 - There should really be a tool for testing plugins.
 	For removing ads and such: it'd be nice to plug the XML or the

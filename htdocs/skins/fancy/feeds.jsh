@@ -13,6 +13,7 @@ function clrdebug() { }
 #include "js/keybindings.js"
 //#include "js/load_module.js"
 // XXX - Should block multiple updates from occurring in parallel.
+#include "js/status-msg.js"
 
 document.addEventListener("DOMContentLoaded", init, false);
 
