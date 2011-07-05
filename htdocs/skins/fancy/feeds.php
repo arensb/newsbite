@@ -53,6 +53,13 @@ if ($skin_vars['mobile'] == "iPhone")
 ?>
 </head>
 <body>
+<ul class="msglist" id="feed-msglist">
+<!--
+<li class="status-msg">This is a status message</li>
+<li class="status-msg">This is another status message</li>
+<li class="status-msg">This is a significantly longer status message that goes on at length, on and on and on until it wraps around and goes on much longer until it outstays its welcome.</li>
+-->
+</ul>
 
 <h1>Feeds</h1>
 

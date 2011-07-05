@@ -69,7 +69,9 @@ table#feeds tr.stale-feed {
 	display:		inline;
 }
 body {
-	background-image:	url(gray-bg.jpg)
+	background-image:	url(gray-bg.jpg);
+	margin-top:		0px;
+	margin-left:		0px;
 }
 
 .tools a {
@@ -90,4 +92,33 @@ body {
 
 .tools li:last-child {
 	padding-right:		0.3em;
+}
+
+/* Error messages and such */
+.msglist {
+	background-color:	orange;
+	width:			50%;
+	margin-top:		0px;
+	margin-left:		25%;
+	position:		absolute;
+	top:			0px;
+/*	outline:		5px solid red;*/
+	padding:		0px;
+/*	border-bottom-width:	5px;*/
+/*	border-bottom-color:	DarkSlateGray;*/
+/*	border-bottom-style:	outset;*/
+/*	-moz-border-radius-bottomleft:	5px;*/
+/*	-moz-border-radius-bottomright:	5px;*/
+}
+
+.msglist li {
+	background-color:	DarkSlateGray;
+	color:			white;
+	list-style-position:	inside;
+	list-style-type:	none;
+	border-left:		2px solid SlateGray;
+	border-bottom:		2px solid black;
+	border-right:		2px solid black;
+	padding-left:		0.5em;
+	padding-right:		0.5em;
 }
