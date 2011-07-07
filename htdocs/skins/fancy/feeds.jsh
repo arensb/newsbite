@@ -122,6 +122,8 @@ debug("line " + i + ": [" + lines[i] + "]");
 				// Ignore them. For that matter, ignore
 				// any JSON lines that aren't objects.
 				continue;
+			// XXX - Isn't there a better way to de-JSON-ify
+			// a string? JSON.parse(str)?
 			try {
 				eval("l = " + line);
 			} catch (e) {
@@ -161,6 +163,7 @@ debug("feed id "+l.feed_id+", state "+l.state);
 				title_cell.innerHTML = l.count_display;
 				break;
 			    case "error":
+				msg_add("Error in "+l.title+" ("+l.feed_id+"): "+l.error, 10000);
 				// XXX - The 'alt=' and/or 'title='
 				// means you can get error message by
 				// hovering pointer over the error
