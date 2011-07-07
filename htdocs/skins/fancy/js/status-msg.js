@@ -9,15 +9,12 @@ document.addEventListener("DOMContentLoaded", msg_init, false);
 var msg_box;		// Box where status messages go.
 function msg_init()
 {
-	// XXX - Status messages
-//	msg_box = document.getElementById("feed-msglist");
+	// Initialize status messages
 	msg_box = document.createElement("ul");
 	msg_box.setAttribute("class", "msglist");
 	msg_box.setAttribute("id", "msglist");
 	var body = document.getElementsByTagName("body")[0];
 	body.appendChild(msg_box);
-
-	msg_add("hello world");
 }
 
 /* msg_add
