@@ -1,3 +1,5 @@
+- Bug: view.php?id=all shows articles from inactive feeds.
+- Bug: HTMLPurify removes YouTube videos. Why?
 - Bug: Why does Firefox keep autocompleting username and password in
   editfeed.php?
 - Bug: Jesus & Mo keeps redirecting back and forth. Perhaps add a
@@ -437,8 +439,6 @@
   http://blogs.answersingenesis.org/blogs/ken-ham/2010/05/18/is-groupon-anti-christian/
 - Articles with only content, no summary, should also be collapsible.
 	Set the max. height
-- Add a status box that pops down from the top to give important
-  information, like when you've lost network connectivity and whatnot.
 - Use addEventListener() instead of on*=script
 - Use addEventListener("DOMContentLoaded"...) instead of "onload".
 - Bookmarklet to mark an article as read.
