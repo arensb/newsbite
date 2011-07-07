@@ -495,3 +495,27 @@ img.thumbnail {
 	margin-right:		1em;
 	margin-bottom:		1em;
 }
+
+/* Error messages and such */
+/* XXX - This is the same as in index.css, so should probably be shared */
+.msglist {
+	background-color:	orange;
+	width:			50%;
+	margin-top:		0px;
+	margin-left:		25%;
+	position:		absolute;
+	top:			0px;
+	padding:		0px;
+}
+
+.msglist li {
+	background-color:	DarkSlateGray;
+	color:			white;
+	list-style-position:	inside;
+	list-style-type:	none;
+	border-left:		2px solid SlateGray;
+	border-bottom:		2px solid black;
+	border-right:		2px solid black;
+	padding-left:		0.5em;
+	padding-right:		0.5em;
+}
