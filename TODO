@@ -1,4 +1,3 @@
-- Bug: view.php?id=all shows articles from inactive feeds.
 - Bug: HTMLPurify removes YouTube videos. Why?
 - Bug: Why does Firefox keep autocompleting username and password in
   editfeed.php?

@@ -337,7 +337,13 @@ function db_get_some_feed_items(/* varargs */)
 	}
 
 	/* Beginning of query */
-	$query = "SELECT * FROM items\n";
+	$query = <<<EOT
+SELECT	items.*
+FROM	items
+  LEFT JOIN feeds
+ON	items.feed_id = feeds.id
+
+EOT;
 
 	$conditions = array();	// All of the "WHERE x AND y AND z" conditions
 
@@ -346,8 +352,10 @@ function db_get_some_feed_items(/* varargs */)
 	// listing their IDs.
 	if (is_numeric($args['feed_id']))
 	{
-		$c = sprintf("feed_id=%d\n", $args['feed_id']);
+		$c = sprintf("items.feed_id=%d\n", $args['feed_id']);
 		array_push($conditions, $c);
+	} else {
+		array_push($conditions, "feeds.active");
 	}
 
 	/* Do we want read items, or just unread ones? */
@@ -355,7 +363,7 @@ function db_get_some_feed_items(/* varargs */)
 	// and unread items, but that's not the default behavior we
 	// want. So we really test for !($args['read'] == true)
 	if (!isset($args['read']) || !$args['read'])
-		array_push($conditions, "!is_read");
+		array_push($conditions, "!items.is_read");
 
 	/* Add selection conditions to query */
 	if (count($conditions) > 0)
@@ -367,14 +375,14 @@ function db_get_some_feed_items(/* varargs */)
 	switch ($args['order'])
 	{
 	    case "date_asc":
-		$query .= "ORDER BY last_update ASC\n";
+		$query .= "ORDER BY items.last_update ASC\n";
 		break;
 	    case "date_desc":
 	    default:
 		// XXX - This fall-through means we don't notice bogus
 		// values. Then again, we can probably trust the
 		// caller.
-		$query .= "ORDER BY last_update DESC\n";
+		$query .= "ORDER BY items.last_update DESC\n";
 		break;
 	}
 
