@@ -73,6 +73,7 @@ class json_output_handler extends feed_update_handler
 		$count_display = $skin->fetch("feed-title");
 		echo jsonify('state',	"end",
 			     'feed_id',	$feed['id'],
+			     'title', $feed['title'],
 			     'count_display',	$count_display
 			),
 			"\n";
