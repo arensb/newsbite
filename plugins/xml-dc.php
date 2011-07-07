@@ -27,6 +27,19 @@ function dc_element_handler(
 		$retval['author_name'] = $children;
 		break;
 
+	    case "date":
+		switch ($parent)
+		{
+		    case "channel":
+		    case "item":
+			$retval['pub_time'] = strtotime($children);
+			break;
+		    default:
+			// Dunno what to do with this
+			break;
+		}
+		break;
+
 	    default:
 //		echo "Warning: unknown \"dc:\" element: [$elt_name]\n";
 		break;
