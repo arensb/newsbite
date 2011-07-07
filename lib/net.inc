@@ -592,7 +592,7 @@ function _http_status(&$text)
 				       $match))
 			{
 				$extra["redirect"] = $match[1];
-error_log("Redirected to [$extra[redirect]]");
+#error_log("Redirected to [$extra[redirect]]");
 			}
 		}
 	} while (substr($text, 0, 5) == "HTTP/");
