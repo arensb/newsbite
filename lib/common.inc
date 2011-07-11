@@ -32,7 +32,7 @@ else $mobile = FALSE;
 if (!(isset($NO_AUTH_CHECK) && $NO_AUTH_CHECK) &&
     !isset($_ENV['CRON']))	# Allow me to run update.php from cron
 {
-	/* XXX - A lot of the identifiers in this section are
+	/* !!NB: A lot of the identifiers in this section are
 	 * replicated in login.php, which can lead to subtle problems.
 	 * (E.g., name of the cookie, names of the config variables,
 	 * etc.)

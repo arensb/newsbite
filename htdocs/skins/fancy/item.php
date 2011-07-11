@@ -190,6 +190,7 @@ if ($item['summary'] == "")
         </ul>
       </td>
       <td class="mark-td">
+	<span class="gplusone"><g:plusone size="small" count="true" href="<?=$item['url']?>"></g:plusone></span>
 <?      /* XXX - When showing read items, change this to "mark as unread" */ ?>
         Mark as read:&nbsp;
 <?      /* "cbb": checkbox bottom */ ?>
