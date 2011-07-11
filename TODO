@@ -1,8 +1,8 @@
+- Bug: Figure out why some feeds show up stale when they have recent articles.
 - Bug: HTMLPurify removes YouTube videos. Why?
-- Bug: Why does Firefox keep autocompleting username and password in
-  editfeed.php?
 - Bug: Jesus & Mo keeps redirecting back and forth. Perhaps add a
   flag to not update the database on redirect.
+	Or keep track of where we've been redirected and look for loops?
 - Bug: fancy skin: when Ajax updates feeds, it doesn't notice updates
   to the list of feeds.
 	Perhaps when updating all, update.php should append a list of
@@ -22,10 +22,40 @@
   index page, not to the last position.
 	flip_to_page() should remember current position, and scroll
   down to it when returning to it.
-- Bug: When wings loads an article with images, the images don't get
-  loaded.
-	Only on iPod, iPad. Firefox, Safari, Chrome work right.
-	Hm. Now iPod and iPad work right.
+- Add Google +1 button
+	http://www.google.com/intl/en/webmasters/+1/button/
+	Either in the header, or perhaps better, in the bar beneath
+  the article.
+	Make sure to set the URL for the original article.
+	Use small one in mobile skin.
+	Not sure which one looks best in regular browser. Medium?
+- Minify and compress supporting files.
+	http://code.google.com/p/minify/
+  Can run this as:
+	php-cgi /path/to/minify/min/index.php f=/path/to/foo.js > foo.js.min
+  Also compress it.
+	Question: does minifying make compression less efficient? Or
+  does it remove enough useless fluff that the less-efficient
+  compression is still worth it?
+	minify adds headers. Is this desirable?
+- Split up distribution.
+	There should really be two distros: one for hackers who want
+  the source, and one for people who want to install it.
+	The hacker distro is pretty easy: it's just all of the source
+  files and such, a copy of ~/proj/newsbite without the .svn noise.
+	For the installer distro, ought to have a number of
+  directories, for all the various directories where things can be
+  installed:
+	htdocs (must go in DocumentRoot)
+	lib (can go outside of DocumentRoot)
+	plugins
+	...
+  Ideally, should have an external config file that says where to
+  install everything, one that users can carry forward when they
+  upgrade. Also, the installer makefile shouldn't have any
+  dependendies on svn (neither should the hacker one, really).
+	Also, in the installer distro, the CSS and JS files should be
+  minified and compressed.
 - dKos text looks funny: first paragraph is indented less than
   subsequent ones. Is this something that can be fixed?
 	It has
@@ -34,12 +64,12 @@
 		<p>yet more text</p>
   IOW non-paragraph text isn't being indented. Should HTMLPurify clean
   this?
+	This happens anywhere there are paragraphs, including inside
+  <description> and inside <blockquote>
 - Function to add an article to a phony feed. This can be used to give
   status reports on update, and stuff like that.
 	Can use internal-rss.php or some such to generate a bogus RSS
   feed, or something. Or even flag them in the database.
-- Failblog (and others?) have tracking bug images that add
-  significantly to load time. Add plugin to remove them.
 - Plugin API: perhaps should have a standard return status indicating
   what happened, e.g.:
 	0 - Didn't run (conditions not met)
@@ -53,7 +83,6 @@
   output language recognition to common.inc as well.
 - Perhaps just assume that any device worth developing for is going to
   have JavaScript enabled?
-- Figure out why some feeds show up stale when they have recent articles.
 - Should the username and password be stored locally, so that the
   cookie can be renewed automatically as needed?
 - CacheManager.js: using item ID and feed ID as key in local memory
@@ -925,7 +954,8 @@
   weather conditions, Nagios alerts, etc.
 - In main view: have a button to toggle displaying feeds with no
   unread items. This could be difficult, since the color of rows is
-  set by their class, which in turn is in the .tpl file.
+  set by their class, which in turn is in the template file.
+	JQuery could help with this. Or do it manually with JavaScript.
 - Plug-in for Atheist Nexus (and others): the body of the item is
   presented as HTML, but is actually plain text, using \n\n as
   paragraph separators. Add <p>...</p> tags.
@@ -978,6 +1008,10 @@
   Firefox 3.5 or 3.6
 	Perhaps use js/load_module to load a class that'll store and
   retrieve stuff in local storage.
+	!!! The above is deprecated. It is being replaced by:
+	http://www.w3.org/TR/IndexedDB/
+  However, this isn't currently supported on any browser that I care about.
+  (Thu Jul  7 18:24:36 2011)
 - Storing data on iPhone:
   http://developer.apple.com/safari/library/documentation/AppleApplications/Reference/SafariWebContent/Client-SideStorage/Client-SideStorage.html
   Can also set up a manifest file, so that the app will download
@@ -1027,3 +1061,8 @@
 	iPad
 	SunOS sun4u
 	MacPPC
+  More generally, see
+	http://www.quirksmode.org/js/detect.html
+	http://www.w3schools.com/jsref/obj_navigator.asp
+  for detecting the browser. However, this should be avoided. Better
+  to check whether the browser has a particular feature.
