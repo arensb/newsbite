@@ -106,6 +106,7 @@ htdocs/skins/wings/js/classes.js
 htdocs/skins/wings/js/debug.js
 htdocs/skins/wings/js/load_module.js
 htdocs/skins/wings/js/xhr.js
+htdocs/skins/wings/manifest.h
 htdocs/skins/wings/style.css
 htdocs/skins/wings/wings.js
 htdocs/skins/wings/wings.jsh
