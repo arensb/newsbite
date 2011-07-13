@@ -21,14 +21,9 @@ var current_item = null;	// Current item, for keybindings and such
 
 function init()
 {
-	// XXX - Firefox 2 (carrot) doesn't have
-	// document.getElementsByClassName()
-
 	addListenerByClass("collapse-bar", "click", toggle_pane, false);
 	addListenerByClass("expand-bar", "click", toggle_pane, false);
 	addListenerByClass("mark-check", "click", mark_item, false);
-	addListenerByClass("item", "mouseover", enter_item, false);
-	addListenerByClass("item", "mouseout", exit_item, false);
 
 	// The main form, the one that holds all the items, their
 	// checkboxes, the buttons at the top and bottom, etc.
@@ -41,7 +36,18 @@ function init()
 			// XXX - Hack: just click on the button
 	bind_key("S-c", collapse_all);
 	bind_key("S-e", expand_all);
-	bind_key("d", key_mark_item);
+
+	/* On desktop, keep track of current item, and add key bindings
+	 * to navigate.
+	 */
+	if (mobile == "")
+	{
+		addListenerByClass("item", "mouseover", enter_item, false);
+		addListenerByClass("item", "mouseout", exit_item, false);
+		bind_key("d", key_mark_item);
+		// XXX - bind_key("k", move_up);
+		// XXX - bind_key("j", move_down);
+	}
 }
 
 /* addListenerByClass
@@ -466,6 +472,10 @@ function expand_all()
 	}
 }
 
+/* enter_item
+ * Called when mouse has entered an item. Highlight it and mark it as
+ * current.
+ */
 function enter_item(ev)
 {
 	var elt = ev.currentTarget;
@@ -475,6 +485,9 @@ function enter_item(ev)
 	current_item = elt;
 }
 
+/* exit_item
+ * Called when mouse has left an item. Unhighlight it.
+ */
 function exit_item(ev)
 {
 	var elt = ev.currentTarget;
@@ -484,6 +497,9 @@ function exit_item(ev)
 	current_item = null;
 }
 
+/* key_mark_item
+ * Mark the current item as read.
+ */
 function key_mark_item()
 {
 	if (current_item == null)
