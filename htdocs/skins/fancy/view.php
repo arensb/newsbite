@@ -66,8 +66,6 @@ if (isset($mobile_css))
 </noscript>
 <script type="text/javascript" src="skins/<?=$skin_dir?>/view.js"></script>
 </head>
-<!-- For Google +1 button -->
-<script type="text/javascript" src="https://apis.google.com/js/plusone.js"></script>
 <body id="view-body">
 
 <?if ($feed['image'] != ""): ?>
