@@ -17,6 +17,7 @@ document.addEventListener("DOMContentLoaded", init, false);
 var main_form;		// Form containing all the items.
 var mark_read = {};		// Hash of item_id -> is_read? values
 var mark_request = null;	// Data for marking items as read/unread
+var current_item = null;	// Current item, for keybindings and such
 
 function init()
 {
@@ -26,6 +27,8 @@ function init()
 	addListenerByClass("collapse-bar", "click", toggle_pane, false);
 	addListenerByClass("expand-bar", "click", toggle_pane, false);
 	addListenerByClass("mark-check", "click", mark_item, false);
+	addListenerByClass("item", "mouseover", enter_item, false);
+	addListenerByClass("item", "mouseout", exit_item, false);
 
 	// The main form, the one that holds all the items, their
 	// checkboxes, the buttons at the top and bottom, etc.
@@ -38,6 +41,7 @@ function init()
 			// XXX - Hack: just click on the button
 	bind_key("S-c", collapse_all);
 	bind_key("S-e", expand_all);
+	bind_key("d", key_mark_item);
 }
 
 /* addListenerByClass
@@ -334,6 +338,12 @@ function parse_flush_response(req)
  * read to unread or vice-versa.
  * 'elt' is the checkbox that was just checked by the user.
  */
+/* XXX - Need to break this up a bit: we'll want to mark itesm several
+ * ways: by clicking a checkbox, by pressing a key, and sometimes
+ * without user intervention, when the back-end storage manager
+ * realizes that an item was marked as read on another machine.
+ * Find out what all of those have in common, and factor it out.
+ */
 function mark_item(ev)
 {
 	var elt = ev.target;
@@ -454,4 +464,33 @@ function expand_all()
 			continue;
 		set_pane(items[i], "content");
 	}
+}
+
+function enter_item(ev)
+{
+	var elt = ev.currentTarget;
+	if (!is_in_class(elt, "item"))
+		return false;
+	add_class(elt, "current-item");
+	current_item = elt;
+}
+
+function exit_item(ev)
+{
+	var elt = ev.currentTarget;
+	if (!is_in_class(elt, "item"))
+		return false;
+	remove_class(elt, "current-item");
+	current_item = null;
+}
+
+function key_mark_item()
+{
+	if (current_item == null)
+		return;
+
+//	mark_item({target: current_item});
+		// XXX - This doesn't work: mark_item assumes that we've
+		// clicked on a button
+	// XXX - Advance to next item, and make it current.
 }

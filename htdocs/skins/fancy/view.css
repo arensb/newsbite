@@ -238,6 +238,11 @@ input[type="submit"] {
 	margin-bottom:		0.2em;
 }
 
+/* Currently-selected item */
+.current-item {
+	outline:		1px solid navy;
+}
+
 .item-header .feed-title {
 	font-family:		Arial, sans-serif;
 	font-size:		120%;
@@ -518,8 +523,4 @@ img.thumbnail {
 	border-right:		2px solid black;
 	padding-left:		0.5em;
 	padding-right:		0.5em;
-}
-
-.gplusone {
-	padding-right:		1em;
 }
