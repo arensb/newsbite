@@ -24,11 +24,10 @@
   down to it when returning to it.
 - Add Google +1 button
 	http://www.google.com/intl/en/webmasters/+1/button/
-	Either in the header, or perhaps better, in the bar beneath
-  the article.
-	Make sure to set the URL for the original article.
-	Use small one in mobile skin.
-	Not sure which one looks best in regular browser. Medium?
+	Problem: it seems to take a lot of time to render and such. Is
+  it worth it? Should it be optional? Is it possible to have each
+  button rendered in turn? Or am I just imagining problems that aren't
+  really there?
 - Minify and compress supporting files.
 	http://code.google.com/p/minify/
   Can run this as:
