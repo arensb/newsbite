@@ -45,6 +45,10 @@ if ($skin_vars['mobile'] == "iPhone")
 elseif ($skin_vars['mobile'] == "Android")
 	echo '<meta name="viewport" content="width = device-width, initial-scale=1.0" />', "\n";
 ?>
+<script type="text/javascript">
+// Set various useful variables to pass on to scripts
+var mobile = "<?=$skin_vars['mobile']?>";
+</script>
 <title>NewsBite: <?=htmlspecialchars($feed['title'])?></title>
 <!-- <link rel="stylesheet" type="text/css" href="skins/<?=$skin_dir?>/style.css" media="all" /> -->
 <link rel="stylesheet" type="text/css" href="skins/<?=$skin_dir?>/view.css" media="all" />
