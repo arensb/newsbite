@@ -238,11 +238,6 @@ input[type="submit"] {
 	margin-bottom:		0.2em;
 }
 
-/* Currently-selected item */
-.current-item {
-	outline:		1px solid navy;
-}
-
 .item-header .feed-title {
 	font-family:		Arial, sans-serif;
 	font-size:		120%;
@@ -343,11 +338,7 @@ input[type="checkbox"].mark-check {
 	display:		none;
 }
 
-/* Summary of item */
-.item-summary,
-.item-content {
-/*	width:			100%;*/
-	max-width:		100%;
+.content-panes {
 	border-top-width:	0px;
 	border-left-width:	2px;
 	border-right-width:	2px;
@@ -355,12 +346,29 @@ input[type="checkbox"].mark-check {
 	border-left-style:	outset;
 	border-right-style:	outset;
 	border-color:		navy;
+}
+
+/* Summary of item */
+.item-summary,
+.item-content {
+/*	width:			100%;*/
+	max-width:		100%;
 
 /*	font-family:		Times, serif;*/
 	font-family:		serif;
 	padding:		0.5em;
 	background-color:	white;
 	overflow:		auto;
+
+	border-left-width:	1px;
+	border-left-style:	solid;
+	border-left-color:	white;
+}
+
+/* Mark the currently-selected item with a blue left border */
+.current-item .item-summary,
+.current-item .item-content {
+	border-left-color:	#6060ff;
 }
 
 .content-panes[collapsible="yes"] .item-summary {
@@ -401,15 +409,6 @@ input[type="checkbox"].mark-check {
 	cursor:			pointer;
 	margin-top:		0px;
 	margin-bottom:		0px;
-
-	border-top-width:	0px;
-	border-left-width:	2px;
-	border-right-width:	2px;
-	border-bottom-width:	2px;
-	border-left-style:	outset;
-	border-top-style:	outset;
-	border-right-style:	outset;
-	border-color:		navy;
 }
 
 /* Control box at bottom of item */
