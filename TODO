@@ -28,6 +28,7 @@
   it worth it? Should it be optional? Is it possible to have each
   button rendered in turn? Or am I just imagining problems that aren't
   really there?
+	Can this be made a plugin?
 - Minify and compress supporting files.
 	http://code.google.com/p/minify/
   Can run this as:
@@ -732,7 +733,6 @@
 	'k'	move to previous item (vi key)
 	'd'	mark item as read, and skip to next item
 	'u'	mark item as unread, and skip to next item
-	?	move to previous item
 
 	Problem: attaching an event listener to each "item" element
   doesn't work reliably: apparently Firefox doesn't understand
@@ -743,9 +743,6 @@
 	Perhaps can attach "mouseover" and "mouseout" listeners to
   individual items: the last one that gets a mouseover is the current
   item.
-- Handle attachments (e.g., <media:content>,
-  <feedburner:origEnclosureLink>) kind of like a mail reader would:
-  put a list at the bottom of the message.
 - Plugin for XKCD: copy the alt text underneath the image, so you
   don't have to RTFS or "View Properties" to see it.
 	(Or, if you want to get fancy: abduct the tooltip stuff and
