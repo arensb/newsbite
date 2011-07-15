@@ -23,7 +23,7 @@ function init()
 {
 	addListenerByClass("collapse-bar", "click", toggle_pane, false);
 	addListenerByClass("expand-bar", "click", toggle_pane, false);
-	addListenerByClass("mark-check", "click", mark_item, false);
+	addListenerByClass("mark-check", "click", button_mark_item, false);
 
 	// The main form, the one that holds all the items, their
 	// checkboxes, the buttons at the top and bottom, etc.
@@ -339,48 +339,38 @@ function parse_flush_response(req)
 	}
 }
 
-/* mark_item
- * Called when user changes the checkbox on an item, to toggle it from
- * read to unread or vice-versa.
- * 'elt' is the checkbox that was just checked by the user.
+/* mark_item1
+ * Marks an item as read or unread. 'ev' is an event (or at least
+ * ev.target has to point to a DOM element inside the item that's
+ * being marked).
+ * This function is the common code for all the ways an item can be
+ * marked (keyboard, click on a checkbox, etc.)
  */
-/* XXX - Need to break this up a bit: we'll want to mark itesm several
- * ways: by clicking a checkbox, by pressing a key, and sometimes
- * without user intervention, when the back-end storage manager
- * realizes that an item was marked as read on another machine.
- * Find out what all of those have in common, and factor it out.
- */
-function mark_item(ev)
+function mark_item1(ev)
 {
 	var elt = ev.target;
 
 	/* Find the enclosing <div class="item"> by going up the parent
 	 * chain.
 	 */
-	var item_div = elt.parentNode;
+	var item_div = elt;
 	while (item_div && !is_in_class(item_div, "item"))
 		item_div = item_div.parentNode;
 	if (item_div == null)
 		/* Something's wrong. Abort */
 		return;
 
-	/* Iff the item is being marked as read, add the "item-read"
-	 * class.
-	 */
-	if (elt.checked)
-		add_class(item_div, "item-read");
-	else
-		remove_class(item_div, "item-read");
+	var is_read = item_div.is_read;
+		// If item_div.is_read isn't set, it defaults to false
 
-	/* There are several checkboxes for each item. Find them all,
-	 * and make sure they're checked/unchecked as well.
-	 */
-	var buttons;
-	buttons = item_div.getElementsByClassName("mark-check");
-
-	for (var i = 0; i < buttons.length; i++)
+	// Flip the is_read bit, and add/remove the "item-read" class.
+	if (item_div.is_read)
 	{
-		buttons[i].checked = elt.checked;
+		item_div.is_read = false;
+		remove_class(item_div, "item-read");
+	} else {
+		item_div.is_read = true;
+		add_class(item_div, "item-read");
 	}
 
 	/* Scroll so that the (collapsed) item is visible.
@@ -400,7 +390,7 @@ function mark_item(ev)
 	 * whole thing is visible, so the problem described above
 	 * doesn't occur.
 	 */
-	if (elt.checked &&
+	if (item_div.is_read &&
 	    item_div.offsetTop < window.pageYOffset)
 	{
 		// Window has been scrolled so that top of item is no
@@ -417,28 +407,70 @@ function mark_item(ev)
 		window.scrollTo(0, item_div.offsetTop);
 	}
 
-	var item_id = elt.name.slice(4);
-		// The name of the checkbox is either "cbt-12345" or
-		// "cbb-12345". Get the item ID from that.
-		// XXX - Ought to get it from a div attribute or
-		// something. Perhaps add 'item-id="12345"' to the
-		// item div.
+	/* There are several checkboxes for each item. Find them all,
+	 * and make sure they're checked/unchecked as well.
+	 */
+	var buttons;
+	buttons = item_div.getElementsByClassName("mark-check");
+
+	for (var i = 0; i < buttons.length; i++)
+	{
+		buttons[i].checked = item_div.is_read;
+	}
+
+	var item_id = item_div.id.slice(5);
+		// The 'id' attribute is of the form "item-12345". Get
+		// the item ID from that.
 
 	/* Add the item ID to the queue of items to mark as read/unread */
 	/* XXX - As time goes on, item IDs will grow ever larger. So
 	 * 'mark_read' will have an ever larger number of empty entries
 	 * at the beginning.
 	 */
-	mark_read[item_id] = elt.checked;
+	mark_read[item_id] = item_div.is_read;
 
 	/* Flush the queue if necessary */
 	flush_queues();
+}
+
+/* button_mark_item
+ * Called when user clicks a button to mark an item. Does the
+ * button-specific stuff, then defers the rest to mark_item1().
+ */
+function button_mark_item(ev)
+{
+	var elt = ev.target;
+
+	/* Do the common stuff */
+	mark_item1(ev);
+
+	/* Find the enclosing <div class="item"> by going up the parent
+	 * chain.
+	 */
+	var item_div = elt.parentNode;
+	while (item_div && !is_in_class(item_div, "item"))
+		item_div = item_div.parentNode;
+	if (item_div == null)
+		/* Something's wrong. Abort */
+		return;
 
 	/* Remove keyboard focus from the item. That way, can
 	 * immediately hit space to scroll down, and it won't mark the
 	 * item as read/unread again.
 	 */
 	elt.blur();
+}
+
+/* key_mark_item
+ * Mark the current item as read. Invoked by key press.
+ */
+function key_mark_item()
+{
+	if (current_item == null)
+		return;
+
+	mark_item1({target: current_item});
+	// XXX - Advance to next item, and make it current.
 }
 
 /* collapse_all
@@ -483,6 +515,7 @@ function enter_item(ev)
 		return false;
 	add_class(elt, "current-item");
 	current_item = elt;
+	return true;
 }
 
 /* exit_item
@@ -495,18 +528,5 @@ function exit_item(ev)
 		return false;
 	remove_class(elt, "current-item");
 	current_item = null;
-}
-
-/* key_mark_item
- * Mark the current item as read.
- */
-function key_mark_item()
-{
-	if (current_item == null)
-		return;
-
-//	mark_item({target: current_item});
-		// XXX - This doesn't work: mark_item assumes that we've
-		// clicked on a button
-	// XXX - Advance to next item, and make it current.
+	return true;
 }
