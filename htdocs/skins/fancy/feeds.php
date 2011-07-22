@@ -50,6 +50,8 @@ if (isset($mobile_css))
 <?
 if ($skin_vars['mobile'] == "iPhone")
 	echo '<meta name="viewport" content="width = device-width, initial-scale=0.8">', "\n";
+elseif ($skin_vars['mobile'] == "Android")
+	echo '<meta name="viewport" content="width = device-width, initial-scale=1.0" />', "\n";
 ?>
 </head>
 <body>
