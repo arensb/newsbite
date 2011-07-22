@@ -103,5 +103,8 @@ for ($i = 0; $i < count($skin_vars['feeds']); $i++)
 }
 ?>
 </table>
+
+<hr/>
+<table id="feeds2"></table>
 </body>
 </html>

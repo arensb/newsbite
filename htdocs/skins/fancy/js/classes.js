@@ -140,7 +140,6 @@ function toggle_class(elem, classA, classB)
 			// Split class string into a list
 	var new_classes = new Array();
 	var toggled = false;
-			
 
 	for (var i in classes)
 	{
