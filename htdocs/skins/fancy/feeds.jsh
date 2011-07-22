@@ -15,15 +15,21 @@ function clrdebug() { }
 // XXX - Should block multiple updates from occurring in parallel.
 #include "js/status-msg.js"
 
+var feed_list;		// Table containing the list of feeds
+
 document.addEventListener("DOMContentLoaded", init, false);
 
 function init()
 {
+	feed_list = document.getElementById("feeds");
+
 	window.addEventListener("keydown", handle_key, false);
 
 	// Key bindings
 	bind_key("d", toggle_details);
 	bind_key("t", toggle_tools);
+
+	init_feed_list();
 }
 
 /* update_feed
@@ -192,12 +198,16 @@ debug("feed id "+l.feed_id+", state "+l.state);
 
 function toggle_details()
 {
-	var feed_list = document.getElementById("feeds");
 	toggle_class(feed_list, "show-details", "hide-details");
 }
 
 function toggle_tools()
 {
-	var feed_list = document.getElementById("feeds");
 	toggle_class(feed_list, "show-tools", "hide-tools");
+}
+
+var feed_list2;
+function init_feed_list()
+{
+	feed_list2 = document.getElementById("feeds2")
 }
