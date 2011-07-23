@@ -29,18 +29,18 @@ if (isset($mobile_css))
 	echo "<link rel=\"stylesheet\" type=\"text/css\" href=\"skins/$skin_vars[skin]/$mobile_css\" media=\"screen\" />\n";
 }
 ?>
-<!-- If JavaScript is turned on, slurp in the JavaScript-specific
-     stylesheet
--->
-<script type="text/javascript">
-  document.write('<link rel="stylesheet" type="text/css" href="skins/<?=$skin_dir?>/style-js.css" media="all" />\n');
-</script>
 <!-- If JavaScript is turned off, slurp in the no-JavaScript-specific
      stylesheet
 -->
 <noscript>
   <link rel="stylesheet" type="text/css" href="skins/<?=$skin_dir?>/style-nojs.css" media="all" />
 </noscript>
+<!-- If JavaScript is turned on, slurp in the JavaScript-specific
+     stylesheet
+-->
+<script type="text/javascript">
+  document.write('<link rel="stylesheet" type="text/css" href="skins/<?=$skin_dir?>/style-js.css" media="all" />\n');
+</script>
 <script type="text/javascript">
   var skin_dir="skins/<?=$skin_dir?>";
   var show_details = false;
@@ -56,11 +56,6 @@ elseif ($skin_vars['mobile'] == "Android")
 </head>
 <body>
 <ul class="msglist" id="feed-msglist">
-<!--
-<li class="status-msg">This is a status message</li>
-<li class="status-msg">This is another status message</li>
-<li class="status-msg">This is a significantly longer status message that goes on at length, on and on and on until it wraps around and goes on much longer until it outstays its welcome.</li>
--->
 </ul>
 
 <h1>Feeds</h1>
@@ -107,6 +102,12 @@ for ($i = 0; $i < count($skin_vars['feeds']); $i++)
 </table>
 
 <hr/>
-<table id="feeds2"></table>
+<table id="feeds2">
+<tr>
+  <th>Unread</th>
+  <th>Title</th>
+  <th class="feed-tools">Tools</th>
+</tr>
+</table>
 </body>
 </html>
