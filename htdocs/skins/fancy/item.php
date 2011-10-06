@@ -135,7 +135,7 @@ if ($item['summary'] == "")
 }
 ?>
   <div class="content-panes show-<?=$which?>" collapsible="<?=$collapsible?>" which="<?=$which?>">
-    <div class="collapse-bar">
+    <div class="collapse-bar upper-bar">
       &#x25b2;<?/* Upward-pointing triangle */?>
     </div>
 
@@ -153,7 +153,7 @@ if ($item['summary'] == "")
       <?=$item['content']?>
       <br style="clear: both"/>
     </div>
-    <div class="collapse-bar">
+    <div class="collapse-bar lower-bar">
       &#x25b2;<?/* Upward-pointing triangle */?>
     </div>
     <div class="expand-bar">

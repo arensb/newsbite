@@ -411,6 +411,28 @@ input[type="checkbox"].mark-check {
 	margin-bottom:		0px;
 }
 
+/* Pretty gradient on the expand/collaspe bars. */
+.upper-bar {
+	background-image:
+		-webkit-gradient(linear, left top, left bottom,
+				 from(navy),
+				 to(#6060ff));
+}
+
+.lower-bar {
+	background-image:
+		-webkit-gradient(linear, left top, left bottom,
+				 from(#6060ff),
+				 to(navy));
+}
+
+.expand-bar {
+	background-image:
+		-webkit-gradient(linear, left top, left bottom,
+				 from(#6060ff),
+				 to(navy));
+}
+
 /* Control box at bottom of item */
 .item-footer {
 	width:			100%;
