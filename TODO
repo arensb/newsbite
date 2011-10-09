@@ -22,6 +22,44 @@
   index page, not to the last position.
 	flip_to_page() should remember current position, and scroll
   down to it when returning to it.
+- Replace "feeds" table with "feeds2" in feeds.php.
+  Rename the new AJAXy list.
+- Feeds page:
+	Instead of "Tools" and "Details" cluttering up the page, just
+  list the #unread, title, and a ">>" link that pops up a details/edit
+  page.
+- Editing feed details: instead of (or in addition to) a separate
+  "edit feed" page, have an "edit" button on the page for a given
+  feed. When clicked, highlight the parts that can be edited: title
+  (edit the nickname).
+	Actually, the nickname is the only visible element that it
+  makes sense to edit this way. For the rest, there could be a form
+  overlaid over the feed.
+- Cache resources like .js, .css files. Ideally also static parts of
+  PHP script output. See mod_cache.
+- JavaScript with namespaces
+	Things like the Google +1 button use a namespace: <g:plusone> or
+  whatever it is. This seems fairly useful.
+	What would be useful would be the ability to get a list of all
+  tags in a given namespace: if I have a bunch of <foo:a>, <foo:b>,
+  <foo:c>, ... tags sprinkled through a document, it'd be nice to get
+  them all without having the parse the DOM.
+	Looks like the way to do this is
+  getElementsByTagNameNS("http://namesp.ace/URL", "*");
+  See
+  http://www.w3.org/TR/2000/REC-DOM-Level-2-Core-20001113/core.html#ID-A6C9094
+- Key bindings
+	'c' - collapse current article
+	'e' - expand current article
+- Can HTMLPurifier add a base URL to relative links? That is, if it
+  sees
+	<a href="/foo">
+  can it be told to turn that into
+	<a href="http://www.somesite.com/foo">
+  ? Ditto for images and perhaps others.
+	See
+  http://htmlpurifier.org/live/configdoc/plain.html#URI.MakeAbsolute
+  Presumably ought to pass base URL in as a second parameter.
 - Add Google +1 button
 	http://www.google.com/intl/en/webmasters/+1/button/
 	Problem: it seems to take a lot of time to render and such. Is
