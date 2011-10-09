@@ -1,3 +1,4 @@
+- Bug: "Update all feeds" no longer updates prettily.
 - Bug: Figure out why some feeds show up stale when they have recent articles.
 - Bug: HTMLPurify removes YouTube videos. Why?
 - Bug: Jesus & Mo keeps redirecting back and forth. Perhaps add a

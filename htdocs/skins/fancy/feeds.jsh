@@ -318,7 +318,7 @@ function receive_feed_list(value)
 	/* Add the header line that Firefox wouldn't allow us to add
 	 * earlier.
 	 */
-	header_line.innerHTML = '<td>&nbsp;</td><th>#</th><th>Title</th><th class="feed-tools">Tools</th>';
+	header_line.innerHTML = '<td>&nbsp;</td><th class="count-col">#</th><th class="title-col">Title</th><th class="feed-tools">Tools</th>';
 
 	// XXX - Put the list in local storage, so it can be seen offline.
 }
