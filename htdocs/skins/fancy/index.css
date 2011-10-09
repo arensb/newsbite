@@ -1,40 +1,53 @@
 /*
  * Index of feeds
  */
-table#feeds {
-	border-width:		1px;
-	border-color:		black;
-	border-spacing:		0px 0px;	/* Space between cells, x,y */
+#feeds {
+	background-color:	white;
+	border-collapse:	collapse;
 	width:			100%;
 }
 
-table#feeds .icon-col {
+#feeds th {
+	text-align:		left;
+}
+
+#feeds tr {
+	padding-top:		1em;
+	padding-bottom:		1em;
+}
+
+#feeds tr.odd-row {
+	background-color:	#dddddd;
+}
+
+#feeds tr.even-row {
+	background-color:	white;
+}
+
+#feeds tr.stale-feed {
+	background-color:	#a0a0a0 !important;
+}
+
+#feeds tr.inactive-feed .title-col {
+	text-decoration:	line-through !important;
+}
+
+#feeds .icon-col {
 	width:			32px;
-	/* Height is crucial: 22px appears to be the smallest height
-	 * that'll accommodate the update icon without ugly resizing.
-	 */
 	height:			22px;
 	padding:		0px;
 	text-align:		center;
 }
 
-table#feeds tr {
+#feeds .count-col {
+	width:			1em;
+	max-width:		2em;
+	text-align:		right;
+	padding-right:		0.5em;
 }
 
-table#feeds tr.odd-row {
-	background-color:	#dddddd;
-}
-
-table#feeds tr.even-row {
-	background-color:	white;
-}
-
-table#feeds tr.inactive-feed .title-col {
-	text-decoration:	line-through !important;
-}
-
-table#feeds tr.stale-feed {
-	background-color:	#a0a0a0 !important;
+#feeds .title-col {
+	padding-left:		0.5em;
 }
 
 /* Hidden elements, or shown only selectively */
@@ -55,6 +68,7 @@ table#feeds tr.stale-feed {
 #feeds.show-tools .feed-tools {
 	display:		inline;
 }
+/* End of #feeds */
 
 .tools {
 	margin-top:		1em;
@@ -68,6 +82,7 @@ table#feeds tr.stale-feed {
 .tools li {
 	display:		inline;
 }
+
 body {
 	background-image:	url(gray-bg.jpg);
 	margin-top:		0px;

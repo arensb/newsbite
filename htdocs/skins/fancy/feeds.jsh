@@ -206,8 +206,119 @@ function toggle_tools()
 	toggle_class(feed_list, "show-tools", "hide-tools");
 }
 
-var feed_list2;
 function init_feed_list()
 {
-	feed_list2 = document.getElementById("feeds2")
+	feed_list = document.getElementById("feeds")
+
+	// Request a list of feeds
+	get_json_data("feeds.php",
+		      { o: "json" },
+		      receive_feed_list,
+		      true);
+}
+
+function receive_feed_list(value)
+{
+	// XXX - Make sure value is a list
+
+	/* XXX - Actually, this function should probably just
+	 * - update the in-memory copy of the feed list
+	 * - stash a copy in local storage
+	 * - invoke a different function to redraw the list
+	 */
+	/* Create a document fragment containing the list of feeds, as
+	 * table rows.
+	 */
+	var thelist = document.createDocumentFragment();
+
+	/* XXX - This is bogus. Don't recreate the header line every
+	 * time: the cells will have event handlers to sort by title
+	 * or #unread. No need to recreate them each time.
+	 */
+	var header_line = document.createElement("tr");
+	thelist.appendChild(header_line);
+
+	// NB: We don't add the content of the row until later,
+	// because Firefox is apparently too smart for its (or my)
+	// good: evidently it thinks that at this point 'header_line'
+	// is a free-floating node outside of a table, and therefore
+	// mustn't contain any <td>s or <th>s, because those only go
+	// inside tables. So it strips the <td>s and <th>s from
+	// innerHTML.
+	// So we have to wait until 'thelist' (containing
+	// 'header_line') has been added to the table, below.
+
+//header_line.innerHTML = '<td><i>hello world</i></td>';
+
+	for (var i = 0; i < value.length; i++)
+	{
+		var feed = value[i];
+
+		// XXX - Skip inactive feeds
+
+		var line = document.createElement("tr");
+		line.feed_id = feed.id;
+		if (i & 1)
+			add_class(line, "odd-row");
+		else
+			add_class(line, "even-row");
+
+		if (feed.active != 1)
+			add_class(line, "inactive-feed");
+
+		if (feed.stale == 1)
+			add_class(line, "stale-feed");
+
+		/* Status indicator */
+		cell = document.createElement("td");
+		add_class(cell, "icon-col");
+		cell.innerHTML = "&nbsp;";
+		line.appendChild(cell);
+
+		/* Number of unread articles */
+		cell = document.createElement("td");
+		add_class(cell, "count-col");
+		cell.innerHTML = feed.num_unread;
+		line.appendChild(cell);
+
+		/* Title */
+		var cell = document.createElement("td");
+		add_class(cell, "title-col");
+		var display_title;
+		// Prefer nickname, if it's set
+		if (feed.nickname == null || feed.nickname == "")
+			display_title = feed.title;
+		else
+			display_title = feed.nickname;
+		cell.innerHTML = '<a href="view.php?id='+feed.id+'">'+
+			display_title +
+			'</a>' +
+			'&nbsp;<span class="feed-details">(' +
+			'<a href="' + feed.url + '">site</a>' +
+			'&nbsp;<a href="' + feed.feed_url + '">RSS</a>' +
+			')</span>';
+		line.appendChild(cell);
+
+		/* Feed tools */
+		cell = document.createElement("td");
+		add_class(cell, "feed-tools");
+		cell.innerHTML = '<a href="update.php?id='+feed.id+'" onclick="return update_feed('+feed.id+')">update</a>&nbsp;<a href="editfeed.php?id='+feed.id+'">edit</a>&nbsp;<a href="unsubscribe.php?id='+feed.id+'">unsub</a> <img src="skins/fancy/Attraction_transfer_icon.gif"/>';
+		line.appendChild(cell);
+
+		thelist.appendChild(line);
+	}
+
+	/* Delete the old contents of the feed div, and replace them with
+	 * the new list.
+	 */
+	while (feed_list.firstChild)
+		feed_list.removeChild(feed_list.firstChild);
+	feed_list.appendChild(thelist);
+
+	/* Add the header line that Firefox wouldn't allow us to add
+	 * earlier.
+	 */
+	header_line.innerHTML = '<td>&nbsp;</td><th>#</th><th>Title</th><th class="feed-tools">Tools</th>';
+
+	// XXX - Put the list in local storage, so it can be seen offline.
 }

@@ -72,39 +72,8 @@ elseif ($skin_vars['mobile'] == "Android")
 </ul>
 
 <table id="feeds" class="hide-details hide-tools">
-<?
-for ($i = 0; $i < count($skin_vars['feeds']); $i++)
-{
-	$feed = $skin_vars['feeds'][$i];
-	$feed_id = $feed['id'];
-
-#echo "i: [$i]<br/>\n";
-	echo "<tr class=\"",
-		($i & 1 ? "odd-row" : "even-row"),
-		($feed['active'] ? "" : " inactive-feed"),
-		($feed['stale'] ? " stale-feed" : ""),
-		"\" id=\"feed-${feed_id}\">";
-	echo "<td class=\"icon-col\">&nbsp;</td>";
-	echo "<td class=\"title-col\">";
-	$the_skin->_include("feed-title",
-			    array("feed" =>	$feed,
-				  "counts" =>	$skin_vars['counts'][$feed_id]
-				    )
-		);
-?>
-<td class="feed-tools">
-<a href="update.php?id=<?=$feed_id?>" onclick="return update_feed(<?=$feed_id?>)">update</a>&nbsp;<a href="editfeed.php?id=<?=$feed_id?>">edit</a>&nbsp;<a href="unsubscribe.php?id=<?=$feed['id']?>">unsub</a>
-</td>
-</tr>
-<?
-}
-?>
-</table>
-
-<hr/>
-<table id="feeds2">
 <tr>
-  <th>Unread</th>
+  <th>#</th>
   <th>Title</th>
   <th class="feed-tools">Tools</th>
 </tr>
