@@ -1,4 +1,3 @@
-- Bug: "Update all feeds" no longer updates prettily.
 - Bug: Figure out why some feeds show up stale when they have recent articles.
 - Bug: HTMLPurify removes YouTube videos. Why?
 - Bug: Jesus & Mo keeps redirecting back and forth. Perhaps add a
@@ -23,8 +22,11 @@
   index page, not to the last position.
 	flip_to_page() should remember current position, and scroll
   down to it when returning to it.
-- Replace "feeds" table with "feeds2" in feeds.php.
-  Rename the new AJAXy list.
+- Spinny thing when updating feeds:
+  Create a single image with all of the various states a feed can be
+  in: normal, updating, error. Then use CSS to set a class, which in
+  turn shifts the background image up or down to display the
+  appropriate icon.
 - Feeds page:
 	Instead of "Tools" and "Details" cluttering up the page, just
   list the #unread, title, and a ">>" link that pops up a details/edit
