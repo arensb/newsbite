@@ -1,6 +1,7 @@
 /* feeds.jsh					-*- JavaScript -*-
  * JavaScript functions for the feed view.
  */
+#define DEBUG 0
 #if DEBUG
 #  include "js/debug.js"
 #else
@@ -31,6 +32,15 @@ function init()
 
 	init_feed_list();
 }
+
+/* XXX - Updating feeds is all kinds of broken.
+ * The back-end PHP script shouldn't return any HTML on how to display
+ * the feed. That should be done here.
+ * The various values should be in identifiable <span>s, so that we can
+ * just replace an existing value.
+ * For that matter, there should probably be a JS list of feed_id => row
+ * that we can use to quickly update all the values we want to.
+ */
 
 /* update_feed
  * Update a feed, or all feeds.
@@ -69,17 +79,18 @@ debug("done clearing");
 
 function clear_status()
 {
-	var table = document.getElementById("feeds").childNodes[1];
+	var table = document.getElementById("feeds")/*.childNodes[1]*/;
 debug("table == "+table);
 
 	/* Iterate over each row, clearing status cell */
+	// XXX - Ought to use table.getElementsByType("tr") or something.
 	for (var row = table.firstChild; row != table.lastChild; row = row.nextSibling)
 	{
 		if (row.firstChild == null)
 			/* Skip #text nodes */
 			// XXX - There must be a better way to do this
 			continue;
-debug("row == "+row.firstChild);
+//debug("row == "+row.firstChild);
 		row.firstChild.innerHTML = "";
 		row.firstChild.style.backgroundColor = null;
 	}
@@ -97,6 +108,7 @@ debug("row == "+row.firstChild);
 function parse_response(req)
 {
 	debug("parse_response readyState: " + req.request.readyState);
+//debug("responseText ("+req.request.responseText.length+"): ["+req.request.responseText+"]");
 	switch (req.request.readyState)
 	{
 	    case 0:		// Uninitialized
@@ -108,32 +120,35 @@ function parse_response(req)
 		/* Get text from where we stopped last time to the end
 		 * of what we've got now.
 		 */
-		var str = req.request.responseText.substr(req.last_off)
+		var str = req.request.responseText.substr(req.last_off);
 
 		/* Remember how much of the string we've gotten so far */
 		req.last_off = req.request.responseText.length;
 
 		/* Split the current input into lines */
-		// XXX - This doesn't quite work: sometimes the buffer
-		// contains part of an object. Perhaps ought to look
-		// for /{.*}\n/g in the buffer.
 		var lines = str.split("\n");
 		for (var i = 0; i < lines.length; i++)
 		{
 			var line = lines[i];
 if (line != "")
-debug("line " + i + ": [" + lines[i] + "]");
+debug("line " + i + "("+req.last_off+"): [" + lines[i] + "]");
 			if (line[0] != '{')
 				// There might be non-JSON lines in there.
 				// Ignore them. For that matter, ignore
 				// any JSON lines that aren't objects.
 				continue;
-			// XXX - Isn't there a better way to de-JSON-ify
-			// a string? JSON.parse(str)?
 			try {
-				eval("l = " + line);
+				// Inside a try{} in case the server sent
+				// bad JSON.
+				l = JSON.parse(line);
 			} catch (e) {
 				debug("Caught error " + e);
+
+				// If this isn't a complete line, put it
+				// back for later. Yeah, this is a bit of
+				// a hack.
+				if (i == lines.length-1)
+					req.last_off -= line.length;
 				continue;
 			}
 
@@ -150,10 +165,13 @@ debug("line " + i + ": [" + lines[i] + "]");
 				continue;
 			}
 
+			// XXX - Really ought to look these up better. Don't
+			// hardcode positions.
 			var status_cell = feed_row.firstChild;
-			var title_cell = status_cell.nextSibling;
+			var count_cell = status_cell.nextSibling;
+			var title_cell = count_cell.nextSibling;
 
-debug("feed id "+l.feed_id+", state "+l.state);
+//debug("feed id "+l.feed_id+", state "+l.state);
 			// XXX - Paths to images / skin name shouldn't
 			// be hardcoded. Perhaps add a class to the cell.
 			switch (l.state)
@@ -166,7 +184,7 @@ debug("feed id "+l.feed_id+", state "+l.state);
 			    case "end":
 				status_cell.innerHTML = '&nbsp;';
 				status_cell.style.backgroundColor = null;
-				title_cell.innerHTML = l.count_display;
+				count_cell.innerHTML = l.counts.unread;
 				break;
 			    case "error":
 				msg_add("Error in "+l.title+" ("+l.feed_id+"): "+l.error, 10000);
@@ -258,6 +276,7 @@ function receive_feed_list(value)
 
 		var line = document.createElement("tr");
 		line.feed_id = feed.id;
+		line.setAttribute("id", "feed-"+feed.id);
 		if (i & 1)
 			add_class(line, "odd-row");
 		else
