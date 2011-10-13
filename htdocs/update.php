@@ -66,15 +66,16 @@ class json_output_handler extends feed_update_handler
 
 	function end_feed(&$feed)
 	{
-		$skin = new Skin();
-		$skin->assign('feed', $feed);
-		$skin->assign('feed_id', $feed['id']);
-		$skin->assign('counts', $feed['counts']);
-		$count_display = $skin->fetch("feed-title");
+#		$skin = new Skin();
+#		$skin->assign('feed', $feed);
+#		$skin->assign('feed_id', $feed['id']);
+#		$skin->assign('counts', $feed['counts']);
+#		$count_display = $skin->fetch("feed-title");
 		echo jsonify('state',	"end",
 			     'feed_id',	$feed['id'],
 			     'title', $feed['title'],
-			     'count_display',	$count_display
+#			     'count_display',	$count_display
+			     'counts',	$feed['counts']
 			),
 			"\n";
 		flush();
@@ -115,10 +116,10 @@ class console_output_handler extends feed_update_handler
 
 /* See what kind of output the user wants */
 
-if ($_ENV['CRON'] == "true")
-{
-	$out_fmt = "console";
-} else {
+//if ($_ENV['CRON'] == "true")
+//{
+//	$out_fmt = "console";
+//} else {
 	switch ($_REQUEST['o'])
 	{
 	    case "json":
@@ -130,7 +131,7 @@ if ($_ENV['CRON'] == "true")
 		$out_fmt = "html";
 		break;
 	}
-}
+//}
 
 $feed_id = $_REQUEST["id"];
 
@@ -233,6 +234,7 @@ if (is_numeric($feed_id) && is_int($feed_id+0))
 		$count_display = $skin->fetch("feed-title");
 		echo jsonify('state',	"end",
 			     'feed_id',	$feed_id,
+			     'counts',	$feed['counts'],
 			     'count_display',	$count_display
 			     ),
 			"\n";
