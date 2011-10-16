@@ -12,17 +12,20 @@ function clrdebug() { }
 #include "js/xhr.js"
 #include "js/classes.js"
 #include "js/keybindings.js"
+#include "js/Template.js"
+#include "js/CacheManager.js"
 //#include "js/load_module.js"
 // XXX - Should block multiple updates from occurring in parallel.
 #include "js/status-msg.js"
 
-var feed_list;		// Table containing the list of feeds
+var feed_table;		// Table containing the list of feeds
 
 document.addEventListener("DOMContentLoaded", init, false);
 
 function init()
 {
-	feed_list = document.getElementById("feeds");
+localStorage.setItem('foo', JSON.stringify({a:1,b:2,c:[3,4,5]}));
+	feed_table = document.getElementById("feeds");
 
 	window.addEventListener("keydown", handle_key, false);
 
@@ -31,6 +34,9 @@ function init()
 	bind_key("t", toggle_tools);
 
 	init_feed_list();
+var foo = JSON.parse(localStorage.getItem('foo'));
+//alert("foo == ["+foo['c'][1]+"]");
+localStorage.removeItem('foo');
 }
 
 /* XXX - Updating feeds is all kinds of broken.
@@ -48,6 +54,10 @@ function init()
  * paradoxically we return 'false' if successful, and 'true' in case
  * of error.
  */
+// XXX - Use get_json_data() from js/xhr.js
+// XXX - When receiving data, store in a local array.
+// XXX - After receiving data (or perhaps after receiving an individual
+// feed's data) store in local cache.
 function update_feed(id)
 {
 clrdebug();
@@ -216,17 +226,17 @@ debug("line " + i + "("+req.last_off+"): [" + lines[i] + "]");
 
 function toggle_details()
 {
-	toggle_class(feed_list, "show-details", "hide-details");
+	toggle_class(feed_table, "show-details", "hide-details");
 }
 
 function toggle_tools()
 {
-	toggle_class(feed_list, "show-tools", "hide-tools");
+	toggle_class(feed_table, "show-tools", "hide-tools");
 }
 
 function init_feed_list()
 {
-	feed_list = document.getElementById("feeds")
+	feed_table = document.getElementById("feeds")
 
 	// Request a list of feeds
 	get_json_data("feeds.php",
@@ -309,6 +319,7 @@ function receive_feed_list(value)
 			display_title = feed.title;
 		else
 			display_title = feed.nickname;
+		// XXX - Use a template for this
 		cell.innerHTML = '<a href="view.php?id='+feed.id+'">'+
 			display_title +
 			'</a>' +
@@ -321,6 +332,7 @@ function receive_feed_list(value)
 		/* Feed tools */
 		cell = document.createElement("td");
 		add_class(cell, "feed-tools");
+		// XXX - Use a template for this
 		cell.innerHTML = '<a href="update.php?id='+feed.id+'" onclick="return update_feed('+feed.id+')">update</a>&nbsp;<a href="editfeed.php?id='+feed.id+'">edit</a>&nbsp;<a href="unsubscribe.php?id='+feed.id+'">unsub</a> <img src="skins/fancy/Attraction_transfer_icon.gif"/>';
 		line.appendChild(cell);
 
@@ -330,9 +342,9 @@ function receive_feed_list(value)
 	/* Delete the old contents of the feed div, and replace them with
 	 * the new list.
 	 */
-	while (feed_list.firstChild)
-		feed_list.removeChild(feed_list.firstChild);
-	feed_list.appendChild(thelist);
+	while (feed_table.firstChild)
+		feed_table.removeChild(feed_table.firstChild);
+	feed_table.appendChild(thelist);
 
 	/* Add the header line that Firefox wouldn't allow us to add
 	 * earlier.
