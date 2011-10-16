@@ -18,13 +18,18 @@ function clrdebug() { }
 // XXX - Should block multiple updates from occurring in parallel.
 #include "js/status-msg.js"
 
-var feed_table;		// Table containing the list of feeds
+var cache = new CacheManager();		// Cache manager for locally-stored data
+var feeds;		// Master list of all feeds
+var feed_title_tmpl = new Template(feed_title_tmpl_text);
+var feed_tools_tmpl = new Template(feed_tools_tmpl_text);
+
+// Interesting DOM nodes we want to keep track of
+var feed_table = {};	// Pointers to interesting elements inside
 
 document.addEventListener("DOMContentLoaded", init, false);
 
 function init()
 {
-localStorage.setItem('foo', JSON.stringify({a:1,b:2,c:[3,4,5]}));
 	feed_table = document.getElementById("feeds");
 
 	window.addEventListener("keydown", handle_key, false);
@@ -34,9 +39,6 @@ localStorage.setItem('foo', JSON.stringify({a:1,b:2,c:[3,4,5]}));
 	bind_key("t", toggle_tools);
 
 	init_feed_list();
-var foo = JSON.parse(localStorage.getItem('foo'));
-//alert("foo == ["+foo['c'][1]+"]");
-localStorage.removeItem('foo');
 }
 
 /* XXX - Updating feeds is all kinds of broken.
@@ -54,6 +56,8 @@ localStorage.removeItem('foo');
  * paradoxically we return 'false' if successful, and 'true' in case
  * of error.
  */
+// XXX - Better to use PreventDefault (?) if successful, so we don't
+// need the paradoxical 'return false'
 // XXX - Use get_json_data() from js/xhr.js
 // XXX - When receiving data, store in a local array.
 // XXX - After receiving data (or perhaps after receiving an individual
@@ -236,7 +240,9 @@ function toggle_tools()
 
 function init_feed_list()
 {
-	feed_table = document.getElementById("feeds")
+	// XXX - Get the cached copy of feeds, from last time.
+	feeds = cache.feeds();
+	redraw_feed_list();
 
 	// Request a list of feeds
 	get_json_data("feeds.php",
@@ -254,6 +260,18 @@ function receive_feed_list(value)
 	 * - stash a copy in local storage
 	 * - invoke a different function to redraw the list
 	 */
+	feeds = value;
+	cache.store_feeds(feeds);
+	redraw_feed_list();
+}
+
+function redraw_feed_list()
+{
+	if (feeds == null)
+		// Special case: no feeds (or something). Use an empty
+		// array.
+		feeds = new Array();
+
 	/* Create a document fragment containing the list of feeds, as
 	 * table rows.
 	 */
@@ -276,11 +294,9 @@ function receive_feed_list(value)
 	// So we have to wait until 'thelist' (containing
 	// 'header_line') has been added to the table, below.
 
-//header_line.innerHTML = '<td><i>hello world</i></td>';
-
-	for (var i = 0; i < value.length; i++)
+	for (var i = 0; i < feeds.length; i++)
 	{
-		var feed = value[i];
+		var feed = feeds[i];
 
 		// XXX - Skip inactive feeds
 
@@ -303,12 +319,14 @@ function receive_feed_list(value)
 		add_class(cell, "icon-col");
 		cell.innerHTML = "&nbsp;";
 		line.appendChild(cell);
+		line.status_cell = cell;
 
 		/* Number of unread articles */
 		cell = document.createElement("td");
 		add_class(cell, "count-col");
 		cell.innerHTML = feed.num_unread;
 		line.appendChild(cell);
+		line.count_cell = cell;
 
 		/* Title */
 		var cell = document.createElement("td");
@@ -316,25 +334,19 @@ function receive_feed_list(value)
 		var display_title;
 		// Prefer nickname, if it's set
 		if (feed.nickname == null || feed.nickname == "")
-			display_title = feed.title;
+			feed.display_title = feed.title;
 		else
-			display_title = feed.nickname;
-		// XXX - Use a template for this
-		cell.innerHTML = '<a href="view.php?id='+feed.id+'">'+
-			display_title +
-			'</a>' +
-			'&nbsp;<span class="feed-details">(' +
-			'<a href="' + feed.url + '">site</a>' +
-			'&nbsp;<a href="' + feed.feed_url + '">RSS</a>' +
-			')</span>';
+			feed.display_title = feed.nickname;
+		cell.innerHTML = feed_title_tmpl.expand(feed);
 		line.appendChild(cell);
+		line.title_cell = cell;
 
 		/* Feed tools */
 		cell = document.createElement("td");
 		add_class(cell, "feed-tools");
-		// XXX - Use a template for this
-		cell.innerHTML = '<a href="update.php?id='+feed.id+'" onclick="return update_feed('+feed.id+')">update</a>&nbsp;<a href="editfeed.php?id='+feed.id+'">edit</a>&nbsp;<a href="unsubscribe.php?id='+feed.id+'">unsub</a> <img src="skins/fancy/Attraction_transfer_icon.gif"/>';
+		cell.innerHTML = feed_tools_tmpl.expand(feed);
 		line.appendChild(cell);
+		line.tools_cell = cell;
 
 		thelist.appendChild(line);
 	}
@@ -349,7 +361,7 @@ function receive_feed_list(value)
 	/* Add the header line that Firefox wouldn't allow us to add
 	 * earlier.
 	 */
-	header_line.innerHTML = '<td>&nbsp;</td><th class="count-col">#</th><th class="title-col">Title</th><th class="feed-tools">Tools</th>';
+	header_line.innerHTML = '<td>&nbsp;</td><th class="count-col" onclick="javascript:sort_by_count()">#</th><th class="title-col" onclick="javascript:sort_by_title()">Title</th><th class="feed-tools">Tools</th>';
 
 	// XXX - Put the list in local storage, so it can be seen offline.
 }
