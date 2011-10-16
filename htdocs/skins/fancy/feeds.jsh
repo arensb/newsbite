@@ -333,10 +333,12 @@ function redraw_feed_list()
 		add_class(cell, "title-col");
 		var display_title;
 		// Prefer nickname, if it's set
-		if (feed.nickname == null || feed.nickname == "")
+		if (feed.nickname != null && feed.nickname != "")
+			feed.display_title = feed.nickname;
+		else if (feed.title != null && feed.title != "")
 			feed.display_title = feed.title;
 		else
-			feed.display_title = feed.nickname;
+			feed.display_title = "[no title]";
 		cell.innerHTML = feed_title_tmpl.expand(feed);
 		line.appendChild(cell);
 		line.title_cell = cell;
