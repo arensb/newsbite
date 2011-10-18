@@ -66,6 +66,8 @@ htdocs/skins/fancy/index.css
 htdocs/skins/fancy/ipad.css
 htdocs/skins/fancy/iphone.css
 htdocs/skins/fancy/item.php
+htdocs/skins/fancy/js/CacheManager.js
+htdocs/skins/fancy/js/Template.js
 htdocs/skins/fancy/js/classes.js
 htdocs/skins/fancy/js/debug.js
 htdocs/skins/fancy/js/defer.js
