@@ -13,20 +13,31 @@ function CacheManager()
 	/* XXX - Load known objects? Or would that affect execution speed? */
 }
 
-// XXX - Save list of feeds
-
-// XXX - Retrieve stored list of feeds
+/* feeds
+ * Retrieve stored list of feeds.
+ */
 CacheManager.prototype.feeds = function()
 {
 	var retval;
+
+	// Get the cached set of feeds from local storage
 	try {
 		retval = localStorage.getItem('feeds');
 	} catch (e) {
 		localStorage.removeItem('feeds');
 		return null;
 	}
-	retval = JSON.parse(retval);
-			 // XXX - Error-checking.
+	if (retval == null)
+		// No feeds stored yet
+		return null;
+
+	// Parse the retrieved value
+	try {
+		retval = JSON.parse(retval);
+	} catch (e) {
+		localStorage.removeItem('feeds');
+		return null;
+	}
 	return retval;
 }
 
@@ -34,7 +45,9 @@ CacheManager.prototype.feeds = function()
 
 // XXX - Get one feed (not all)
 
-// XXX - Save feed metadata
+/* store_feeds
+ * Save list of feeds to localStorage.
+ */
 CacheManager.prototype.store_feeds = function(feeds)
 {
 	var str = JSON.stringify(feeds);
