@@ -74,11 +74,15 @@ elseif ($skin_vars['mobile'] == "Android")
 </ul>
 
 <table id="feeds" class="hide-details hide-tools">
-<tr>
-  <th>#</th>
-  <th>Title</th>
+<thead>
+  <th class="icon-col">&nbsp;<!-- status indicator --></th>
+  <th class="count-col">#</th>
+  <th class="title-col">Title</th>
   <th class="feed-tools">Tools</th>
-</tr>
+</thead>
+<tbody id="feeds-tbody">
+  <td colspan="3">Loading...</td>
+</tbody>
 </table>
 </body>
 </html>

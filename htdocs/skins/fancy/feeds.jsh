@@ -242,7 +242,8 @@ function init_feed_list()
 {
 	// XXX - Get the cached copy of feeds, from last time.
 	feeds = cache.feeds();
-	redraw_feed_list();
+	if (feeds != null)
+		redraw_feed_list();
 
 	// Request a list of feeds
 	get_json_data("feeds.php",
@@ -276,23 +277,6 @@ function redraw_feed_list()
 	 * table rows.
 	 */
 	var thelist = document.createDocumentFragment();
-
-	/* XXX - This is bogus. Don't recreate the header line every
-	 * time: the cells will have event handlers to sort by title
-	 * or #unread. No need to recreate them each time.
-	 */
-	var header_line = document.createElement("tr");
-	thelist.appendChild(header_line);
-
-	// NB: We don't add the content of the row until later,
-	// because Firefox is apparently too smart for its (or my)
-	// good: evidently it thinks that at this point 'header_line'
-	// is a free-floating node outside of a table, and therefore
-	// mustn't contain any <td>s or <th>s, because those only go
-	// inside tables. So it strips the <td>s and <th>s from
-	// innerHTML.
-	// So we have to wait until 'thelist' (containing
-	// 'header_line') has been added to the table, below.
 
 	for (var i = 0; i < feeds.length; i++)
 	{
@@ -356,14 +340,10 @@ function redraw_feed_list()
 	/* Delete the old contents of the feed div, and replace them with
 	 * the new list.
 	 */
-	while (feed_table.firstChild)
-		feed_table.removeChild(feed_table.firstChild);
-	feed_table.appendChild(thelist);
-
-	/* Add the header line that Firefox wouldn't allow us to add
-	 * earlier.
-	 */
-	header_line.innerHTML = '<td>&nbsp;</td><th class="count-col" onclick="javascript:sort_by_count()">#</th><th class="title-col" onclick="javascript:sort_by_title()">Title</th><th class="feed-tools">Tools</th>';
+	var feed_tbody = feed_table.getElementsByTagName("tbody")[0];
+	while (feed_tbody.firstChild)
+		feed_tbody.removeChild(feed_tbody.firstChild);
+	feed_tbody.appendChild(thelist);
 
 	// XXX - Put the list in local storage, so it can be seen offline.
 }
