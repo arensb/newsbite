@@ -59,8 +59,8 @@ CacheManager.prototype.store_feeds = function(feeds)
 
 // XXX - Retrieve feed metadata
 
-// XXX - Save an item
+// XXX - Save an article
 
-// XXX - Retrieve an item (by id)
+// XXX - Retrieve an article (by id)
 
 #endif	// _CacheManager_js_
