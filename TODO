@@ -3,9 +3,6 @@
 	They often involve iframes. See
 	http://stackoverflow.com/questions/4135755/how-do-i-allow-script-object-param-embed-and-iframe-tags-in-htmlpurifier
 	(From http://stackoverflow.com/questions/4739284/htmlpurifier-iframe-vimeo-and-youtube-video )
-- Bug: Jesus & Mo keeps redirecting back and forth. Perhaps add a
-  flag to not update the database on redirect.
-	Or keep track of where we've been redirected and look for loops?
 - Bug: fancy skin: when Ajax updates feeds, it doesn't notice updates
   to the list of feeds.
 	Perhaps when updating all, update.php should append a list of
@@ -25,6 +22,7 @@
   index page, not to the last position.
 	flip_to_page() should remember current position, and scroll
   down to it when returning to it.
+- Sort feeds in main feeds display.
 - Spinny thing when updating feeds:
   Create a single image with all of the various states a feed can be
   in: normal, updating, error. Then use CSS to set a class, which in
