@@ -1,8 +1,3 @@
-- Bug: Figure out why some feeds show up stale when they have recent articles.
-- Bug: HTMLPurify removes YouTube videos. Why?
-	They often involve iframes. See
-	http://stackoverflow.com/questions/4135755/how-do-i-allow-script-object-param-embed-and-iframe-tags-in-htmlpurifier
-	(From http://stackoverflow.com/questions/4739284/htmlpurifier-iframe-vimeo-and-youtube-video )
 - Bug: fancy skin: when Ajax updates feeds, it doesn't notice updates
   to the list of feeds.
 	Perhaps when updating all, update.php should append a list of
