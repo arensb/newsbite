@@ -25,6 +25,35 @@ require_once HTMLPURIFIER_LIB . "/HTMLPurifier.auto.php";
 $purifier = NULL;	# Singleton purifier
 $purifier_config = NULL;
 
+/* HTMLPurifier_Filter_YouTubeIframe
+ * Allow YouTube videos that use <iframe>
+ */
+class HTMLPurifier_Filter_YouTubeIframe extends HTMLPurifier_Filter
+{
+	public $name = 'YouTubeIframe';
+
+	/* The approach is a simple one, outlined in the YouTube filter:
+	 * in preFilter, replace <iframe [stuff]></iframe> with
+	 * <span class="vimeo-iframe>[stuff]</span>
+	 * Then, in postFilter, recreate the original <iframe>.
+	 *
+	 * Presumably this can be used for other trusted iframes.
+	 */
+	public function preFilter($html, $config, $context)
+	{
+		$pre_regex = '#<iframe ([^>]*src="http://www.youtube.com/embed/[^>]*)></iframe>#s';
+		$pre_replace = '<span class="youtube-iframe">\1</span>';
+		return preg_replace($pre_regex, $pre_replace, $html);
+	}
+
+	public function postFilter($html, $config, $context)
+	{
+		return preg_replace('#<span class="youtube-iframe">(.*?)</span>#s',
+				    '<iframe $1></iframe>',
+				    $html);
+	}
+}
+
 /* HTMLPurifier_Filter_Vimeo
  * Allow embedded Vimeo videos.
  */
@@ -72,8 +101,12 @@ function htmlpurify_init()
 	# Allow YouTube videos
 	$purifier_config->set('Filter.YouTube', TRUE);
 
-	# Allow Vimeo videos
-	$purifier_config->set('Filter.Custom', array(new HTMLPurifier_Filter_Vimeo()));
+	# Other custom video filters
+	$purifier_config->set('Filter.Custom',
+			      array(
+				      new HTMLPurifier_Filter_YouTubeIframe(),
+				      new HTMLPurifier_Filter_Vimeo()
+				      ));
 
 	# XXX - Specify configuration options
 	$purifier = new HTMLPurifier($purifier_config);
