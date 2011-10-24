@@ -27,8 +27,8 @@
 	Instead of "Tools" and "Details" cluttering up the page, just
   list the #unread, title, and a ">>" link that pops up a details/edit
   page.
-- Feeds page: Too many items in the menu bar at the top. Use a
-  drop-down menu.
+- Feeds page drop-down menus: use an onclick to toggle menu on and
+  off, for mobile devices and such.
 - Editing feed details: instead of (or in addition to) a separate
   "edit feed" page, have an "edit" button on the page for a given
   feed. When clicked, highlight the parts that can be edited: title
