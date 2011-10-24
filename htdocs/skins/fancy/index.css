@@ -79,8 +79,41 @@
 	padding-bottom:		0.2em;
 }
 
-.tools li {
+.tools > li {
 	display:		inline;
+}
+
+.tools .submenu {
+	position:		relative;
+	top:			0px;
+	left:			0px;
+}
+
+.submenu-title {
+	display:		inline;
+	font-weight:		bold;
+}
+
+.submenu .tools-menu {
+	display:		none;
+	position:		absolute;
+	left:			0.5em;
+	top:			0em;	/* Should align with the bottom of the line */
+	min-width:		10em;
+	background-color:	white;
+	list-style-type:	none;
+	padding:		0px;
+	margin-top:		1.2em;	/* Should align with the bottom of the line */
+	-moz-box-shadow:	5px 5px 5px grey;
+}
+
+.submenu:hover .tools-menu {
+	display:		block;
+}
+
+.tools-menu li {
+	display:		default;
+/*outline:		1px dotted blue;*/
 }
 
 body {
@@ -93,11 +126,11 @@ body {
 	text-decoration:	none;
 }
 
-.tools li:before {
+.tools > li:before {
 	content:		" | ";
 }
 
-.tools li:first-child {
+.tools > li:first-child {
 	padding-left:		0.3em;
 }
 
