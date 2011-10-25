@@ -1,3 +1,4 @@
+- Bug: markitems.php includes style.css, which doesn't seem to exist.
 - Bug: fancy skin: when Ajax updates feeds, it doesn't notice updates
   to the list of feeds.
 	Perhaps when updating all, update.php should append a list of
@@ -17,6 +18,22 @@
   index page, not to the last position.
 	flip_to_page() should remember current position, and scroll
   down to it when returning to it.
+- Bug: Post titles (and other things) sometimes have "&" instead of
+  "&amp;".
+	Need to figure out whether we want to store things as "text"
+  or HTML in the database.
+	Storing as HTML means we get to preserve markup, e.g., if a
+  title uses an italicized phrase or a weird entity. For this to work,
+  need to go through the feed-parsing code and make sure that if a
+  title is text, we convert to HTML; if it's HTML, we merely clean it
+  up.
+- <noscript> in feeds.php apparently breaking xmllint --html
+  Just get rid of it?
+- markitem code in view.jsh is old and crufty. Fix it.
+	Use AJAX call from xhr.
+- "Display" menu on feeds page:
+  - Toggle empty feeds (no unread posts)
+  - Toggle stale feeds
 - Sort feeds in main feeds display.
 - Spinny thing when updating feeds:
   Create a single image with all of the various states a feed can be
@@ -52,6 +69,26 @@
 - Key bindings
 	'c' - collapse current article
 	'e' - expand current article
+- Publisher guidelines from readability.com:
+  http://www.readability.com/publishers/guidelines/
+  This should make things show up better in Safari Reader.
+  - <article>
+    - class="hentry"
+    Firefox doesn't grok <article> yet. This breaks CSS.
+  - class="entry-title" for post title.
+  - <time class="updated" datetime="2011-10-24 10:11:12-0400" pubdate>whenever</time>
+    "updated" for hAtom; "pubdate" for Reader.
+  - <p class="byline author vcard"><span class="fn">John Q. Author</span></p>
+    Who wrote the article.
+  - <div class="entry-content">
+    Content of the post.
+  - <div class="entry-content-asset">...</div>
+    Mark images and such that are directly related to the post.
+- Would hAtom or hNews be useful?
+  http://microformats.org/wiki/hAtom
+  http://microformats.org/wiki/hnews
+  Might be able to mark things up for Safari reader and/or other
+  readers. Perhaps might even be able to reuse some class names.
 - Can HTMLPurifier add a base URL to relative links? That is, if it
   sees
 	<a href="/foo">
@@ -218,6 +255,7 @@
   to php.ini.
 	Don't turn on both mod_mime and zlib.output_compression, lest
   you wind up with double-gzipped output from PHP scripts.
+	Test this.
 - Minify CSS, JS: there are various minification tools out there that
   will strip comments, extraneous whitespace, etc. from CSS or JS
   files.
@@ -1077,6 +1115,8 @@
 
   Apparently currently (May 2010) neither iPod Touch nor iPad consider
   themselves handheld devices. Go figure.
+- CSS: replace -moz-box-shadow, -webkit-box-shadow with box-shadow
+  once enough browsers support it.
 - CSS media queries described at
   http://www.w3.org/TR/2002/CR-css3-mediaqueries-20020708/
 - CSS3 supports "target" attributes for opening links in new
