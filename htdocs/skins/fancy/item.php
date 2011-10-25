@@ -84,7 +84,7 @@ if ($item['title'] == "" ||
 ?>
 	<span class="item-author">by <?=htmlspecialchars($item['author'])?></span>,&nbsp;
 <?	endif ?>
-	<span><?=strftime("%e %b, %Y", strtotime($item['pub_date']))?></span>
+	<time datetime="<?=$item['pub_date']?>" pubdate><?=strftime("%e %b, %Y", strtotime($item['pub_date']))?></time>
       </td>
       <td class="icon-box">
 <?
