@@ -2,6 +2,11 @@
 require_once("common.inc");
 require_once("database.inc");
 
+/* XXX - In practice, this is only used in an AJAX call. So a lot of
+ * the code here that allows for HTML is just cruft.
+ */
+
+/* XXX - $ok isn't used. Figure out something to do with it */
 $ok = true;	// Error status. If $ok, then we can just redirect to
 		// wherever we came from when we're done. Otherwise,
 		// need to display an error message.
@@ -130,19 +135,6 @@ if ($ok)
 	redirect_to($_SERVER['HTTP_REFERER']);
 	exit(0);
 }
+
+abort("Something went wrong, but I don't know what.");
 ?>
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
-	"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
-<html>
-<head>
-<title>NewsBite: Update items</title>
-<link rel="stylesheet" type="text/css" href="style.css" media="all" />
-</head>
-<body>
-
-<p><b>Error:</b> Something went wrong, but I don't know what.</p>
-
-<a href="<?=$_SERVER['HTTP_REFERER']?>">Back</a>.
-
-</body>
-</html>
