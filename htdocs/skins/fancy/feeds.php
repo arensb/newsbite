@@ -65,10 +65,10 @@ elseif ($skin_vars['mobile'] == "Android")
 <ul class="tools">
   <li><a href="update.php?id=all" onclick="return update_feed('all')">Update all feeds</a></li>
   <li><a href="view.php?id=all">View all feeds</a></li>
-  <li><a href="addfeed.php">Add a feed</a></li>
   <li class="submenu">
     <span class="submenu-title">Feeds</span>
     <ul class="tools-menu">
+      <li><a href="addfeed.php">Add a feed</a></li>
       <li><a href="opml.php">Subscription list as OPML</a></li>
       <li><a href="loadopml.php">Add OPML file</a></li>
       <li><a href="setskin.php">Change skin</a></li>
