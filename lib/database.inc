@@ -857,6 +857,7 @@ EOT;
  * $is_read is a boolean, either true (mark items as read) or false
  * (mark items as unread), and $items is an array of item IDs to mark.
  */
+// XXX - Should return status.
 // XXX - Would it be better to take an array of
 //	item_id => is_read
 // values?
