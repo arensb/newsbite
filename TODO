@@ -1,4 +1,3 @@
-- Bug: markitems.php includes style.css, which doesn't seem to exist.
 - Bug: fancy skin: when Ajax updates feeds, it doesn't notice updates
   to the list of feeds.
 	Perhaps when updating all, update.php should append a list of
@@ -27,6 +26,9 @@
   need to go through the feed-parsing code and make sure that if a
   title is text, we convert to HTML; if it's HTML, we merely clean it
   up.
+- Is it time to retire the default skin, which doesn't use JavaScript?
+- Is it possible to add a "share" button to articles, for sharing on
+  various social networks? (G+, Facebook, Twitter, etc.)
 - <noscript> in feeds.php apparently breaking xmllint --html
   Just get rid of it?
 - markitem code in view.jsh is old and crufty. Fix it.
