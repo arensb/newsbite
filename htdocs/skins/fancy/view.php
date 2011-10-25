@@ -153,10 +153,6 @@ foreach ($skin_vars as $k => $v)
 ?>
 <form name="mark-items" method="post" action="markitems.php">
 <div class="button-box">
-<!--
-  <input type="reset" name="clearit" value="Clear changes"/>
-  <input type="submit" name="mark-all" value="Mark all as read"/>
--->
   <input type="submit" name="doit" value="Apply changes"/>
 </div>
 <?
