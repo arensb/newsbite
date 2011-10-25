@@ -85,15 +85,15 @@ $feed['items'] = $items;
 // XXX - At least, ought to find out how many items there are, so as
 // not to add "earlier" link when there's nothing earlier.
 /* Construct URL for earlier and later pages, and names for those links */
-$prev_link = $_SERVER['PHP_SELF'] . "?id=$feed_id&s=" .
-	($start + $num_items);
+$prev_link = htmlentities($_SERVER['PHP_SELF'] . "?id=$feed_id&s=" .
+			  ($start + $num_items));
 $prev_link_text = "Earlier";
 //$prev_link_text = "Earlier &#x2397;";	// With "previous page" symbol
 
 if ($start >= $num_items)
 {
-	$next_link = $_SERVER['PHP_SELF'] . "?id=$feed_id&s=" .
-		($start - $num_items);
+	$next_link = htmlentities($_SERVER['PHP_SELF'] . "?id=$feed_id&s=" .
+				  ($start - $num_items));
 	$next_link_text = "Later";
 //	$next_link_text = "Later &#x2398;";	// With "next page" symbol
 } else {
