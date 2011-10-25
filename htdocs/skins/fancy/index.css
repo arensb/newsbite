@@ -98,13 +98,15 @@
 	display:		none;
 	position:		absolute;
 	left:			0.5em;
-	top:			0em;	/* Should align with the bottom of the line */
+	top:			0em;
 	min-width:		10em;
 	background-color:	white;
 	list-style-type:	none;
-	padding:		0px;
+	padding:		0.2em;
 	margin-top:		1.2em;	/* Should align with the bottom of the line */
+	border:			1px solid black;
 	-moz-box-shadow:	5px 5px 5px grey;
+	-webkit-box-shadow:	5px 5px 5px grey;
 }
 
 .submenu:hover .tools-menu {
