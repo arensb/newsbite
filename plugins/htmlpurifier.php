@@ -84,6 +84,36 @@ class HTMLPurifier_Filter_Vimeo extends HTMLPurifier_Filter
 	}
 }
 
+/* HTMLPurifier_Filter_Magnifier
+ * Allow embedded Google Magnifier music.
+ */
+class HTMLPurifier_Filter_Magnifier extends HTMLPurifier_Filter
+{
+	public $name = 'Magnifier';
+
+	/* The approach is a simple one, outlined in the YouTube filter:
+	 * in preFilter, replace <iframe [stuff]></iframe> with
+	 * <span class="vimeo-iframe>[stuff]</span>
+	 * Then, in postFilter, recreate the original <iframe>.
+	 *
+	 * Presumably this can be used for other trusted iframes.
+	 */
+	public function preFilter($html, $config, $context)
+	{
+		$pre_regex = '#<iframe (src="http://music.google.com/music/.+?)>.*?</iframe>#s';
+
+		$pre_replace = '<span class="magnifier-iframe">\1</span>';
+		return preg_replace($pre_regex, $pre_replace, $html);
+	}
+
+	public function postFilter($html, $config, $context)
+	{
+		return preg_replace('#<span class="magnifier-iframe">(.*?)</span>#s',
+				    '<iframe $1></iframe>',
+				    $html);
+	}
+}
+
 # htmlpurify_init
 # Set up the singleton purifier
 function htmlpurify_init()
@@ -105,7 +135,8 @@ function htmlpurify_init()
 	$purifier_config->set('Filter.Custom',
 			      array(
 				      new HTMLPurifier_Filter_YouTubeIframe(),
-				      new HTMLPurifier_Filter_Vimeo()
+				      new HTMLPurifier_Filter_Vimeo(),
+				      new HTMLPurifier_Filter_Magnifier()
 				      ));
 
 	# XXX - Specify configuration options
