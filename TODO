@@ -27,8 +27,17 @@
   title is text, we convert to HTML; if it's HTML, we merely clean it
   up.
 - Is it time to retire the default skin, which doesn't use JavaScript?
+	Every browser I use or care about supports AJAX, so use that
+  and drop plain HTML support.
+	Delete default skin. Make "fancy" the default.
 - Is it possible to add a "share" button to articles, for sharing on
   various social networks? (G+, Facebook, Twitter, etc.)
+	For Twitter: build a button at
+  http://twitter.com/about/resources/tweetbutton
+	For G+: this might do the trick:
+  http://www.google.com/intl/en/webmasters/+1/button/index.html
+	Facebook: this, or something related?:
+  http://developers.facebook.com/docs/reference/plugins/send/
 - <noscript> in feeds.php apparently breaking xmllint --html
   Just get rid of it?
 - markitem code in view.jsh is old and crufty. Fix it.
@@ -86,6 +95,11 @@
     Content of the post.
   - <div class="entry-content-asset">...</div>
     Mark images and such that are directly related to the post.
+- Apparently iOS JS can use accelerometer:
+  http://developer.apple.com/library/safari/#documentation/SafariDOMAdditions/Reference/DeviceMotionEventClassRef/DeviceMotionEvent/DeviceMotionEvent.html#//apple_ref/doc/uid/TP40010525
+	Perhaps use "shake" to mean "refresh"?
+	Also rotation:
+  http://developer.apple.com/library/safari/#documentation/SafariDOMAdditions/Reference/DeviceOrientationEventClassRef/DeviceOrientationEvent/DeviceOrientationEvent.html#//apple_ref/doc/uid/TP40010526
 - Would hAtom or hNews be useful?
   http://microformats.org/wiki/hAtom
   http://microformats.org/wiki/hnews
@@ -107,6 +121,7 @@
   button rendered in turn? Or am I just imagining problems that aren't
   really there?
 	Can this be made a plugin?
+	Or add this to a "share" button.
 - Minify and compress supporting files.
 	http://code.google.com/p/minify/
   Can run this as:
