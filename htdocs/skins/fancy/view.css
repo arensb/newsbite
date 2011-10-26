@@ -115,6 +115,7 @@ p {
 }
 
 /* XXX - Attempt at prettier form buttons
+ * Perhaps ought to use <button> rather than <input>
 input[type="reset"],
 input[type="submit"] {
 	-moz-border-radius-topleft:	10px;
