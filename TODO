@@ -26,10 +26,22 @@
   need to go through the feed-parsing code and make sure that if a
   title is text, we convert to HTML; if it's HTML, we merely clean it
   up.
+- Bug: On android, often title bar overflows to the right of the
+  screen.
 - Is it time to retire the default skin, which doesn't use JavaScript?
 	Every browser I use or care about supports AJAX, so use that
   and drop plain HTML support.
 	Delete default skin. Make "fancy" the default.
+- The feeds in feeds.jsh are starting to turn into moderately
+  complicated objects. It would be nice to have 'feeds' be an array of
+  Feed objects, rather than an array of generic arrays. How to do
+  this?
+	Perhaps receive_feed_list() should convert the feeds it
+  receives into Feed objects, using a constructor.
+	Probably need to do the same thing when reading them out of
+  localStorage.
+	Might need a toString() method to store Feed objects in
+  localStorage.
 - Is it possible to add a "share" button to articles, for sharing on
   various social networks? (G+, Facebook, Twitter, etc.)
 	For Twitter: build a button at
@@ -46,6 +58,13 @@
   - Toggle empty feeds (no unread posts)
   - Toggle stale feeds
 - Sort feeds in main feeds display.
+- Maybe ought to store a feed's language, so that we can figure out
+  how to sort its name correctly in the main feed display (e.g.,
+  "Le Monde" (fr) => "MONDE LE", and "El Mundo" (es) => "MUNDO EL").
+	This can be guessed from the <language> tag in RSS (Atom
+  doesn't seem to specify), but Le Monde, at least, doesn't bother to
+  say that it's in French.
+	Make this a feed option.
 - Spinny thing when updating feeds:
   Create a single image with all of the various states a feed can be
   in: normal, updating, error. Then use CSS to set a class, which in
@@ -149,6 +168,10 @@
   dependendies on svn (neither should the hacker one, really).
 	Also, in the installer distro, the CSS and JS files should be
   minified and compressed.
+	In PHP, can use 'if (extension_loaded("mysql"))' to find out
+  whether a given module is loaded. Can use
+  '$module_list = apache_get_modules()' to get list of available
+  Apache modules. Can use this to suggest a .htaccess to the user.
 - dKos text looks funny: first paragraph is indented less than
   subsequent ones. Is this something that can be fixed?
 	It has
