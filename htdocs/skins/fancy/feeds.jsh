@@ -12,6 +12,7 @@ function clrdebug() { }
 #include "js/xhr.js"
 #include "js/classes.js"
 #include "js/keybindings.js"
+#include "js/types.js"
 #include "js/Template.js"
 #include "js/CacheManager.js"
 //#include "js/load_module.js"
@@ -37,6 +38,7 @@ function init()
 	// Key bindings
 	bind_key("d", toggle_details);
 	bind_key("t", toggle_tools);
+	// XXX - C-r: refresh list of feeds.
 
 	init_feed_list();
 }
@@ -240,7 +242,7 @@ function toggle_tools()
 
 function init_feed_list()
 {
-	// XXX - Get the cached copy of feeds, from last time.
+	// Get the cached copy of feeds, from last time.
 	feeds = cache.feeds();
 	if (feeds != null)
 		redraw_feed_list();
@@ -254,14 +256,21 @@ function init_feed_list()
 
 function receive_feed_list(value)
 {
-	// XXX - Make sure value is a list
+	// Make sure value is a list
+	if (!value instanceof Array)
+		// XXX - Error-reporting?
+		return;
 
-	/* XXX - Actually, this function should probably just
-	 * - update the in-memory copy of the feed list
-	 * - stash a copy in local storage
-	 * - invoke a different function to redraw the list
+	// Create an array of Feed objects from what we just got.
+	/* XXX - Ought to update the existing list: we might store
+	 * state or something, and don't want to lose that just
+	 * because the feed count got updated.
 	 */
-	feeds = value;
+	var newfeeds = new Array();
+	for (var i in value)
+		newfeeds.push(new Feed(value[i]))
+	feeds = newfeeds;
+
 	cache.store_feeds(feeds);
 	redraw_feed_list();
 }
@@ -278,11 +287,29 @@ function redraw_feed_list()
 	 */
 	var thelist = document.createDocumentFragment();
 
-	for (var i = 0; i < feeds.length; i++)
+	// XXX - Make this a separate function (a method on FeedList,
+	// perhaps?) so that we can sort either by name, or by number
+	// of unread articles (or anything else we might add).
+	// XXX - The sorting functions should be able to handle
+	// reverse sort order as well. Perhaps can just use
+	// Array.reverse().
+	var sorted_feeds = feeds.sort(
+		function(a, b)
+		{
+			var as = a.sortname();
+			var bs = b.sortname();
+			if (as < bs)
+				return -1;
+			else if (as > bs)
+				return 1;
+			return 0;
+		});
+	for (var i = 0; i < sorted_feeds.length; i++)
 	{
-		var feed = feeds[i];
+		var feed = sorted_feeds[i];
 
-		// XXX - Skip inactive feeds
+		// XXX - Skip inactive feeds if user wants
+		// XXX - Skip empty feeds if user wants
 
 		var line = document.createElement("tr");
 		line.feed_id = feed.id;
@@ -315,14 +342,12 @@ function redraw_feed_list()
 		/* Title */
 		var cell = document.createElement("td");
 		add_class(cell, "title-col");
-		var display_title;
-		// Prefer nickname, if it's set
-		if (feed.nickname != null && feed.nickname != "")
-			feed.display_title = feed.nickname;
-		else if (feed.title != null && feed.title != "")
-			feed.display_title = feed.title;
-		else
-			feed.display_title = "[no title]";
+		feed.display_title = feed.displaytitle();
+		// XXX - This is arguably bogus: we're using the Feed
+		// object both in its capacity as an object, and also
+		// as a hash of template values.
+		// Having a separate hash with template values would
+		// be cleaner.
 		cell.innerHTML = feed_title_tmpl.expand(feed);
 		line.appendChild(cell);
 		line.title_cell = cell;
