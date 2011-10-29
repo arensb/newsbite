@@ -1,5 +1,8 @@
 #ifndef _CacheManager_js_
 #define _CacheManager_js_
+
+#include "types.js"		/* Feed and Item classes */
+
 /* CacheManager.js
  * Manage local storage.
  */
@@ -10,7 +13,10 @@
 
 function CacheManager()
 {
-	/* XXX - Load known objects? Or would that affect execution speed? */
+	/* XXX - Load known objects? Or would that affect execution
+	 * speed? Or perhaps just stick a flag in the prototype saying
+	 * that this object hasn't been initialized properly yet?
+	 */
 }
 
 /* feeds
@@ -18,26 +24,35 @@ function CacheManager()
  */
 CacheManager.prototype.feeds = function()
 {
-	var retval;
-
 	// Get the cached set of feeds from local storage
+	var str;
 	try {
-		retval = localStorage.getItem('feeds');
+		str = localStorage.getItem('feeds');
 	} catch (e) {
+		// Exception might be thrown if browser doesn't grok
+		// localStorage.
 		localStorage.removeItem('feeds');
 		return null;
 	}
-	if (retval == null)
+	if (str == null)
 		// No feeds stored yet
 		return null;
 
 	// Parse the retrieved value
+	var a;		// Array of strings, rather than the array of
+			// Feeds that we'll eventually return.
 	try {
-		retval = JSON.parse(retval);
+		a = JSON.parse(str);
 	} catch (e) {
+		// In case of syntax error or something
 		localStorage.removeItem('feeds');
 		return null;
 	}
+
+	// Convert elements to objects.
+	var retval = new Array();
+	for (f in a)
+		retval.push(new Feed(f));
 	return retval;
 }
 
