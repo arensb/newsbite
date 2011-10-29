@@ -38,16 +38,15 @@ function msg_add(msg, duration)
 	// Set an alarm to remove the message after a certain timeout,
 	// and remember where we put that alarm, so we can remove it
 	// later.
-	 item.expire = setTimeout(function() {
-			   msg_expire(item);
-		   }, duration);
+	item.expire = setTimeout(function() {
+			msg_expire(item);
+		}, duration);
 	msg_box.appendChild(item);
 }
 
 function msg_expire(msg)
 {
 	var parent = msg.parentNode;
-//	alert("Inside msg_expire, parent "+parent);
 
 	// Cancel the timed expiration we'd set earlier, in case we
 	// got here by the user clicking on the message.
