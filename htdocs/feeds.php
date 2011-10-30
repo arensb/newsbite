@@ -41,8 +41,6 @@ foreach ($feeds as $id => $data)
 	$desc['stale']           = $data['stale'];
 	$desc['num_read']        = $counts[$id]['read'];
 	$desc['num_unread']      = $counts[$id]['unread'];
-	$desc['latest_pub_date'] = $counts[$id]['latest_pub_date'];
-	$desc['latest_update']   = $counts[$id]['latest_update'];
 
 	$output[] = $desc;
 }
