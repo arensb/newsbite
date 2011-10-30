@@ -126,8 +126,6 @@ EOT
  *	array(
  *		'read'			=> 150,
  *		'unread'		=> 12,
- *		'latest_pub_date'	=> <time_t>,
- *		'latest_update		=> <time_t>
  *	);
  */
 // XXX - Should accept $feed_id == NULL, to count all items.
@@ -156,32 +154,6 @@ EOT
 	$retval = $result->fetch_assoc();
 		// XXX - Error-checking
 
-	/* Get the times when the feed was last published to, and last
-	 * updated.
-	 */
-	$query = sprintf(<<<EOT
-SELECT		UNIX_TIMESTAMP(MAX(`pub_date`)) as `latest_pub_date`,
-		UNIX_TIMESTAMP(MAX(`last_update`)) as `latest_update`
-FROM		items
-WHERE		feed_id = %d
-EOT
-			 ,
-			 $feed_id);
-	$result = $dbh->query($query);
-	if (!$result)
-	{
-		// XXX - Should just set error message, and allow
-		// caller to do error-reporting.
-		echo "Error ", $dbh->errno, ": \"",
-			$dbh->error, "\"<br/>\n";
-		return NULL;
-	}
-	$row = $result->fetch_assoc();
-		// XXX - Error-checking
-
-	$retval['latest_pub_date'] = $row['latest_pub_date'];
-	$retval['latest_update']   = $row['latest_update'];
-
 	return $retval;
 }
 
@@ -194,8 +166,6 @@ EOT
  *		190	=> array(		// Feed ID 190
  *			'read'	=> 150,
  *			'unread'=> 12,
- *			'latest_pub_date'	=> <time_t>,
- *			'latest_update'		=> <time_t>
  *			),
  *		191	=> array( ... ),	// Feed ID 191
  *		...
@@ -236,47 +206,6 @@ EOT;
 		$feed_id = $row['feed_id'];
 		unset($row['feed_id']);
 		$retval[$feed_id] = $row;
-	}
-
-	/* Get the latest pub_date and last_update of any item in each
-	 * feed.
-	 */
-	// XXX - When a feed doesn't have any items, this returns NULL
-	// for all the counts. We fix this below with a hack, but
-	// there's got to be a better way.
-	$query = <<<EOT
-SELECT		feeds.id AS `feed_id`,
-		UNIX_TIMESTAMP(
-			IFNULL(MAX(items.`pub_date`),
-			       "0000-00-00 00:00:00"))
-			AS `latest_pub_date`,
-		UNIX_TIMESTAMP(
-			IFNULL(MAX(items.`last_update`),
-			       "0000-00-00 00:00:00"))
-			AS `latest_update`
-FROM		feeds
-LEFT JOIN	items
-  ON		feeds.id=items.feed_id
-GROUP BY	feeds.id
-EOT;
-	$result = $dbh->query($query);
-	if (!$result)
-	{
-		// XXX - Should just set error message, and allow
-		// caller to do error-reporting.
-		echo "Error ", $dbh->errno, ": \"",
-			$dbh->error, "\"<br/>\n";
-		return NULL;
-	}
-
-	while ($row = $result->fetch_assoc())
-	{
-		// XXX - Error-checking
-		$feed_id = $row['feed_id'];
-		$retval[$feed_id]['latest_pub_date'] =
-			$row['latest_pub_date'];
-		$retval[$feed_id]['latest_update'] =
-			$row['latest_update'];
 	}
 
 	return $retval;
