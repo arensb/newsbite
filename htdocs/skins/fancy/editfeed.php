@@ -154,7 +154,7 @@ $feed = &$skin_vars['feed'];
 <?    if (isset($skin_vars['errors']['username'])): ?>
         <div class="error-msg"><?=$skin_vars['errors']['username']?></div>
 <? endif ?>
-      <input type="text" name="username" value="<?=$feed['username']?>"/>
+      <input type="text" name="username" value="<?=$feed['username']?>" autocomplete="off"/>
     </td>
   </tr>
 
@@ -164,7 +164,7 @@ $feed = &$skin_vars['feed'];
 <?    if (isset($skin_vars['errors']['passwd'])): ?>
         <div class="error-msg"><?=$skin_vars['errors']['passwd']?></div>
 <? endif ?>
-      <input type="password" name="password" value="<?=$feed['passwd']?>"/>
+      <input type="password" name="password" value="<?=$feed['passwd']?>" autocomplete="off"/>
     </td>
   </tr>
 </table>
