@@ -11,13 +11,6 @@ $skin_dir = $skin_vars['skin'];
 <title>NewsBite: Adding feed</title>
 <link rel="stylesheet" type="text/css" href="skins/<?=$skin_dir?>/style.css" media="all" />
 <link rel="stylesheet" type="text/css" href="skins/<?=$skin_dir?>/addfeed.css" media="all" />
-<!-- If JavaScript is turned on, slurp in the JavaScript-specific
-     stylesheet
--->
-<script type="text/javascript">
-  document.write('<link rel="stylesheet" type="text/css" href="skins/<?=$skin_dir?>/style-js.css" media="all" />\n');
-</script>
-
 <script type="text/javascript">
 // Function to add NewsBite as an RSS subscriber in Firefox
 var ff_subscribe_url = "<?=$skin_vars['subscribe_url']?>?feed_url=%s";	// Subscription URL

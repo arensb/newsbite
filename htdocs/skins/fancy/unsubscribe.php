@@ -12,12 +12,6 @@ echo '<', '?xml version="1.0" encoding="UTF-8"?', ">\n";
 <title>NewsBite: Unsubscribe</title>
 <link rel="stylesheet" type="text/css" href="skins/<?=$skin_dir?>/style.css" media="all" />
 <link rel="stylesheet" type="text/css" href="skins/<?=$skin_dir?>/unsubscribe.css" media="all" />
-<!-- If JavaScript is turned on, slurp in the JavaScript-specific
-     stylesheet
--->
-<script type="text/javascript">
-  document.write('<link rel="stylesheet" type="text/css" href="skins/<?=$skin_dir?>/style-js.css" media="all" />\n');
-</script>
 </head>
 <body id="unsubscribe-body">
 
