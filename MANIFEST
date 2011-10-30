@@ -89,11 +89,6 @@ htdocs/skins/fancy/view.css
 htdocs/skins/fancy/view.js
 htdocs/skins/fancy/view.jsh
 htdocs/skins/fancy/view.php
-htdocs/skins/mobile/feeds.js
-htdocs/skins/mobile/feeds.tpl
-htdocs/skins/mobile/index.css
-htdocs/skins/mobile/setskin.css
-htdocs/skins/mobile/setskin.tpl
 htdocs/skins/wings/Makefile
 htdocs/skins/wings/feeds.php
 htdocs/skins/wings/images/gray-bg.jpg
