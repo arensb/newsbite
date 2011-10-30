@@ -29,12 +29,6 @@ if (isset($mobile_css))
 	echo "<link rel=\"stylesheet\" type=\"text/css\" href=\"skins/$skin_vars[skin]/$mobile_css\" media=\"screen\" />\n";
 }
 ?>
-<!-- If JavaScript is turned off, slurp in the no-JavaScript-specific
-     stylesheet
--->
-<noscript>
-  <link rel="stylesheet" type="text/css" href="skins/<?=$skin_dir?>/style-nojs.css" media="all" />
-</noscript>
 <!-- If JavaScript is turned on, slurp in the JavaScript-specific
      stylesheet
 -->
