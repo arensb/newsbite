@@ -75,7 +75,7 @@ require_once("hooks.inc");
 // <webMaster>					webmaster
 //			<contributor>		feed_contributors[]
 // <pubDate>					pub_time
-// <lastBuildDate>	<updated>		build_time
+// <lastBuildDate>	<updated>		build_time (should be ignored)
 // <category>		<category><term>	categories[][term]
 //			<category><scheme>	categories[][scheme]
 //			<category><label>	categories[][label]
@@ -109,7 +109,7 @@ require_once("hooks.inc");
 // <enclosure>		<link {other}>?		enclosure{}
 // <guid>		<id>			guid
 // <pubDate>		<published>		pub_time
-//			<updated>		build_time
+//			<updated>		build_time (should be ignored)
 // <source>		<source>		-
 //			<rights>		-
 
@@ -252,7 +252,6 @@ $feed_errmsg = "";	// Error message
  */
 function parse_feed($feed_text)
 {
-//echo "<hr/>About to parse [<pre>$feed_text</pre>]\n\n<hr/>\n";
 	global $feed_err, $feed_errmsg;
 	global $_context;
 
@@ -407,9 +406,13 @@ function _element_start_handler($parser, $fullname, $attrs)
 		/* Call init handler, if any */
 		if (function_exists($url2handler[$ns_url]["init"]))
 		{
+			# XXX - Pass along $attrs as an additional argument:
+			# can give a hint to the parser whether which version
+			# of RSS we're dealing with.
 			$err = $url2handler[$ns_url]["init"](
 				$ns_url,
-				$url2ns[$ns_url]
+				$url2ns[$ns_url],
+				$attrs
 				);
 			/* Allow the handler to abort processing */
 			if (!$err)
@@ -559,6 +562,16 @@ function _element_end_handler($parser, $fullname)
  * it'll be called for "foo", "&", and "bar".
  * It also gets called for whitespace between elements.
  */
+// XXX - It doesn't look as though we can tell whether this function
+// was called from inside a <![CDATA[[ ]]> or not. The only difference
+// between
+// <title>one &lt;i&gt;two&lt;/i&gt; three</title>
+// and
+// <title><![CDATA[one <i>two</i> three]]></title>
+// is that in the former case, _cdata_handler() gets called a bunch of
+// times, while in the latter it only gets called once.
+
+// However, in both case we get "<" rather than "&lt;".
 function _cdata_handler($parser, $data)
 {
 	global $_context;
@@ -620,8 +633,11 @@ function _namespace_handler($parser, $prefix, $url)
 	$url2ns[$url] = $prefix;
 
 	/* If there's an initialization hook for this URL, call it */
+	$dummy = null;
 	if (function_exists($url2handler[$url]['init']))
-		$url2handler[$url]['init']($url, $prefix);
+		// XXX - url2handler[init] expects a third argument, a
+		// list of attributes. Do we have that?
+		$url2handler[$url]['init']($url, $prefix, $dummy);
 }
 
 // XXX - Apparently this is supposed to be called when leaving the
@@ -741,8 +757,10 @@ function default_attribute_handler(
 /********** RSS ************************************************/
 // RSS 2.0 spec at
 // http://cyber.law.harvard.edu/rss/rss.html
-function rss_init($url, $prefix)
+function rss_init($url, $prefix, &$attrs)
 {
+	// XXX - Look at $attrs['version'] to see which version of RSS
+	// we're dealing with.
 	return true;
 }
 
@@ -890,6 +908,9 @@ function rss_element_handler(
 		break;
 
 	    case "lastBuildDate":
+		/* Really, we don't care about lastBuildDate. So this
+		 * section is pretty much just for completeness.
+		 */
 		switch ($parent)
 		{
 		    case "channel":
@@ -1461,7 +1482,7 @@ function rss_attribute_handler(
  * Atom initialization hook. Do whatever is necessary to initialize
  * Atom.
  */
-function atom_init($url, $prefix)
+function atom_init($url, $prefix, &$attrs)
 {
 	return true;
 }
