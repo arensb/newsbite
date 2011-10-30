@@ -18,12 +18,6 @@ echo '<', '?xml version="1.0" encoding="UTF-8"?', ">\n";
 <script type="text/javascript">
   document.write('<link rel="stylesheet" type="text/css" href="skins/<?=$skin_dir?>/style-js.css" media="all" />\n');
 </script>
-<!-- If JavaScript is turned off, slurp in the no-JavaScript-specific
-     stylesheet
--->
-<noscript>
-  <link rel="stylesheet" type="text/css" href="skins/<?=$skin_dir?>/style-nojs.css" media="all" />
-</noscript>
 </head>
 <body id="unsubscribe-body">
 
