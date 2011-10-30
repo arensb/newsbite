@@ -9,7 +9,7 @@ function clrdebug() { }
 #include "js/xhr.js"
 #include "js/classes.js"
 #include "js/keybindings.js"
-#include "js/load_module.js"
+/*#include "js/load_module.js"*/
 #include "js/status-msg.js"
 
 document.addEventListener("DOMContentLoaded", init, false);
