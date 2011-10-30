@@ -54,10 +54,12 @@
   Just get rid of it?
 - markitem code in view.jsh is old and crufty. Fix it.
 	Use AJAX call from xhr.
+- Perhaps have "login" as an AJAX service. Send credentials to a
+  password-protected page; have the page send back a JSON status
+  message and a cookie that can be used to retrieve the other pages.
 - "Display" menu on feeds page:
   - Toggle empty feeds (no unread posts)
   - Toggle stale feeds
-- Sort feeds in main feeds display.
 - Maybe ought to store a feed's language, so that we can figure out
   how to sort its name correctly in the main feed display (e.g.,
   "Le Monde" (fr) => "MONDE LE", and "El Mundo" (es) => "MUNDO EL").
@@ -70,6 +72,18 @@
   in: normal, updating, error. Then use CSS to set a class, which in
   turn shifts the background image up or down to display the
   appropriate icon.
+	Perhaps have it use the "number of unread articles" column, so
+  as to take up less space on the iPhone.
+- Dates in the database are hopelessly fucked. I'm not sure what I was
+  trying to do anymore, and when you download a lot of articles from a
+  new feed, they show up in some bizarre order.
+	I think the things I care about are:
+	- When was this article put out on the net?
+	- (Maybe) When did the author last revise this article?
+	- How long has it been since anything was posted to this feed?
+	- When's the last time I successfully got the contents of this
+	  feed?
+	- mtime: when did I mark this article as read/unread?
 - Feeds page:
 	Instead of "Tools" and "Details" cluttering up the page, just
   list the #unread, title, and a ">>" link that pops up a details/edit
@@ -150,6 +164,10 @@
   does it remove enough useless fluff that the less-efficient
   compression is still worth it?
 	minify adds headers. Is this desirable?
+- Minify CSS, JS: there are various minification tools out there that
+  will strip comments, extraneous whitespace, etc. from CSS or JS
+  files.
+	Like compressing, this should be done at install time.
 - Split up distribution.
 	There should really be two distros: one for hackers who want
   the source, and one for people who want to install it.
@@ -296,10 +314,8 @@
 	Don't turn on both mod_mime and zlib.output_compression, lest
   you wind up with double-gzipped output from PHP scripts.
 	Test this.
-- Minify CSS, JS: there are various minification tools out there that
-  will strip comments, extraneous whitespace, etc. from CSS or JS
-  files.
-	Like compressing, this should be done at install time.
+	Figure out how to serve uncompressed files to browsers that
+  don't grok gzip.
 - Create icon, startup images for mobile app
   http://commons.wikimedia.org/wiki/File:Newspaper_Cover.svg
   http://commons.wikimedia.org/wiki/RSS
@@ -386,23 +402,10 @@
 	  along with various close-tags.
 	  Quick hack: invoke clean-html when displaying, rather than
 	  when updating.
-- RSS feeds can be redirected. It's possible that when a site moves,
-  it forwards the RSS feed to the new site for a while. The code
-  should detect this, and at least spit out a message saying that
-  something has changed. Perhaps update the feed URL automatically.
-	For that matter, perhaps it could generate a synthetic article
-  in the feed, saying that the feed URL has changed.
 - Functions and scripts that take a feed ID should also take a group.
   In particular, "all" should be considered a group, not a special
   feed ID (though it can be considered a special group).
 - 'make install' (or 'make upgrade') should install everything.
-- Delete "mobile" skin?
-	First, save all the useful experiments.
-	- orientation, for iPad/iPhone
-	* get_json_data (could be useful)
-	- iPhone sizes, from index.css
-	- Gradients (index.css)
-	* Template
 - Add "$Rev$" or something to some file, so we can tell which revision
   we should be at. Compare this to the database, and see if we need to
   upgrade.
