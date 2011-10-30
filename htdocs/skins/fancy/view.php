@@ -44,12 +44,6 @@ var mobile = "<?=$skin_vars['mobile']?>";
 if (isset($mobile_css))
 	echo "<link rel=\"stylesheet\" type=\"text/css\" href=\"skins/$skin_dir/$mobile_css\" media=\"screen\" />\n";
 ?>	  
-<!-- If JavaScript is turned on, slurp in the JavaScript-specific
-     stylesheet
--->
-<script type="text/javascript">
-  document.write('<link rel="stylesheet" type="text/css" href="skins/<?=$skin_dir?>/style-js.css" media="all" />\n');
-</script>
 <script type="text/javascript" src="skins/<?=$skin_dir?>/view.js"></script>
 </head>
 <body id="view-body">

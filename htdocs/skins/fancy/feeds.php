@@ -29,12 +29,6 @@ if (isset($mobile_css))
 	echo "<link rel=\"stylesheet\" type=\"text/css\" href=\"skins/$skin_vars[skin]/$mobile_css\" media=\"screen\" />\n";
 }
 ?>
-<!-- If JavaScript is turned on, slurp in the JavaScript-specific
-     stylesheet
--->
-<script type="text/javascript">
-  document.write('<link rel="stylesheet" type="text/css" href="skins/<?=$skin_dir?>/style-js.css" media="all" />\n');
-</script>
 <script type="text/javascript">
   var skin_dir="skins/<?=$skin_dir?>";
   var show_details = false;
