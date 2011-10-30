@@ -84,6 +84,14 @@
 	- When's the last time I successfully got the contents of this
 	  feed?
 	- mtime: when did I mark this article as read/unread?
+
+	lib/database.inc: feeds.last_update should be computed from
+  items.pub_date. Ignore anything it says in <rss><channel><pubDate>.
+	We could _almost_ just compute feeds.last_update on the fly,
+  as the latest item.pub_date, but for one thing: if all of the items
+  get expired and deleted, we still want to know that the last item
+  was posted on such-and-such date.
+
 - Feeds page:
 	Instead of "Tools" and "Details" cluttering up the page, just
   list the #unread, title, and a ">>" link that pops up a details/edit
