@@ -371,18 +371,20 @@ EOT;
 		$query .= "WHERE " . implode("\nAND ", $conditions) . "\n";
 	}
 
-	/* Specify order in query */
+	/* Specify order in query.
+	 * Use id as a tiebreaker, to ensure a consistent order.
+	 */
 	switch ($args['order'])
 	{
 	    case "date_asc":
-		$query .= "ORDER BY items.last_update ASC\n";
+		$query .= "ORDER BY items.last_update ASC, id ASC\n";
 		break;
 	    case "date_desc":
 	    default:
 		// XXX - This fall-through means we don't notice bogus
 		// values. Then again, we can probably trust the
 		// caller.
-		$query .= "ORDER BY items.last_update DESC\n";
+		$query .= "ORDER BY items.last_update DESC, id DESC\n";
 		break;
 	}
 
