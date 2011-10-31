@@ -91,7 +91,6 @@
   as the latest item.pub_date, but for one thing: if all of the items
   get expired and deleted, we still want to know that the last item
   was posted on such-and-such date.
-
 - Feeds page:
 	Instead of "Tools" and "Details" cluttering up the page, just
   list the #unread, title, and a ">>" link that pops up a details/edit
@@ -107,6 +106,13 @@
   overlaid over the feed.
 - Cache resources like .js, .css files. Ideally also static parts of
   PHP script output. See mod_cache.
+- To make things really fancy, could have live updating of article
+  status on multiple devices: Have the client open a persistent
+  connection to the server (basically, a PHP script that never exits).
+  Over this channel, the server announces changes to items. So if
+  client A marks item 12345 as read, this information gets broadcast
+  to all connected clients, and they can update their displays
+  accordingly.
 - JavaScript with namespaces
 	Things like the Google +1 button use a namespace: <g:plusone> or
   whatever it is. This seems fairly useful.
