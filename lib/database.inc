@@ -374,6 +374,16 @@ function db_add_feed($feed)
 			break;
 
 		    case "last_update":
+			/* Normally, we ignore the last_update time
+			 * from the feed itself (as opposed to the
+			 * time from the individual items). But in
+			 * this case, since we're adding a new feed,
+			 * having a publisher-supplied value might be
+			 * better than nothing.
+			 */
+			/* XXX - Then again, it might not. We could
+			 * just as easily initialize it to now.
+			 */
 			// Convert from time_t to SQL date
 			$fields[] = "last_update";
 			$values[] = "FROM_UNIXTIME($v)";
@@ -514,10 +524,18 @@ function db_update_feed_info($feed_id, $fields)
 			$dbh->real_escape_string($fields['image']['url']) .
 			"'";
 
-	if (array_key_exists('last_update', $fields) &&
-	    $fields['last_update'] > $old['unix_last_update'])
-		// Last update (time_t)
-		$updates[] = sprintf("last_update = FROM_UNIXTIME(%ld)", $fields['last_update']);
+// XXX - This function is called
+// a) when the user changes feed information (like title or URL)
+// b) when we update a feed.
+// We don't want to change last_update in either of those cases; we
+// only want to change last_update when an item with a pub_date newer
+// than feeds.last_update comes in.
+// So this is commented out until I'm sure this doesn't break
+// anything.
+//	if (array_key_exists('last_update', $fields) &&
+//	    $fields['last_update'] > $old['unix_last_update'])
+//		// Last update (time_t)
+//		$updates[] = sprintf("last_update = FROM_UNIXTIME(%ld)", $fields['last_update']);
 
 	if (array_key_exists('ttl', $fields) &&
 	    $fields['ttl'] != $old['ttl'])
@@ -579,53 +597,61 @@ function db_update_feed($feed_id, $feed)
 
 	foreach ($feed['items'] as $item)
 	{
-		// This query may look long and redundant, but
-		// basically it means:
-		//
-		// If this entry doesn't exist yet, create one. If the
-		// entry already exists, update it from the RSS
-		// information.
-		//
-		// The date fields (look for the IFNULL() calls) work
-		// as follows:
-		//
-		// When adding a new item:
-		// If a publication time was given, use that;
-		// otherwise, use the current time.
-		// If an update time was given, use that; otherwise,
-		// use the publication time.
-		//
-		// When updating an existing item: update pub_date and
-		// last_update to what it says in the feed. If it
-		// wasn't specified, leave the existing field
-		// unchanged.
-		// This is useful because a lot of RSS feeds don't
-		// include timestamps. But we don't want articles
-		// bubbling up to the last time the feed was fetched.
-
-		// NB: This code does something that may not be
-		// kosher: the line that sets the last_update field
-		// uses the previously-set value for 'pub_date'. I
-		// don't know whether this is portable or robust; it
-		// just seems to work.
-
-		// XXX - Unfortunately, this sends the summary and
-		// content to the database twice, which might be
-		// undesirable for feeds that typically have long
-		// posts. Is there a way around this?
-
-		// XXX - The following might happen:
-		// - article is published; pub_date = last_update = t0
-		// - user marks it read at t1
-		// - article is updated; pub_date = t0, last_update = t2
-		// There's now new information that the user might
-		// want to see; ought to mark the article as unread.
-
-		// XXX - Currently, all new articles are marked as
-		// is_read == FALSE. It might be useful for a hook to
-		// mark an article as read as soon as it comes in
-		// (e.g., ignoring articles in the newspaper's sports
-		// section).
+		/* This query may look long and redundant, but
+		 * basically it means:
+		 *
+		 * If this entry doesn't exist yet, create one. If the
+		 * entry already exists, update it from the RSS
+		 * information.
+		 *
+		 * The date fields (look for the IFNULL() calls) work
+		 * as follows:
+		 *
+		 * When adding a new item:
+		 * If a publication time was given, use that;
+		 * otherwise, use the current time.
+		 * If an update time was given, use that; otherwise,
+		 * use the publication time.
+		 *
+		 * When updating an existing item: update pub_date and
+		 * last_update to what it says in the feed. If it
+		 * wasn't specified, leave the existing field
+		 * unchanged.
+		 * This is useful because a lot of RSS feeds don't
+		 * include timestamps. But we don't want articles
+		 * bubbling up to the last time the feed was fetched.
+		 *
+		 * NB: This code does something that may not be
+		 * kosher: the line that sets the last_update field
+		 * uses the previously-set value for 'pub_date'. I
+		 * don't know whether this is portable or robust; it
+		 * just seems to work.
+		 */
+		/* XXX - Unfortunately, this sends the summary and
+		 * content to the database twice, which might be
+		 * undesirable for feeds that typically have long
+		 * posts. Is there a way around this?
+		 */
+		/* XXX - The following might happen:
+		 * - article is published; pub_date = last_update = t0
+		 * - user marks it read at t1
+		 * - article is updated; pub_date = t0, last_update = t2
+		 * There's now new information that the user might
+		 * want to see; ought to mark the article as unread.
+		 * Then again, the user might not: the update might be
+		 * a trivial modification to fix a typo; or it might
+		 * be a liveblog of an ongoing, uninteresting event.
+		 *
+		 * Perhaps a better compromise might be to use only
+		 * the most recent of pub_date and last_update as the
+		 * sole publication time. 
+		 */
+		/* XXX - Currently, all new articles are marked as
+		 * is_read == FALSE. It might be useful for a hook to
+		 * mark an article as read as soon as it comes in
+		 * (e.g., ignoring articles in the newspaper's sports
+		 * section).
+		 */
 
 		$query = <<<EOT
 INSERT INTO	items
@@ -737,6 +763,19 @@ EOT;
 	}
 
 	// Update feeds.last_update, so we can measure staleness
+	/* XXX - Edge case: what if the feed is broken (or weird), so
+	 * that currently feeds.last_update == Aug 1 (from the last
+	 * update), but the most recent items.pub_date is Mar 1? Then
+	 * we'd see feeds.last_update go back 4 months, even though
+	 * the most recent post was Aug 1.
+	 *
+	 * Perhaps use
+	 * SET last_update = MAX(last_update, (SELECT ...))
+	 * But then if the feed is empty, then the IFNULL will default
+	 * to NOW(), which is also bad. If the feed is empty, then
+	 * feeds.last_update should remain unchanged. So perhaps
+	 * should default to the epoch.
+	 */
 	$query = <<<EOT
 UPDATE	feeds
 	SET	last_update = 
