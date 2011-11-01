@@ -39,6 +39,7 @@ function init()
 	bind_key("d", toggle_details);
 	bind_key("t", toggle_tools);
 	// XXX - C-r: refresh list of feeds.
+	bind_key("C-r", refresh_feed_list);
 
 	init_feed_list();
 }
@@ -247,6 +248,22 @@ function init_feed_list()
 	if (feeds != null)
 		redraw_feed_list();
 
+	// XXX - Ought to set a spinny icon.
+
+	// Request a list of feeds
+	get_json_data("feeds.php",
+		      { o: "json" },
+		      receive_feed_list,
+		      true);
+}
+
+/* refresh_feed_list
+ * Get a new set of item counts and such from the server, and redraw
+ * the list.
+ */
+function refresh_feed_list()
+{
+	// XXX - Ought to set a spinny icon.
 	// Request a list of feeds
 	get_json_data("feeds.php",
 		      { o: "json" },
@@ -256,6 +273,7 @@ function init_feed_list()
 
 function receive_feed_list(value)
 {
+	// XXX - Clear spinny icon.
 	// Make sure value is a list
 	if (!value instanceof Array)
 		// XXX - Error-reporting?
