@@ -79,7 +79,6 @@ if (is_integer($feed_id))
 // at the top of the rendered page, so that scripts on that page can
 // tell what we're displaying.
 $items = db_get_some_feed_items($get_feed_args);
-$feed['items'] = $items;
 
 // XXX - Find out how many items there are in this list, so we can put
 // up a navigation bar.
@@ -116,7 +115,7 @@ if ($mobile &&
 		$m_wund = "i.wund.com";		# iPhone mobile site
 	else
 		$m_wund = "m.wund.com";		# Generic mobile site
-	foreach ($feed['items'] as &$i)
+	foreach ($items as &$i)
 	{
 		// WaPo stuff is ugly.
 		// "spf=1" is to show the full article. Leave it off
@@ -145,7 +144,7 @@ if ($mobile &&
 if ($mobile)
 {
 	// Other transformations that apply to iPad as well.
-	foreach ($feed['items'] as &$i)
+	foreach ($items as &$i)
 	{
 		$i['url'] = preg_replace(',^http://www\.lemonde\.fr/,',
 					 'http://mobile.lemonde.fr/',
@@ -202,7 +201,7 @@ $skin->assign('start', $start);
 $skin->assign('feed', $feed);
 if (isset($feeds))
 	$skin->assign('feeds', $feeds);
-$skin->assign('items', $feed['items']);
+$skin->assign('items', $items);
 $skin->assign('prev_link', $prev_link);
 $skin->assign('prev_link_text', $prev_link_text);
 $skin->assign('next_link', $next_link);
