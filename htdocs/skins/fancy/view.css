@@ -127,6 +127,10 @@ input[type="submit"] {
 }
 */
 
+#itemlist {
+	outline:		1px solid red;
+}
+
 /* Overall box containing an item */
 .item {
 	margin-top:		1em;
@@ -370,6 +374,14 @@ input[type="checkbox"].mark-check {
 .current-item .item-summary,
 .current-item .item-content {
 	border-left-color:	#6060ff;
+/* Attempt at making a more interesting gradient background for the current item.
+	background-image:
+		-webkit-gradient(linear, left top, right top,
+				 from(#6060ff),
+				 color-stop(1%, #b0b0b0),
+				 color-stop(3%, white),
+				 to(white));
+*/
 }
 
 .content-panes[collapsible="yes"] .item-summary {
