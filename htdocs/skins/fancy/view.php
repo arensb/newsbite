@@ -36,6 +36,8 @@ elseif ($skin_vars['mobile'] == "Android")
 <script type="text/javascript">
 // Set various useful variables to pass on to scripts
 var mobile = "<?=$skin_vars['mobile']?>";
+var feed_id = <?=jsonify($skin_vars['feed_id'])?>;
+var start = <?=jsonify($skin_vars['start']?>;
 </script>
 <title>NewsBite: <?=htmlspecialchars($feed['title'])?></title>
 <!-- <link rel="stylesheet" type="text/css" href="skins/<?=$skin_dir?>/style.css" media="all" /> -->
@@ -136,6 +138,9 @@ foreach ($skin_vars as $k => $v)
 /* XXX - When showing read items, change to value="unread"/> */
 ?>
 <input type="hidden" name="mark-how" value="read"/>
+
+<!-- itemlist: load articles and display them here -->
+<div id="itemlist"></div>
 
 <?
 /* List of items. Items are displayed using the separate "item"
