@@ -35,9 +35,10 @@ elseif ($skin_vars['mobile'] == "Android")
 ?>
 <script type="text/javascript">
 // Set various useful variables to pass on to scripts
+// The parameters we were given were the feed ID, and the start offset.
 var mobile = "<?=$skin_vars['mobile']?>";
-var feed_id = <?=jsonify($skin_vars['feed_id'])?>;
-var start = <?=jsonify($skin_vars['start']?>;
+var feed = <?=jsonify($skin_vars['feed'])?>;
+var start = <?=jsonify($skin_vars['start'])?>;
 </script>
 <title>NewsBite: <?=htmlspecialchars($feed['title'])?></title>
 <!-- <link rel="stylesheet" type="text/css" href="skins/<?=$skin_dir?>/style.css" media="all" /> -->
@@ -140,7 +141,14 @@ foreach ($skin_vars as $k => $v)
 <input type="hidden" name="mark-how" value="read"/>
 
 <!-- itemlist: load articles and display them here -->
-<div id="itemlist"></div>
+<div id="itemlist">
+<script type="text/javascript">
+for (i in feed)
+{
+	document.write("feed."+i+": "+feed[i]+"<br/>");
+}	 
+</script>
+</div>
 
 <?
 /* List of items. Items are displayed using the separate "item"
