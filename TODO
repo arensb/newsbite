@@ -26,22 +26,27 @@
   need to go through the feed-parsing code and make sure that if a
   title is text, we convert to HTML; if it's HTML, we merely clean it
   up.
+	Assume that any text-type text (titles, summaries, contents)
+  are HTML, and therefore need to be cleaned up.
+	Dates should be converted to SQL datetime in the database,
+  then sent as time_t to the client.
+	Email addresses are text, but should probably be sanitized.
+	Author names... not sure. There may be non-ASCII characters,
+  and different people may deal with this differently (UTF-8 vs. HTML
+  entities). Perhaps safest to assume that they're HTML and clean up
+  (if possible, only do entity translation, and throw out any markup).
 - Bug: On android, often title bar overflows to the right of the
   screen.
+- Split up htdocs/view.php into presentation and content.
+	htdocs/view.php invokes the skin, which in turn sets JS
+  variables from skin variables (feed_id, offset, and whatever other
+  parameters we've been given)
+	htdocs/items.php (or something) takes those parameters and
+  returns a JSON (or XML) list of articles.
 - Is it time to retire the default skin, which doesn't use JavaScript?
 	Every browser I use or care about supports AJAX, so use that
   and drop plain HTML support.
 	Delete default skin. Make "fancy" the default.
-- The feeds in feeds.jsh are starting to turn into moderately
-  complicated objects. It would be nice to have 'feeds' be an array of
-  Feed objects, rather than an array of generic arrays. How to do
-  this?
-	Perhaps receive_feed_list() should convert the feeds it
-  receives into Feed objects, using a constructor.
-	Probably need to do the same thing when reading them out of
-  localStorage.
-	Might need a toString() method to store Feed objects in
-  localStorage.
 - Is it possible to add a "share" button to articles, for sharing on
   various social networks? (G+, Facebook, Twitter, etc.)
 	For Twitter: build a button at
