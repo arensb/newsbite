@@ -197,6 +197,8 @@ if ($out_fmt == "xml")
 /* If we get this far, user has requested HTML output */
 $skin = new Skin();
 
+$skin->assign('feed_id', $feed_id);
+$skin->assign('start', $start);
 $skin->assign('feed', $feed);
 if (isset($feeds))
 	$skin->assign('feeds', $feeds);
