@@ -51,7 +51,8 @@ if ($feed_id == "all")
 	 * Construct a pseudo-feed to put the items in
 	 */
 	$feed = array(
-		"title"	=> "All feeds"
+		"title"	=> "All feeds",
+		"id"	=> "all",
 		);
 	$feeds = db_get_feeds();
 } else {
@@ -197,7 +198,6 @@ if ($out_fmt == "xml")
 /* If we get this far, user has requested HTML output */
 $skin = new Skin();
 
-$skin->assign('feed_id', $feed_id);
 $skin->assign('start', $start);
 $skin->assign('feed', $feed);
 if (isset($feeds))
