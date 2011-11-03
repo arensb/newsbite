@@ -146,8 +146,9 @@ foreach ($skin_vars as $k => $v)
 for (i in feed)
 {
 	document.write("feed."+i+": "+feed[i]+"<br/>");
-}	 
+}
 </script>
+Loading...
 </div>
 
 <?
