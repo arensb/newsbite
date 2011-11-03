@@ -145,6 +145,10 @@ input[type="submit"] {
 		-webkit-gradient(linear, left top, left bottom,
 			from(blue),
 			to(navy));
+	background-image:
+		-moz-linear-gradient(top,
+			blue,
+			navy);
 	border-top-color:	blue;
 	border-bottom-color:	navy;
 }
@@ -430,6 +434,10 @@ input[type="checkbox"].mark-check {
 		-webkit-gradient(linear, left top, left bottom,
 				 from(navy),
 				 to(#6060ff));
+	background-image:
+		-moz-linear-gradient(top,
+				 navy,
+				 #6060ff);
 }
 
 .lower-bar {
@@ -437,6 +445,10 @@ input[type="checkbox"].mark-check {
 		-webkit-gradient(linear, left top, left bottom,
 				 from(#6060ff),
 				 to(navy));
+	background-image:
+		-moz-linear-gradient(top,
+				 #6060ff,
+				 navy);
 }
 
 .expand-bar {
@@ -444,6 +456,10 @@ input[type="checkbox"].mark-check {
 		-webkit-gradient(linear, left top, left bottom,
 				 from(#6060ff),
 				 to(navy));
+	background-image:
+		-moz-linear-gradient(top,
+				 #6060ff,
+				 navy);
 }
 
 /* Control box at bottom of item */
