@@ -1,6 +1,14 @@
 #ifndef _CacheManager_js_
 #define _CacheManager_js_
-
+/* XXX - Perhaps organize things as follows:
+ * localStorage:
+ * - feeds: basically a mirror of the 'feeds' table.
+ * - ihead:NNN: basically a mirror of 'items where id == NNN', but
+ *	without the summary or content.
+ * - ibody:NNN: { "summary": <summary-text>,
+ *			"content": <content-text>
+ *		}
+ */
 #include "types.js"		/* Feed and Item classes */
 
 /* CacheManager.js
@@ -17,6 +25,26 @@ function CacheManager()
 	 * speed? Or perhaps just stick a flag in the prototype saying
 	 * that this object hasn't been initialized properly yet?
 	 */
+	this.items = {};	// Header information about items
+	this.have_text = {};	// 1 for those items for which we have text
+
+	for (var i, n = localStorage.length; i < n; i++)
+	{
+		var key = localStorage.key(i);
+		var matches;
+
+		if (matches = key.match(/^ihead:(\d+)$/))
+		{
+			// XXX - Currently just setting 1 if a
+			// particular item is in localStorage
+			// XXX - Wrap this in a try{}.
+			this.items[match[1]] = JSON.parse(localStorage.getItem(key));
+		} else if (matches = key.match(/^ibody:(\d+)$/))
+		{
+			this.have_text[matches[1]] = 1;
+		}
+		// XXX - Check for unrecognized entries?
+	}
 }
 
 /* feeds
@@ -52,7 +80,7 @@ CacheManager.prototype.feeds = function()
 	// Convert elements to objects.
 	var retval = new Array();
 	for (f in a)
-		retval.push(new Feed(f));
+		retval.push(new Feed(a[f]));
 	return retval;
 }
 
