@@ -33,13 +33,14 @@ function CacheManager()
 		var key = localStorage.key(i);
 		var matches;
 
-		if (matches = key.match(/^ihead:(\d+)$/))
+		// The '(...) != null' construct is only there to stop
+		// Firefox from issuing a warning about whether I
+		// meant to use == instead of =.
+		if ((matches = key.match(/^ihead:(\d+)$/)) != null)
 		{
-			// XXX - Currently just setting 1 if a
-			// particular item is in localStorage
 			// XXX - Wrap this in a try{}.
 			this.items[match[1]] = JSON.parse(localStorage.getItem(key));
-		} else if (matches = key.match(/^ibody:(\d+)$/))
+		} else if ((matches = key.match(/^ibody:(\d+)$/)) != null)
 		{
 			this.have_text[matches[1]] = 1;
 		}
