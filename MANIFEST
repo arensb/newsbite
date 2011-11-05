@@ -45,6 +45,7 @@ htdocs/skins/default/unsubscribe.php
 htdocs/skins/default/view.css
 htdocs/skins/default/view.js
 htdocs/skins/default/view.php
+htdocs/skins/fancy/Ajax-loader.gif
 htdocs/skins/fancy/Attention_niels_epting.png
 htdocs/skins/fancy/Attraction_transfer_icon.gif
 htdocs/skins/fancy/Loading.gif
@@ -74,6 +75,7 @@ htdocs/skins/fancy/js/defer.js
 htdocs/skins/fancy/js/keybindings.js
 htdocs/skins/fancy/js/load_module.js
 htdocs/skins/fancy/js/status-msg.js
+htdocs/skins/fancy/js/types.js
 htdocs/skins/fancy/js/xhr.js
 htdocs/skins/fancy/opml.css
 htdocs/skins/fancy/opml.php
