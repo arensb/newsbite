@@ -96,6 +96,7 @@ foreach ($skin_vars as $k => $v)
   <li><a href="unsubscribe.php?id=<?=$feed_id?>">Unsubscribe from feed</a></li>
 <?endif?>
 </ul>
+<button onclick="localStorage.clear()">Clear localStorage</button>
 
 <?
 /* Navigation bar. **/
@@ -140,16 +141,7 @@ foreach ($skin_vars as $k => $v)
 ?>
 <input type="hidden" name="mark-how" value="read"/>
 
-<!-- itemlist: load articles and display them here -->
-<div id="itemlist">
-<script type="text/javascript">
-for (i in feed)
-{
-	document.write("feed."+i+": "+feed[i]+"<br/>");
-}
-</script>
-Loading...
-</div>
+<div id="itemlist"><img src="skins/<?=$skin_dir?>/Ajax-loader.gif"/></div>
 
 <?
 /* List of items. Items are displayed using the separate "item"

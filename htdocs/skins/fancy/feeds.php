@@ -79,7 +79,7 @@ elseif ($skin_vars['mobile'] == "Android")
   <th class="feed-tools">Tools</th>
 </thead>
 <tbody id="feeds-tbody">
-  <td colspan="3">Loading...</td>
+  <td colspan="3"><img src="skins/<?=$skin_dir?>/Ajax-loader.gif"/></td>
 </tbody>
 </table>
 </body>
