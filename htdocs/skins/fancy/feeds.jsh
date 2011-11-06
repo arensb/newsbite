@@ -12,6 +12,7 @@ function clrdebug() { }
 #include "js/xhr.js"
 #include "js/classes.js"
 #include "js/keybindings.js"
+#include "js/Events.js"
 #include "js/types.js"
 #include "js/Template.js"
 #include "js/CacheManager.js"
