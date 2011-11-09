@@ -9,6 +9,9 @@ function clrdebug() { }
 #include "js/xhr.js"
 #include "js/classes.js"
 #include "js/keybindings.js"
+#include "js/PatEvent.js"
+#include "js/types.js"
+#include "js/CacheManager.js"
 /*#include "js/load_module.js"*/
 #include "js/status-msg.js"
 
@@ -19,8 +22,13 @@ var mark_read = {};		// Hash of item_id -> is_read? values
 var mark_request = null;	// Data for marking items as read/unread
 var current_item = null;	// Current item, for keybindings and such
 
+var cache = new CacheManager();	// Cache manager for locally-stored data
+var itemlist;		// Div containing the items.
+
 function init()
 {
+	itemlist = document.getElementById("itemlist");
+
 	addListenerByClass("collapse-bar", "click", toggle_pane, false);
 	addListenerByClass("expand-bar", "click", toggle_pane, false);
 	addListenerByClass("mark-check", "click", button_mark_item, false);
@@ -43,11 +51,16 @@ function init()
 	if (mobile == "")
 	{
 		addListenerByClass("item", "mouseover", enter_item, false);
+//		bind_event("mouseover", ".item", enter_item);
 		addListenerByClass("item", "mouseout", exit_item, false);
+//		bind_event("mouseout", ".item", exit_item);
 		bind_key("d", key_mark_item);
 		// XXX - bind_key("k", move_up);
 		// XXX - bind_key("j", move_down);
 	}
+
+// XXX - Experimental: moving toward more AJAXy interface.
+//do_stuff();
 }
 
 /* addListenerByClass
@@ -529,4 +542,41 @@ function exit_item(ev)
 	remove_class(elt, "current-item");
 	current_item = null;
 	return true;
+}
+
+function do_stuff()
+{
+	itemlist.innerHTML = "CacheManager: "+cache+"<br/>\n";
+	var str = "ihead:<ul>";
+	for (i in cache.items)
+	{
+		str += "<li>"+i+": "+cache.items[i]+"</li>";
+	}
+	str += "</ul>";
+	itemlist.innerHTML += str;
+
+	str = "ibody:<ul>";
+	for (i in cache.have_text)
+	{
+		str += "<li>"+i+"</li>";
+	}
+	str += "</ul>";
+	itemlist.innerHTML += str;
+
+	get_json_data("items.php",
+		      { o: "json",
+			id: feed.id
+		      },
+		      receive_item_list,
+		      true);
+}
+
+function receive_item_list(value)
+{
+	// XXX - Can we update the feed info from the feed header?
+
+	for (i in value.items)
+	{
+//		msg_add("item: "+value.items[i].title);
+	}
 }
