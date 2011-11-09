@@ -37,6 +37,59 @@
   (if possible, only do entity translation, and throw out any markup).
 - Bug: On android, often title bar overflows to the right of the
   screen.
+- Bug: bind_event doesn't properly detect when the mouse enters an
+  item, because there's no padding between the item and its children.
+  The way to fix this (and arguably the Right Way to implement event
+  handling in the first place) would be to attach event listeners to
+  individual elements, not to the window.
+	That is, we have:
+	<window>
+	  <item>
+	    <item-header>
+	    <item-content>
+	    <item-footer>
+
+  Since <item> has no padding, the mouseover event technically occurs
+  on the <item-header>. <item-header> has no handler for the event, so
+  it bubbles up to <item>, which doesn't have a handler either, so it
+  bubbles up to <window>, which does have a handler. But at that
+  point, <window> sees that the event occurred on <item-header>, and
+  doesn't automatically know (unless it searches <item-header>'s
+  ancestry) that it involved an <item>, so a ".item" selector doesn't
+  work.
+	A better approach would be to bind handlers directly to DOM
+  elements (the way it's done now with addListenerByClass()). This
+  would have to be done in two phases: when a new
+  {ev,selector}=>handler is registered, do a sweep of the current DOM
+  to find all elements that match the new selector. Then, when the DOM
+  is modified, do a sweep of the elements that have been
+  added/modified, and add those bindings that apply to the new
+  elements (and remove the ones that no longer apply).
+	This can probably be done by listening for DOMSubtreeModified,
+  DOMNodeInserted, DOMNodeInsertedIntoDocument, DOMAttrModified.
+	One potential problem with this is that the node that was
+  added might have children. So if we have
+	bind_event("click", ".foo .child", do_things)
+  and change
+  	<div class="foo"><div class="child">
+  to
+	<div class="bar"><div class="child">
+  then do_things() should no longer be called when clicking on child.
+
+	Should be able to get all children of a node with
+	node.getElementsByTagName("*");
+- Move event handlers over to bind_event().
+	Fix update_feed(id) to work with bind_event (i.e., take only
+  one argument).
+- Put bind_key in js/Events.js.
+- Guideline: Apple recommends using 'delete' to free up memory and
+  help the garbage collector. Basically, any time you have
+	var my_foo = new Foo;
+  write
+	delete my_foo;
+  wherever you're done with it.
+	Also, use 'var', to make variables local (so they can be
+  destroyed when they go out of scope).
 - Split up htdocs/view.php into presentation and content.
 	htdocs/view.php invokes the skin, which in turn sets JS
   variables from skin variables (feed_id, offset, and whatever other
@@ -47,6 +100,11 @@
 	Every browser I use or care about supports AJAX, so use that
   and drop plain HTML support.
 	Delete default skin. Make "fancy" the default.
+- What's the best way to handle XKCD mouseover text on mobile devices?
+  Perhaps an HTMLPurifier plugin that finds <img alt="foo"/> and puts
+  the alt-text under the image, as a caption?
+	Or perhaps put a button next to the image, which expands into
+  a box with the alt-text?
 - Is it possible to add a "share" button to articles, for sharing on
   various social networks? (G+, Facebook, Twitter, etc.)
 	For Twitter: build a button at
