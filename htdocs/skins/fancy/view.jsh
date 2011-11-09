@@ -29,9 +29,12 @@ function init()
 {
 	itemlist = document.getElementById("itemlist");
 
-	addListenerByClass("collapse-bar", "click", toggle_pane, false);
-	addListenerByClass("expand-bar", "click", toggle_pane, false);
-	addListenerByClass("mark-check", "click", button_mark_item, false);
+	PatEvent.bind_event(document, "click", ".collapse-bar",
+			    toggle_pane, false);
+	PatEvent.bind_event(document, "click", ".expand-bar",
+			    toggle_pane, false);
+	PatEvent.bind_event(document, "click", ".mark-check",
+			    button_mark_item, false);
 
 	// The main form, the one that holds all the items, their
 	// checkboxes, the buttons at the top and bottom, etc.
@@ -50,10 +53,10 @@ function init()
 	 */
 	if (mobile == "")
 	{
-		addListenerByClass("item", "mouseover", enter_item, false);
-//		bind_event("mouseover", ".item", enter_item);
-		addListenerByClass("item", "mouseout", exit_item, false);
-//		bind_event("mouseout", ".item", exit_item);
+		PatEvent.bind_event(document, "_enter", ".item",
+				    enter_item, false);
+		PatEvent.bind_event(document, "_exit", ".item",
+				    exit_item, false);
 		bind_key("d", key_mark_item);
 		// XXX - bind_key("k", move_up);
 		// XXX - bind_key("j", move_down);
@@ -61,25 +64,6 @@ function init()
 
 // XXX - Experimental: moving toward more AJAXy interface.
 //do_stuff();
-}
-
-/* addListenerByClass
- * Adds an event listener to all elements with class 'className'.
- * The arguments 'event', 'handler', and 'capture' are passed on
- * to addEventListener().
- */
-function addListenerByClass(className, event, handler, capture)
-{
-	var elements = document.getElementsByClassName(className);
-
-	for (var i = 0; i < elements.length; i++)
-	{
-		try {
-			elements[i].addEventListener(event, handler, capture);
-		} catch (err) {
-			// XXX - Is there anything to do?
-		}
-	}
 }
 
 /* toggle-pane
