@@ -37,10 +37,11 @@
   (if possible, only do entity translation, and throw out any markup).
 - Bug: On android, often title bar overflows to the right of the
   screen.
+- view.jsh: Replace AddListenerByClass() with bind_event(). Get rid of
+  AddListenerByClass().
 - Move event handlers over to bind_event().
 	Fix update_feed(id) to work with bind_event (i.e., take only
   one argument).
-- Put bind_key in js/Events.js.
 - Guideline: Apple recommends using 'delete' to free up memory and
   help the garbage collector. Basically, any time you have
 	var my_foo = new Foo;
@@ -330,6 +331,9 @@
 	Is it possible to attach an "on-finger-up" event handler, such
   that if the user has dragged the page past the bottom of the screen,
   it loads the next item in the feed?
+	Or monitor all "drag" type moves and keep track of the
+  position of the stuff on the page. Load articles as necessary to
+  give the illusion that it's one big continuous page.
 - wings: the page divs should go all the way to the top. This might help:
 	http://www.communitymx.com/content/article.cfm?cid=BAD95
 - plugins/xml-media.php:
