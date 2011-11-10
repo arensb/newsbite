@@ -27,6 +27,8 @@ p {
 .feed-icon {
 	float:			right;
 	margin:			1em;
+	max-width:		128px;
+	max-height:		128px;
 }
 
 /* Feed subtitle */
