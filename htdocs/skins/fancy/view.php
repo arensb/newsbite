@@ -38,7 +38,73 @@ elseif ($skin_vars['mobile'] == "Android")
 // The parameters we were given were the feed ID, and the start offset.
 var mobile = "<?=$skin_vars['mobile']?>";
 var feed = <?=jsonify($skin_vars['feed'])?>;
-var start = <?=jsonify($skin_vars['start'])?>;
+var start_offset = <?=jsonify($skin_vars['start'])?>;
+
+// XXX - This template needs an awful lot of work. See item.php
+var item_tmpl_text = '<div class="item" id="item-@id@">\
+  <table class="item-header">\
+    <tr>\
+      <!-- Second set of checkboxes, for iPad -->\
+      <td class="icon-box button-box-left">\
+        <input class="mark-check" type="checkbox" name="cbX-@id@" value="1"/>\
+      </td>\
+      <td class="info">\
+        <h3 class="item-title">\
+          <a href="@url@" @url_attr@>@title@</a>\
+        </h3>\
+        <h3 class="feed-title">\
+          <a href="@feed_url@">@feed_title@</a>\
+        </h3>\
+        <span class="item-author">by @author@</span>,&nbsp;\
+        <time datetime="@pub_date@" pubdate>@pretty_pub_date@</time>\
+      </td>\
+      <td class="icon-box">\
+        <span class="mark-read">Mark as read:&nbsp;</span>\
+        <input class="mark-check" type="checkbox" name="cbt-@id@" value="1"/>\
+      </td>\
+    </tr>\
+  </table>\
+  <div class="content-panes show-@which@" collapsible="@collapsible@" which="@which@">\
+    <div class="collapse-bar upper-bar">\
+      &#x25b2;\
+    </div>\
+\
+    <div class="item-summary">\
+      @summary@\
+      <br style="clear:both"/>\
+    </div>\
+\
+    <div class="item-content">\
+      @content@\
+      <br style="clear: both"/>\
+    </div>\
+    <div class="collapse-bar lower-bar">\
+      &#x25b2;\
+    </div>\
+    <div class="expand-bar">\
+      &#x25bc;\
+    </div>\
+  </div>\
+\
+  <table class="item-footer">\
+    <tr>\
+      <td class="icon-box button-box-left">\
+        <input class="mark-check" type="checkbox" name="cbY-@id@" value="1"/>\
+      </td>\
+      <td class="bottom-link-box">\
+        <ul class="bottom-links">\
+          <li><a href="@url@">Read more</a></li>\
+          <li><a href="@comment_url@">Comments</a></li>\
+          <li><a href="@comment_rss@">(feed)</a></li>\
+        </ul>\
+      </td>\
+      <td class="mark-td">\
+        Mark as read:&nbsp;\
+        <input class="mark-check" type="checkbox" name="cbb-@id@" value="1"/>\
+      </td>\
+    </tr>\
+  </table>\
+</div>';
 </script>
 <title>NewsBite: <?=htmlspecialchars($feed['title'])?></title>
 <!-- <link rel="stylesheet" type="text/css" href="skins/<?=$skin_dir?>/style.css" media="all" /> -->
