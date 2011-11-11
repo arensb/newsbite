@@ -45,15 +45,6 @@ function init()
 	init_feed_list();
 }
 
-/* XXX - Updating feeds is all kinds of broken.
- * The back-end PHP script shouldn't return any HTML on how to display
- * the feed. That should be done here.
- * The various values should be in identifiable <span>s, so that we can
- * just replace an existing value.
- * For that matter, there should probably be a JS list of feed_id => row
- * that we can use to quickly update all the values we want to.
- */
-
 /* update_feed
  * Update a feed, or all feeds.
  * This is intended to be called from inside an onclick="...", so
@@ -277,7 +268,6 @@ function receive_feed_list(value)
 	// XXX - Clear spinny icon.
 	// Make sure value is a list
 	if (!value instanceof Array)
-		// XXX - Error-reporting?
 		return;
 
 	// Create an array of Feed objects from what we just got.
@@ -285,6 +275,7 @@ function receive_feed_list(value)
 	 * state or something, and don't want to lose that just
 	 * because the feed count got updated.
 	 */
+	// XXX - feeds is now a hash. Is this bit necessary?
 	var newfeeds = new Array();
 	for (var i in value)
 		newfeeds.push(new Feed(value[i]))
