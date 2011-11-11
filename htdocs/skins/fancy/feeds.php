@@ -30,7 +30,8 @@ if (isset($mobile_css))
 }
 ?>
 <script type="text/javascript">
-  var skin_dir="skins/<?=$skin_dir?>";
+  /* XXX - Which of these variables are actually needed? */
+  var skin_dir = "skins/<?=$skin_dir?>";
   var show_details = false;
   var show_tools = false;
   var feed_title_tmpl_text = '<a href="view.php?id=@id@">@display_title@</a>&nbsp;<span class="feed-details">(<a href="@url@">site</a>, <a href="@feed_url@">RSS</a>)</span>';
