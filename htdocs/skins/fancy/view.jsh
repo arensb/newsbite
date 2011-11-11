@@ -12,8 +12,15 @@ function clrdebug() { }
 #include "js/PatEvent.js"
 #include "js/types.js"
 #include "js/CacheManager.js"
+#include "js/Template.js"
 /*#include "js/load_module.js"*/
 #include "js/status-msg.js"
+/* XXX - Should have a separate module for handling updates from the
+ * server: have functions to request fresh copy of feed list, or
+ * getting new items.
+ *
+ * When those things come in, perhaps send an event.
+ */
 
 document.addEventListener("DOMContentLoaded", init, false);
 
@@ -23,12 +30,45 @@ var mark_request = null;	// Data for marking items as read/unread
 var current_item = null;	// Current item, for keybindings and such
 
 var cache = new CacheManager();	// Cache manager for locally-stored data
+var feeds;		// List of feeds
 var itemlist;		// Div containing the items.
+var item_tmpl = new Template(item_tmpl_text);
+			// Defined in view.php
 
 function init()
 {
+	feeds = cache.feeds();
+			// Get list of feeds from cache
+			// XXX - Send a request to get an updated
+			// list.
+
+			// XXX - This is used in displaying individual
+			// items. What happens if it's empty? E.g.
+			// - start with no localStorage
+			// - issue request for feeds
+			// - issue request for items
+			// - request for items returns
+			// - start displaying items
+			// - request for feeds returns (or fails)
+			//
+			// In this case, we're trying to look stuff up
+			// with an empty feeds list. Seems hairy.
+			// Might need some sort of mutex mechanism for
+			// synchronization. Perhaps generate an event
+			// when the feed list is updated.
+			//
+			// When feeds come in, set have_feeds=true;
+			// when items come in, set have_items=true.
+			// When both are set, launch the initial
+			// refresher.
+
+	// XXX - Get list of items in the current feed from cache.
+	// Send a request to get an updated list.
+
 	itemlist = document.getElementById("itemlist");
 
+	// XXX - The root node for bind_event shouldn't be document,
+	// but rather whichever div will contain the articles.
 	PatEvent.bind_event(document, "click", ".collapse-bar",
 			    toggle_pane, false);
 	PatEvent.bind_event(document, "click", ".expand-bar",
@@ -63,7 +103,7 @@ function init()
 	}
 
 // XXX - Experimental: moving toward more AJAXy interface.
-//do_stuff();
+do_stuff();
 }
 
 /* toggle-pane
@@ -561,6 +601,59 @@ function receive_item_list(value)
 
 	for (i in value.items)
 	{
-//		msg_add("item: "+value.items[i].title);
+		var item = value.items[i];
+		var title = item.title;
+
+		if (title == null ||
+		    title.match(/^\s*$/))
+			title = "[no title]";
+
+		// XXX - Fill these in.
+		// XXX - Indicate whether to show content or summary.
+		// XXX - Indicate whether collapsible.
+		var item_values = {
+			id:		item.id,
+			url:		encodeURI(item.url),
+			url_attr:	"",
+				// XXX - On iPhone/iPad, open title link
+				// in a new window.
+			title:		title,
+				// XXX - If empty, use "[no title]".
+				// XXX - Assume that the PHP script has sent us clean HTML.
+			feed_url:	encodeURI("[feed_url]"),
+				// XXX - Get this from feeds.
+			feed_title:	"[feed_title]",
+				// XXX - Get this from feeds.
+			author:		item.author,
+				// XXX - If author is empty, shouldn't
+				// display the "by" before author
+				// name.
+				// XXX - If ever use author URL, might
+				// want to wrap author name in <a
+				// href="mailto:...>.
+			pub_date:	item.pub_date,
+			pretty_pub_date:item.pub_date,
+				// XXX - Pretty-print the date.
+			summary:	item.summary,
+			content:	item.content,
+			comment_url:	encodeURI(item.content_url),
+			comment_rss:	encodeURI(item.content_rss),
+			// Indicate whether collapsible (both content
+			// and summary exist), and whether to display
+			// summary or content.
+			collapsible:	(item.summary != null &&
+					 item.content != null ?
+					 "yes" : "no"),
+			which:		(item.content == null ?
+					 "summary" : "content"),
+		};
+		var item_node = item_tmpl.expand(item_values);
+
+		// XXX - At this point, item_node is just a chunk of
+		// text. Ought to turn it into a DOM fragment, and
+		// store interesting information about it.
+
+		// Append to itemlist.
+		itemlist.innerHTML += item_node;
 	}
 }
