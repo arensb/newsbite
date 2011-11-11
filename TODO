@@ -37,8 +37,6 @@
   (if possible, only do entity translation, and throw out any markup).
 - Bug: On android, often title bar overflows to the right of the
   screen.
-- Remove purple-gradient.png: not used. Not likely to ever be used,
-  especially with CSS gradients.
 - Move event handlers over to bind_event().
 	Fix update_feed(id) to work with bind_event (i.e., take only
   one argument).
