@@ -42,7 +42,7 @@ foreach ($feeds as $id => $data)
 	$desc['num_read']        = $counts[$id]['read'];
 	$desc['num_unread']      = $counts[$id]['unread'];
 
-	$output[] = $desc;
+	$output[$id] = $desc;
 }
 
 if ($out_fmt == "json")
