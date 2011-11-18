@@ -4,30 +4,15 @@
 #ifndef _debug_js_
 #define _debug_js_
 
-var debug_window = undefined;
-
-var last_time = null;
-function debug(str)
+if (window.console == undefined)
 {
-/*return;*/
-	if (debug_window == undefined)
-		debug_window = document.getElementById("debug");
-	if (debug_window == null)
-		return;
-
-	var t = new Date().getTime();
-//	var delta = (last_time == null ? "" : t - last_time);
-//	last_time = t;
-//	debug_window.innerHTML += t + "(" + delta + "): " +
-	debug_window.innerHTML += t + ": " +
-		str + "<br/>\n";
-}
-
-function clrdebug()
-{
-	if (debug_window == null)
-		return;
-	debug_window.innerHTML = "";
+	window.console = {
+		debug:	function(str) {},
+		info:	function(str) {},
+		warn:	function(str) {},
+		error:	function(str) {},
+		dir:	function(thing) {},
+	};
 }
 
 #endif	// _debug_js_

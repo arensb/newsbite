@@ -1,10 +1,5 @@
 /*						-*- JavaScript -*- */
-#if DEBUG
-#  include "js/debug.js"
-#else
-function debug() { }
-function clrdebug() { }
-#endif	// DEBUG
+#include "js/debug.js"
 // #include "js/defer.js"
 #include "js/xhr.js"
 #include "js/classes.js"
@@ -168,7 +163,6 @@ function set_pane(container, state)
  */
 function flush_queues()
 {
-clrdebug();
 	// XXX - If another flush_queues() request is running, do
 	// nothing; return.
 	// XXX - There should never be two flush_queues()es running at
@@ -191,12 +185,10 @@ clrdebug();
 			mark_request.unread.push(i);
 		delete(mark_read[i]);
 	}
-//debug("Marking [" + mark_request.read + "] as read, and [" + mark_request.unread + "] as unread");
 
 	/* Start a new request to send the queues (mark_request.read and
 	 * mark_request.unread) to the server.
 	 */
-//debug("Flushing queues");
 	// XXX - http://stackoverflow.com/questions/2680756/why-should-i-reuse-xmlhttprequest-objects
 	// suggests reusing XMLHttpRequest objects: reduces number of
 	// distinct objects, so fewer network connections to step on
@@ -209,7 +201,6 @@ clrdebug();
 	if (!request)
 	{
 		// XXX - Better error-reporting
-//debug("Error: can't create XMLHttpRequest");
 		return true;
 	}
 
@@ -243,7 +234,6 @@ function parse_flush_response(req)
 	// put them back in mark_read (bearing in mind that they may
 	// have been marked again by the user, so don't overwrite
 	// those).
-	//	debug("parse_response readyState: " + req.request.readyState);
 
 	switch (req.request.readyState)
 	{
@@ -273,14 +263,12 @@ function parse_flush_response(req)
 			for (i in req.read)
 			{
 				var id = req.read[i];
-//debug("Putting back " + id + " as read");
 				if (mark_read[id] == undefined)
 					mark_read[id] = true;
 			}
 			for (i in req.unread)
 			{
 				var id = req.unread[i];
-//debug("Putting back " + id + " as unread");
 				if (mark_read[id] == undefined)
 					mark_read[id] = false;
 			}
@@ -653,7 +641,6 @@ function init_feeds()
 			// Get list of feeds from cache
 
 	/* Send a request to get an updated list. */
-console.debug("sending feed request");
 	get_json_data("feeds.php",
 		      { o: "json",
 			id: feed.id
@@ -670,7 +657,6 @@ console.debug("sending feed request");
  */
 function receive_feed_list(value)
 {
-console.debug("received feed request");
 	// Make sure value is a list
 	if (!value instanceof Array)
 		return;
@@ -696,7 +682,6 @@ function init_items()
 	// XXX - Get items from local storage
 
 	/* Send a request to get more items */
-console.debug("Sending item request");
 	get_json_data("items.php",
 		      { o:	"json",
 			id:	feed.id,
@@ -707,7 +692,6 @@ console.debug("Sending item request");
 
 function receive_items(value)
 {
-console.debug("Received item request");
 	feed = value.feed;	// Update current feed description
 
 	/* Convert the items received into Item objects */
@@ -728,7 +712,6 @@ console.debug("Received item request");
  */
 function update_itemlist()
 {
-console.debug("inside update_itemlist");
 	/* XXX - Make sure we have both feeds and items */
 
 	var new_itemlist = document.createDocumentFragment();
