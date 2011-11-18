@@ -275,10 +275,9 @@ function receive_feed_list(value)
 	 * state or something, and don't want to lose that just
 	 * because the feed count got updated.
 	 */
-	// XXX - feeds is now a hash. Is this bit necessary?
-	var newfeeds = new Array();
+	var newfeeds = {};
 	for (var i in value)
-		newfeeds.push(new Feed(value[i]))
+		newfeeds[i] = new Feed(value[i]);
 	feeds = newfeeds;
 
 	cache.store_feeds(feeds);
@@ -303,7 +302,13 @@ function redraw_feed_list()
 	// XXX - The sorting functions should be able to handle
 	// reverse sort order as well. Perhaps can just use
 	// Array.reverse().
-	var sorted_feeds = feeds.sort(
+	var sorted_feeds = new Array();
+
+	// Copy values from feeds (hash) into sorted_feeds (array)
+	for (i in feeds)
+		sorted_feeds.push(feeds[i]);
+	// Now sort feeds by title
+	sorted_feeds.sort(
 		function(a, b)
 		{
 			var as = a.sortname();
