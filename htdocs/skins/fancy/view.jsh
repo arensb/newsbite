@@ -31,40 +31,17 @@ var current_item = null;	// Current item, for keybindings and such
 
 var cache = new CacheManager();	// Cache manager for locally-stored data
 var feeds;		// List of feeds
+var allitems;		// In-memory list of all known items.
+			// XXX - This shouldn't exist. Most known
+			// items should be in cache.
+var disp_items;		// List of displayed items
+
 var itemlist;		// Div containing the items.
 var item_tmpl = new Template(item_tmpl_text);
 			// Defined in view.php
 
 function init()
 {
-	feeds = cache.feeds();
-			// Get list of feeds from cache
-			// XXX - Send a request to get an updated
-			// list.
-
-			// XXX - This is used in displaying individual
-			// items. What happens if it's empty? E.g.
-			// - start with no localStorage
-			// - issue request for feeds
-			// - issue request for items
-			// - request for items returns
-			// - start displaying items
-			// - request for feeds returns (or fails)
-			//
-			// In this case, we're trying to look stuff up
-			// with an empty feeds list. Seems hairy.
-			// Might need some sort of mutex mechanism for
-			// synchronization. Perhaps generate an event
-			// when the feed list is updated.
-			//
-			// When feeds come in, set have_feeds=true;
-			// when items come in, set have_items=true.
-			// When both are set, launch the initial
-			// refresher.
-
-	// XXX - Get list of items in the current feed from cache.
-	// Send a request to get an updated list.
-
 	itemlist = document.getElementById("itemlist");
 
 	// XXX - The root node for bind_event shouldn't be document,
@@ -102,8 +79,11 @@ function init()
 		// XXX - bind_key("j", move_down);
 	}
 
+	init_feeds();
+	init_items();
+
 // XXX - Experimental: moving toward more AJAXy interface.
-do_stuff();
+//do_stuff();
 }
 
 /* toggle-pane
@@ -568,6 +548,7 @@ function exit_item(ev)
 	return true;
 }
 
+// XXX - Not used anymore.
 function do_stuff()
 {
 	itemlist.innerHTML = "CacheManager: "+cache+"<br/>\n";
@@ -595,6 +576,8 @@ function do_stuff()
 		      true);
 }
 
+// XXX - Not used anymore. Take the useful stuff and move it to
+// update_itemlist or something.
 function receive_item_list(value)
 {
 	// XXX - Can we update the feed info from the feed header?
@@ -656,4 +639,124 @@ function receive_item_list(value)
 		// Append to itemlist.
 		itemlist.innerHTML += item_node;
 	}
+}
+
+/* init_feeds
+ * Initialize the 'feeds' structure. Fetch it from local storage, and
+ * send a request to the server to get a fresh copy. When it comes in,
+ * we'll sync up with a similar procedure from init_items() and draw
+ * the list of items for the user.
+ */
+function init_feeds()
+{
+	feeds = cache.feeds();
+			// Get list of feeds from cache
+
+	/* Send a request to get an updated list. */
+console.debug("sending feed request");
+	get_json_data("feeds.php",
+		      { o: "json",
+			id: feed.id
+		      },
+		      receive_feed_list,
+		      true);
+}
+
+/* receive_feed_list
+ * Callback function for receiving the feed list.
+ */
+/* XXX - This is cribbed from feeds.jsh. Should probably combine the
+ * two.
+ */
+function receive_feed_list(value)
+{
+console.debug("received feed request");
+	// Make sure value is a list
+	if (!value instanceof Array)
+		return;
+
+	// Create an array of Feed objects from what we just got.
+	/* XXX - Ought to update the existing list: we might store
+	 * state or something, and don't want to lose that just
+	 * because the feed count got updated.
+	 */
+	var newfeeds = new Array();
+	for (var i in value)
+		newfeeds[i] = new Feed(value[i]);
+	feeds = newfeeds;
+
+	cache.store_feeds(feeds);
+
+	/* XXX - Do something intelligent */
+	update_itemlist();
+}
+
+function init_items()
+{
+	// XXX - Get items from local storage
+
+	/* Send a request to get more items */
+console.debug("Sending item request");
+	get_json_data("items.php",
+		      { o:	"json",
+			id:	feed.id,
+		      },
+		      receive_items,
+		      true);
+}
+
+function receive_items(value)
+{
+console.debug("Received item request");
+	feed = value.feed;	// Update current feed description
+
+	/* Convert the items received into Item objects */
+	for (i in value.items)
+		value.items[i] = new Item(value.items[i]);
+
+	// XXX - Cache the new items in local storage
+	// XXX - Update in-memory list of items we know about?
+	allitems = value.items;
+
+	// Redraw itemlist
+	update_itemlist();
+}
+
+/* update_itemlist
+ * We've received either a feed list or an item list. Update the
+ * displayed list to reflect any necessary changes.
+ */
+function update_itemlist()
+{
+console.debug("inside update_itemlist");
+	/* XXX - Make sure we have both feeds and items */
+
+	var new_itemlist = document.createDocumentFragment();
+		// XXX - Probably shouldn't create this until we know
+		// we need to.
+	// XXX - For now, just assume that we should display every
+	// known item.
+	for (var i in allitems)
+	{
+		var item = allitems[i];
+
+		// XXX - Create item node (get code from
+		// receive_item_list())
+
+		var t = document.createElement("div");
+		t.innerHTML = '<div class="item">'+item.displaytitle()+"</div>";
+		var el = t.firstChild;
+		new_itemlist.appendChild(el);
+
+		// XXX - Look up and store any interesting properties
+		// of this node. Remember whether it was collapsed or
+		// expanded (if refreshing).
+	}
+
+	// Delete existing children
+	while (itemlist.firstChild)
+		itemlist.removeChild(itemlist.firstChild);
+	itemlist.appendChild(new_itemlist);
+
+	/* XXX */
 }
