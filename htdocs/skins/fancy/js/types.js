@@ -115,7 +115,7 @@ Feed.prototype.sortname = function()
 // - Are details/tools/empty feeds/stale feeds currently displayed?
 // - How are we sorting?
 
-/* XXX - Item class
+/* Item class
  * Class based on 'items' table in the database.
  */
 function Item(arg)
@@ -126,5 +126,12 @@ function Item(arg)
 	// Copy all the fields from 'arg' to 'this'
 	for (field in arg)
 		this[field] = arg[field]
+}
+
+Item.prototype.displaytitle = function()
+{
+	if (this.title == null)
+		return "[no title]";
+	return this.title;
 }
 #endif	// _types_js_
