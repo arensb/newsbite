@@ -259,7 +259,6 @@ foreach ($items as $i)
 <?endif /* count($items) */ ?>
 
 <p>User <?=$skin_vars['auth_user']?>, session expires <?=$skin_vars['auth_expiration']?>.</p>
-<!-- <div id="debug" style="clear:both"></div> -->
 
 </body>
 </html>

@@ -1,13 +1,7 @@
 /* feeds.jsh					-*- JavaScript -*-
  * JavaScript functions for the feed view.
  */
-#define DEBUG 0
-#if DEBUG
-#  include "js/debug.js"
-#else
-function debug() { }
-function clrdebug() { }
-#endif	// DEBUG
+#include "js/debug.js"
 // #include "js/defer.js"
 #include "js/xhr.js"
 #include "js/classes.js"
@@ -59,10 +53,8 @@ function init()
 // feed's data) store in local cache.
 function update_feed(id)
 {
-clrdebug();
 	// XXX - If updating one feed, ought to only clear that line
 	clear_status();
-debug("done clearing");
 
 	var request = createXMLHttpRequest();
 	if (!request)
@@ -89,7 +81,6 @@ debug("done clearing");
 function clear_status()
 {
 	var table = document.getElementById("feeds")/*.childNodes[1]*/;
-debug("table == "+table);
 
 	/* Iterate over each row, clearing status cell */
 	// XXX - Ought to use table.getElementsByType("tr") or something.
@@ -99,7 +90,6 @@ debug("table == "+table);
 			/* Skip #text nodes */
 			// XXX - There must be a better way to do this
 			continue;
-//debug("row == "+row.firstChild);
 		row.firstChild.innerHTML = "";
 		row.firstChild.style.backgroundColor = null;
 	}
@@ -116,8 +106,6 @@ debug("table == "+table);
  */
 function parse_response(req)
 {
-	debug("parse_response readyState: " + req.request.readyState);
-//debug("responseText ("+req.request.responseText.length+"): ["+req.request.responseText+"]");
 	switch (req.request.readyState)
 	{
 	    case 0:		// Uninitialized
@@ -139,8 +127,6 @@ function parse_response(req)
 		for (var i = 0; i < lines.length; i++)
 		{
 			var line = lines[i];
-if (line != "")
-debug("line " + i + "("+req.last_off+"): [" + lines[i] + "]");
 			if (line[0] != '{')
 				// There might be non-JSON lines in there.
 				// Ignore them. For that matter, ignore
@@ -151,8 +137,6 @@ debug("line " + i + "("+req.last_off+"): [" + lines[i] + "]");
 				// bad JSON.
 				l = JSON.parse(line);
 			} catch (e) {
-				debug("Caught error " + e);
-
 				// If this isn't a complete line, put it
 				// back for later. Yeah, this is a bit of
 				// a hack.
@@ -163,14 +147,15 @@ debug("line " + i + "("+req.last_off+"): [" + lines[i] + "]");
 
 			if (l.feed_id == undefined)
 			{
-				debug("Error: no feed_id");
+				// no feed_id.
+				// XXX - Tell user, perhaps?
 				continue;
 			}
 
 			var feed_row = document.getElementById("feed-" + l.feed_id);
 			if (feed_row == undefined)
 			{
-				debug("Error: can't find row feed-" + l.feed_id);
+				// Can't find row feed-$id
 				continue;
 			}
 
@@ -180,7 +165,6 @@ debug("line " + i + "("+req.last_off+"): [" + lines[i] + "]");
 			var count_cell = status_cell.nextSibling;
 			var title_cell = count_cell.nextSibling;
 
-//debug("feed id "+l.feed_id+", state "+l.state);
 			// XXX - Paths to images / skin name shouldn't
 			// be hardcoded. Perhaps add a class to the cell.
 			switch (l.state)
