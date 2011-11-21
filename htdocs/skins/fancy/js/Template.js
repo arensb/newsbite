@@ -3,7 +3,9 @@
 
 function Template(tmpl)
 {
-	this.template = tmpl;	// Text of the template
+	this.template = tmpl.replace(/>\s+</g, "><");
+			// Text of the template. Try to strip out
+			// extraneous whitespace.
 }
 
 /* Template.expand
