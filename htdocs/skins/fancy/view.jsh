@@ -16,6 +16,7 @@
  *
  * When those things come in, perhaps send an event.
  */
+/* XXX - Delete unused functions */
 
 document.addEventListener("DOMContentLoaded", init, false);
 
@@ -74,11 +75,26 @@ function init()
 		// XXX - bind_key("j", move_down);
 	}
 
-	init_feeds();
-	init_items();
+//	init_feeds();
+//	init_items();
+
+	// Get feeds and items from cache.
+	feeds = cache.feeds();
+//console.debug("initially feeds == "+feeds);
+	allitems = cache.getitems();
+//console.debug("initially allitems == "+allitems);
+
+	// Draw what we've got so far, if anything
+	if (feeds != null && allitems != null)
+		update_itemlist();
+else console.debug("not calling update_itemlist yet");
 
 // XXX - Experimental: moving toward more AJAXy interface.
 //do_stuff();
+
+	// Get fresh feed and item information. When that arrives,
+	// it'll update the feed list.
+	init_feeds_items();
 }
 
 /* toggle-pane
@@ -536,32 +552,102 @@ function exit_item(ev)
 	return true;
 }
 
-// XXX - Not used anymore.
+// XXX - Testing
 function do_stuff()
 {
-	itemlist.innerHTML = "CacheManager: "+cache+"<br/>\n";
-	var str = "ihead:<ul>";
-	for (i in cache.items)
+	function feed_callback(value)
 	{
-		str += "<li>"+i+": "+cache.items[i]+"</li>";
+		console.debug("Got feeds: "+value)
 	}
-	str += "</ul>";
-	itemlist.innerHTML += str;
 
-	str = "ibody:<ul>";
-	for (i in cache.have_text)
+	function item_callback(value)
 	{
-		str += "<li>"+i+"</li>";
+		console.debug("Got items: "+value);
 	}
-	str += "</ul>";
-	itemlist.innerHTML += str;
 
-	get_json_data("items.php",
+
+	get_json_data("feeds.php",
 		      { o: "json",
-			id: feed.id
+			id: "all",
 		      },
-		      receive_item_list,
+		      feed_callback,
 		      true);
+}
+
+/* init_feeds_items
+ * Get both feeds and items from the server.
+ *
+ * The problem is that we want to display things to the user quickly,
+ * but we can't display items before we have feeds, because we want to
+ * display things like the feed name, which aren't in the item.
+ *
+ * It also doesn't make sense to launch two AJAX requests at once,
+ * since they'll just step on each other (and we can't reuse the XHR
+ * object, which is apparently efficient). On top of which, trying to
+ * coordinate multiple execution threads this way is a PITA.
+ *
+ * So in an attempt to keep things manageable, this function launches
+ * an XHR request for the feeds. The callback for that function
+ * launches an XHR request for items. The callback for that one
+ * updates the displayed list.
+ */
+/* XXX - Should this be renamed to update_feeds_items(), and take
+ * arguments like the feed to update, and a callback function?
+ */
+function init_feeds_items()
+{
+console.debug("Inside init_feeds_items");
+	get_json_data("feeds.php",
+		      { o:	"json",
+			id:	"all",
+		      },
+		      feed_callback,
+		      true);
+
+	function feed_callback(value)
+	{
+console.debug("Got feeds: "+value)
+		/* Start the next AJAX request going. It'll take
+		 * forever, so we'll do other stuff while that's
+		 * going.
+		 */
+		get_json_data("items.php",
+			      { o:	"json",
+			        id:	feed.id,
+			      },
+			      item_callback,
+			      true);
+
+		// Create an array of Feed objects from what we just got.
+		/* XXX - Ought to update the existing list: we might
+		 * store state or something, and don't want to lose
+		 * that just because the feed count got updated.
+		 */
+		var newfeeds = new Array();
+		for (var i in value)
+			newfeeds[i] = new Feed(value[i]);
+		feeds = newfeeds;
+
+		cache.store_feeds(feeds);
+	}
+
+	function item_callback(value)
+	{
+		console.debug("Got items: "+value);
+
+		feed = value.feed;	// Update current feed description
+
+		/* Convert the items received into Item objects */
+		for (i in value.items)
+			value.items[i] = new Item(value.items[i]);
+
+		// XXX - Cache the new items in local storage
+		// XXX - Update in-memory list of items we know about?
+		allitems = value.items;
+
+		// Redraw itemlist
+		update_itemlist();
+	}
 }
 
 // XXX - Not used anymore. Take the useful stuff and move it to
@@ -712,8 +798,6 @@ function receive_items(value)
  */
 function update_itemlist()
 {
-	/* XXX - Make sure we have both feeds and items */
-
 	var new_itemlist = document.createDocumentFragment();
 		// XXX - Probably shouldn't create this until we know
 		// we need to.
@@ -722,24 +806,62 @@ function update_itemlist()
 	for (var i in allitems)
 	{
 		var item = allitems[i];
+		var item_feed = feeds[item.feed_id];
+			// XXX - Check to make sure that
+			// feeds[item.feed_id] exists, that we haven't
+			// been given an item from a nonexistent feed?
+		var title = item.displaytitle();
 
-		// XXX - Create item node (get code from
-		// receive_item_list())
+		// XXX - Fill these in.
+		// XXX - Indicate whether to show content or summary.
+		// XXX - Indicate whether collapsible.
+		var item_values = {
+			id:		item.id,
+			url:		encodeURI(item.url),
+			url_attr:	"",
+				// XXX - On iPhone/iPad, open title link
+				// in a new window.
+			title:		title,
+			feed_url:	encodeURI(item_feed.url),
+				// XXX - Get this from feeds.
+			feed_title:	item_feed.displaytitle(),
+			author:		item.author,
+				// XXX - If author is empty, shouldn't
+				// display the "by" before author
+				// name.
+				// XXX - If ever use author URL, might
+				// want to wrap author name in <a
+				// href="mailto:...>.
+			pub_date:	item.pub_date,
+			pretty_pub_date:item.pub_date,
+				// XXX - Pretty-print the date.
+			summary:	item.summary,
+			content:	item.content,
+			comment_url:	encodeURI(item.content_url),
+			comment_rss:	encodeURI(item.content_rss),
+			// Indicate whether collapsible (both content
+			// and summary exist), and whether to display
+			// summary or content.
+			collapsible:	(item.summary != null &&
+					 item.content != null ?
+					 "yes" : "no"),
+			which:		(item.content == null ?
+					 "summary" : "content"),
+		};
 
-		var t = document.createElement("div");
-		t.innerHTML = '<div class="item">'+item.displaytitle()+"</div>";
-		var el = t.firstChild;
-		new_itemlist.appendChild(el);
+		// XXX - The following hack, to create a DOM node from
+		// HTML, should probably be in Template.js.
+		var item_node = item_tmpl.expand(item_values);
+		var new_node = document.createElement("div");
+		new_node.innerHTML = item_node;
+		item_node = new_node.firstChild;
 
-		// XXX - Look up and store any interesting properties
-		// of this node. Remember whether it was collapsed or
-		// expanded (if refreshing).
+		// Append to itemlist.
+		new_itemlist.appendChild(item_node);
 	}
 
 	// Delete existing children
 	while (itemlist.firstChild)
 		itemlist.removeChild(itemlist.firstChild);
 	itemlist.appendChild(new_itemlist);
-
-	/* XXX */
 }
