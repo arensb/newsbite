@@ -858,6 +858,10 @@ function update_itemlist()
 
 		// Append to itemlist.
 		new_itemlist.appendChild(item_node);
+
+		/* XXX - Keep pointers to the items, and any other
+		 * interesting information.
+		 */
 	}
 
 	// Delete existing children
