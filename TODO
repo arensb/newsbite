@@ -31,20 +31,28 @@
   and different people may deal with this differently (UTF-8 vs. HTML
   entities). Perhaps safest to assume that they're HTML and clean up
   (if possible, only do entity translation, and throw out any markup).
+- Bug: when items.php gets request for nonexistent feed, it dumps an
+  HTML error message. Should be JSON (or whatever the user requested).
 - Bug: On android, often title bar overflows to the right of the
   screen.
-- js/debug.js: Firefox 6, Chrome, etc. all should have decent web
-  consoles. Just use
-	console.{debug,info,warn,error}("msg");
-	console.dir(object) to display its structure (Chrome, not
-  Firefox 7)
-  See
-  https://developer.mozilla.org/en/Using_the_Web_Console
-	FF3 (probably) doesn't have it, so make js/debug.js have a
-  null console object, with empty methods.
-	Then again, might want to use it just to define a dummy
-  console object for browsers that don't define it. Or to provide
-  cross-browser compatibility functions.
+- Perhaps add a function to xhr.js that'll make multiple JSON
+  requests, and call a handler when they all complete:
+	multi_json(
+		"foo.php", { arg1: 1, arg2: 2 },
+		"bar.php", { arg3: 3, arg4: 4 },
+		...
+		handler_func,
+		error_func);
+  It'll then send a JSON request for "foo.php" with the first set of
+  parameters; when it completes, send a request for "bar.php" with the
+  second set of parameters, etc.
+	When they're all done, call handler_func() with an array of
+  values: the (parsed) value returned by foo.php, the one from
+  bar.php, etc.
+	If any of them fail, call error_func() with the index and URL
+  of the call that failed, error status, and all that fun stuff.
+- Should get rid of "Apply Changes" button. Also probably
+  "Earlier"/"Later" links.
 - Move event handlers over to bind_event().
 	Fix update_feed(id) to work with bind_event (i.e., take only
   one argument).
