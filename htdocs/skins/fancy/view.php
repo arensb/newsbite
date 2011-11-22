@@ -209,17 +209,6 @@ foreach ($skin_vars as $k => $v)
 
 <div id="itemlist"><img src="skins/<?=$skin_dir?>/Ajax-loader.gif"/></div>
 
-<?
-/* List of items. Items are displayed using the separate "item"
- * template
- */
-foreach ($items as $i)
-{
-	$the_skin->_include("item",
-			    array("item" => $i));
-} 
-?>
-
 <div class="button-box">
 <!--
   <input type="reset" name="clearit" value="Clear changes"/>
