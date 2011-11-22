@@ -107,4 +107,11 @@ CacheManager.prototype.store_feeds = function(feeds)
 
 // XXX - Retrieve an article (by id)
 
+// XXX - Get metadata for items
+CacheManager.prototype.getitems = function()
+{
+	// XXX - Do something smart
+	return null;
+}
+
 #endif	// _CacheManager_js_
