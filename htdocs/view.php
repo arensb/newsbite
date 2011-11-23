@@ -9,26 +9,6 @@ require_once("hooks.inc");
 
 load_hooks(PLUGIN_DIR);
 
-/* See what kind of output the user wants */
-switch ($_REQUEST['o'])
-{
-    case "json":
-	// XXX - If another browser comes along that can't deal with
-	// standard JSON, add a "hack" parameter or something to say
-	// how to work around it.
-	$out_fmt = "json";
-	header("Content-type: text/plain; charset=utf-8");
-	break;
-    case "xml":
-	$out_fmt = "xml";
-	header("Content-type: text/xml; charset=utf-8");
-	break;
-    default:
-	header("Content-type: text/html; charset=utf-8");
-	$out_fmt = "html";
-	break;
-}
-
 $feed_id = $_REQUEST['id'];		// ID of feed to show
 /* Make sure $feed_id is an integer */
 if (is_numeric($feed_id) && is_integer($feed_id+0))

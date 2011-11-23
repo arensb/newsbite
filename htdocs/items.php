@@ -19,19 +19,11 @@ require_once("database.inc");
 
 //load_hooks(PLUGIN_DIR);
 
-/* See what kind of output the user wants */
-switch ($_REQUEST['o'])
+/* Make sure output format is sane */
+switch ($out_fmt)
 {
     case "xml":
-	$out_fmt = "xml";
-	header("Content-type: text/xml; charset=utf-8");
-	break;
     case "json":
-	// XXX - If another browser comes along that can't deal with
-	// standard JSON, add a "hack" parameter or something to say
-	// how to work around it.
-	$out_fmt = "json";
-	header("Content-type: text/plain; charset=utf-8");
 	break;
     default:
 	# 400 == generic bad request

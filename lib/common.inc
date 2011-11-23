@@ -6,6 +6,31 @@
 
 require_once("config.inc");
 
+/* See what kind of output the user wants */
+switch ($_REQUEST['o'])
+{
+    case "json":
+	// XXX - If another browser comes along that can't deal with
+	// standard JSON, add a "hack" parameter or something to say
+	// how to work around it.
+	$out_fmt = "json";
+	header("Content-type: text/plain; charset=utf-8");
+	break;
+    case "xml":
+	$out_fmt = "xml";
+	header("Content-type: text/xml; charset=utf-8");
+	break;
+    default:
+	if (isset($_ENV['CRON']))
+	{
+		$out_fmt = "console";
+	} else {
+		header("Content-type: text/html; charset=utf-8");
+		$out_fmt = "html";
+	}
+	break;
+}
+
 /* Try to guess whether we're viewing this on an iPhone or other
  * mobile device.
  */

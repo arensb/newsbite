@@ -113,26 +113,6 @@ class console_output_handler extends feed_update_handler
 	}
 }
 
-
-/* See what kind of output the user wants */
-
-//if ($_ENV['CRON'] == "true")
-//{
-//	$out_fmt = "console";
-//} else {
-	switch ($_REQUEST['o'])
-	{
-	    case "json":
-		$out_fmt = "json";
-		header("Content-type: text/plain; charset=utf-8");
-		break;
-	    default:
-		header("Content-type: text/html; charset=utf-8");
-		$out_fmt = "html";
-		break;
-	}
-//}
-
 $feed_id = $_REQUEST["id"];
 
 /* See which feeds we're updating */
