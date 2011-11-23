@@ -75,9 +75,6 @@ function init()
 		// XXX - bind_key("j", move_down);
 	}
 
-//	init_feeds();
-//	init_items();
-
 	// Get feeds and items from cache.
 	feeds = cache.feeds();
 //console.debug("initially feeds == "+feeds);
@@ -88,9 +85,6 @@ function init()
 	if (feeds != null && allitems != null)
 		update_itemlist();
 else console.debug("not calling update_itemlist yet");
-
-// XXX - Experimental: moving toward more AJAXy interface.
-//do_stuff();
 
 	// Get fresh feed and item information. When that arrives,
 	// it'll update the feed list.
@@ -552,28 +546,6 @@ function exit_item(ev)
 	return true;
 }
 
-// XXX - Testing
-function do_stuff()
-{
-	function feed_callback(value)
-	{
-		console.debug("Got feeds: "+value)
-	}
-
-	function item_callback(value)
-	{
-		console.debug("Got items: "+value);
-	}
-
-
-	get_json_data("feeds.php",
-		      { o: "json",
-			id: "all",
-		      },
-		      feed_callback,
-		      true);
-}
-
 /* init_feeds_items
  * Get both feeds and items from the server.
  *
@@ -648,148 +620,6 @@ console.debug("Got feeds: "+value)
 		// Redraw itemlist
 		update_itemlist();
 	}
-}
-
-// XXX - Not used anymore. Take the useful stuff and move it to
-// update_itemlist or something.
-function receive_item_list(value)
-{
-	// XXX - Can we update the feed info from the feed header?
-
-	for (i in value.items)
-	{
-		var item = value.items[i];
-		var title = item.title;
-
-		if (title == null ||
-		    title.match(/^\s*$/))
-			title = "[no title]";
-
-		// XXX - Fill these in.
-		// XXX - Indicate whether to show content or summary.
-		// XXX - Indicate whether collapsible.
-		var item_values = {
-			id:		item.id,
-			url:		encodeURI(item.url),
-			url_attr:	"",
-				// XXX - On iPhone/iPad, open title link
-				// in a new window.
-			title:		title,
-				// XXX - If empty, use "[no title]".
-				// XXX - Assume that the PHP script has sent us clean HTML.
-			feed_url:	encodeURI("[feed_url]"),
-				// XXX - Get this from feeds.
-			feed_title:	"[feed_title]",
-				// XXX - Get this from feeds.
-			author:		item.author,
-				// XXX - If author is empty, shouldn't
-				// display the "by" before author
-				// name.
-				// XXX - If ever use author URL, might
-				// want to wrap author name in <a
-				// href="mailto:...>.
-			pub_date:	item.pub_date,
-			pretty_pub_date:item.pub_date,
-				// XXX - Pretty-print the date.
-			summary:	item.summary,
-			content:	item.content,
-			comment_url:	encodeURI(item.content_url),
-			comment_rss:	encodeURI(item.content_rss),
-			// Indicate whether collapsible (both content
-			// and summary exist), and whether to display
-			// summary or content.
-			collapsible:	(item.summary != null &&
-					 item.content != null ?
-					 "yes" : "no"),
-			which:		(item.content == null ?
-					 "summary" : "content"),
-		};
-		var item_node = item_tmpl.expand(item_values);
-
-		// XXX - At this point, item_node is just a chunk of
-		// text. Ought to turn it into a DOM fragment, and
-		// store interesting information about it.
-
-		// Append to itemlist.
-		itemlist.innerHTML += item_node;
-	}
-}
-
-/* init_feeds
- * Initialize the 'feeds' structure. Fetch it from local storage, and
- * send a request to the server to get a fresh copy. When it comes in,
- * we'll sync up with a similar procedure from init_items() and draw
- * the list of items for the user.
- */
-function init_feeds()
-{
-	feeds = cache.feeds();
-			// Get list of feeds from cache
-
-	/* Send a request to get an updated list. */
-	get_json_data("feeds.php",
-		      { o: "json",
-			id: feed.id
-		      },
-		      receive_feed_list,
-		      true);
-}
-
-/* receive_feed_list
- * Callback function for receiving the feed list.
- */
-/* XXX - This is cribbed from feeds.jsh. Should probably combine the
- * two.
- */
-function receive_feed_list(value)
-{
-	// Make sure value is a list
-	if (!value instanceof Array)
-		return;
-
-	// Create an array of Feed objects from what we just got.
-	/* XXX - Ought to update the existing list: we might store
-	 * state or something, and don't want to lose that just
-	 * because the feed count got updated.
-	 */
-	var newfeeds = new Array();
-	for (var i in value)
-		newfeeds[i] = new Feed(value[i]);
-	feeds = newfeeds;
-
-	cache.store_feeds(feeds);
-
-	/* XXX - Do something intelligent */
-	update_itemlist();
-}
-
-function init_items()
-{
-	// XXX - Get items from local storage
-
-	/* Send a request to get more items */
-	get_json_data("items.php",
-		      { o:	"json",
-			id:	feed.id,
-		      },
-		      receive_items,
-		      true);
-}
-
-function receive_items(value)
-{
-	feed = value.feed;	// Update current feed description
-
-	/* Convert the items received into Item objects */
-	for (i in value.items)
-		value.items[i] = new Item(value.items[i]);
-
-	// XXX - Cache the new items in local storage
-	// XXX - Update in-memory list of items we know about?
-	allitems = value.items;
-
-	// Redraw itemlist
-	update_itemlist();
 }
 
 /* update_itemlist
