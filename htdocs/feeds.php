@@ -5,8 +5,6 @@
 require_once("common.inc");
 require_once("database.inc");
 
-$out_fmt = $_REQUEST['o'];	# Output format
-
 $want_stats = isset($_REQUEST['s']);
 				# Add stats (# read/unread items)
 				# if requested.

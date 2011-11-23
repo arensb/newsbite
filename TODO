@@ -263,8 +263,6 @@
   collect statistics and see which plugins run when. In particular, we
   want to see when a plugin stops working because the feed changed the
   format of its web bugs or whatever.
-- Have 'o' be a common option for requesting output style, and move
-  output language recognition to common.inc as well.
 - Perhaps just assume that any device worth developing for is going to
   have JavaScript enabled?
 - Should the username and password be stored locally, so that the
