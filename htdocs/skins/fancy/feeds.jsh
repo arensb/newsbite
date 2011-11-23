@@ -228,7 +228,9 @@ function init_feed_list()
 
 	// Request a list of feeds
 	get_json_data("feeds.php",
-		      { o: "json" },
+		      { o: "json",
+		        s: "yes",	// Want stats
+		      },
 		      receive_feed_list,
 		      true);
 }
@@ -242,7 +244,9 @@ function refresh_feed_list()
 	// XXX - Ought to set a spinny icon.
 	// Request a list of feeds
 	get_json_data("feeds.php",
-		      { o: "json" },
+		      { o: "json",
+		        s: "yes",	// Want stats
+		      },
 		      receive_feed_list,
 		      true);
 }

@@ -7,6 +7,11 @@ require_once("database.inc");
 
 $out_fmt = $_REQUEST['o'];	# Output format
 
+$want_stats = isset($_REQUEST['s']);
+				# Add stats (# read/unread items)
+				# if requested.
+				# Generating stats is currently slow.
+
 # Make sure the requested output format is sane
 if ($out_fmt != 'json' && $out_fmt != "xml")
 {
@@ -17,7 +22,8 @@ if ($out_fmt != 'json' && $out_fmt != "xml")
 
 # Gather information about the feeds
 $feeds = db_get_feeds(TRUE);
-$counts = db_get_all_feed_counts();
+if ($want_stats)
+	$counts = db_get_all_feed_counts();
 
 # Collect the gathered information into one array
 $output = Array();
@@ -39,8 +45,11 @@ foreach ($feeds as $id => $data)
 	$desc['image']           = $data['image'];
 	$desc['active']          = $data['active'];
 	$desc['stale']           = $data['stale'];
-	$desc['num_read']        = $counts[$id]['read'];
-	$desc['num_unread']      = $counts[$id]['unread'];
+	if ($want_stats)
+	{
+		$desc['num_read']        = $counts[$id]['read'];
+		$desc['num_unread']      = $counts[$id]['unread'];
+	}
 
 	$output[$id] = $desc;
 }
