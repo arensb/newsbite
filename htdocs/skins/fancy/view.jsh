@@ -83,8 +83,8 @@ function init()
 
 	// Draw what we've got so far, if anything
 	if (feeds != null && allitems != null)
-		update_itemlist();
-else console.debug("not calling update_itemlist yet");
+		redraw_itemlist();
+else console.debug("not calling redraw_itemlist yet");
 
 	// Get fresh feed and item information. When that arrives,
 	// it'll update the feed list.
@@ -618,15 +618,15 @@ console.debug("Got feeds: "+value)
 		allitems = value.items;
 
 		// Redraw itemlist
-		update_itemlist();
+		redraw_itemlist();
 	}
 }
 
-/* update_itemlist
+/* redraw_itemlist
  * We've received either a feed list or an item list. Update the
  * displayed list to reflect any necessary changes.
  */
-function update_itemlist()
+function redraw_itemlist()
 {
 	var new_itemlist = document.createDocumentFragment();
 		// XXX - Probably shouldn't create this until we know
