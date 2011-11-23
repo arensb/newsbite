@@ -242,9 +242,8 @@ foreach ($skin_vars as $k => $v)
 </div>
 
 <?else:	/* count($items) > 0 */
-/* XXX - Would it be worth having a separate template for an empty feed? */
 ?>
-<p>There are no articles to display.</p>
+<div id="itemlist"><p>There are no articles to display.</p></div>
 <?endif /* count($items) */ ?>
 
 <p>User <?=$skin_vars['auth_user']?>, session expires <?=$skin_vars['auth_expiration']?>.</p>
