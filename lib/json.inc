@@ -7,6 +7,10 @@
  * Helper function for jsonify: takes one argument, and returns its
  * representation as a JSON string.
  */
+/* XXX - Normally, the json_encode() function already exists. So a
+ * syntax check fails. Not sure what to do about it. Can't undelete a
+ * function.
+ */
 function json_encode($it)
 {
 
