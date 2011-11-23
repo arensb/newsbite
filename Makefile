@@ -82,7 +82,7 @@ syntax-check:
 	@$(EGREP) '\.(php|inc)$$' MANIFEST | \
 	while read fname; do \
 		echo "Checking $$fname"; \
-		$(PHP) -l "$$fname" || exit $?; \
+		$(PHP) -l "$$fname"; \
 	done
 
 # Generate ChangeLog file from the beginning of this year until now
