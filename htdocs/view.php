@@ -178,6 +178,7 @@ if ($mobile)
 
 if ($out_fmt == "json")
 {
+	$feed['items'] = $items;
 	echo jsonify($feed);
 
 	db_disconnect();
@@ -189,6 +190,7 @@ if ($out_fmt == "xml")
 	require_once("xml-output.inc");
 				// Get print_xml() only when necessary
 
+	$feed['items'] = $items;
 	print_xml($feed);
 	db_disconnect(0);
 	exit(0);
