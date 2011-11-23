@@ -116,6 +116,7 @@ lib/common.inc
 lib/config.inc.sample
 lib/database.inc
 lib/hooks.inc
+lib/json.inc
 lib/net.inc
 lib/parse-feed.inc
 lib/skin.inc
