@@ -13,7 +13,6 @@ REV_CMD =	svn status -uq | grep "Status against revision:"|awk '{print $$4}'
 # "!=", so it doesn't see the second assignment, while BSD make does,
 # so it ignores the first assignment.
 REV =		$(shell ${REV_CMD})
-REV !=		${REV_CMD}
 
 DISTNAME =	${PROJECT}-r${REV}
 
