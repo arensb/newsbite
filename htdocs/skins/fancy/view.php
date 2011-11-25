@@ -41,6 +41,7 @@ var feed = <?=jsonify($skin_vars['feed'])?>;
 var start_offset = <?=jsonify($skin_vars['start'])?>;
 
 // XXX - This template needs an awful lot of work. See item.php
+// XXX - Don't show left checkboxes on non-iPads.
 var item_tmpl_text = '<div class="item" id="item-@id@">\
   <table class="item-header">\
     <tr>\
@@ -117,13 +118,13 @@ if (isset($mobile_css))
 </head>
 <body id="view-body">
 
-<?if ($feed['image'] != ""): ?>
+<?if (isset($feed['image']) && $feed['image'] != ""): ?>
 <img class="feed-icon" src="<?=$feed['image']?>"/>
 <?endif?>
 
 <h1><?
 # Feed title
-if ($feed['url'] == "")
+if (!isset($feed['url']) || $feed['url'] == "")
 	echo htmlspecialchars($feed['title']);
 else
 	echo "<a href=\"",
@@ -132,11 +133,11 @@ else
 		htmlspecialchars($feed['title']),
 		"</a>";
 ?></h1>
-<?if ($feed['subtitle'] != ""):?>
+<?if (isset($feed['subtitle']) && $feed['subtitle'] != ""):?>
 <div class="feed-subtitle"><?=htmlspecialchars($feed['subtitle'])?></div>
 <?endif?>
 
-<?if ($feed['description'] != ""):
+<?if (isset($feed['description']) && $feed['description'] != ""):
 	$description = $feed['description'];
 	run_hooks("clean-html", array(&$description))
 ?>
