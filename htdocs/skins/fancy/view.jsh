@@ -591,8 +591,6 @@ function init_feeds_items()
 
 	function item_callback(value)
 	{
-		console.debug("Got items: "+value);
-
 		feed = value.feed;	// Update current feed description
 			// XXX - Perhaps ought to cache this.
 
