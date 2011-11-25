@@ -279,7 +279,7 @@ EOT;
 	/* Were we asked for just one feed ID? */
 	// XXX - Would be nice to request some, but not all, feeds, by
 	// listing their IDs.
-	if (is_numeric($args['feed_id']))
+	if (isset($args['feed_id']) && is_numeric($args['feed_id']))
 	{
 		$c = sprintf("items.feed_id=%d\n", $args['feed_id']);
 		array_push($conditions, $c);
@@ -303,6 +303,8 @@ EOT;
 	/* Specify order in query.
 	 * Use id as a tiebreaker, to ensure a consistent order.
 	 */
+	if (!isset($args['order']))
+		$args['order'] = "date_desc";	// Stop PHP from complaining
 	switch ($args['order'])
 	{
 	    case "date_asc":
