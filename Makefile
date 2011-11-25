@@ -69,6 +69,8 @@ clean::
 	rm -rf dist
 
 test check:	missing syntax-check
+# XXX - Should have a check to make sure that everything in MANIFEST
+# is in svn.
 
 # Look for files missing from the manifest
 missing:
