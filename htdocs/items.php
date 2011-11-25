@@ -40,12 +40,16 @@ elseif ($feed_id == "all")
 else
 	header("HTTP/1.0 400 Invalid feed ID.");
 
-$start = $_REQUEST['s'];		// Skip first $start items
-/* Make sure $feed_id is an integer */
-if (!is_numeric($start) || !is_integer($start+0))
-	/* Ignore illegal values. */
+if (isset($_REQUEST['s']))
+{
+	$start = $_REQUEST['s'];		// Skip first $start items
+
+	/* Make sure $feed_id is an integer */
+	if (!is_numeric($start) || !is_integer($start+0))
+		/* Ignore illegal values. */
+		$start = 0;
+} else
 	$start = 0;
-$start = (int) $start;
 
 if ($feed_id == "all")
 {
