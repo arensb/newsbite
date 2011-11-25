@@ -7,7 +7,7 @@
 require_once("config.inc");
 
 /* See what kind of output the user wants */
-switch ($_REQUEST['o'])
+switch (isset($_REQUEST['o']) ? $_REQUEST['o'] : "")
 {
     case "json":
 	// XXX - If another browser comes along that can't deal with
