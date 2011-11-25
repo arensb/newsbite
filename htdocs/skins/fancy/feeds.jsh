@@ -227,12 +227,7 @@ function init_feed_list()
 	// XXX - Ought to set a spinny icon.
 
 	// Request a list of feeds
-	get_json_data("feeds.php",
-		      { o: "json",
-		        s: "yes",	// Want stats
-		      },
-		      receive_feed_list,
-		      true);
+	cache.update_feeds(true, receive_feed_list);
 }
 
 /* refresh_feed_list
@@ -243,18 +238,15 @@ function refresh_feed_list()
 {
 	// XXX - Ought to set a spinny icon.
 	// Request a list of feeds
-	get_json_data("feeds.php",
-		      { o: "json",
-		        s: "yes",	// Want stats
-		      },
-		      receive_feed_list,
-		      true);
+	cache.update_feeds(true, receive_feed_list);
 }
 
 function receive_feed_list(value)
 {
 	// XXX - Clear spinny icon.
+
 	// Make sure value is a list
+	// XXX - Shouldn't be necessary.
 	if (!value instanceof Array)
 		return;
 
@@ -263,12 +255,8 @@ function receive_feed_list(value)
 	 * state or something, and don't want to lose that just
 	 * because the feed count got updated.
 	 */
-	var newfeeds = {};
-	for (var i in value)
-		newfeeds[i] = new Feed(value[i]);
-	feeds = newfeeds;
+	feeds = value;
 
-	cache.store_feeds(feeds);
 	redraw_feed_list();
 }
 
