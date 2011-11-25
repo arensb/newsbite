@@ -84,7 +84,6 @@ function init()
 	// Draw what we've got so far, if anything
 	if (feeds != null && allitems != null)
 		redraw_itemlist();
-else console.debug("not calling redraw_itemlist yet");
 
 	// Get fresh feed and item information. When that arrives,
 	// it'll update the feed list.
@@ -187,7 +186,7 @@ function flush_queues()
 	/* Assign each element of mark_read to either mark_request.read
 	 * or mark_request.unread.
 	 */
-	for (i in mark_read)
+	for (var i in mark_read)
 	{
 		if (mark_read[i])
 			mark_request.read.push(i);
@@ -270,13 +269,13 @@ function parse_flush_response(req)
 			req.aborted = true;
 
 			/* Put the items to be marked back on mark_read */
-			for (i in req.read)
+			for (var i in req.read)
 			{
 				var id = req.read[i];
 				if (mark_read[id] == undefined)
 					mark_read[id] = true;
 			}
-			for (i in req.unread)
+			for (var i in req.unread)
 			{
 				var id = req.unread[i];
 				if (mark_read[id] == undefined)
@@ -319,13 +318,13 @@ function parse_flush_response(req)
 			/* Put the items to be marked back on mark_read */
 			// XXX - This code is duplicated above. Consolidate
 			// into a function.
-			for (i in req.read)
+			for (var i in req.read)
 			{
 				var id = req.read[i];
 				if (mark_read[id] == undefined)
 					mark_read[id] = true;
 			}
-			for (i in req.unread)
+			for (var i in req.unread)
 			{
 				var id = req.unread[i];
 				if (mark_read[id] == undefined)
@@ -336,14 +335,14 @@ function parse_flush_response(req)
 
 		if (req.aborted)
 			return;
-		for (i in req.read)
+		for (var i in req.read)
 		{
 			var item = document.getElementById("item-"+req.read[i]);
 			if (item == null)
 				continue;
 			item.setAttribute("deleted", "yes");
 		}
-		for (i in req.unread)
+		for (var i in req.unread)
 		{
 			var item = document.getElementById("item-"+req.unread[i]);
 			if (item == null)
@@ -568,7 +567,10 @@ function exit_item(ev)
  */
 function init_feeds_items()
 {
-console.debug("Inside init_feeds_items");
+	/* XXX - If we have feeds but no items, then ought to skip
+	 * directly to getting a list of items, and update the feeds
+	 * later.
+	 */
 	get_json_data("feeds.php",
 		      { o:	"json",
 			id:	"all",
@@ -578,7 +580,6 @@ console.debug("Inside init_feeds_items");
 
 	function feed_callback(value)
 	{
-console.debug("Got feeds: "+value)
 		/* Start the next AJAX request going. It'll take
 		 * forever, so we'll do other stuff while that's
 		 * going.
@@ -608,9 +609,10 @@ console.debug("Got feeds: "+value)
 		console.debug("Got items: "+value);
 
 		feed = value.feed;	// Update current feed description
+			// XXX - Perhaps ought to cache this.
 
 		/* Convert the items received into Item objects */
-		for (i in value.items)
+		for (var i in value.items)
 			value.items[i] = new Item(value.items[i]);
 
 		// XXX - Cache the new items in local storage
