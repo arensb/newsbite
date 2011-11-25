@@ -67,7 +67,7 @@ function get_json_data(url, params, handler, batch)
 		'application/x-www-form-urlencoded');
 
 	var param_string = "";
-	for (p in params)
+	for (var p in params)
 	{
 		if (param_string != "")
 			param_string += "&";
