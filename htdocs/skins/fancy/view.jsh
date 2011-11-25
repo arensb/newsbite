@@ -571,12 +571,7 @@ function init_feeds_items()
 	 * directly to getting a list of items, and update the feeds
 	 * later.
 	 */
-	get_json_data("feeds.php",
-		      { o:	"json",
-			id:	"all",
-		      },
-		      feed_callback,
-		      true);
+	cache.update_feeds(false, feed_callback);
 
 	function feed_callback(value)
 	{
@@ -591,17 +586,7 @@ function init_feeds_items()
 			      item_callback,
 			      true);
 
-		// Create an array of Feed objects from what we just got.
-		/* XXX - Ought to update the existing list: we might
-		 * store state or something, and don't want to lose
-		 * that just because the feed count got updated.
-		 */
-		var newfeeds = new Array();
-		for (var i in value)
-			newfeeds[i] = new Feed(value[i]);
-		feeds = newfeeds;
-
-		cache.store_feeds(feeds);
+		feeds = value;
 	}
 
 	function item_callback(value)
