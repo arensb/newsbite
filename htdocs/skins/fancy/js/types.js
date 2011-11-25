@@ -14,7 +14,7 @@ function Feed(arg)
 		return;
 
 	// Copy all the fields from 'arg' to 'this'
-	for (field in arg)
+	for (var field in arg)
 		this[field] = arg[field]
 }
 
@@ -80,9 +80,9 @@ Feed.prototype.sortname = function()
 			// except in Turkish, but hey, i18n is good.
 	sorted = sorted.replace(/^(THE|A|AN|OF)\b\s*(.*)$/, "$2 $1");
 			// Move "The" and others to the end
-	sorted = sorted.replace(/\'(S|RE|LL)\b/g, "$1");
+	sorted = sorted.replace(/\'(S|RE|LL)\b/g, "$1");	// ' STFU cpp
 			// Remove apostrophe in "John's", "we're", "they'll"
-	sorted = sorted.replace(/N\'T\b/g, "NT");
+	sorted = sorted.replace(/N\'T\b/g, "NT");		// ' STFU cpp
 			// Remove apostrophe in "isn't", "hasn't", etc.
 	sorted = sorted.replace(/&/g, " AND ");
 	sorted = sorted.replace(/-/g, " ");
@@ -124,7 +124,7 @@ function Item(arg)
 		return;
 
 	// Copy all the fields from 'arg' to 'this'
-	for (field in arg)
+	for (var field in arg)
 		this[field] = arg[field]
 }
 
