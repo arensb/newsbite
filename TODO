@@ -1,3 +1,11 @@
+- Bug: When starting, sometimes, the feeds page displays "undefined"
+  in the "number of unread articles" column.
+	I suspect this is because when view.jsh fetches feeds, it
+  fetches them without item counts, then stores the result in
+  localStorage.
+	Presumably ought to be smarter about updating 'feeds': don't
+  just replace the entire structure; rather, update the fields that
+  have changed.
 - Bug?: There are some old articles in the database. Why aren't they
   being cleaned out properly?
 	db_update_feed() only cleans out whichever feed it was called
@@ -1166,3 +1174,7 @@
 	http://www.w3schools.com/jsref/obj_navigator.asp
   for detecting the browser. However, this should be avoided. Better
   to check whether the browser has a particular feature.
+# Local Variables:
+# fill-prefix: "  "
+# mode: auto-fill
+# End:
