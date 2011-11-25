@@ -52,7 +52,7 @@ function dc_element_handler(
 /* Register this handler with the XML parser */
 add_xml_handler("http://purl.org/dc/elements/1.1/",
 		array(
-			"element"	=> dc_element_handler,
+			"element"	=> 'dc_element_handler',
 		)
 	);
 ?>

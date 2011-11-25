@@ -71,7 +71,7 @@ function content_element_handler(
 /* Register this handler with the XML parser */
 add_xml_handler("http://purl.org/rss/1.0/modules/content/",
 		array(
-			"element"	=> content_element_handler
-			)
+			"element"	=> 'content_element_handler',
+		)
 	);
 ?>
