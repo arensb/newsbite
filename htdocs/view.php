@@ -38,7 +38,7 @@ if ($feed_id == "all")
 		"title"	=> "All feeds",
 		"id"	=> "all",
 		);
-	$feeds = db_get_feeds();
+#	$feeds = db_get_feeds();
 } else {
 	$feed = db_get_feed($feed_id);
 	if ($feed === NULL)
@@ -62,7 +62,8 @@ if (is_integer($feed_id))
 // XXX - Put these selection criteria in a JS object, which we can put
 // at the top of the rendered page, so that scripts on that page can
 // tell what we're displaying.
-$items = db_get_some_feed_items($get_feed_args);
+#$items = db_get_some_feed_items($get_feed_args);
+$items = array();
 
 // XXX - Find out how many items there are in this list, so we can put
 // up a navigation bar.
@@ -162,7 +163,7 @@ if ($mobile)
 
 if ($out_fmt == "json")
 {
-	$feed['items'] = $items;
+#	$feed['items'] = $items;
 	echo jsonify($feed);
 
 	db_disconnect();
@@ -185,18 +186,18 @@ $skin = new Skin();
 
 $skin->assign('start', $start);
 $skin->assign('feed', $feed);
-if (isset($feeds))
-	$skin->assign('feeds', $feeds);
-$skin->assign('items', $items);
+#if (isset($feeds))
+#	$skin->assign('feeds', $feeds);
+#$skin->assign('items', $items);
 $skin->assign('prev_link', $prev_link);
 $skin->assign('prev_link_text', $prev_link_text);
 $skin->assign('next_link', $next_link);
 $skin->assign('next_link_text', $next_link_text);
 $skin->assign('mobile', $mobile);
-# XXX - Debugging
+## XXX - Debugging
 $skin->assign('auth_user', $auth_user);
 $skin->assign('auth_expiration', strftime("%c", $auth_expiration));
-# XXX - end debugging
+## XXX - end debugging
 $skin->display("view");
 
 db_disconnect();
