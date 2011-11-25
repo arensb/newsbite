@@ -56,7 +56,7 @@ function media_element_handler(
 /* Register this handler with the XML parser */
 add_xml_handler("http://search.yahoo.com/mrss/",
 		array(
-		"element"	=> media_element_handler,
+			"element"	=> 'media_element_handler',
 		)
 	);
 
