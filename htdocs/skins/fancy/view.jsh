@@ -679,6 +679,16 @@ function redraw_itemlist()
 		 */
 	}
 
+	// XXX - There's probably a better way to do this. With CSS,
+	// maybe.
+	if (new_itemlist.childNodes.length == 0)
+	{
+		// No items to display
+		var new_node = document.createElement("p");
+		new_node.innerHTML = "There are no articles to display.";
+		new_itemlist.appendChild(new_node);
+	}
+
 	// Delete existing children
 	while (itemlist.firstChild)
 		itemlist.removeChild(itemlist.firstChild);
