@@ -191,7 +191,7 @@ foreach ($skin_vars as $k => $v)
 </div>
 
 <!-- List of items -->
-<?if (count($items) > 0):
+<?
 /* XXX - Should have navigation strip:
  *  <- first [20] [21] [22] _23_ [24] [25] [26] last ->
  * Put this at top and bottom. So probably ought to have a separate
@@ -241,11 +241,6 @@ foreach ($skin_vars as $k => $v)
     <a href="<?=$skin_vars['next_link']?>"><?=$skin_vars['next_link_text']?></a>
   </span>
 </div>
-
-<?else:	/* count($items) > 0 */
-?>
-<div id="itemlist"><p>There are no articles to display.</p></div>
-<?endif /* count($items) */ ?>
 
 <p>User <?=$skin_vars['auth_user']?>, session expires <?=$skin_vars['auth_expiration']?>.</p>
 
