@@ -126,6 +126,10 @@ function Item(arg)
 	// Copy all the fields from 'arg' to 'this'
 	for (var field in arg)
 		this[field] = arg[field]
+
+	// XXX - Ought to convert pub_date and last_update to Date
+	// objects. But it'd be easier if the server returned ISO-8601
+	// or time_t.
 }
 
 Item.prototype.displaytitle = function()

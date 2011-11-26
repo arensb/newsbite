@@ -266,6 +266,8 @@ function db_get_some_feed_items(/* varargs */)
 	}
 
 	/* Beginning of query */
+	# XXX - Ought to return dates in ISO-8601 ("2011-11-23T10:09:17Z")
+	# or time_t format.
 	$query = <<<EOT
 SELECT	items.*
 FROM	items
