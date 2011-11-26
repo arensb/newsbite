@@ -70,10 +70,6 @@
   parameters we've been given)
 	htdocs/items.php (or something) takes those parameters and
   returns a JSON (or XML) list of articles.
-- Is it time to retire the default skin, which doesn't use JavaScript?
-	Every browser I use or care about supports AJAX, so use that
-  and drop plain HTML support.
-	Delete default skin. Make "fancy" the default.
 - What's the best way to handle XKCD mouseover text on mobile devices?
   Perhaps an HTMLPurifier plugin that finds <img alt="foo"/> and puts
   the alt-text under the image, as a caption?
@@ -556,9 +552,6 @@
 - Feed maintenance: feeds go stale, get deleted, etc. all the time.
   It'd be really nice if the index page showed the ones with errors.
 	Check the HTTP status: if it's 4xx, then the feed is dead.
-- Get rid of unused skins: default.
-	Make "fancy" the new default. Maybe just rename it to
-  "default".
 - Guideline: Apple recommends using 'delete' to free up memory and
   help the garbage collector. Basically, any time you have
 	var my_foo = new Foo;
