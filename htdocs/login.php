@@ -85,7 +85,6 @@ if (isset($_SERVER['REMOTE_USER']))
 <body>
 <h1>You've been authenticated through Apache</h1>
 <p><a href="<?=$from?>">Back to where you came from</a></p>
-<?phpinfo();?>
 </body>
 </html>
 <?
