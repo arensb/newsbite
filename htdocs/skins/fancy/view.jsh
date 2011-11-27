@@ -77,12 +77,10 @@ function init()
 
 	// Get feeds and items from cache.
 	feeds = cache.feeds();
-//console.debug("initially feeds == "+feeds);
-	allitems = cache.getitems();
-//console.debug("initially allitems == "+allitems);
+	allitems = cache.getitems(feed.id);
 
 	// Draw what we've got so far, if anything
-	if (feeds != null && allitems != null)
+	if (feeds != null && allitems != null && allitems.length > 0)
 		redraw_itemlist();
 
 	// Get fresh feed and item information. When that arrives,
@@ -579,28 +577,14 @@ function init_feeds_items()
 		 * forever, so we'll do other stuff while that's
 		 * going.
 		 */
-		get_json_data("items.php",
-			      { o:	"json",
-			        id:	feed.id,
-			      },
-			      item_callback,
-			      true);
+		cache.update_items(feed.id, 0, item_callback);
 
 		feeds = value;
 	}
 
 	function item_callback(value)
 	{
-		feed = value.feed;	// Update current feed description
-			// XXX - Perhaps ought to cache this.
-
-		/* Convert the items received into Item objects */
-		for (var i in value.items)
-			value.items[i] = new Item(value.items[i]);
-
-		// XXX - Cache the new items in local storage
-		// XXX - Update in-memory list of items we know about?
-		allitems = value.items;
+		allitems = value;
 
 		// Redraw itemlist
 		redraw_itemlist();
