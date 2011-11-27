@@ -12,7 +12,12 @@
 /* XXX - When localStorage fills up, setItem() throws an exception:
  * "Exception... "Persistent storage maximum size reached"  code: "1014"
  * nsresult: "0x805303f6 (NS_ERROR_DOM_QUOTA_REQCHED)"  location:
-#"http://.../foo.js Line: NN"
+ * #"http://.../foo.js Line: NN"
+ *
+ * Perhaps write wrappers around localStorage.setItem() and
+ * localStorage.getItem(), which keep track of when each item was
+ * added/modified/accessed. The setItem() wrapper can then catch quota
+ * exceptions, and delete items as necessary.
  */
 #include "types.js"		/* Feed and Item classes */
 #include "xhr.js"		// For AJAX requests
@@ -23,7 +28,6 @@
 /* XXX - Need some kind of consistency check a la fsck.
  * Store a value indicating whether local storage is clean or not,
  * in case a non-atomic operation gets interrupted.
- * - Does each ihead: entry have an ibody: and vice-versa?
  * - Are there any items in nonexistent feeds?
  */
 
@@ -57,14 +61,14 @@
 
 function CacheManager()
 {
-	/* XXX - Load known objects? Or would that affect execution
-	 * speed? Or perhaps just stick a flag in the prototype saying
-	 * that this object hasn't been initialized properly yet?
-	 */
-	this.items = {};	// Header information about items
-	this.have_text = {};	// 1 for those items for which we have text
+	this.headers = [];	// Metadata for all cached items,
+				// sorted by pub_date.
+	this.itemindex = {};	// All cached items, indexed by ID.
 
-	for (var i, n = localStorage.length; i < n; i++)
+	/* Scan localStorage for stuff saved since last time.
+	 */
+	// XXX - How does this affect execution speed?
+	for (var i = 0, n = localStorage.length; i < n; i++)
 	{
 		var key = localStorage.key(i);
 		var matches;
@@ -72,16 +76,32 @@ function CacheManager()
 		// The '(...) != null' construct is only there to stop
 		// Firefox from issuing a warning about whether I
 		// meant to use == instead of =.
-		if ((matches = key.match(/^ihead:(\d+)$/)) != null)
+		if ((matches = key.match(/^item:(\d+)$/)) != null)
 		{
 			// XXX - Wrap this in a try{}.
-			this.items[match[1]] = JSON.parse(localStorage.getItem(key));
-		} else if ((matches = key.match(/^ibody:(\d+)$/)) != null)
-		{
-			this.have_text[matches[1]] = 1;
+			var item = new Item(JSON.parse(localStorage.getItem(key)));
+			// XXX - Extract header info
+			var header = {};
+			header.id = item.id;
+			header.feed_id = item.feed_id;
+			header.pub_date = item.pub_date;
+
+			// Store the header info.
+			this.headers.push(header);
+			this.itemindex[item.id] = item;
 		}
 		// XXX - Check for unrecognized entries?
 	}
+
+	// Sort headers by last_update, just like lib/database.inc.
+	this.headers.sort(function(a, b) {
+			if (a.last_update > b.last_update)
+				return -1;
+			else if (a.last_update < b.last_update)
+				return 1;
+			else
+				return b.id - a.id;
+		});
 }
 
 /* feeds
@@ -89,6 +109,12 @@ function CacheManager()
  */
 CacheManager.prototype.feeds = function()
 {
+	// XXX - Ought to put feed information in 'this' in the
+	// constructor, and update it when it changes. This function
+	// should just return the in-memory copy.
+	// Or perhaps this function can initialize this.allfeeds if
+	// it's unset, and thereafter just use that.
+
 	// Get the cached set of feeds from local storage
 	var str;
 	try {
@@ -151,11 +177,14 @@ CacheManager.prototype.update_feeds = function(counts, cb)
  */
 CacheManager.prototype._update_feeds_cb = function(value, user_cb)
 {
+	// XXX - Ought to update existing feed info. In particular, if
+	// 'value' doesn't contain the read/unread counts, ought to
+	// keep the old value.
 	var newfeeds = new Array();
 	for (var i in value)
 		newfeeds[i] = new Feed(value[i]);
 
-	this.store_feeds(newfeeds);
+	this.store_feeds(newfeeds);	// Save a copy of the feed info
 
 	user_cb(newfeeds);
 }
@@ -177,34 +206,49 @@ CacheManager.prototype.store_feeds = function(feeds)
 
 // XXX - Retrieve feed metadata
 
+/* update_items
+ * Get items from the server.
+ * feed_id - ID of the feed to update, or "all".
+ * start - Start offset
+ * cb - callback function to call when the update is complete.
+ */
+CacheManager.prototype.update_items = function(feed_id, start, cb)
+{
+	var ajax_args = {
+		o:	"json",
+		id:	feed_id,
+		s:	start + 0,
+		};
+
+	var me = this;
+	get_json_data("items.php",
+		      ajax_args,
+		      function(value) {
+			      me._update_items_cb(value, cb);
+		      },
+		      true);
+}
+
+CacheManager.prototype._update_items_cb = function(value, user_cb)
+{
+	var newitems = new Array();
+	for (var i in value.items)
+	{
+		var item = new Item(value.items[i]);
+		newitems.push(item);
+		this.store_item(item);
+	}
+
+	user_cb(newitems);
+}
+
 // XXX - Save an article
 CacheManager.prototype.store_item = function(item)
 {
-	/* Split item into body (summary and content, the two long
-	 * fields) and head (everything else). Store them as
-	 */
-	var ihead = {};
-	var ibody = {};
+	var str = JSON.stringify(item);
+	localStorage.setItem('item:'+item.id, str);
 
-	for (var field in item)
-	{
-		if (!item.hasOwnProperty(field))
-			// Don't iterate over inherited properties. See
-			// http://stackoverflow.com/questions/5861763/how-to-tell-if-a-javascript-variable-is-a-function
-			continue;
-		if (typeof(item[field]) == "function")
-			// Don't store functions
-			continue;
-
-		if (field == "summary" || field == "content")
-			ibody[field] = item[field]
-		else
-			ihead[field] = item[field]
-	}
-	localStorage.setItem("ihead:"+item.id,
-			     JSON.stringify(ihead));
-	localStorage.setItem("ibody:"+item.id,
-			     JSON.stringify(ibody));
+	// XXX - Update in-memory stuff
 }
 
 /* get_item
@@ -212,25 +256,30 @@ CacheManager.prototype.store_item = function(item)
  */
 CacheManager.prototype.get_item = function(id)
 {
-	var ihead = localStorage.getItem("ihead:"+id);
-
-	var ibody = localStorage.getItem("ibody:"+id);
-	if (ihead == null || ibody == null)
-		// Can't find it
+	// XXX - Note time when this was accessed.
+	var str = localStorage.getItem("item:"+id);
+	if (str == null)
 		return null;
-
-	// Copy fields from ibody to ihead
-	for (var i in ibody)
-		ihead[i] = ibody[i];
-
-	return new Item(ihead);
+	return new Item(JSON.parse(str));
 }
 
-// XXX - Get metadata for items
-CacheManager.prototype.getitems = function()
+/* getitems
+ * Get some items from the given feed
+ */
+// XXX - Ought to be able to specify more details.
+CacheManager.prototype.getitems = function(feed_id)
 {
 	// XXX - Do something smart
-	return null;
+	var retval = new Array();
+	for (var i = 0, l = this.headers.length; i < l; i++)
+	{
+		var head = this.headers[i];
+		if (feed_id != "all" && head.feed_id != feed_id)
+			continue;
+		retval.push(this.get_item(head.id));
+	}
+
+	return retval;
 }
 
 #endif	// _CacheManager_js_
