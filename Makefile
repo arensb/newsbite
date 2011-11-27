@@ -40,8 +40,7 @@ INSTALL_PLUGINS =	${PRIV_ROOT}/plugins
 INSTALL_SKINS =	${PRIV_ROOT}/skins
 
 RECURSIVE_DIRS =	\
-	htdocs/skins/fancy \
-	htdocs/skins/wings
+	htdocs/skins/fancy
 
 # XXX - Create htdocs/.htaccess based on the directories above
 # XXX - Create lib/config.inc based on the directories above
