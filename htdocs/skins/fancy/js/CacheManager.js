@@ -4,11 +4,6 @@
  */
 #ifndef _CacheManager_js_
 #define _CacheManager_js_
-/* XXX - Perhaps organize things as follows:
- * localStorage:
- * - feeds: basically a mirror of the 'feeds' table.
- * - item:NNN: the item with id NNN.
- */
 /* XXX - When localStorage fills up, setItem() throws an exception:
  * "Exception... "Persistent storage maximum size reached"  code: "1014"
  * nsresult: "0x805303f6 (NS_ERROR_DOM_QUOTA_REQCHED)"  location:
@@ -32,9 +27,9 @@
  */
 
 /* XXX - Interface:
- * feeds() - Return the feeds structure currently in storage.
+ * - feeds() - Return the feeds structure currently in storage.
  *
- * update_feeds(cb) - Send an AJAX request to get feed information,
+ * - update_feeds(cb) - Send an AJAX request to get feed information,
  * and call cb(new_feeds) when it completes.
  *
  * items(feed_id, ptr, before, after) - Return some items currently in
@@ -51,13 +46,13 @@
  * 'ptr'. If ptr is null, then 'before' is ignored; if ptr is -1, then
  * 'after' is ignored.
  *
- * update_items(feed_id, ?, cb) - Send an AJAX request to get more items
+ * - update_items(feed_id, ?, cb) - Send an AJAX request to get more items
  * from feed_id, then call cb() when it completes.
  */
 /* XXX - Perhaps have callback functions called when feeds/items get
- * updated?
+ * updated? For when things change in the background. Or would that be
+ * a bad idea?
  */
-
 
 function CacheManager()
 {
@@ -80,7 +75,7 @@ function CacheManager()
 		{
 			// XXX - Wrap this in a try{}.
 			var item = new Item(JSON.parse(localStorage.getItem(key)));
-			// XXX - Extract header info
+			// Extract header info
 			var header = {};
 			header.id = item.id;
 			header.feed_id = item.feed_id;
@@ -109,12 +104,6 @@ function CacheManager()
  */
 CacheManager.prototype.feeds = function()
 {
-	// XXX - Ought to put feed information in 'this' in the
-	// constructor, and update it when it changes. This function
-	// should just return the in-memory copy.
-	// Or perhaps this function can initialize this.allfeeds if
-	// it's unset, and thereafter just use that.
-
 	// Get the cached set of feeds from local storage
 	var str;
 	try {
@@ -122,6 +111,8 @@ CacheManager.prototype.feeds = function()
 	} catch (e) {
 		// Exception might be thrown if browser doesn't grok
 		// localStorage.
+		// XXX - This should no longer be necessary once
+		// getItem/putItem/removeItem are wrapped.
 		localStorage.removeItem('feeds');
 		return null;
 	}
@@ -130,6 +121,8 @@ CacheManager.prototype.feeds = function()
 		return null;
 
 	// Parse the retrieved value
+	// XXX - The parsing part should no longer be necessary once
+	// getItem() is wrapped.
 	var a;		// Array of strings, rather than the array of
 			// Feeds that we'll eventually return.
 	try {
@@ -177,9 +170,10 @@ CacheManager.prototype.update_feeds = function(counts, cb)
  */
 CacheManager.prototype._update_feeds_cb = function(value, user_cb)
 {
-	// XXX - Ought to update existing feed info. In particular, if
-	// 'value' doesn't contain the read/unread counts, ought to
-	// keep the old value.
+	// XXX - Ought to update existing feed info, rather than just
+	// replace what's there. In particular, if 'value' doesn't
+	// contain the read/unread counts, ought to keep the old
+	// value.
 	var newfeeds = new Array();
 	for (var i in value)
 		newfeeds[i] = new Feed(value[i]);
@@ -188,10 +182,6 @@ CacheManager.prototype._update_feeds_cb = function(value, user_cb)
 
 	user_cb(newfeeds);
 }
-
-// XXX - Update saved data for one feed
-
-// XXX - Get one feed (not all)
 
 /* store_feeds
  * Save list of feeds to localStorage.
@@ -202,9 +192,39 @@ CacheManager.prototype.store_feeds = function(feeds)
 
 	localStorage.setItem('feeds', str);
 	// XXX - Error-checking. Make sure quota hasn't been exceeded.
+	// Naah, do this in setItem() wrapper.
 }
 
-// XXX - Retrieve feed metadata
+/* get_item
+ * Retrieve an article (by id)
+ */
+CacheManager.prototype.get_item = function(id)
+{
+	// XXX - Note time when this was accessed. Naah, let getItem()
+	// wrapper do it.
+	var str = localStorage.getItem("item:"+id);
+	if (str == null)
+		return null;
+	return new Item(JSON.parse(str));
+}
+
+/* getitems
+ * Get some items from the given feed
+ */
+// XXX - Ought to be able to specify more details.
+CacheManager.prototype.getitems = function(feed_id)
+{
+	var retval = new Array();
+	for (var i = 0, l = this.headers.length; i < l; i++)
+	{
+		var head = this.headers[i];
+		if (feed_id != "all" && head.feed_id != feed_id)
+			continue;
+		retval.push(this.get_item(head.id));
+	}
+
+	return retval;
+}
 
 /* update_items
  * Get items from the server.
@@ -249,37 +269,6 @@ CacheManager.prototype.store_item = function(item)
 	localStorage.setItem('item:'+item.id, str);
 
 	// XXX - Update in-memory stuff
-}
-
-/* get_item
- * Retrieve an article (by id)
- */
-CacheManager.prototype.get_item = function(id)
-{
-	// XXX - Note time when this was accessed.
-	var str = localStorage.getItem("item:"+id);
-	if (str == null)
-		return null;
-	return new Item(JSON.parse(str));
-}
-
-/* getitems
- * Get some items from the given feed
- */
-// XXX - Ought to be able to specify more details.
-CacheManager.prototype.getitems = function(feed_id)
-{
-	// XXX - Do something smart
-	var retval = new Array();
-	for (var i = 0, l = this.headers.length; i < l; i++)
-	{
-		var head = this.headers[i];
-		if (feed_id != "all" && head.feed_id != feed_id)
-			continue;
-		retval.push(this.get_item(head.id));
-	}
-
-	return retval;
 }
 
 #endif	// _CacheManager_js_
