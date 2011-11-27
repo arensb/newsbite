@@ -14,6 +14,8 @@
  * added/modified/accessed. The setItem() wrapper can then catch quota
  * exceptions, and delete items as necessary.
  */
+/* XXX - Add functions to mark items as read/unread.
+ */
 #include "types.js"		/* Feed and Item classes */
 #include "xhr.js"		// For AJAX requests
 
@@ -99,40 +101,77 @@ function CacheManager()
 		});
 }
 
+/* XXX - localStorage wrappers:
+ * - length() ?
+ * - key(i) ?
+ * x getItem(key)
+ * x setItem(key, value)
+ * x removeItem(key)
+ * - touch(key) ? - Just update atime/mtime/ctime
+ */
+
+/* getItem
+ * Wrapper around localStorage.getItem(): retrieve and parse the
+ * requested item. Update access time.
+ */
+CacheManager.prototype.getItem = function(key)
+{
+	var retval;
+	var str = localStorage.getItem(key);
+
+	if (str == null)
+		return null;
+	try {
+		retval = JSON.parse(str);
+	} catch (e) {
+		// The item doesn't parse, or something. Delete it.
+		this.removeItem(key);
+			// XXX - Remove from the array with key
+			// information. Or perhaps just use
+			// this.removeKey()?
+		return null;
+	}
+
+	// XXX - Update access time for key.
+
+	return retval;
+}
+
+/* setItem
+ * Wrapper around localStorage.setItem(): store the key=>value pair,
+ * and update its mtime.
+ */
+CacheManager.prototype.setItem = function(key, value)
+{
+	var str = JSON.stringify(value);
+		// XXX - Error-checking?
+
+	try {
+		localStorage.setItem(key, str);
+	} catch (e) {
+		// XXX - Do something intelligent: if we're out of
+		// quota, free up some space by deleting old cruft.
+	}
+}
+
+/* removeitem
+ * Wrapper around localStorage.removeItem(): remove the item from both
+ * localStorage and from the meta information list.
+ */
+CacheManager.prototype.removeItem = function(key)
+{
+	localStorage.removeItem(key);
+	// XXX - Remove from meta
+}
+
 /* feeds
  * Retrieve stored list of feeds.
  */
 CacheManager.prototype.feeds = function()
 {
-	// Get the cached set of feeds from local storage
-	var str;
-	try {
-		str = localStorage.getItem('feeds');
-	} catch (e) {
-		// Exception might be thrown if browser doesn't grok
-		// localStorage.
-		// XXX - This should no longer be necessary once
-		// getItem/putItem/removeItem are wrapped.
-		localStorage.removeItem('feeds');
-		return null;
-	}
-	if (str == null)
-		// No feeds stored yet
-		return null;
-
-	// Parse the retrieved value
-	// XXX - The parsing part should no longer be necessary once
-	// getItem() is wrapped.
-	var a;		// Array of strings, rather than the array of
+	var a = this.getItem('feeds');
+			// Array of strings, rather than the array of
 			// Feeds that we'll eventually return.
-	try {
-		a = JSON.parse(str);
-	} catch (e) {
-		// In case of syntax error or something
-		localStorage.removeItem('feeds');
-		return null;
-	}
-
 	// Convert elements to objects.
 	var retval = new Array();
 	for (var f in a)
@@ -188,11 +227,7 @@ CacheManager.prototype._update_feeds_cb = function(value, user_cb)
  */
 CacheManager.prototype.store_feeds = function(feeds)
 {
-	var str = JSON.stringify(feeds);
-
-	localStorage.setItem('feeds', str);
-	// XXX - Error-checking. Make sure quota hasn't been exceeded.
-	// Naah, do this in setItem() wrapper.
+	this.setItem('feeds', feeds);
 }
 
 /* get_item
@@ -200,12 +235,10 @@ CacheManager.prototype.store_feeds = function(feeds)
  */
 CacheManager.prototype.get_item = function(id)
 {
-	// XXX - Note time when this was accessed. Naah, let getItem()
-	// wrapper do it.
-	var str = localStorage.getItem("item:"+id);
-	if (str == null)
+	var tmp = this.getItem("item:"+id);
+	if (tmp == null)
 		return null;
-	return new Item(JSON.parse(str));
+	return new Item(tmp);
 }
 
 /* getitems
@@ -265,10 +298,7 @@ CacheManager.prototype._update_items_cb = function(value, user_cb)
 // XXX - Save an article
 CacheManager.prototype.store_item = function(item)
 {
-	var str = JSON.stringify(item);
-	localStorage.setItem('item:'+item.id, str);
-
-	// XXX - Update in-memory stuff
+	this.setItem('item:'+item.id, item);
 }
 
 #endif	// _CacheManager_js_
