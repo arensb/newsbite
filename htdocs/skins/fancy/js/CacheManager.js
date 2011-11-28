@@ -270,9 +270,9 @@ CacheManager.prototype._update_feeds_cb = function(value, user_cb)
 	// replace what's there. In particular, if 'value' doesn't
 	// contain the read/unread counts, ought to keep the old
 	// value.
-	var newfeeds = new Array();
+	var newfeeds = {};
 	for (var i in value)
-		newfeeds.push(new Feed(value[i]));
+		newfeeds[i] = new Feed(value[i]);
 
 	this.store_feeds(newfeeds);	// Save a copy of the feed info
 
