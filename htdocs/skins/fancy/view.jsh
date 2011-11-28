@@ -611,18 +611,17 @@ function redraw_itemlist()
 			// been given an item from a nonexistent feed?
 		var title = item.displaytitle();
 
-		// XXX - Fill these in.
-		// XXX - Indicate whether to show content or summary.
-		// XXX - Indicate whether collapsible.
+		// Fill in values to plug into item template
 		var item_values = {
 			id:		item.id,
 			url:		encodeURI(item.url),
-			url_attr:	"",
-				// XXX - On iPhone/iPad, open title link
+			url_attr:	(mobile != "" ?
+					 'target="_blank"'
+					 : ""),
+				// On mobile devices, open title link
 				// in a new window.
 			title:		title,
 			feed_url:	encodeURI(item_feed.url),
-				// XXX - Get this from feeds.
 			feed_title:	item_feed.displaytitle(),
 			author:		item.author,
 				// XXX - If author is empty, shouldn't
