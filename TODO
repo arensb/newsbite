@@ -37,6 +37,8 @@
   HTML error message. Should be JSON (or whatever the user requested).
 - Bug: On android, often title bar overflows to the right of the
   screen.
+- Template.expand should return a DOM object, not a string.
+- Integrate keybinding stuff into PatEvent.
 - Should get rid of "Apply Changes" button. Also probably
   "Earlier"/"Later" links.
 - Move event handlers over to bind_event().
