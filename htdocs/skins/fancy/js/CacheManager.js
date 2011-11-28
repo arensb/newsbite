@@ -58,25 +58,40 @@
 
 function CacheManager()
 {
-	this.headers = [];	// Metadata for all cached items,
+	this.headers = [];	// Metadata for all cached articles,
 				// sorted by pub_date.
-	this.itemindex = {};	// All cached items, indexed by ID.
+	this.itemindex = {};	// All cached articles, indexed by ID.
+	this._ls_index = {};	// Metainformation about the data in
+				// localStorage.
+			// XXX - Keep track of size?
 
 	/* Scan localStorage for stuff saved since last time.
 	 */
 	// XXX - How does this affect execution speed?
+	// XXX - Should _ls_index be saved across sessions?
 	for (var i = 0, n = localStorage.length; i < n; i++)
 	{
 		var key = localStorage.key(i);
 		var matches;
 
-		// The '(...) != null' construct is only there to stop
-		// Firefox from issuing a warning about whether I
-		// meant to use == instead of =.
-		if ((matches = key.match(/^item:(\d+)$/)) != null)
+		if (key == "feeds")
+		{
+			this._ls_index[key] = {
+				"time":	new Date(),
+			};
+		} else if ((matches = key.match(/^item:(\d+)$/)) != null)
+			// The '(...) != null' construct is only there
+			// to stop Firefox from issuing a warning
+			// about whether I meant to use == instead of
+			// =.
 		{
 			// XXX - Wrap this in a try{}.
 			var item = new Item(JSON.parse(localStorage.getItem(key)));
+
+			this._ls_index[key] = {
+				"time":	new Date(),
+			};
+
 			// Extract header info
 			var header = {};
 			header.id = item.id;
@@ -87,7 +102,10 @@ function CacheManager()
 			this.headers.push(header);
 			this.itemindex[item.id] = item;
 		}
-		// XXX - Check for unrecognized entries?
+
+		/* Ignore unrecognized entries: they probably belong
+		 * to some other app on the same machine+port.
+		 */
 	}
 
 	// Sort headers by last_update, just like lib/database.inc.
@@ -101,14 +119,7 @@ function CacheManager()
 		});
 }
 
-/* XXX - localStorage wrappers:
- * - length() ?
- * - key(i) ?
- * x getItem(key)
- * x setItem(key, value)
- * x removeItem(key)
- * - touch(key) ? - Just update atime/mtime/ctime
- */
+/* localStorage wrappers */
 
 /* getItem
  * Wrapper around localStorage.getItem(): retrieve and parse the
@@ -126,13 +137,13 @@ CacheManager.prototype.getItem = function(key)
 	} catch (e) {
 		// The item doesn't parse, or something. Delete it.
 		this.removeItem(key);
-			// XXX - Remove from the array with key
-			// information. Or perhaps just use
-			// this.removeKey()?
 		return null;
 	}
 
-	// XXX - Update access time for key.
+	// Update access time for key.
+	this._ls_index[key] = {
+		"time":	new Date(),
+		};
 
 	return retval;
 }
@@ -151,7 +162,13 @@ CacheManager.prototype.setItem = function(key, value)
 	} catch (e) {
 		// XXX - Do something intelligent: if we're out of
 		// quota, free up some space by deleting old cruft.
+		this._ls_purge(key.length+str.length);
 	}
+
+	// Update timestamp on the item.
+	this._ls_index[key] = {
+		"time":	new Date(),
+		};
 }
 
 /* removeitem
@@ -161,7 +178,47 @@ CacheManager.prototype.setItem = function(key, value)
 CacheManager.prototype.removeItem = function(key)
 {
 	localStorage.removeItem(key);
-	// XXX - Remove from meta
+
+	// Remove from timestamp data.
+	delete this._ls_index[key];
+}
+
+/* _ls_purge
+ * Delete old cruft from localStorage. 'size' says how many bytes to
+ * free up.
+ */
+// XXX - This function can delete things that other functions are
+// using.
+CacheManager.prototype._ls_purge = function(size)
+{
+msg_add("Garbage collection");
+	var tmp = new Array;
+
+	/* Make an array from _ls_index data */
+	for (var i in this._ls_index)
+	{
+		tmp.push({
+			"key":	i,
+			"time":	this._ls_index[i].time,
+			});
+	}
+
+	/* Sort the array by time */
+	tmp.sort(function(a, b) {
+		return a.time.getTime() - b.time.getTime()
+		});
+
+	/* Purge the oldest entries */
+	/* XXX - This is rather stupid and inefficient: we're just
+	 * taking the oldest 50% of the entries and purging that. It'd
+	 * be smarter to free up 'size' bytes, perhaps plus some
+	 * additional space for elbow room.
+	 */
+	for (var i = 0, len = Math.floor(tmp.length/2); i < len; i++)
+	{
+		// Purge the i'th element.
+		this.removeItem(tmp[i].key);
+	}
 }
 
 /* feeds
@@ -215,7 +272,7 @@ CacheManager.prototype._update_feeds_cb = function(value, user_cb)
 	// value.
 	var newfeeds = new Array();
 	for (var i in value)
-		newfeeds[i] = new Feed(value[i]);
+		newfeeds.push(new Feed(value[i]));
 
 	this.store_feeds(newfeeds);	// Save a copy of the feed info
 
