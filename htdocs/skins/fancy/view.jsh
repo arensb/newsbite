@@ -192,6 +192,9 @@ function flush_queues()
 		delete(mark_read[i]);
 	}
 
+	// XXX - Use get_json_data(). Or better yet, move the whole
+	// thing to CacheManager.js.
+
 	/* Start a new request to send the queues (mark_request.read and
 	 * mark_request.unread) to the server.
 	 */
@@ -303,6 +306,7 @@ function parse_flush_response(req)
 				// Ignore them. For that matter, ignore
 				// any JSON lines that aren't objects.
 				continue;
+			// XXX - Ought to use JSON.parse
 			try {
 				eval("l = " + line);
 				break;
@@ -338,6 +342,8 @@ function parse_flush_response(req)
 			if (item == null)
 				continue;
 			item.setAttribute("deleted", "yes");
+				// XXX - What needs to be done to mark
+				// an item as read?
 		}
 		for (var i in req.unread)
 		{
@@ -345,6 +351,7 @@ function parse_flush_response(req)
 			if (item == null)
 				continue;
 			item.setAttribute("deleted", "no");
+				// XXX - Mark the item as unread?
 		}
 		break;
 	}
