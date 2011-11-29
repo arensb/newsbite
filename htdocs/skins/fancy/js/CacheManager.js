@@ -230,9 +230,9 @@ CacheManager.prototype.feeds = function()
 			// Array of strings, rather than the array of
 			// Feeds that we'll eventually return.
 	// Convert elements to objects.
-	var retval = new Array();
+	var retval = {};
 	for (var f in a)
-		retval.push(new Feed(a[f]));
+		retval[f] = new Feed(a[f]);
 	return retval;
 }
 
