@@ -40,18 +40,17 @@ function init()
 {
 	itemlist = document.getElementById("itemlist");
 
-	// XXX - The root node for bind_event shouldn't be document,
-	// but rather whichever div will contain the articles.
-	PatEvent.bind_event(document, "click", ".collapse-bar",
-			    toggle_pane, false);
-	PatEvent.bind_event(document, "click", ".expand-bar",
-			    toggle_pane, false);
-	PatEvent.bind_event(document, "click", ".mark-check",
-			    button_mark_item, false);
-
 	// The main form, the one that holds all the items, their
 	// checkboxes, the buttons at the top and bottom, etc.
 	main_form = document.forms[0];
+
+	// Bind some events
+	PatEvent.bind_event(itemlist, "click", ".collapse-bar",
+			    toggle_pane, false);
+	PatEvent.bind_event(itemlist, "click", ".expand-bar",
+			    toggle_pane, false);
+	PatEvent.bind_event(itemlist, "click", ".mark-check",
+			    button_mark_item, false);
 
 	window.addEventListener("keydown", handle_key, false);
 
@@ -66,9 +65,9 @@ function init()
 	 */
 	if (mobile == "")
 	{
-		PatEvent.bind_event(document, "_enter", ".item",
+		PatEvent.bind_event(itemlist, "_enter", ".item",
 				    enter_item, false);
-		PatEvent.bind_event(document, "_exit", ".item",
+		PatEvent.bind_event(itemlist, "_exit", ".item",
 				    exit_item, false);
 		bind_key("d", key_mark_item);
 		// XXX - bind_key("k", move_up);
