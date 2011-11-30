@@ -87,6 +87,8 @@ EOT
 	$retval = array();
 	while ($row = $result->fetch_assoc())
 	{
+		$row['active'] = $row['active'] ? TRUE : FALSE;
+			# Make sure 'active' is properly boolean
 		$retval[$row['id']] = $row;
 	}
 	return $retval;
@@ -152,6 +154,8 @@ EOT
 		return NULL;
 	}
 	$retval = $result->fetch_assoc();
+	$retval['active'] = $retval['active'] ? TRUE : FALSE;
+		# Make sure 'active' is properly boolean
 		// XXX - Error-checking
 
 	return $retval;
@@ -339,6 +343,8 @@ EOT;
 	$retval = array();
 	while ($row = $result->fetch_assoc())
 	{
+		# Make sure is_read is properly converted to boolean.
+		$row['is_read'] = $row['is_read'] ? TRUE : FALSE;
 		$retval[] = $row;
 	}
 
