@@ -243,12 +243,38 @@ function parse_flush_error(status, msg, mark_request)
 		var id = mark_request.read[i];
 		if (mark_read[id] == undefined)
 			mark_read[id] = true;
+
+		/* Mark the in-cache copy as read */
+		// XXX - A loop inside a loop seems inefficient. This
+		// is probably slow.
+		for (var j in allitems)
+		{
+			var item = allitems[j];
+			if (item.id == id)
+			{
+				item.is_read = true;
+				// XXX - Delete it from cache?
+			}
+		}
 	}
 	for (var i in mark_request.unread)
 	{
 		var id = mark_request.unread[i];
 		if (mark_read[id] == undefined)
 			mark_read[id] = false;
+
+		/* Mark the in-cache copy as unread */
+		// XXX - A loop inside a loop seems inefficient. This
+		// is probably slow.
+		for (var j in allitems)
+		{
+			var item = allitems[j];
+			if (item.id == id)
+			{
+				item.is_read = false;
+				// XXX - Re-fetch it from the server?
+			}
+		}
 	}
 }
 
@@ -506,6 +532,9 @@ function redraw_itemlist()
 	for (var i in allitems)
 	{
 		var item = allitems[i];
+		if (item.is_read)
+			continue;
+
 		var item_feed = feeds[item.feed_id];
 			// XXX - Check to make sure that
 			// feeds[item.feed_id] exists, that we haven't
