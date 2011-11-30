@@ -167,6 +167,7 @@ function set_pane(container, state)
 /* flush_queues
  * Send the contents of the queues to markitems.php
  */
+// XXX - Move most of the item-marking stuff to CacheManager.js
 function flush_queues()
 {
 	// XXX - If another flush_queues() request is running, do
@@ -192,168 +193,62 @@ function flush_queues()
 		delete(mark_read[i]);
 	}
 
-	// XXX - Use get_json_data(). Or better yet, move the whole
-	// thing to CacheManager.js.
-
-	/* Start a new request to send the queues (mark_request.read and
-	 * mark_request.unread) to the server.
-	 */
-	// XXX - http://stackoverflow.com/questions/2680756/why-should-i-reuse-xmlhttprequest-objects
-	// suggests reusing XMLHttpRequest objects: reduces number of
-	// distinct objects, so fewer network connections to step on
-	// each other's toes, less garbage collection, lower chance of
-	// a memory leak, etc.
-	// http://ajaxpatterns.org/XMLHttpRequest_Call says to make sure
-	// the object has either completed, or you've called abort()
-	// before reusing.
-	var request = createXMLHttpRequest();
-	if (!request)
-	{
-		// XXX - Better error-reporting
-		return true;
-	}
-
-	var err;
-
-	mark_request.request = request;
-
-	request.open('POST',
-		'markitems.php?o=json',
-		true);
-	request.setRequestHeader('Content-Type',
-		'application/x-www-form-urlencoded');
-	request.onreadystatechange =
-		function() { parse_flush_response(mark_request) };
-	// Encode lists of items to mark as read/unread
-	var req_data = "mark-read=" +
-			encodeURIComponent(mark_request.read.join(",")) +
-			"&mark-unread=" +
-			encodeURIComponent(mark_request.unread.join(","));
-	request.send(req_data);
-
-	return false;
+	get_json_data("markitems.php",
+		      { o:	"json",
+		        "mark-read":	mark_request.read.join(","),
+		        "mark-unread":	mark_request.unread.join(","),
+		      },
+		      function(value) {
+			      parse_flush_response(value, mark_request);
+		      },
+		      function(status, msg) {
+			      parse_flush_error(status, msg, mark_request);
+		      },
+		      true);
 }
 
-function parse_flush_response(req)
+function parse_flush_response(value, req)
 {
-	var err = 0;
-	var errmsg = undefined;
-
-	// XXX - If there's an error, take all the items in req and
-	// put them back in mark_read (bearing in mind that they may
-	// have been marked again by the user, so don't overwrite
-	// those).
-
-	switch (req.request.readyState)
+	for (var i in req.read)
 	{
-	    case 0:		// Uninitialized
-	    case 1:		// Loading
-		return
-	    case 2:		// Loaded
-		/* Get request status */
+		var item = document.getElementById("item-"+req.read[i]);
+			// XXX - Should have a table of
+			// currently-displayed items.
+		if (item == null)
+			continue;
+		item.setAttribute("deleted", "yes");
+			// XXX - What else needs to be done to mark an
+			// item as read?
+	}
+	for (var i in req.unread)
+	{
+		var item = document.getElementById("item-"+req.unread[i]);
+			// XXX - Should have a table of
+			// currently-displayed items.
+		if (item == null)
+			continue;
+		item.setAttribute("deleted", "no");
+			// XXX - What else needs to be done to mark
+			// the item as unread?
+	}
+}
 
-		/* Get HTTP status */
-		try {
-			err = req.request.status;
-			errmsg = req.request.statusText;
-		} catch (e) {
-			err = 1;
-		}
+function parse_flush_error(status, msg, mark_request)
+{
+	msg_add("Error marking items: "+status+": "+msg);
 
-		/* If the HTTP status isn't 200, abort the request and
-		 * put the items back on the to-do list.
-		 */
-		if (err != 200)
-		{
-			req.request.abort();
-			req.aborted = true;
-
-			/* Put the items to be marked back on mark_read */
-			for (var i in req.read)
-			{
-				var id = req.read[i];
-				if (mark_read[id] == undefined)
-					mark_read[id] = true;
-			}
-			for (var i in req.unread)
-			{
-				var id = req.unread[i];
-				if (mark_read[id] == undefined)
-					mark_read[id] = false;
-			}
-		}
-		return;
-	    case 3:		// Got partial text
-		return;
-	    case 4:		// Got all text
-
-		/* Check response text: if it's not a status message
-		 * from our server saying that the messages were
-		 * deleted, then consider it failed: an HTTP status
-		 * code of 200 could have come from a proxy popping up
-		 * a login box or something.
-		 */
-		// XXX - The following code is duplicated in feeds.js.
-		// Ought to consolidate into a library or something.
-		var lines = req.request.responseText.split("\n");
-		var l = {};
-		for (var i = 0; i < lines.length; i++)
-		{
-			var line = lines[i];
-
-			if (line[0] != '{')
-				// There might be non-JSON lines in there.
-				// Ignore them. For that matter, ignore
-				// any JSON lines that aren't objects.
-				continue;
-			// XXX - Ought to use JSON.parse
-			try {
-				eval("l = " + line);
-				break;
-			} catch (e) {
-				continue;
-			}
-		}
-		if (l.state != "ok")
-		{
-			/* Put the items to be marked back on mark_read */
-			// XXX - This code is duplicated above. Consolidate
-			// into a function.
-			for (var i in req.read)
-			{
-				var id = req.read[i];
-				if (mark_read[id] == undefined)
-					mark_read[id] = true;
-			}
-			for (var i in req.unread)
-			{
-				var id = req.unread[i];
-				if (mark_read[id] == undefined)
-					mark_read[id] = false;
-			}
-			return;
-		}
-
-		if (req.aborted)
-			return;
-		for (var i in req.read)
-		{
-			var item = document.getElementById("item-"+req.read[i]);
-			if (item == null)
-				continue;
-			item.setAttribute("deleted", "yes");
-				// XXX - What needs to be done to mark
-				// an item as read?
-		}
-		for (var i in req.unread)
-		{
-			var item = document.getElementById("item-"+req.unread[i]);
-			if (item == null)
-				continue;
-			item.setAttribute("deleted", "no");
-				// XXX - Mark the item as unread?
-		}
-		break;
+	/* Put the items to be marked back on mark_read */
+	for (var i in mark_request.read)
+	{
+		var id = mark_request.read[i];
+		if (mark_read[id] == undefined)
+			mark_read[id] = true;
+	}
+	for (var i in mark_request.unread)
+	{
+		var id = mark_request.unread[i];
+		if (mark_read[id] == undefined)
+			mark_read[id] = false;
 	}
 }
 
