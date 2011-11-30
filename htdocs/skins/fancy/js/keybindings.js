@@ -4,8 +4,6 @@
 #ifndef _keybindings_js_
 #define _keybindings_js_
 
-var key_box = undefined;	/* Debugging key events */
-
 /* XXX - Module: keybindings.js */
 /* keytab
  * This is the main table for mapping keystrokes to functions.
@@ -74,28 +72,6 @@ function bind_key(key, func)
 /* Handle keys */
 function handle_key(evt)
 {
-	/* Display the key that was pressed */
-	if (key_box == undefined)
-		key_box = document.getElementById("thekey");
-	if (key_box)
-	{
-		var msg = "Event: ";
-		if (evt.ctrlKey)
-			msg += "Ctrl-";
-		if (evt.shiftKey)
-			msg += "Shift-";
-		if (evt.metaKey)
-			msg += "Meta-";
-		if (evt.altKey)
-			msg += "Alt-";
-		if (evt.keyCode >= 32 &&
-		    evt.keyCode <= 126)
-			msg += String.fromCharCode(evt.keyCode);
-//		else
-			msg += "&lt;"+evt.keyCode+"&gt;"
-		key_box.innerHTML = msg;
-	}
-
 // evt: object KeyboardEvent
 // originalTarget
 // target
