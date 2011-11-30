@@ -225,7 +225,7 @@ function jsonify($arg)
 
 	if ($argc == 1)
 		$it =& $arg;
-	elseif ($argv % 2 == 0)
+	elseif ($argc % 2 == 0)
 	{
 		// Convert array of arguments to an assoc.
 		$it = array();
