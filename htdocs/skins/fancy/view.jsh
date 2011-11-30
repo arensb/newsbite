@@ -607,3 +607,8 @@ function redraw_itemlist()
 		itemlist.removeChild(itemlist.firstChild);
 	itemlist.appendChild(new_itemlist);
 }
+
+function refresh()
+{
+	console.info("I ought to refresh something");
+}
