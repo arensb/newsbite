@@ -6,11 +6,6 @@ require_once("database.inc");
  * the code here that allows for HTML is just cruft.
  */
 
-/* XXX - $ok isn't used. Figure out something to do with it */
-$ok = true;	// Error status. If $ok, then we can just redirect to
-		// wherever we came from when we're done. Otherwise,
-		// need to display an error message.
-
 /* Figure out what we're expected to do */
 if (isset($_REQUEST['doit']))
 	// Mark each item according to its radio buttons
@@ -128,13 +123,6 @@ switch ($cmd)
 //echo "Calling db_mark_items($how, $item_ids)<br/>\n";
 db_mark_items($how, $item_ids);
 	// XXX - Error-checking
-
-if ($ok)
-{
-	/* Redirect back to where we came from */
-	redirect_to($_SERVER['HTTP_REFERER']);
-	exit(0);
-}
 
 abort("Something went wrong, but I don't know what.");
 ?>
