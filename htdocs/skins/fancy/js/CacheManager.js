@@ -256,6 +256,7 @@ CacheManager.prototype.update_feeds = function(counts, cb)
 		      function(value) {
 			      me._update_feeds_cb(value, cb);
 		      },
+		      null,	// XXX - Error handler
 		      true);
 }
 
@@ -336,6 +337,7 @@ CacheManager.prototype.update_items = function(feed_id, start, cb)
 		      function(value) {
 			      me._update_items_cb(value, cb);
 		      },
+		      null,	// XXX - Error handler
 		      true);
 }
 
