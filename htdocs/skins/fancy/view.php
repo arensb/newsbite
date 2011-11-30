@@ -60,7 +60,7 @@ var item_tmpl_text = '<div class="item" id="item-@id@">\
         <time datetime="@pub_date@" pubdate>@pretty_pub_date@</time>\
       </td>\
       <td class="icon-box">\
-        <span class="mark-read">Mark as read:&nbsp;</span>\
+        <label class="mark-read">Mark as read:&nbsp;</label>\
         <input class="mark-check" type="checkbox" name="cbt-@id@" value="1"/>\
       </td>\
     </tr>\
@@ -100,7 +100,7 @@ var item_tmpl_text = '<div class="item" id="item-@id@">\
         </ul>\
       </td>\
       <td class="mark-td">\
-        Mark as read:&nbsp;\
+        <label>Mark as read:&nbsp;</label>\
         <input class="mark-check" type="checkbox" name="cbb-@id@" value="1"/>\
       </td>\
     </tr>\
@@ -198,34 +198,15 @@ foreach ($skin_vars as $k => $v)
  * template for it.
  */
 ?>
-<form name="mark-items" method="post" action="markitems.php">
 <div class="button-box">
-  <input type="submit" name="doit" value="Apply changes"/>
+  <button onclick="refresh()">Refresh</button>
 </div>
-<?
-/* This next field says how to mark checked items */
-/* XXX - When showing read items, change to value="unread"/> */
-?>
-<input type="hidden" name="mark-how" value="read"/>
 
 <div id="itemlist"><img src="skins/<?=$skin_dir?>/Ajax-loader.gif"/></div>
 
 <div class="button-box">
-<!--
-  <input type="reset" name="clearit" value="Clear changes"/>
--->
-<?
-  /* When displaying read items, should this say "Mark all as unread"?
-   * Should there be separate "Mark all as read" and "Mark all as
-   * unread" buttons?
-   */
-?>
-<!--
-  <input type="submit" name="mark-all" value="Mark all as read"/>
--->
-  <input type="submit" name="doit" value="Apply changes"/>
+  <button onclick="refresh()">Refresh</button>
 </div>
-</form>
 
 <?
 /* Navigation bar. */
