@@ -51,11 +51,12 @@ if (window.XMLHttpRequest && typeof XMLHttpRequest != "undefined")
  * 'url' is the URL from which to fetch the data.
  * 'params' is an object of POST pararameters to send.
  * 'handler' is a function to call when the data has arrived.
+ * 'err_handler' is a function to call in case of error.
  * 'batch' is a boolean: if true, wait until all the data has come in to
  * call the handler. Otherwise, call the handler for each line as it
  * comes in.
  */
-function get_json_data(url, params, handler, batch)
+function get_json_data(url, params, handler, err_handler, batch)
 {
 	var request = createXMLHttpRequest();
 	if (!request)
@@ -79,7 +80,10 @@ function get_json_data(url, params, handler, batch)
 	{
 		request.onreadystatechange =
 			function() {
-				get_json_callback_batch(request, handler, batch);
+				get_json_callback_batch(request,
+							handler,
+							err_handler,
+							batch);
 			};
 	}
 	request.send(param_string);
@@ -88,7 +92,7 @@ function get_json_data(url, params, handler, batch)
 	return true;	// Success
 }
 
-function get_json_callback_batch(req, user_func, batch)
+function get_json_callback_batch(req, user_func, user_err, batch)
 {
 	switch (req.readyState)
 	{
@@ -113,6 +117,10 @@ function get_json_callback_batch(req, user_func, batch)
 		{
 			req.abort();
 			req.aborted = true;
+
+			// Call a user function, if defined.
+			if (user_err != null)
+				user_err(req.status, req.statusText);
 		}
 		return;
 	    case 3:		// Got partial text
