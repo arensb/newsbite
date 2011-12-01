@@ -253,6 +253,7 @@ function parse_flush_error(status, msg, mark_request)
 			if (item.id == id)
 			{
 				item.is_read = true;
+				cache.store_item(item);
 				// XXX - Delete it from cache?
 			}
 		}
@@ -272,6 +273,7 @@ function parse_flush_error(status, msg, mark_request)
 			if (item.id == id)
 			{
 				item.is_read = false;
+				cache.store_item(item);
 				// XXX - Re-fetch it from the server?
 			}
 		}
@@ -367,6 +369,17 @@ function mark_item1(ev)
 	 * at the beginning.
 	 */
 	mark_read[item_id] = item_div.is_read;
+
+	/* Find the item's entry in allitems, and mark it */
+	for (var i = 0, l = allitems.length; i < l; i++)
+	{
+		var item = allitems[i];
+		if (item.id != item_id)
+			continue;
+		item.is_read = item_div.is_read;
+		// XXX - Mark in the cache as well.
+		cache.store_item(item);
+	}
 
 	/* Flush the queue if necessary */
 	flush_queues();
@@ -611,4 +624,6 @@ function redraw_itemlist()
 function refresh()
 {
 	console.info("I ought to refresh something");
+	if (feeds != null && allitems != null && allitems.length > 0)
+		redraw_itemlist();
 }
