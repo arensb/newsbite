@@ -54,12 +54,6 @@ function init()
 
 	window.addEventListener("keydown", handle_key, false);
 
-	// Key bindings
-	bind_key("C-r", function() { main_form.doit[0].click() });
-			// XXX - Hack: just click on the button
-	bind_key("S-c", collapse_all);
-	bind_key("S-e", expand_all);
-
 	/* On desktop, keep track of current item, and add key bindings
 	 * to navigate.
 	 */
@@ -72,6 +66,11 @@ function init()
 		bind_key("d", key_mark_item);
 		// XXX - bind_key("k", move_up);
 		// XXX - bind_key("j", move_down);
+
+		// Key bindings
+		bind_key("C-r", refresh);
+		bind_key("S-c", collapse_all);
+		bind_key("S-e", expand_all);
 	}
 
 	// Get feeds and items from cache.
@@ -623,7 +622,6 @@ function redraw_itemlist()
 
 function refresh()
 {
-	console.info("I ought to refresh something");
 	if (feeds != null && allitems != null && allitems.length > 0)
 		redraw_itemlist();
 }
