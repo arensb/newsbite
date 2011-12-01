@@ -97,6 +97,7 @@ function CacheManager()
 			header.id = item.id;
 			header.feed_id = item.feed_id;
 			header.pub_date = item.pub_date;
+			header.is_read = item.is_read;
 
 			// Store the header info.
 			this.headers.push(header);
@@ -306,12 +307,18 @@ CacheManager.prototype.get_item = function(id)
 CacheManager.prototype.getitems = function(feed_id)
 {
 	var retval = new Array();
-	for (var i = 0, l = this.headers.length; i < l; i++)
+	for (var i = 0, n = 0, l = this.headers.length; i < l; i++)
 	{
 		var head = this.headers[i];
 		if (feed_id != "all" && head.feed_id != feed_id)
 			continue;
+		if (head.is_read)
+			continue;
 		retval.push(this.get_item(head.id));
+
+		// Limit ourselves to 25 items.
+		if (++n >= 25)
+			break;
 	}
 
 	return retval;
