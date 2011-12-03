@@ -551,6 +551,20 @@ function redraw_itemlist()
 			// XXX - Check to make sure that
 			// feeds[item.feed_id] exists, that we haven't
 			// been given an item from a nonexistent feed?
+
+			// XXX - Why would this happen? It's possible
+			// that the user unsubscribed from a feed, and
+			// we've got a cached item from a nonexistent
+			// feed, so this code is still useful.
+			// Except that as of this writing, 'allitems'
+			// came from the server just now.
+			if (item_feed == null)
+			{
+				console.error("Undefined feed "+item.feed_id);
+
+				// Just ignore this item
+				continue;
+			}
 		var title = item.displaytitle();
 
 		// Fill in values to plug into item template
