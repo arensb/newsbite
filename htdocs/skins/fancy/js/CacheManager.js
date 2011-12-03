@@ -108,16 +108,6 @@ function CacheManager()
 		 * to some other app on the same machine+port.
 		 */
 	}
-
-	// Sort headers by last_update, just like lib/database.inc.
-	this.headers.sort(function(a, b) {
-			if (a.last_update > b.last_update)
-				return -1;
-			else if (a.last_update < b.last_update)
-				return 1;
-			else
-				return b.id - a.id;
-		});
 }
 
 /* localStorage wrappers */
@@ -278,6 +268,15 @@ CacheManager.prototype._update_feeds_cb = function(value, user_cb)
 
 	this.store_feeds(newfeeds);	// Save a copy of the feed info
 
+	/* XXX - If the user has unsubscribed from some feed, we may
+	 * have cached items from no-longer-existing feeds. Ought to
+	 * go through the cache and delete them.
+	 * Best not to do it in this function, though, since the
+	 * browser user is waiting for stuff to happen. Rather, ought
+	 * to wait a bit and do maintenance while other stuff is going
+	 * on.
+	 */
+
 	user_cb(newfeeds);
 }
 
@@ -307,6 +306,18 @@ CacheManager.prototype.get_item = function(id)
 CacheManager.prototype.getitems = function(feed_id)
 {
 	var retval = new Array();
+
+	/* Sort headers by last_update, just like lib/database.inc. */
+	this.headers.sort(function(a, b) {
+			if (a.last_update > b.last_update)
+				return -1;
+			else if (a.last_update < b.last_update)
+				return 1;
+			else
+				return b.id - a.id;
+		});
+
+	/* Get the first 25 unread items */
 	for (var i = 0, n = 0, l = this.headers.length; i < l; i++)
 	{
 		var head = this.headers[i];
@@ -365,6 +376,22 @@ CacheManager.prototype._update_items_cb = function(value, user_cb)
 CacheManager.prototype.store_item = function(item)
 {
 	this.setItem('item:'+item.id, item);
+			// Store in localStorage
+
+	// Add to this.headers, this.itemindex
+	var header;
+	if ((header = this.itemindex[item.id]) == null)
+	{
+		header = {};
+		this.headers.push(header);
+	}
+	header.id = item.id;
+	header.feed_id = item.feed_id;
+	header.pub_date = item.pub_date;
+	header.is_read = item.is_read;
 }
+
+// XXX - Delete an article?
+// Remove from this.headers, this.itemindex
 
 #endif	// _CacheManager_js_
