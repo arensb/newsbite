@@ -4,16 +4,6 @@
  */
 #ifndef _CacheManager_js_
 #define _CacheManager_js_
-/* XXX - When localStorage fills up, setItem() throws an exception:
- * "Exception... "Persistent storage maximum size reached"  code: "1014"
- * nsresult: "0x805303f6 (NS_ERROR_DOM_QUOTA_REQCHED)"  location:
- * #"http://.../foo.js Line: NN"
- *
- * Perhaps write wrappers around localStorage.setItem() and
- * localStorage.getItem(), which keep track of when each item was
- * added/modified/accessed. The setItem() wrapper can then catch quota
- * exceptions, and delete items as necessary.
- */
 /* XXX - Add functions to mark items as read/unread.
  */
 #include "types.js"		/* Feed and Item classes */
@@ -39,6 +29,9 @@
  *	feed_id - feed ID, or null for all.
  *	ptr - item ID, or null for first available item, or -1 for
  *	      last available item.
+ *	      Should be a struct describing the current item: ID, date,
+ *	      etc. so we can find the "current" item if that particular
+ *	      one has been deleted.
  *	before - return this many items before 'ptr'
  *	after - return this many items after 'ptr'
  * Notionally, we have in localStorage a list of items, ordered from
@@ -60,7 +53,8 @@ function CacheManager()
 {
 	this.headers = [];	// Metadata for all cached articles,
 				// sorted by pub_date.
-	this.itemindex = {};	// All cached articles, indexed by ID.
+	this.itemindex = {};	// Metadata for all cached articles,
+				// indexed by ID.
 	this._ls_index = {};	// Metainformation about the data in
 				// localStorage.
 			// XXX - Keep track of size?
@@ -97,11 +91,14 @@ function CacheManager()
 			header.id = item.id;
 			header.feed_id = item.feed_id;
 			header.pub_date = item.pub_date;
+			header.last_update = item.last_update;
+				// XXX - Which one do I want? pub_date, or
+				// last_update? Gah! So confused!
 			header.is_read = item.is_read;
 
 			// Store the header info.
 			this.headers.push(header);
-			this.itemindex[item.id] = item;
+			this.itemindex[item.id] = header;
 		}
 
 		/* Ignore unrecognized entries: they probably belong
@@ -151,8 +148,10 @@ CacheManager.prototype.setItem = function(key, value)
 	try {
 		localStorage.setItem(key, str);
 	} catch (e) {
-		// XXX - Do something intelligent: if we're out of
-		// quota, free up some space by deleting old cruft.
+		// If we're out of quota, free up some space by
+		// deleting old cruft.
+		// XXX - Check to make sure the error is actually
+		// "over quota".
 		this._ls_purge(key.length+str.length);
 	}
 
@@ -195,6 +194,10 @@ msg_add("Garbage collection");
 	}
 
 	/* Sort the array by time */
+	// XXX - Entries marked as read should be deleted before
+	// unread ones. But this layer doesn't know about any of that.
+	// Perhaps need to allow higher layers to indicate that this
+	// is a "delete preferentially" type of entry.
 	tmp.sort(function(a, b) {
 		return a.time.getTime() - b.time.getTime()
 		});
@@ -303,12 +306,31 @@ CacheManager.prototype.get_item = function(id)
  * Get some items from the given feed
  */
 // XXX - Ought to be able to specify more details.
-CacheManager.prototype.getitems = function(feed_id)
+CacheManager.prototype.getitems = function(feed_id, cur, before, after)
 {
 	var retval = new Array();
 
+	// XXX - Get the unread articles from whichever feed we're
+	// reading.
+	// Sort them. Find the spot, then return the surrounding
+	// articles.
+
 	/* Sort headers by last_update, just like lib/database.inc. */
-	this.headers.sort(function(a, b) {
+	var hdrs = [];
+	for (var i = 0, l = this.headers.length; i < l; i++)
+	{
+		var h = this.headers[i];
+		if (h.is_read)
+			continue;
+		if (feed_id != "all" && h.feed_id != feed_id)
+			continue;
+		hdrs.push(h);
+	}
+	hdrs.sort(function(a, b) {
+			// XXX - Does this function do what I want?
+			// Want to sort by last_update, from newest to
+			// youngest; use id (larger id goes first) as
+			// a tiebreaker.
 			if (a.last_update > b.last_update)
 				return -1;
 			else if (a.last_update < b.last_update)
@@ -316,20 +338,67 @@ CacheManager.prototype.getitems = function(feed_id)
 			else
 				return b.id - a.id;
 		});
+	var hlen = hdrs.length;
 
-	/* Get the first 25 unread items */
-	for (var i = 0, n = 0, l = this.headers.length; i < l; i++)
+	if (hlen == 0)
+		// No items cached
+		return null;
+
+	/* Find the entry corresponding to 'ptr', or the place where
+	 * it would go if it existed.
+	 */
+	var ptr = null;	// Index of item corresponding to 'cur'.
+
+	// Check for special values: null for first available, -1 for
+	// last available item.
+	if (cur == null)
+		ptr = 0;
+	else if (cur == -1)
+		ptr = hlen-1;
+	else {
+		for (var i = 0; i < hlen; i++)
+		{
+			var item = hdrs[i];
+
+			// Found the exact item we're looking for
+			if (cur.id != null && item.id == cur.id)
+			{
+				ptr = i;
+				break;
+			}
+
+			// Couldn't find the exact one. We'll settle for the
+			// one after that (chronologically).
+			if (cur.last_update < item.last_update)
+			{
+				if (i == 0)
+					ptr = 0;
+				else
+					ptr = i - 1;
+				break;
+			}
+		}
+	}
+	if (ptr == null)
+		// Couldn't find anything. This might happen if 'cur'
+		// refers to an article from last week, but all we
+		// have in cache is articles from today. Give them the
+		// oldest available article.
+		ptr = hlen-1;
+
+	var first = ptr - before;
+	var last = ptr + after;
+
+	if (first < 0)
+		first = 0;
+	if (last >= hlen)
+		last = hlen-1 ;
+
+
+	for (var i = first; i <= last; i++)
 	{
-		var head = this.headers[i];
-		if (feed_id != "all" && head.feed_id != feed_id)
-			continue;
-		if (head.is_read)
-			continue;
+		var head = hdrs[i];
 		retval.push(this.get_item(head.id));
-
-		// Limit ourselves to 25 items.
-		if (++n >= 25)
-			break;
 	}
 
 	return retval;
@@ -379,8 +448,8 @@ CacheManager.prototype.store_item = function(item)
 			// Store in localStorage
 
 	// Add to this.headers, this.itemindex
-	var header;
-	if ((header = this.itemindex[item.id]) == null)
+	var header = this.itemindex[item.id];
+	if (header == null)
 	{
 		header = {};
 		this.headers.push(header);
