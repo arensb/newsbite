@@ -75,7 +75,7 @@ function init()
 
 	// Get feeds and items from cache.
 	feeds = cache.feeds();
-	allitems = cache.getitems(feed.id);
+	allitems = cache.getitems(feed.id, null, 0, 25);
 
 	// Draw what we've got so far, if anything
 	if (feeds != null && allitems != null && allitems.length > 0)
@@ -541,6 +541,8 @@ function redraw_itemlist()
 		// we need to.
 	// XXX - For now, just assume that we should display every
 	// known item.
+	allitems = cache.getitems(feed.id, null, 0, 25);
+
 	for (var i in allitems)
 	{
 		var item = allitems[i];
@@ -637,5 +639,10 @@ function redraw_itemlist()
 function refresh()
 {
 	if (feeds != null && allitems != null && allitems.length > 0)
+	{
+		cache.update_items(feed.id, 0,
+				   function(){}
+				  );
 		redraw_itemlist();
+	}
 }
