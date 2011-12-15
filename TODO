@@ -1,3 +1,5 @@
+- Bug: Clicking "update all feeds" in main feed view goes to HTML
+  version, not fancy-spinny AJAX version.
 - Bug: When starting, sometimes, the feeds page displays "undefined"
   in the "number of unread articles" column.
 	I suspect this is because when view.jsh fetches feeds, it
@@ -37,6 +39,13 @@
   HTML error message. Should be JSON (or whatever the user requested).
 - Bug: On android, often title bar overflows to the right of the
   screen.
+- Script to provide an RSS/Atom feed of the stuff in the database, for
+  Calibre.
+	Presumably should return the last 24 hours' worth of articles.
+	Perhaps should support individual feeds, or groups (once those
+  exist).
+	What should the limiting factor(s) be? Currently there can be
+  > 500 items in a day.
 - Template.expand should return a DOM object, not a string.
 - Kindle: make checkboxes bigger.
 - Integrate keybinding stuff into PatEvent.
@@ -45,6 +54,8 @@
 - Move event handlers over to bind_event().
 	Fix update_feed(id) to work with bind_event (i.e., take only
   one argument).
+	I think this means fixing bind_event to store a keytab with
+  each 
 - Split up htdocs/view.php into presentation and content.
 	htdocs/view.php invokes the skin, which in turn sets JS
   variables from skin variables (feed_id, offset, and whatever other
