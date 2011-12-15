@@ -1,5 +1,3 @@
-- Bug: Clicking "update all feeds" in main feed view goes to HTML
-  version, not fancy-spinny AJAX version.
 - Bug: When starting, sometimes, the feeds page displays "undefined"
   in the "number of unread articles" column.
 	I suspect this is because when view.jsh fetches feeds, it
