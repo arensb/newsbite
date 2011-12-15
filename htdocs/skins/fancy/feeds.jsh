@@ -80,11 +80,12 @@ function update_feed(id)
 
 function clear_status()
 {
-	var table = document.getElementById("feeds")/*.childNodes[1]*/;
+	var table = document.getElementById("feeds");
+	var feed_tbody = table.getElementsByTagName("tbody")[0];
 
 	/* Iterate over each row, clearing status cell */
 	// XXX - Ought to use table.getElementsByType("tr") or something.
-	for (var row = table.firstChild; row != table.lastChild; row = row.nextSibling)
+	for (var row = feed_tbody.firstChild; row != feed_tbody.lastChild; row = row.nextSibling)
 	{
 		if (row.firstChild == null)
 			/* Skip #text nodes */
