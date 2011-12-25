@@ -37,6 +37,17 @@
   HTML error message. Should be JSON (or whatever the user requested).
 - Bug: On android, often title bar overflows to the right of the
   screen.
+- Perhaps install PHP pcntl module? Includes fork(), exec(). This
+  could be useful for a long-running tool on the server that sends
+  updates on article status to the client(s).
+- Key bindings: fix bind_event() to take an "additional data" object.
+  This should be a an object: {key1: value1, key2: value2, ...}. When
+  an event handler is bound to a DOM node, also add key1, key2, ... to
+  the node.
+	Define a Keytab object, which (like in Emacs), binds keys to
+  functions. So binding a key to a function becomes a two-step
+  process: bind a key to a function in a Keytab, and bind a Keytab to
+  a DOM node.
 - Script to provide an RSS/Atom feed of the stuff in the database, for
   Calibre.
 	Presumably should return the last 24 hours' worth of articles.
