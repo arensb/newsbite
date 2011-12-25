@@ -138,7 +138,8 @@ function db_get_feed_counts($feed_id)
 	/* Get the number of read/unread items */
 	$query = sprintf(<<<EOT
 SELECT		IFNULL(SUM(is_read), 0) as `read`,
-		IFNULL(SUM(!is_read), 0) as `unread`
+		IFNULL(SUM(!is_read), 0) as `unread`,
+		active
 FROM		items
 WHERE		feed_id = %d
 EOT
@@ -604,7 +605,11 @@ function db_update_feed($feed_id, $feed)
 			     "updated" => 0);
 	}
 
-	$update_counts = array();
+	$update_counts = array(
+		"old"		=> 0,
+		"new"		=> 0,
+		"updated"	=> 0,
+		);
 		// Assoc saying how many items were updated, how many
 		// are new, how many were already in the database.
 
