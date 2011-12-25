@@ -297,6 +297,9 @@ EOT;
 	// Without an explicit condition, SQL will return both read
 	// and unread items, but that's not the default behavior we
 	// want. So we really test for !($args['read'] == true)
+	/* XXX - Ought to be able to select "give me only read items",
+	 * "give me only unread items", or "give me both".
+	 */
 	if (!isset($args['read']) || !$args['read'])
 		array_push($conditions, "!items.is_read");
 
