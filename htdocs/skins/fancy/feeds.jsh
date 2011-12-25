@@ -18,6 +18,10 @@ var cache = new CacheManager();		// Cache manager for locally-stored data
 var feeds;		// Master list of all feeds
 var feed_title_tmpl = new Template(feed_title_tmpl_text);
 var feed_tools_tmpl = new Template(feed_tools_tmpl_text);
+// XXX - Should the show_* variables be put in localStorage?
+var show_empty = true;
+var show_inactive = true;
+var show_stale = true;
 
 // Interesting DOM nodes we want to keep track of
 var feed_table = {};	// Pointers to interesting elements inside
@@ -218,6 +222,35 @@ function toggle_tools()
 	toggle_class(feed_table, "show-tools", "hide-tools");
 }
 
+/* toggle_show_empty
+ * Toggle between showing and hiding empty feeds: ones with no unread
+ * articles.
+ */
+function toggle_show_empty()
+{
+	show_empty = !show_empty;
+	redraw_feed_list();
+}
+
+/* toggle_show_inactive
+ * Toggle between showing and hiding inactive feeds.
+ */
+function toggle_show_inactive()
+{
+	show_inactive = !show_inactive;
+	redraw_feed_list();
+}
+
+/* toggle_show_stale
+ * Toggle between showing and hiding stale feeds (ones with no recent
+ * articles).
+ */
+function toggle_show_stale()
+{
+	show_stale = !show_stale;
+	redraw_feed_list();
+}
+
 function init_feed_list()
 {
 	// Get the cached copy of feeds, from last time.
@@ -300,8 +333,17 @@ function redraw_feed_list()
 	{
 		var feed = sorted_feeds[i];
 
-		// XXX - Skip inactive feeds if user wants
-		// XXX - Skip empty feeds if user wants
+		// Skip empty feeds if user wants.
+		if (feed.num_unread == 0 && !show_empty)
+			continue;
+
+		// Skip inactive feeds if user wants.
+		if (feed.active != 1 && !show_inactive)
+			continue;
+
+		// Skip stale feeds if user wants.
+		if (feed.stale == 1 && !show_stale)
+			continue;
 
 		var line = document.createElement("tr");
 		line.feed_id = feed.id;

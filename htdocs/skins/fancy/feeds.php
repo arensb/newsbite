@@ -68,6 +68,9 @@ elseif ($skin_vars['mobile'] == "Android")
     <ul class="tools-menu">
       <li><a onclick="javascript:toggle_details()">Toggle details</a></li>
       <li><a onclick="javascript:toggle_tools()">Toggle tools</a></li>
+      <li><a onclick="javascript:toggle_show_empty()">Toggle empty feeds</a></li>
+      <li><a onclick="javascript:toggle_show_inactive()">Toggle inactive feeds</a></li>
+      <li><a onclick="javascript:toggle_show_stale()">Toggle stale feeds</a></li>
     </ul>
   </li>
 </ul>
