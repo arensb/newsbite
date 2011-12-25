@@ -108,6 +108,10 @@ function htmlpurify_init()
 				      new HTMLPurifier_Filter_Vimeo()
 				      ));
 
+	# Increase the max image height
+	$purifier_config->set('HTML.MaxImgLength', 3000);
+	$purifier_config->set('CSS.MaxImgLength', "3000px");
+
 	# XXX - Specify configuration options
 	$purifier = new HTMLPurifier($purifier_config);
 }
