@@ -559,7 +559,7 @@ img.thumbnail {
 	width:			50%;
 	margin-top:		0px;
 	margin-left:		25%;
-	position:		absolute;
+	position:		fixed;
 	top:			0px;
 	padding:		0px;
 }
