@@ -90,7 +90,6 @@ function handle_key(evt)
 	if (func != undefined)
 	{
 		func(evt);
-		// XXX - Should this also evt.prevent_default()?
 		return;
 	}
 }
