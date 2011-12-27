@@ -389,7 +389,8 @@ function _element_start_handler($parser, $fullname, $attrs)
 		}
 
 		/* Call init handler, if any */
-		if (function_exists($url2handler[$ns_url]["init"]))
+		if (isset($url2handler[$ns_url]["init"]) &&
+		    function_exists($url2handler[$ns_url]["init"]))
 		{
 			# XXX - Pass along $attrs as an additional argument:
 			# can give a hint to the parser whether which version
