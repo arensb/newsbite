@@ -527,7 +527,8 @@ function db_update_feed_info($feed_id, $fields)
 			($fields['active'] ? "TRUE" : "FALSE");
 
 	/* Other fields that require special processing */
-	if (is_array($fields['image']) &&
+	if (array_key_exists('image', $fields) &&
+	    is_array($fields['image']) &&
 	    array_key_exists('url', $fields['image']) &&
 	    $fields['image']['url'] != $old['image'])
 		// Image associated with the site

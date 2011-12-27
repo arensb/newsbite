@@ -128,25 +128,25 @@ $url2handler = array(		// Handlers for specific URLs
 
 	// RSS 0.9x, 1.x, 2.0
 	"" => array(
-		"init"		=> rss_init,
-		"element"	=> rss_element_handler,
-		"attribute"	=> rss_attribute_handler,
-//		"text"		=> rss_text_handler
+		"init"		=> 'rss_init',
+		"element"	=> 'rss_element_handler',
+		"attribute"	=> 'rss_attribute_handler',
+//		"text"		=> 'rss_text_handler'
 		),
 
 	// Atom
 	"http://www.w3.org/2005/Atom"	=> array(
-		"init"		=> atom_init,
-		"element"	=> atom_element_handler,
-		"attribute"	=> atom_attribute_handler,
+		"init"		=> 'atom_init',
+		"element"	=> 'atom_element_handler',
+		"attribute"	=> 'atom_attribute_handler',
 		),
 
 	// RDF
 	"http://purl.org/rss/1.0/" => array(
-		"element"	=> rdf_element_handler,
+		"element"	=> 'rdf_element_handler',
 		),
 	"http://www.w3.org/1999/02/22-rdf-syntax-ns#"	=> array(
-		"element"	=> rdf_element_handler,
+		"element"	=> 'rdf_element_handler',
 		),
 
 // Other namespaces I've seen, for additional features inside a feed:
@@ -178,7 +178,9 @@ $url2handler = array(		// Handlers for specific URLs
 
 load_hooks(PLUGIN_DIR);
 
-$url2ns = array();	// Map URLs to their namespace prefixes
+$url2ns = array(	// Map URLs to their namespace prefixes
+	""	=> "",	// Default
+	);
 $ns2url = array();	// Map namespace prefixes to their URLs
 
 /* $_context
@@ -502,7 +504,8 @@ function _element_end_handler($parser, $fullname)
 		$node['retval'] = $node['retval']['#text'];
 
 	/* Call element handler */
-	if (function_exists($url2handler[$ns_url]["element"]))
+	if (isset($url2handler[$ns_url]["element"]) &&
+	    function_exists($url2handler[$ns_url]["element"]))
 		$handler = $url2handler[$ns_url]["element"];
 	else
 		$handler = 'default_element_handler';
@@ -602,7 +605,8 @@ function _namespace_handler($parser, $prefix, $url)
 
 	/* If there's an initialization hook for this URL, call it */
 	$dummy = null;
-	if (function_exists($url2handler[$url]['init']))
+	if (isset($url2handler[$url]['init']) &&
+	    function_exists($url2handler[$url]['init']))
 		// XXX - url2handler[init] expects a third argument, a
 		// list of attributes. Do we have that?
 		$url2handler[$url]['init']($url, $prefix, $dummy);
