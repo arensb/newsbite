@@ -449,9 +449,11 @@ function _element_start_handler($parser, $fullname, $attrs)
 			// So presumably best practice is for the
 			// attribute handler to put unrecognized
 			// attributes in $retval with their prefix.
-			if (function_exists($url2handler[$attr_url]["attribute"]))				$handler = $url2handler[$attr_url]["attribute"];
+			if (isset($url2handler[$attr_url]["attribute"]) &&
+			    function_exists($url2handler[$attr_url]["attribute"]))
+				$handler = $url2handler[$attr_url]["attribute"];
 			else
-				$handler = default_attribute_handler;
+				$handler = 'default_attribute_handler';
 
 			$err = $handler(
 				$attr_url,
@@ -1772,7 +1774,8 @@ function atom_element_handler(
 		    case "entry":
 			$retval['author_email'] = $children['email'];
 			$retval['author_name']  = $children['name'];
-			$retval['author_url']   = $children['uri'];
+			if (isset($children['uri']))
+				$retval['author_url']   = $children['uri'];
 			break;
 
 		    default:
@@ -2036,7 +2039,7 @@ function rdf_element_handler(
 		{
 		    case "Seq":
 			// XXX - Check attributes
-			$retval['li'][] = $attrs['resource'];
+			$retval['li'][] = $attrs["$prefix:resource"];
 			break;
 
 		    default:
