@@ -40,6 +40,23 @@
 - Perhaps install PHP pcntl module? Includes fork(), exec(). This
   could be useful for a long-running tool on the server that sends
   updates on article status to the client(s).
+- Key bindings: This is way more complicated than it ought to be:
+	It looks as though there's keyboard focus, which has nothing
+  to do with where the mouse it (i.e., HTML/DOM has no concept of
+  focus-follows-mouse). Rather, the key event goes to whichever
+  element has keyboard focus (which is originally the body, I guess),
+  and (apparently) bubbles up from there.
+	In order to have a completely generic "bind any keymap to any
+  element" setup with focus-follows-mouse, we'd need to keep track of
+  every element that has keydown events associated with it: when the
+  mouse enters, call element.focus() on it, and when the mouse leaves,
+  call element.blur(). (Also apparently need to
+  setAttribute('tabindex', 0) for some reason.)
+	Since (I think) we only want to bind events to items and to
+  the window as a whole, the best solution seems to be to keep track
+  _enter and _exit evenst (which we do) to see which item is the
+  current one, and have a window-level handler "keydown" handler to
+  invoke the proper function on the current item.
 - Key bindings: fix bind_event() to take an "additional data" object.
   This should be a an object: {key1: value1, key2: value2, ...}. When
   an event handler is bound to a DOM node, also add key1, key2, ... to
