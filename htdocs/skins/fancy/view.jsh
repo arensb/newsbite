@@ -16,7 +16,6 @@
  *
  * When those things come in, perhaps send an event.
  */
-/* XXX - Delete unused functions */
 
 document.addEventListener("DOMContentLoaded", init, false);
 
@@ -64,6 +63,7 @@ function init()
 		PatEvent.bind_event(itemlist, "_exit", ".item",
 				    exit_item, false);
 		bind_key("d", key_mark_item);
+		bind_key("c", toggle_collapse_item);
 		// XXX - bind_key("k", move_up);
 		// XXX - bind_key("j", move_down);
 
@@ -422,6 +422,25 @@ function key_mark_item()
 
 	mark_item1({target: current_item});
 	// XXX - Advance to next item, and make it current.
+}
+
+/* toggle_collapse_item
+ * Toggle the current item between showing summary and showing
+ * content. That is, expand or collapse the item as needed.
+ */
+function toggle_collapse_item()
+{
+	if (current_item == null)
+		return;
+
+	var panes = current_item.getElementsByClassName("content-panes");
+	for (var i = 0, l = panes.length; i < l; i++)
+	{
+		var p = panes[i];
+		if (p.getAttribute("collapsible") != "yes")
+			continue;
+		toggle_class(p, "show-summary", "show-content");
+	}
 }
 
 /* collapse_all
