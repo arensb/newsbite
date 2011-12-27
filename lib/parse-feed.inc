@@ -113,23 +113,6 @@ require_once("hooks.inc");
 // <source>		<source>		-
 //			<rights>		-
 
-/* $element_hooks
- * Lists hooks to be called after a particular element has been seen.
- * The entries are of the form
- *	""	=> array(			// Namespace URL
- *		"channel"	=> array(		// Element name
- *			rss_rss_cleanup
- *			),
- *		"item"	=> array(		// Element name
- *			rss_rss_cleanup
- *			)
- *		)
- */
-/* XXX - Arguably obsolete, what with plugins. But let's keep this
- * around for a bit in case it proves to be useful.
- */
-$element_hooks = array();
-
 /* url2handler
  * Maps the URL for a given namespace to its handler.
  * Elements of this array are of the form
@@ -264,12 +247,12 @@ function parse_feed($feed_text)
 			// I think UTF-8 might already be the default, but
 			// let's set it explicitly anyway
 	xml_set_element_handler($xml_parser,
-				_element_start_handler,
-				_element_end_handler);
-	xml_set_start_namespace_decl_handler($xml_parser, _namespace_handler);
+				'_element_start_handler',
+				'_element_end_handler');
+	xml_set_start_namespace_decl_handler($xml_parser, '_namespace_handler');
 	// I'd set xml_set_end_namespace_decl_handler(), but it
 	// doesn't seem to do anything, due to a bug in libxml2.
-	xml_set_character_data_handler($xml_parser, _cdata_handler);
+	xml_set_character_data_handler($xml_parser, '_cdata_handler');
 
 	/* Create a node to contain the value returned by the
 	 * document, and push it onto the context stack.
@@ -494,7 +477,6 @@ function _element_end_handler($parser, $fullname)
 {
 	global $_context;
 	global $url2handler;
-	global $element_hooks;
 	global $url2ns;
 
 	/* Parse $fullname into URL and name */
@@ -511,23 +493,6 @@ function _element_end_handler($parser, $fullname)
 	$retval =& $_context[count($_context)-1]['retval'];
 			// Where to put return value from this element
 
-	/* Run any hooks associated with this element.
-	 * Hooks are run before the handler: that way, a hook has a
-	 * chance to clean up the element before the hander determines
-	 * what its return value is.
-	 */
-	$hooks = $element_hooks[$ns_url][$name];
-	if (isset($hooks))
-	{
-		foreach ($hooks as $h)
-		{
-			/* Call each hook in turn */
-			$h($node['name'],
-			   $node['retval'],
-			   $_context);
-		}
-	}
-
 	/* Special case: if $node['retval'] is an array with only a
 	 * "#text" entry, replace it with its string value.
 	 */
@@ -540,7 +505,7 @@ function _element_end_handler($parser, $fullname)
 	if (function_exists($url2handler[$ns_url]["element"]))
 		$handler = $url2handler[$ns_url]["element"];
 	else
-		$handler = default_element_handler;
+		$handler = 'default_element_handler';
 	$err = $handler($ns_url,
 			$url2ns[$ns_url],
 			$name,
