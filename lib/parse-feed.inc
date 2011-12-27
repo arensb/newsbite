@@ -553,7 +553,10 @@ function _cdata_handler($parser, $data)
 	}
 	// XXX - Call text handler, if one is defined?
 	$parent = &$_context[count($_context)-1];
-	$parent['retval']['#text'] .= $data;
+	if (isset($parent['retval']['#text']))
+		$parent['retval']['#text'] .= $data;
+	else
+		$parent['retval']['#text'] = $data;
 }
 
 // XXX - This version takes 3 arguments. The version documented at php.net
