@@ -7,6 +7,14 @@ require_once("config.inc");
 
 $dbh = NULL;		// Database handle
 
+/* db_errno, db_errmsg
+ * If one of the functions here returns an error, it should put an
+ * error number and message here, so the caller can display something
+ * smart.
+ */
+$db_errno = NULL;	// Error number
+$db_errmsg = NULL;	// Error message
+
 /* db_connect
  * Connect to the database if necessary. Return a handle to the
  * database.
@@ -76,10 +84,11 @@ EOT
 	$result = $dbh->query($query);
 	if (!$result)
 	{
-		// XXX - Should set error message, and allow caller to
-		// do error-reporting.
-		echo "Error ", $dbh->errno, ": \"",
-			$dbh->error, "\"<br/>\n";
+		global $db_errno;
+		$db_errno = $dbh->errno;
+		global $db_errmsg;
+		$db_errmsg = $dbh->error;
+
 		return NULL;
 	}
 
@@ -147,10 +156,10 @@ EOT
 	$result = $dbh->query($query);
 	if (!$result)
 	{
-		// XXX - Should just set error message, and allow
-		// caller to do error-reporting.
-		echo "Error ", $dbh->errno, ": \"",
-			$dbh->error, "\"<br/>\n";
+		global $db_errno;
+		$db_errno = $dbh->errno;
+		global $db_errmsg;
+		$db_errmsg = $dbh->error;
 		return NULL;
 	}
 	$retval = $result->fetch_assoc();
@@ -194,10 +203,10 @@ EOT;
 	$result = $dbh->query($query);
 	if (!$result)
 	{
-		// XXX - Should just set error message, and allow
-		// caller to do error-reporting.
-		echo "Error ", $dbh->errno, ": \"",
-			$dbh->error, "\"<br/>\n";
+		global $db_errno;
+		$db_errno = $dbh->errno;
+		global $db_errmsg;
+		$db_errmsg = $dbh->error;
 		return NULL;
 	}
 
@@ -423,10 +432,10 @@ function db_add_feed($feed)
 	$err = $stmt->execute();
 	if (!$err)
 	{
-		// XXX - Should just set error message, and allow
-		// caller to do error-reporting.
-		echo "<b>Error ", $dbh->errno,
-			", \"", $dbh->error, "\"</b><br/>\n";
+		global $db_errno;
+		$db_errno = $dbh->errno;
+		global $db_errmsg;
+		$db_errmsg = $dbh->error;
 		$stmt->close();
 		return false;
 	}
@@ -563,11 +572,11 @@ function db_update_feed_info($feed_id, $fields)
 		$result = $dbh->query($query);
 		if (!$result)
 		{
-			// XXX - Should just set error message, and
-			// allow caller to do error-reporting.
-			echo "<b>Error updating feed information: ",
-				$dbh->errno, ": \"",
-				$dbh->error, "\"</b><br/>\n";
+			global $db_errno;
+			$db_errno = $dbh->errno;
+			global $db_errmsg;
+			$db_errmsg = "Error setting feed information: " .
+				$dbh->error;
 			return FALSE;
 		}
 	}
@@ -870,11 +879,10 @@ EOT
 	$result = $dbh->query($query);
 	if (!$result)
 	{
-		// XXX - Should just set error message, and allow
-		// caller to do error-reporting.
-		echo "Error updating feed information: ",
-			$dbh->errno, ": \"",
-			$dbh->error, "\"<br/>\n";
+		global $db_errno;
+		$db_errno = $dbh->errno;
+		global $db_errmsg;
+		$db_errmsg = "Error updating feed information: " . $dbh->error;
 	}
 }
 
