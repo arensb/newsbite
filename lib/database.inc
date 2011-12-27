@@ -138,8 +138,7 @@ function db_get_feed_counts($feed_id)
 	/* Get the number of read/unread items */
 	$query = sprintf(<<<EOT
 SELECT		IFNULL(SUM(is_read), 0) as `read`,
-		IFNULL(SUM(!is_read), 0) as `unread`,
-		active
+		IFNULL(SUM(!is_read), 0) as `unread`
 FROM		items
 WHERE		feed_id = %d
 EOT
@@ -155,8 +154,6 @@ EOT
 		return NULL;
 	}
 	$retval = $result->fetch_assoc();
-	$retval['active'] = $retval['active'] ? TRUE : FALSE;
-		# Make sure 'active' is properly boolean
 		// XXX - Error-checking
 
 	return $retval;
