@@ -40,9 +40,11 @@ PatEvent._init = function()
 		;
 	else if (Element.prototype.mozMatchesSelector != null)
 	{
+		/* Mozilla */
 		Element.prototype.matchesSelector =
 			Element.prototype.mozMatchesSelector;
 	} else if (Element.prototype.webkitMatchesSelector)
+		/* Webkit */
 		Element.prototype.matchesSelector =
 			Element.prototype.webkitMatchesSelector;
 	// XXX - else... what?
@@ -91,12 +93,12 @@ PatEvent._init = function()
  * It's useful to be able to say "call this handler when the mouse
  * crosses over into element X, and call this other handler when the
  * mouse exits it". The obvious way to handle this is with "mouseover"
- * and "mouse out", but those are kinda broken in Firefox.
+ * and "mouseout", but those are kinda broken in Firefox.
  *
  * Let's say you have
  *	<parent>
  *	  <child1>...</child1>
- *	  <child2>...</child1>
+ *	  <child2>...</child2>
  *	</parent>
  * and "mouseover" and "mouseout" events attached to <parent>.
  *
@@ -217,6 +219,7 @@ PatEvent._add_binding = function(node, evtype, selector, handler, capture)
 		if (node.matchesSelector(selector))
 			node.addEventListener(evtype, handler, capture);
 	} catch (e) {
+		console.error("Can't attach root listener: "+e);
 	}
 
 	// Attach the event to any matching child nodes
