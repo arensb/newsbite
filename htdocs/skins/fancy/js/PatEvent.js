@@ -14,6 +14,44 @@
  *
  * Perhaps could attach to each node a list of all event handlers.
  */
+/* XXX - Key bindings
+ *
+ * Currently, this module does not support keypress events (for that,
+ * see "keybindings.js"), because that's a hairy problem.
+ *	To start with, to have an Emacs-like keypress model, we need a
+ * Keymap object, which maps key definitions to handlers. This is
+ * pretty simple: just have a hash with keys of the form
+ * <modifiers>-<keycode> (e.g, "k", or "CS-r" for Ctrl-Shift-r) that
+ * map to functions. Then attach a Keymap to each DOM node. The
+ * "keydown" handler then looks at the event, figures out which key
+ * was pressed (with all modifiers), looks it up in the appropriate
+ * Keymap, and calls the user's function.
+ *
+ *	What I really want is focus-follows-mouse, so that I can wave
+ * the mouse over an item and press a key to collapse it. But the DOM
+ * doesn't support that; some element (initially the entire window)
+ * has keyboard focus, and there's no way to tell where the mouse was
+ * when a given key was pressed.
+ *	To do this, we'd need something like the following:
+ * var mymap = new Keymap();
+ * mymap.define_key("C-r", do_refresh);
+ * PatEvent.bind_keymap(".foo", mymap);
+ *		// Binding a key to a DOM element is a two-step process:
+ *		// define the keymap, and attach the keymap to the
+ *		// element(s).
+ *
+ * bind_keymap() needs to attach _enter and _exit event handlers to
+ * all of the DOM elements that match the selector ".foo" (if they
+ * don't have one already, which is a hairy problem in itself). It
+ * also adds a "keymap" property to each of these DOM elements.
+ *	These _enter/_exit handlers simply update a variable that says
+ * which element currently has the mouse in it (and, by implication,
+ * which Keymap applies).
+ *	An event listener on 'window' itself (at the very top) can
+ * then listen for keypresses. It checks whether a relevant element
+ * has the mouse in it, look up the relevant Keymap, and call the
+ * appropriate user function.
+ */
 var PatEvent;
 
 // Don't include this module twice, 'cos you'll get clobbered.
