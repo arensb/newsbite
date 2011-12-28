@@ -600,7 +600,9 @@ function db_update_feed($feed_id, $feed)
 	db_update_feed_info($feed_id, $feed);
 
 	/* Add/replace the items in the database. */
-	if (count($feed['items']) == 0)
+	if (!isset($feed['items']) ||
+	    !is_array($feed['items']) ||
+	    count($feed['items']) == 0)
 	{
 		// XXX - Should delete old items here. But I don't
 		// want to duplicate code.
