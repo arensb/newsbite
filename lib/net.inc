@@ -455,7 +455,8 @@ function _save_handle($feed_id, &$feed_text)
 	 * recent article was posted.
 	 */
 	$last_update = NULL;
-	if (is_array($feed['items']))
+	if (isset($feed['items']) &&
+	    is_array($feed['items']))
 	{
 		foreach ($feed['items'] as $item)
 		{

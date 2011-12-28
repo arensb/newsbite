@@ -260,6 +260,8 @@ function parse_feed($feed_text)
 	 * document, and push it onto the context stack.
 	 */
 	$node = array(
+		"name"		=> "",	# Prevent PHP warnings
+		"url"		=> "",	# Prevent PHP warnings
 		"retval"	=> NULL
 		);
 	array_push($_context, $node);
@@ -503,6 +505,7 @@ function _element_end_handler($parser, $fullname)
 	 */
 	if (is_array($node['retval']) &&
 	    count($node['retval']) == 1 &&
+	    isset($node['retval']['#text']) &&
 	    is_string($node['retval']['#text']))
 		$node['retval'] = $node['retval']['#text'];
 
@@ -1773,8 +1776,10 @@ function atom_element_handler(
 		{
 		    case "feed":
 		    case "entry":
-			$retval['author_email'] = $children['email'];
-			$retval['author_name']  = $children['name'];
+			if (isset($children['email']))
+				$retval['author_email'] = $children['email'];
+			if (isset($chilren['name']))
+				$retval['author_name']  = $children['name'];
 			if (isset($children['uri']))
 				$retval['author_url']   = $children['uri'];
 			break;
