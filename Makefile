@@ -39,6 +39,15 @@ INSTALL_PLUGINS =	${PRIV_ROOT}/plugins
 # ./htdocs/skins/*
 INSTALL_SKINS =	${PRIV_ROOT}/skins
 
+# Include a site-local Makefile, if it exists.
+# The $(wildcard) statement is to see whether it exists. Then, if it
+# does, we include it.
+# The user can also use 'make MAKEFILE_LOCAL=/path/to/file'.
+MAKEFILE_LOCAL = $(wildcard Makefile.local)
+ifneq "${MAKEFILE_LOCAL}" ""
+include ${MAKEFILE_LOCAL}
+endif
+
 RECURSIVE_DIRS =	\
 	htdocs/skins/fancy
 
@@ -59,7 +68,7 @@ dist:	all
 	fi
 	${TAR} cnf - --no-recursion `cat MANIFEST` | \
 		(cd dist/"${DISTNAME}"; tar xBpf -)
-	(cd dist; tar cvf - "${DISTNAME}") | \
+	(cd dist; ${TAR} cvf - "${DISTNAME}") | \
 		${GZIP} --best > "${DISTNAME}.tar.gz"
 
 install::
