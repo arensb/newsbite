@@ -17,6 +17,11 @@
  * When those things come in, perhaps send an event.
  */
 
+/* XXX - Replace 'allitems' with 'onscreen' everywhere. */
+/* XXX - Store current item in 'onscreen' when it changes.
+ * _enter, _exit event handlers.
+ */
+
 document.addEventListener("DOMContentLoaded", init, false);
 
 var main_form;		// Form containing all the items.
@@ -29,7 +34,26 @@ var feeds;		// List of feeds
 var allitems;		// In-memory list of all known items.
 			// XXX - This shouldn't exist. Most known
 			// items should be in cache.
-var disp_items;		// List of displayed items
+var onscreen;		// List of displayed items
+	// XXX - {
+	// current item - reference to item that has focus
+	// cur_xpos, cur_ypos - X, Y position of current item
+	//	Should this be x, y offset relative to top left corner
+	//	of current item?
+	// items - list of displayed items:
+	//	{
+	//		copy of what's in the database
+	//		whether collapsed or not
+	//		whether marked as read or not
+	//		prev -- ref to previous element in list
+	//		next -- ref to next element in list
+	//	}
+	// first - reference to items[0]
+	// last - reference to last element of items
+	// }
+	// Perhaps have
+	//	onscreen.prepend_items(list)
+	//	onscreen.append_items(list)
 
 var itemlist;		// Div containing the items.
 var item_tmpl = new Template(item_tmpl_text);
@@ -76,6 +100,21 @@ function init()
 	// Get feeds and items from cache.
 	feeds = cache.feeds();
 	allitems = cache.getitems(feed.id, null, 0, 25);
+
+	// Fetch the list of what was on screen last time we started
+	onscreen = cache.getItem("onscreen");
+	// XXX - Initialize it if empty. Or initialize any missing
+	// bits even if not empty.
+
+	if (onscreen == null)
+	{
+		onscreen = {
+			cur_item:	null,
+			cur_xpos:	0,
+			cur_ypos:	0,
+			items:		[],
+		};
+	}
 
 	// Draw what we've got so far, if anything
 	if (feeds != null && allitems != null && allitems.length > 0)
@@ -218,6 +257,11 @@ function parse_flush_response(value, req)
 		item.setAttribute("deleted", "yes");
 			// XXX - What else needs to be done to mark an
 			// item as read?
+
+		// XXX - If there are more than 10 deleted items in
+		// onscreen, delete the oldest ones
+		// - delete from onscreen
+		// - remove from localStorage
 	}
 	for (var i in req.unread)
 	{
@@ -229,6 +273,8 @@ function parse_flush_response(value, req)
 		item.setAttribute("deleted", "no");
 			// XXX - What else needs to be done to mark
 			// the item as unread?
+		// XXX - If there are now more than 25 unread articles
+		// on screen, remove some. (Which ones?)
 	}
 }
 
@@ -518,8 +564,8 @@ function exit_item(ev)
  * launches an XHR request for items. The callback for that one
  * updates the displayed list.
  */
-/* XXX - Should this be renamed to update_feeds_items(), and take
- * arguments like the feed to update, and a callback function?
+/* XXX - Should this take arguments like the feed to update, and a
+ * callback function?
  */
 function init_feeds_items()
 {
@@ -544,6 +590,11 @@ function init_feeds_items()
 	{
 		allitems = value;
 
+		// We're running for the first time, so get the top
+		// (latest) articles from the cache.
+		onscreen.items = cache.getitems(feed.id, null, 0, 25);
+		cache.setItem(onscreen);
+
 		// Redraw itemlist
 		redraw_itemlist();
 	}
@@ -560,11 +611,17 @@ function redraw_itemlist()
 		// we need to.
 	// XXX - For now, just assume that we should display every
 	// known item.
-	allitems = cache.getitems(feed.id, null, 0, 25);
+	var newitems;		// Updated list of things we should
+				// display.
 
-	for (var i in allitems)
+	// XXX - Draw the items in onscreen.items
+	// XXX - If there are items above or below, add arrows to scroll
+	// up or down.
+	// XXX - Scroll to current item, current position.
+
+	for (var i in onscreen.items)
 	{
-		var item = allitems[i];
+		var item = onscreen.items[i];
 		if (item.is_read)
 			continue;
 
@@ -656,7 +713,11 @@ function redraw_itemlist()
 }
 
 function refresh()
+// XXX - Perhaps ought to take an argument saying whether the top or
+// bottom button was pressed, and prepend or append articles to
+// onscreen.items accordingly.
 {
+	// XXX - update onscreen
 	if (feeds != null && allitems != null && allitems.length > 0)
 	{
 		cache.update_items(feed.id, 0,
