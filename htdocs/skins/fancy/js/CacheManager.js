@@ -68,7 +68,8 @@ function CacheManager()
 		var key = localStorage.key(i);
 		var matches;
 
-		if (key == "feeds")
+		if (key == "feeds" ||
+		    key == "onscreen")
 		{
 			this._ls_index[key] = {
 				"time":	new Date(),
@@ -250,7 +251,9 @@ CacheManager.prototype.update_feeds = function(counts, cb)
 		      function(value) {
 			      me._update_feeds_cb(value, cb);
 		      },
-		      null,	// XXX - Error handler
+		      function(status, msg) {	// Error handler
+			      msg_add("JSON failed: "+status+": "+msg);
+		      },
 		      true);
 }
 
@@ -305,6 +308,7 @@ CacheManager.prototype.get_item = function(id)
 /* getitems
  * Get some items from the given feed
  */
+// XXX - Document the arguments
 // XXX - Ought to be able to specify more details.
 CacheManager.prototype.getitems = function(feed_id, cur, before, after)
 {
@@ -424,7 +428,9 @@ CacheManager.prototype.update_items = function(feed_id, start, cb)
 		      function(value) {
 			      me._update_items_cb(value, cb);
 		      },
-		      null,	// XXX - Error handler
+		      function(status, msg) {	// Error handler
+			      msg_add("JSON failed: "+status+": "+msg);
+		      },
 		      true);
 }
 
