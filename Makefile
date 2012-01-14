@@ -87,7 +87,6 @@ missing:
 		fgrep -vf MANIFEST || true
 
 # Check for syntax errors in PHP files
-# XXX - Bleah. This randomly dumps core. Why?
 syntax-check:
 	@$(EGREP) '\.(php|inc)$$' MANIFEST | \
 	while read fname; do \
