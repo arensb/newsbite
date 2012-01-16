@@ -1,6 +1,3 @@
-- Bug: sometimes, feed list has several "odd-row" lines in a row, or
-  several "even-row" lines. Probably has to do with ignoring empty
-  feeds.
 - Bug: When starting, sometimes, the feeds page displays "undefined"
   in the "number of unread articles" column.
 	I suspect this is because when view.jsh fetches feeds, it
