@@ -329,7 +329,7 @@ function redraw_feed_list()
 				return 1;
 			return 0;
 		});
-	for (var i = 0; i < sorted_feeds.length; i++)
+	for (var i = 0, row = 0; i < sorted_feeds.length; i++)
 	{
 		var feed = sorted_feeds[i];
 
@@ -348,7 +348,7 @@ function redraw_feed_list()
 		var line = document.createElement("tr");
 		line.feed_id = feed.id;
 		line.setAttribute("id", "feed-"+feed.id);
-		if (i & 1)
+		if (row & 1)
 			add_class(line, "odd-row");
 		else
 			add_class(line, "even-row");
@@ -394,6 +394,7 @@ function redraw_feed_list()
 		line.tools_cell = cell;
 
 		thelist.appendChild(line);
+		row++;
 	}
 
 	/* Delete the old contents of the feed div, and replace them with
