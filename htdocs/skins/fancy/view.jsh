@@ -34,9 +34,18 @@ var feeds;		// List of feeds
 var allitems;		// In-memory list of all known items.
 			// XXX - This shouldn't exist. Most known
 			// items should be in cache.
+// XXX - Perhaps should just remember current item:
+//	ID
+//	xpos, ypos: position of top left corner of the item div
+//	last_update or something?
+var cur_item = {
+	id:	null,
+	xpos:	null,
+	ypos:	null,
+	};
 var onscreen;		// List of displayed items
 	// XXX - {
-	// current item - reference to item that has focus
+	// current item - ID of item that has focus
 	// cur_xpos, cur_ypos - X, Y position of current item
 	//	Should this be x, y offset relative to top left corner
 	//	of current item?
@@ -45,11 +54,7 @@ var onscreen;		// List of displayed items
 	//		copy of what's in the database
 	//		whether collapsed or not
 	//		whether marked as read or not
-	//		prev -- ref to previous element in list
-	//		next -- ref to next element in list
 	//	}
-	// first - reference to items[0]
-	// last - reference to last element of items
 	// }
 	// Perhaps have
 	//	onscreen.prepend_items(list)
@@ -99,10 +104,10 @@ function init()
 
 	// Get feeds and items from cache.
 	feeds = cache.feeds();
-	allitems = cache.getitems(feed.id, null, 0, 25);
 
 	// Fetch the list of what was on screen last time we started
 	onscreen = cache.getItem("onscreen");
+	cur_item = cache.getItem("cur_item");
 	// XXX - Initialize it if empty. Or initialize any missing
 	// bits even if not empty.
 
@@ -112,12 +117,16 @@ function init()
 			cur_item:	null,
 			cur_xpos:	0,
 			cur_ypos:	0,
-			items:		[],
 		};
+		onscreen.items = cache.getitems(feed.id, null, 0, 25);
 	}
 
 	// Draw what we've got so far, if anything
-	if (feeds != null && allitems != null && allitems.length > 0)
+
+	// XXX - If feeds is null, can't draw anything.
+	if (feeds != null &&
+	    onscreen.items != null &&
+	    onscreen.items.length > 0)
 		redraw_itemlist();
 
 	// Get fresh feed and item information. When that arrives,
@@ -292,9 +301,9 @@ function parse_flush_error(status, msg, mark_request)
 		/* Mark the in-cache copy as read */
 		// XXX - A loop inside a loop seems inefficient. This
 		// is probably slow.
-		for (var j in allitems)
+		for (var j in onscreen.items)
 		{
-			var item = allitems[j];
+			var item = onscreen.items[j];
 			if (item.id == id)
 			{
 				item.is_read = true;
@@ -312,9 +321,9 @@ function parse_flush_error(status, msg, mark_request)
 		/* Mark the in-cache copy as unread */
 		// XXX - A loop inside a loop seems inefficient. This
 		// is probably slow.
-		for (var j in allitems)
+		for (var j in onscreen.items)
 		{
-			var item = allitems[j];
+			var item = onscreen.items[j];
 			if (item.id == id)
 			{
 				item.is_read = false;
@@ -415,10 +424,10 @@ function mark_item1(ev)
 	 */
 	mark_read[item_id] = item_div.is_read;
 
-	/* Find the item's entry in allitems, and mark it */
-	for (var i = 0, l = allitems.length; i < l; i++)
+	/* Find the item's entry in onscreen.items, and mark it */
+	for (var i = 0, l = onscreen.items.length; i < l; i++)
 	{
-		var item = allitems[i];
+		var item = onscreen.items[i];
 		if (item.id != item_id)
 			continue;
 		item.is_read = item_div.is_read;
@@ -588,12 +597,10 @@ function init_feeds_items()
 
 	function item_callback(value)
 	{
-		allitems = value;
-
 		// We're running for the first time, so get the top
 		// (latest) articles from the cache.
 		onscreen.items = cache.getitems(feed.id, null, 0, 25);
-		cache.setItem(onscreen);
+		cache.setItem("onscreen", onscreen);
 
 		// Redraw itemlist
 		redraw_itemlist();
@@ -687,6 +694,7 @@ function redraw_itemlist()
 		var new_node = document.createElement("div");
 		new_node.innerHTML = item_node;
 		item_node = new_node.firstChild;
+		item.node = item_node;
 
 		// Append to itemlist.
 		new_itemlist.appendChild(item_node);
@@ -718,7 +726,9 @@ function refresh()
 // onscreen.items accordingly.
 {
 	// XXX - update onscreen
-	if (feeds != null && allitems != null && allitems.length > 0)
+	if (feeds != null &&
+	    onscreen.items != null &&
+	    onscreen.items.length > 0)
 	{
 		cache.update_items(feed.id, 0,
 				   function(){}
