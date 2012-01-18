@@ -17,11 +17,6 @@
  * When those things come in, perhaps send an event.
  */
 
-/* XXX - Replace 'allitems' with 'onscreen' everywhere. */
-/* XXX - Store current item in 'onscreen' when it changes.
- * _enter, _exit event handlers.
- */
-
 document.addEventListener("DOMContentLoaded", init, false);
 
 var main_form;		// Form containing all the items.
@@ -31,9 +26,7 @@ var current_item = null;	// Current item, for keybindings and such
 
 var cache = new CacheManager();	// Cache manager for locally-stored data
 var feeds;		// List of feeds
-var allitems;		// In-memory list of all known items.
-			// XXX - This shouldn't exist. Most known
-			// items should be in cache.
+
 // XXX - Perhaps should just remember current item:
 //	ID
 //	xpos, ypos: position of top left corner of the item div
@@ -106,7 +99,6 @@ function init()
 	feeds = cache.feeds();
 
 	// Fetch the list of what was on screen last time we started
-	onscreen = cache.getItem("onscreen");
 	cur_item = cache.getItem("cur_item");
 	// XXX - Initialize it if empty. Or initialize any missing
 	// bits even if not empty.
@@ -300,7 +292,8 @@ function parse_flush_error(status, msg, mark_request)
 
 		/* Mark the in-cache copy as read */
 		// XXX - A loop inside a loop seems inefficient. This
-		// is probably slow.
+		// is probably slow. Then again, we're only iterating
+		// over the short list of what's on screen.
 		for (var j in onscreen.items)
 		{
 			var item = onscreen.items[j];
@@ -320,7 +313,8 @@ function parse_flush_error(status, msg, mark_request)
 
 		/* Mark the in-cache copy as unread */
 		// XXX - A loop inside a loop seems inefficient. This
-		// is probably slow.
+		// is probably slow. Then again, we're only iterating
+		// over the short list of what's on screen.
 		for (var j in onscreen.items)
 		{
 			var item = onscreen.items[j];
@@ -636,13 +630,6 @@ function redraw_itemlist()
 			// XXX - Check to make sure that
 			// feeds[item.feed_id] exists, that we haven't
 			// been given an item from a nonexistent feed?
-
-			// XXX - Why would this happen? It's possible
-			// that the user unsubscribed from a feed, and
-			// we've got a cached item from a nonexistent
-			// feed, so this code is still useful.
-			// Except that as of this writing, 'allitems'
-			// came from the server just now.
 			if (item_feed == null)
 			{
 				console.error("Undefined feed "+item.feed_id);
