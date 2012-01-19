@@ -1,3 +1,5 @@
+- Bug: Safari can't stringify DOM nodes. This is a problem in
+  mark_item1(), since item.node is a HTMLDivElement.
 - Bug: When starting, sometimes, the feeds page displays "undefined"
   in the "number of unread articles" column.
 	I suspect this is because when view.jsh fetches feeds, it
