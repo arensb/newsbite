@@ -19,10 +19,22 @@
 
 document.addEventListener("DOMContentLoaded", init, false);
 
+// Set HTMLElement's toJSON method, so that JSON.stringify() of
+// structures containing a DOM node doesn't fail with an error.
+/* XXX - This seems like a hack: might be better to split up
+ * onscreen.items[i] into { data: {...}, node: <HTMLElement> }.
+ * If so, remove this hack.
+ */
+if (HTMLElement.prototype.toJSON == null)
+{
+	HTMLElement.prototype.toJSON = function() { return undefined; };
+}
+
 var main_form;		// Form containing all the items.
 var mark_read = {};		// Hash of item_id -> is_read? values
 var mark_request = null;	// Data for marking items as read/unread
 var current_item = null;	// Current item, for keybindings and such
+	// XXX - Replace 'current_item' with 'cur_item'.
 
 var cache = new CacheManager();	// Cache manager for locally-stored data
 var feeds;		// List of feeds
@@ -425,8 +437,7 @@ function mark_item1(ev)
 		if (item.id != item_id)
 			continue;
 		item.is_read = item_div.is_read;
-		// XXX - Mark in the cache as well.
-		cache.store_item(item);
+		cache.store_item(item);		// Mark in the cache as well.
 	}
 
 	/* Flush the queue if necessary */
