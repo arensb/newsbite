@@ -154,6 +154,19 @@ function redirect_to($url)
  */
 function abort($msg)
 {
+	global $out_fmt;
+
+	# Abort handling for non-HTML output types.
+	if ($out_fmt == "json")
+	{
+		echo jsonify(array("error" => $msg));
+		exit(0);
+	} elseif ($out_fmt == "xml")
+	{
+		print_xml(array("error" => $msg));
+		exit(0);
+	}
+
 	/* Try to load the skin module. */
 	$err = @include_once("skin.inc");
 	if ($err === FALSE)

@@ -1,5 +1,3 @@
-- Bug: Safari can't stringify DOM nodes. This is a problem in
-  mark_item1(), since item.node is a HTMLDivElement.
 - Bug: When starting, sometimes, the feeds page displays "undefined"
   in the "number of unread articles" column.
 	I suspect this is because when view.jsh fetches feeds, it
@@ -35,8 +33,6 @@
   and different people may deal with this differently (UTF-8 vs. HTML
   entities). Perhaps safest to assume that they're HTML and clean up
   (if possible, only do entity translation, and throw out any markup).
-- Bug: when items.php gets request for nonexistent feed, it dumps an
-  HTML error message. Should be JSON (or whatever the user requested).
 - Bug: On android, often title bar overflows to the right of the
   screen.
 - Perhaps install PHP pcntl module? Includes fork(), exec(). This
