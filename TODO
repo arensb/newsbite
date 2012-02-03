@@ -1,3 +1,12 @@
+- Bug?: Automatic RSS redirect: This got broken by the "Stop SOPA"
+  protest, when several sites redirected their RSS feeds to an
+  anti-SOPA page. After that, several feeds got stuck on that page, so
+  they didn't update.
+	Perhaps the best thing to do would be to not redirect
+  automatically, but to generate a fake article in feed 0 saying where
+  the feed got redirected to. Perhaps include a link to 'editfeed.php'
+  with the new URL.
+	Update editfeed.php to allow supplying a new parameter.
 - Bug: When starting, sometimes, the feeds page displays "undefined"
   in the "number of unread articles" column.
 	I suspect this is because when view.jsh fetches feeds, it
@@ -35,6 +44,14 @@
   (if possible, only do entity translation, and throw out any markup).
 - Bug: On android, often title bar overflows to the right of the
   screen.
+- MySQL function FOUND_ROWS():
+  http://dev.mysql.com/doc/refman/5.0/en/information-functions.html#function_found-rows
+  'select <foo> from <bar> limit <baz>
+   select found_rows()'
+  returns the number of rows that would have been returned if there
+  were no "limit" clause.
+- Perhaps a way to get row number, and get the N rows around a given row:
+  http://jimlife.wordpress.com/2008/09/09/displaying-row-number-rownum-in-mysql/
 - Perhaps install PHP pcntl module? Includes fork(), exec(). This
   could be useful for a long-running tool on the server that sends
   updates on article status to the client(s).
