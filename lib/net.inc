@@ -258,9 +258,12 @@ function update_all_feeds($handler)
 							// updating a single
 							// feed.
 
-#echo "Ought to update feed_url ["; print_r($handle['feed']['feed_url']); echo "] to [$fetch_http_extra[redirect]]<br/>\n";
+echo "Ought to update feed_url ["; print_r($handle['feed']['feed_url']); echo "] to [$fetch_http_extra[redirect]]<br/>\n";
 							$handle['feed']['feed_url'] = $fetch_http_extra['redirect'];
-							db_update_feed($handle['feed']['id'], $handle['feed']);
+							// XXX - Instead of updating the feed, ought to notify the
+							// user, ideally by creating a new post with a link that'll
+							// update the feed to the new URL.
+#							db_update_feed($handle['feed']['id'], $handle['feed']);
 						}
 
 						$err = _save_handle(
