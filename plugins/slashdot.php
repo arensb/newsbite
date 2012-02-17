@@ -8,14 +8,12 @@ function slashdot_noise_hook($nodename, &$retval, &$context)
 		return;
 #echo "(slashdot_noise) before: <pre>["; print_r($retval); echo "]</pre>\n";
 
-	/* "Share on Facebook/Twitter" links */
-	# Facebook link
-	$retval = preg_replace('{<a href="http://www.facebook.com/sharer.php.*?</a>}',
+	// Facebook and Twitter links
+	$retval = preg_replace('{<a class="slashpop".*?</a>}',
 			       '',
 			       $retval);
-
-	# Twitter link
-	$retval = preg_replace('{<a href="http://twitter.com/home\?status=[^>]*title="Share on Twitter".*?</a>}',
+	// Google+ link
+	$retval = preg_replace('{<a class="nobg" href="http://plus.google.com/.*?</a>}',
 			       '',
 			       $retval);
 
