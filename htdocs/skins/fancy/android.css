@@ -78,3 +78,9 @@ blockquote {
 	margin-right:		0.5em;
 	padding-left:		0.25em;
 }
+
+/* Make debugging messages go the full width of the screen, on Android */
+.msglist {
+	width:			100%;
+	margin-left:		0%;
+}
