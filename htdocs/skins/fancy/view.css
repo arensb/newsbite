@@ -8,6 +8,8 @@ body {
 	margin-right:		0px;
 	margin-bottom:		0px;
 	background-image:	url(gray-bg.jpg);
+	z-index:		0;
+	position:		relative;
 }
 
 h1 {
@@ -138,6 +140,8 @@ input[type="submit"] {
 	margin-left:		2px;
 	margin-right:		2px;
 	clear:			both;
+	z-index:		5;
+	position:		relative;
 }
 
 .item .item-header {
@@ -562,6 +566,7 @@ img.thumbnail {
 	position:		fixed;
 	top:			0px;
 	padding:		0px;
+	z-index:		10;
 }
 
 .msglist li {
