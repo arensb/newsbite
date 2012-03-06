@@ -63,6 +63,7 @@
 /* Links to tools for managing feeds */
 #feeds .feed-tools {
 	display:		none;
+	white-space:		nowrap;	/* Prevent ugly wrapping of image */
 }
 
 #feeds.show-tools .feed-tools {
