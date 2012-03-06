@@ -312,7 +312,7 @@ CacheManager.prototype.get_item = function(id)
 // XXX - Ought to be able to specify more details.
 CacheManager.prototype.getitems = function(feed_id, cur, before, after)
 {
-msg_add("CacheManager.getitems("+feed_id+", "+cur+", "+before+", "+after+")");
+//msg_add("CacheManager.getitems("+feed_id+", "+cur+", "+before+", "+after+")");
 	var retval = new Array();
 
 	// XXX - Get the unread articles from whichever feed we're
@@ -322,8 +322,7 @@ msg_add("CacheManager.getitems("+feed_id+", "+cur+", "+before+", "+after+")");
 
 	/* Sort headers by last_update, just like lib/database.inc. */
 	var hdrs = [];
-msg_add("this.headers.length: "+this.headers.length);
-// XXX - For some reason, this grows by 1 when a post is marked read or unread.
+//msg_add("this.headers.length: "+this.headers.length);
 	for (var i = 0, l = this.headers.length; i < l; i++)
 	{
 		var h = this.headers[i];
@@ -346,7 +345,7 @@ msg_add("this.headers.length: "+this.headers.length);
 				return b.id - a.id;
 		});
 	var hlen = hdrs.length;
-msg_add("hlen: "+hlen);
+//msg_add("hlen: "+hlen);
 
 	if (hlen == 0)
 		// No items cached
