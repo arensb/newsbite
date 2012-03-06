@@ -422,15 +422,9 @@ function mark_item1(ev)
 		buttons[i].checked = item_div.is_read;
 	}
 
-	var item_id = item_div.id.slice(5);
-		// The 'id' attribute is of the form "item-12345". Get
-		// the item ID from that.
+	var item_id = item_div.item_id;
 
 	/* Add the item ID to the queue of items to mark as read/unread */
-	/* XXX - As time goes on, item IDs will grow ever larger. So
-	 * 'mark_read' will have an ever larger number of empty entries
-	 * at the beginning.
-	 */
 	mark_read[item_id] = item_div.is_read;
 
 	/* Find the item's entry in onscreen.items, and mark it */
