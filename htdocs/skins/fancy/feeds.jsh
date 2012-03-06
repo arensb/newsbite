@@ -131,7 +131,12 @@ function parse_response(req)
 		var lines = str.split("\n");
 		for (var i = 0; i < lines.length; i++)
 		{
+			var l;
 			var line = lines[i];
+
+			if (line.length == 0)
+				// Got a blank line.
+				continue;
 			if (line[0] != '{')
 				// There might be non-JSON lines in there.
 				// Ignore them. For that matter, ignore
