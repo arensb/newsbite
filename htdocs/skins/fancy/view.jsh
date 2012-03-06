@@ -213,6 +213,9 @@ function set_pane(container, state)
 		return;
 	if (item_div.offsetTop < window.pageYOffset)
 		window.scrollTo(0, item_div.offsetTop);
+
+	// XXX - Find entry in onscreen.items. Mark its state. Save to
+	// cache.
 }
 
 /* flush_queues
@@ -621,12 +624,8 @@ function redraw_itemlist()
 	var new_itemlist = document.createDocumentFragment();
 		// XXX - Probably shouldn't create this until we know
 		// we need to.
-	// XXX - For now, just assume that we should display every
-	// known item.
-	var newitems;		// Updated list of things we should
-				// display.
 
-	// XXX - Draw the items in onscreen.items
+	/* Draw the items in onscreen.items */
 	// XXX - If there are items above or below, add arrows to scroll
 	// up or down.
 	// XXX - Scroll to current item, current position.
@@ -692,6 +691,7 @@ function redraw_itemlist()
 		var new_node = document.createElement("div");
 		new_node.innerHTML = item_node;
 		item_node = new_node.firstChild;
+		item_node.item_id = item.id;
 		item.node = item_node;
 
 		// Append to itemlist.
@@ -715,6 +715,8 @@ function redraw_itemlist()
 	// Delete existing children
 	while (itemlist.firstChild)
 		itemlist.removeChild(itemlist.firstChild);
+
+	// Add the new list
 	itemlist.appendChild(new_itemlist);
 }
 
@@ -723,14 +725,18 @@ function refresh()
 // bottom button was pressed, and prepend or append articles to
 // onscreen.items accordingly.
 {
+	// XXX - Find the articles marked as read, and purge them from
+	// cache.
+
 	// XXX - update onscreen
 	if (feeds != null &&
 	    onscreen.items != null &&
 	    onscreen.items.length > 0)
 	{
-		cache.update_items(feed.id, 0,
-				   function(){}
-				  );
+		onscreen.items = cache.getitems(feed.id, null, 0, 25);
+//		cache.update_items(feed.id, 0,
+//				   function(){}
+//				  );
 		redraw_itemlist();
 	}
 }
