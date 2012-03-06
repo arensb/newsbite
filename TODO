@@ -1,3 +1,5 @@
+- Bug: Title link to Pharyngula articles is sometimes "Array".
+  Ditto Greta Christina.
 - Bug?: Automatic RSS redirect: This got broken by the "Stop SOPA"
   protest, when several sites redirected their RSS feeds to an
   anti-SOPA page. After that, several feeds got stuck on that page, so
@@ -7,6 +9,8 @@
   the feed got redirected to. Perhaps include a link to 'editfeed.php'
   with the new URL.
 	Update editfeed.php to allow supplying a new parameter.
+	What about when a feed URL is good, but includes a (wanted)
+  redirect? Ought to have some list of redirects to ignore.
 - Bug: When starting, sometimes, the feeds page displays "undefined"
   in the "number of unread articles" column.
 	I suspect this is because when view.jsh fetches feeds, it
@@ -97,12 +101,6 @@
   one argument).
 	I think this means fixing bind_event to store a keytab with
   each 
-- Split up htdocs/view.php into presentation and content.
-	htdocs/view.php invokes the skin, which in turn sets JS
-  variables from skin variables (feed_id, offset, and whatever other
-  parameters we've been given)
-	htdocs/items.php (or something) takes those parameters and
-  returns a JSON (or XML) list of articles.
 - What's the best way to handle XKCD mouseover text on mobile devices?
   Perhaps an HTMLPurifier plugin that finds <img alt="foo"/> and puts
   the alt-text under the image, as a caption?
@@ -666,12 +664,6 @@
   sorting a massive data set, would it be possible to use some variant
   of quicksort to first sort by time, then sort by "comics go before
   news", etc.?
-- Would be useful on the feed list page to be able to toggle empty
-  feeds on and off. Also stale feeds (those that haven't been updated
-  in 30 days (or whatever)).
-	Can't just toggle visibility in JS: that would break coloring
-  alternating rows.
-	Eh. Fuck alternating rows.
 - Might be useful to add gestures, for portable devices. See
   http://depts.washington.edu/aimgroup/proj/dollar/
 	On the N810, one can scroll the display by drawing on it. So
