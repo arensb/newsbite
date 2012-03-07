@@ -627,6 +627,8 @@ function redraw_itemlist()
 	for (var i in onscreen.items)
 	{
 		var item = onscreen.items[i];
+		if (item == null)
+			break;
 		if (item.is_read)
 			continue;
 
