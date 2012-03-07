@@ -90,8 +90,11 @@ missing:
 syntax-check:
 	@$(EGREP) '\.(php|inc)$$' MANIFEST | \
 	while read fname; do \
-		echo "Checking $$fname"; \
-		$(PHP) -l "$$fname"; \
+		errmsg=`$(PHP) -l "$$fname" 2>&1`; \
+		if [ "$$?" != 0 ]; then \
+			echo "Syntax error in $$fname:"; \
+			echo "$$errmsg"; \
+		fi \
 	done
 
 # Generate ChangeLog file from the beginning of this year until now
