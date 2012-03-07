@@ -473,6 +473,9 @@ function _save_handle($feed_id, &$feed_text)
 		// identify stale feeds.
 		$feed['last_update'] = $last_update;
 
+	if (!isset($feed['subtitle']))
+		$feed['subtitle'] = NULL;
+
 	/* Add the feed to the database */
 	// XXX - What does this do? Is it redundant?
 	// XXX - The callers call db_get_feed() to get a fresh copy of
