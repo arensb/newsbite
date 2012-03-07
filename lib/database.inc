@@ -523,9 +523,15 @@ function db_update_feed_info($feed_id, $fields)
 	{
 		if (array_key_exists($f, $fields) &&
 		    $fields[$f] != $old[$f])
-			$updates[] = "$f = '" .
-				$dbh->real_escape_string($fields[$f]) .
-				"'";
+		{
+			if ($fields[$f] === NULL)
+				$value = "NULL";
+			else
+				$value = "'" .
+					$dbh->real_escape_string($fields[$f]) .
+					"'";
+			$updates[] = "$f = $value";
+		}
 	}
 
 	/* Boolean fields */
