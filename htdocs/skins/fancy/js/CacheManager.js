@@ -337,9 +337,9 @@ CacheManager.prototype.getitems = function(feed_id, cur, before, after)
 			// Want to sort by last_update, from newest to
 			// youngest; use id (larger id goes first) as
 			// a tiebreaker.
-			if (a.pub_date > b.pub_date)
+			if (a.last_update > b.last_update)
 				return -1;
-			else if (a.pub_date < b.pub_date)
+			else if (a.last_update < b.last_update)
 				return 1;
 			else
 				return b.id - a.id;
