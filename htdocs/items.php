@@ -19,6 +19,8 @@ require_once("database.inc");
 
 //load_hooks(PLUGIN_DIR);
 
+/* Check arguments */
+
 /* Make sure output format is sane */
 switch ($out_fmt)
 {
