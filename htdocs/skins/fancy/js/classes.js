@@ -30,8 +30,16 @@
 /* XXX - Can this be made to look more object-ish? Perhaps rewrite the
  * code that uses these functions to use the classList API, and create
  * a compatibility object for those browsers that don't support this.
- * I think the Mozilla Dev page has an example of such an object.
+ * See
+ * https://github.com/eligrey/classList.js/blob/master/classList.js
+ * for a compatibility shim.
  */
+var is_in_class;
+var add_class;
+var remove_class;
+var replace_class;
+var toggle_class;
+
 document.addEventListener("DOMContentLoaded", function() {
 	// NB: this function unregisters itself at the end.
 
