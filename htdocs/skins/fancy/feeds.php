@@ -21,6 +21,9 @@ switch ($skin_vars['mobile'])
     case 'iPad':
 	$mobile_css = "ipad.css";
 	break;
+    case 'Android':
+	$mobile_css = "android.css";
+	break;
     default:
 	break;
 }
