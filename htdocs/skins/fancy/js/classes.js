@@ -27,6 +27,11 @@
  * (that gets run when document.body exists), then see if
  * document.body has classList.
  */
+/* XXX - Can this be made to look more object-ish? Perhaps rewrite the
+ * code that uses these functions to use the classList API, and create
+ * a compatibility object for those browsers that don't support this.
+ * I think the Mozilla Dev page has an example of such an object.
+ */
 document.addEventListener("DOMContentLoaded", function() {
 	// NB: this function unregisters itself at the end.
 
@@ -34,11 +39,6 @@ document.addEventListener("DOMContentLoaded", function() {
 	// following much simpler. See
 	// https://developer.mozilla.org/en/DOM/element.classList
 	var have_classList = (document.body.classList != undefined);
-
-	if (have_classList)
-		alert("I have classList");
-	else
-		alert("I don't have classList");
 
 	/* is_in_class
 	 * Returns true iff 'cls' is in the class list of 'elem'.
