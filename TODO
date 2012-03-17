@@ -1,5 +1,24 @@
 - Bug: Title link to Pharyngula articles is sometimes "Array".
   Ditto Greta Christina.
+- Bug: When I changed the feed URL for The Atheist Experience, the
+  posts appear out of order: last_update is when it was refreshed, but
+  the pub_date is when the post was published:
+	mysql> select pub_date, last_update from items where !is_read and feed_id=50;
+	+---------------------+---------------------+
+	| pub_date            | last_update         |
+	+---------------------+---------------------+
+	| 2012-02-23 19:02:56 | 2012-03-07 09:14:01 |
+	| 2012-02-24 09:34:12 | 2012-03-07 09:14:01 |
+	| 2012-02-25 18:29:40 | 2012-03-07 09:14:01 |
+	| 2012-02-26 20:48:49 | 2012-03-07 09:14:01 |
+	| 2012-02-27 19:05:02 | 2012-03-07 09:14:01 |
+	| 2012-02-28 09:29:09 | 2012-03-07 09:14:01 |
+	| 2012-02-28 18:12:45 | 2012-03-07 09:14:01 |
+	| 2012-03-02 14:48:49 | 2012-03-07 09:14:01 |
+	| 2012-03-04 18:23:50 | 2012-03-07 09:14:01 |
+	| 2012-03-05 17:51:24 | 2012-03-07 09:14:01 |
+	+---------------------+---------------------+
+  In this case, last_update should default to pub_date. Or something.
 - Bug?: Automatic RSS redirect: This got broken by the "Stop SOPA"
   protest, when several sites redirected their RSS feeds to an
   anti-SOPA page. After that, several feeds got stuck on that page, so
