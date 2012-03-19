@@ -1,6 +1,6 @@
 /*						-*- JavaScript -*- */
 #include "js/debug.js"
-// #include "js/defer.js"
+#include "js/defer.js"
 #include "js/xhr.js"
 #include "js/classes.js"
 #include "js/keybindings.js"
@@ -10,12 +10,6 @@
 #include "js/Template.js"
 /*#include "js/load_module.js"*/
 #include "js/status-msg.js"
-/* XXX - Should have a separate module for handling updates from the
- * server: have functions to request fresh copy of feed list, or
- * getting new items.
- *
- * When those things come in, perhaps send an event.
- */
 
 document.addEventListener("DOMContentLoaded", init, false);
 
@@ -437,8 +431,12 @@ function mark_item1(ev)
 		cache.store_item(item);		// Mark in the cache as well.
 	}
 
-	/* Flush the queue if necessary */
-	flush_queues();
+	/* Flush the queue if necessary.
+	 * Use defer() here so that the browser can redraw
+	 * immediately, in case there's a delay creating the HTTP
+	 * request.
+	 */
+	flush_queues.defer(0);
 }
 
 /* button_mark_item
@@ -669,8 +667,8 @@ function redraw_itemlist()
 				// XXX - Pretty-print the date.
 			summary:	item.summary,
 			content:	item.content,
-			comment_url:	encodeURI(item.content_url),
-			comment_rss:	encodeURI(item.content_rss),
+			comment_url:	encodeURI(item.comment_url),
+			comment_rss:	encodeURI(item.comment_rss),
 			// Indicate whether collapsible (both content
 			// and summary exist), and whether to display
 			// summary or content.
