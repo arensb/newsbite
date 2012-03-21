@@ -67,6 +67,22 @@
   (if possible, only do entity translation, and throw out any markup).
 - Bug: On android, often title bar overflows to the right of the
   screen.
+- Perhaps add another phase to collecting articles: examining
+  individual posts. Plugins could go here.
+	The idea is: update_feed() fetches a given feed and parses it
+  into articles and such. Then, when that's done, feed each (new?)
+  article to a plugin that can rewrite the article.
+	This plugin can do things like:
+	- For GoComics feeds, scrape the article page and retrieve the
+  URL for the image (look for a <div> with class "comic", or whatever
+  it is). Rewrite item.summary to include the image.
+	- For Washington Post articles, scrape the page and get the
+  keywords from the HTML header:
+	<meta name="keywords" content="virginia,democrats,education,state budget,legislators"/>
+  It can use this to tag an article by keywords, or even auto-kill the
+  sports articles.
+	The latter can also be done by looking at <pheedo:origLink>,
+  to find articles at http://www.washingtonpost.com/sports/...
 - MySQL function FOUND_ROWS():
   http://dev.mysql.com/doc/refman/5.0/en/information-functions.html#function_found-rows
   'select <foo> from <bar> limit <baz>
