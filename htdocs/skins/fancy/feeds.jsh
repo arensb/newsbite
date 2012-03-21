@@ -37,8 +37,7 @@ function init()
 	// Key bindings
 	bind_key("d", toggle_details);
 	bind_key("t", toggle_tools);
-	// XXX - C-r: refresh list of feeds.
-	bind_key("C-r", refresh_feed_list);
+	bind_key("C-r", refresh_feed_list);	// C-r: refresh list of feeds.
 
 	init_feed_list();
 }
