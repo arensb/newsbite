@@ -696,8 +696,8 @@ INSERT INTO	items
 VALUES		(?,       ?,   ?,     ?,       ?,       ?,      ?,
 		 ?,           ?,           ?,
 		 IFNULL(FROM_UNIXTIME(?), NOW()),
-		 NOW(),
-		 FALSE)
+		 pub_date,
+		 IFNULL(?, FALSE))
 ON DUPLICATE KEY UPDATE
 		url=?,
 		title=?,
@@ -735,8 +735,10 @@ EOT;
 			$item['guid'] = $item['url'];
 		}
 
+		if (!isset($item['is_read']))
+			$item['is_read'] = false;
 		$stmt->bind_param("dsssssssssd" .
-				  "ssssssssd",
+				  "ssssssssdi",
 				  // Values for new items
 				  $feed_id,
 				  $item['url'],
@@ -749,7 +751,7 @@ EOT;
 				  $item['comment_feed'],
 				  $item['guid'],
 				  $item['pub_time'],
-				  // 'is_read' automatically set to false
+				  $item['is_read'],
 
 				  // Values for updated items
 				  $item['url'],
@@ -761,7 +763,6 @@ EOT;
 				  $item['comment_url'],
 				  $item['comment_feed'],
 				  $item['pub_time']
-				  // 'is_read' left unchanged
 			);
 		$err = $stmt->execute();
 		// XXX - Can count number of affected rows. Apparently
