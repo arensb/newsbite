@@ -67,6 +67,11 @@
   (if possible, only do entity translation, and throw out any markup).
 - Bug: On android, often title bar overflows to the right of the
   screen.
+- Pre-mark ads as read:
+	Can now have "$item['is_read'] = true" when adding an item.
+  This allows for plugins that mark items as read when they're parsed.
+  Things like WaPo's "Featured Advertiser".
+	Probably best to add a "body" hook.
 - Perhaps add another phase to collecting articles: examining
   individual posts. Plugins could go here.
 	The idea is: update_feed() fetches a given feed and parses it
