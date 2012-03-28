@@ -679,12 +679,6 @@ function db_update_feed($feed_id, $feed)
 		 * the most recent of pub_date and last_update as the
 		 * sole publication time. 
 		 */
-		/* XXX - Currently, all new articles are marked as
-		 * is_read == FALSE. It might be useful for a hook to
-		 * mark an article as read as soon as it comes in
-		 * (e.g., ignoring articles in the newspaper's sports
-		 * section).
-		 */
 
 		$query = <<<EOT
 INSERT INTO	items
