@@ -788,6 +788,8 @@ function rss_element_handler(
 		// - <channel><textInput><link>
 		// - <item><link>
 		// - <textInput><link>
+if (is_array($children))
+error_log("Before hooks, link is array\n");
 		switch ($parent)
 		{
 		    case "image":
@@ -797,6 +799,8 @@ function rss_element_handler(
 			# Give hooks a chance to clean up the link to the
 			# article.
 			run_hooks("post_link", array(&$children));
+if (is_array($children))
+error_log("After hooks, link is array\n");
 			$retval['url'] = $children;
 		    case "channel":
 		    case "textInput":
@@ -1778,7 +1782,7 @@ function atom_element_handler(
 		    case "entry":
 			if (isset($children['email']))
 				$retval['author_email'] = $children['email'];
-			if (isset($chilren['name']))
+			if (isset($children['name']))
 				$retval['author_name']  = $children['name'];
 			if (isset($children['uri']))
 				$retval['author_url']   = $children['uri'];
