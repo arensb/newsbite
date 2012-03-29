@@ -312,7 +312,9 @@ CacheManager.prototype.get_item = function(id)
 // XXX - Ought to be able to specify more details.
 CacheManager.prototype.getitems = function(feed_id, cur, before, after)
 {
-//msg_add("CacheManager.getitems("+feed_id+", "+cur+", "+before+", "+after+")");
+//console.debug("CacheManager.getitems("+feed_id+", "+cur+", "+before+", "+after+")");
+//if (cur != null)
+//console.debug("cur.last_update: "+cur.last_update);
 	var retval = new Array();
 
 	// XXX - Get the unread articles from whichever feed we're
@@ -376,7 +378,7 @@ CacheManager.prototype.getitems = function(feed_id, cur, before, after)
 
 			// Couldn't find the exact one. We'll settle for the
 			// one after that (chronologically).
-			if (cur.last_update < item.last_update)
+			if (item.last_update < cur.last_update)
 			{
 				if (i == 0)
 					ptr = 0;
