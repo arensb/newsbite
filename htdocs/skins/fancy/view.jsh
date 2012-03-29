@@ -371,6 +371,53 @@ function mark_item1(ev)
 		add_class(item_div, "item-read");
 	}
 
+	var item_id = item_div.item_id;
+
+	/* Add the item ID to the queue of items to mark as read/unread */
+	mark_read[item_id] = item_div.is_read;
+
+	/* Find the item's entry in onscreen.items, and mark it */
+	for (var i = 0, l = onscreen.items.length; i < l; i++)
+	{
+		var item = onscreen.items[i];
+		if (item.id != item_id)
+			continue;
+		item.is_read = item_div.is_read;
+		cache.store_item(item);		// Mark in the cache as well.
+	}
+
+	/* XXX - If marking an item as read, bring up another item
+	 * from cache.
+	 * - Get last item in onscreen.items.
+	 * - Get the item that comes after that.
+	 * - Display it.
+	 * - If there are now > 25 items on screen, delete the topmost one.
+	 * - If the deleted item was marked read, purge it from cache.
+	 */
+	addnewnode:
+	if (item_div.is_read)
+	{
+		var last_item = onscreen.items[onscreen.items.length-1];
+				// Get last item in onscreen.items.
+		var more_items = cache.getitems(feed.id, last_item, 0, 1);
+				// Get the next one after that in cache
+		if (more_items == null || more_items.length < 2)
+			// If getitems() returned < 2 items, then
+			// there aren't any more items in cache after
+			// last_item.
+			break addnewnode;	// Break out of if-block
+
+		var new_item = more_items.pop();
+				// The new item we're about to add.
+		var new_node = item2node(new_item);
+
+		new_node.item_id = new_item.id;
+		new_item.node = new_node;
+
+		itemlist.appendChild(new_node);
+		onscreen.items.push(new_item);
+	}
+
 	/* Scroll so that the (collapsed) item is visible.
 	 * Let's say the item is long; the user has read the item, and
 	 * has clicked on the bottom checkbox to mark the item as
@@ -414,21 +461,6 @@ function mark_item1(ev)
 	for (var i = 0; i < buttons.length; i++)
 	{
 		buttons[i].checked = item_div.is_read;
-	}
-
-	var item_id = item_div.item_id;
-
-	/* Add the item ID to the queue of items to mark as read/unread */
-	mark_read[item_id] = item_div.is_read;
-
-	/* Find the item's entry in onscreen.items, and mark it */
-	for (var i = 0, l = onscreen.items.length; i < l; i++)
-	{
-		var item = onscreen.items[i];
-		if (item.id != item_id)
-			continue;
-		item.is_read = item_div.is_read;
-		cache.store_item(item);		// Mark in the cache as well.
 	}
 
 	/* Flush the queue if necessary.
@@ -607,6 +639,69 @@ function init_feeds_items()
 	}
 }
 
+/* item2node
+ * Create a DOM node from 'item' by substituting variables in the item
+ * template, and creating a DOM node from that.
+ */
+// XXX - Should this go in Item.prototype?
+function item2node(item)
+{
+	var item_feed = feeds[item.feed_id];
+
+	// XXX - Check to make sure that feeds[item.feed_id] exists,
+	// that we haven't been given an item from a nonexistent feed?
+	if (item_feed == null)
+	{
+		console.error("Undefined feed "+item.feed_id);
+		return null;
+	}
+
+	var title = item.displaytitle();
+
+	// Fill in values to plug into item template
+	var item_values = {
+		id:		item.id,
+		url:		encodeURI(item.url),
+		url_attr:	(mobile != "" ?
+				 'target="_blank"'
+				 : ""),
+			// On mobile devices, open title link in a new
+			// window.
+		title:		title,
+		feed_url:	encodeURI(item_feed.url),
+		feed_title:	item_feed.displaytitle(),
+		author:		item.author,
+			// XXX - If author is empty, shouldn't display
+			// the "by" before author name.
+			// XXX - If ever use author URL, might want to
+			// wrap author name in <a href="mailto:...>.
+		pub_date:	item.pub_date,
+		pretty_pub_date:item.pub_date,
+			// XXX - Pretty-print the date.
+		summary:	item.summary,
+		content:	item.content,
+		comment_url:	encodeURI(item.comment_url),
+		comment_rss:	encodeURI(item.comment_rss),
+		// Indicate whether collapsible (both content and
+		// summary exist), and whether to display summary or
+		// content.
+		collapsible:	(item.summary != null &&
+				 item.content != null ?
+				 "yes" : "no"),
+		which:		(item.content == null ?
+				 "summary" : "content"),
+	};
+
+	// XXX - The following hack, to create a DOM node from HTML,
+	// should probably be in Template.js.
+	var item_node = item_tmpl.expand(item_values);
+	var new_node = document.createElement("div");
+	new_node.innerHTML = item_node;
+	item_node = new_node.firstChild;
+
+	return item_node;
+}
+
 /* redraw_itemlist
  * We've received either a feed list or an item list. Update the
  * displayed list to reflect any necessary changes.
@@ -630,61 +725,7 @@ function redraw_itemlist()
 		if (item.is_read)
 			continue;
 
-		var item_feed = feeds[item.feed_id];
-			// XXX - Check to make sure that
-			// feeds[item.feed_id] exists, that we haven't
-			// been given an item from a nonexistent feed?
-			if (item_feed == null)
-			{
-				console.error("Undefined feed "+item.feed_id);
-
-				// Just ignore this item
-				continue;
-			}
-		var title = item.displaytitle();
-
-		// Fill in values to plug into item template
-		var item_values = {
-			id:		item.id,
-			url:		encodeURI(item.url),
-			url_attr:	(mobile != "" ?
-					 'target="_blank"'
-					 : ""),
-				// On mobile devices, open title link
-				// in a new window.
-			title:		title,
-			feed_url:	encodeURI(item_feed.url),
-			feed_title:	item_feed.displaytitle(),
-			author:		item.author,
-				// XXX - If author is empty, shouldn't
-				// display the "by" before author
-				// name.
-				// XXX - If ever use author URL, might
-				// want to wrap author name in <a
-				// href="mailto:...>.
-			pub_date:	item.pub_date,
-			pretty_pub_date:item.pub_date,
-				// XXX - Pretty-print the date.
-			summary:	item.summary,
-			content:	item.content,
-			comment_url:	encodeURI(item.comment_url),
-			comment_rss:	encodeURI(item.comment_rss),
-			// Indicate whether collapsible (both content
-			// and summary exist), and whether to display
-			// summary or content.
-			collapsible:	(item.summary != null &&
-					 item.content != null ?
-					 "yes" : "no"),
-			which:		(item.content == null ?
-					 "summary" : "content"),
-		};
-
-		// XXX - The following hack, to create a DOM node from
-		// HTML, should probably be in Template.js.
-		var item_node = item_tmpl.expand(item_values);
-		var new_node = document.createElement("div");
-		new_node.innerHTML = item_node;
-		item_node = new_node.firstChild;
+		var item_node = item2node(item);
 		item_node.item_id = item.id;
 		item.node = item_node;
 
