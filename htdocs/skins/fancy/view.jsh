@@ -92,8 +92,8 @@ function init()
 				    exit_item, false);
 		bind_key("d", key_mark_item);
 		bind_key("c", toggle_collapse_item);
-		// XXX - bind_key("k", move_up);
-		// XXX - bind_key("j", move_down);
+		bind_key("k", move_up);
+		bind_key("j", move_down);
 
 		// Key bindings
 		bind_key("C-r", refresh);
@@ -388,9 +388,6 @@ function mark_item1(ev)
 
 	/* XXX - If marking an item as read, bring up another item
 	 * from cache.
-	 * - Get last item in onscreen.items.
-	 * - Get the item that comes after that.
-	 * - Display it.
 	 * - If there are now > 25 items on screen, delete the topmost one.
 	 * - If the deleted item was marked read, purge it from cache.
 	 */
@@ -559,6 +556,100 @@ function expand_all()
 			continue;
 		set_pane(items[i], "content");
 	}
+}
+
+/* move_up
+ * Make the previous item the current one.
+ */
+function move_up()
+{
+	if (onscreen.items.length == 0)
+		return;
+
+	if (current_item == null)
+	{
+		/* No currently-selected item */
+		// XXX - Instead of selecting the bottommost item,
+		// perhaps ought to find the bottommost one in the
+		// visible window.
+		current_item = onscreen.items[onscreen.items.length-1].node;
+		add_class(current_item, "current-item");
+	} else {
+		remove_class(current_item, "current-item");
+
+		/* Find the current item in onscreen.items, so we can
+		 * get the next one.
+		 */
+		var i;
+		for (i = 0; i < onscreen.items.length; i++)
+		{
+			if (onscreen.items[i].node == current_item)
+				// Found it.
+				break;
+		}
+		if (i == 0 || i >= onscreen.items.length)
+		{
+			/* Couldn't find current item, or we're at the
+			 * last item.
+			 */
+			// XXX - Perhaps oughtto load the next item
+			// from cache.
+		} else {
+			current_item = onscreen.items[--i].node;
+		}
+	}
+
+	add_class(current_item, "current-item");
+
+	// Scroll so that the new current item is at the top
+	window.scrollTo(0, current_item.offsetTop);
+}
+
+/* move_down
+ * Make the next item the current one.
+ */
+function move_down()
+{
+	if (onscreen.items.length == 0)
+		return;
+
+	if (current_item == null)
+	{
+		/* No currently-selected item */
+		// XXX - Instead of selecting the topmost item,
+		// perhaps ought to find the topmost one in the
+		// visible window.
+		current_item = onscreen.items[0].node;
+		add_class(current_item, "current-item");
+	} else {
+		remove_class(current_item, "current-item");
+
+		/* Find the current item in onscreen.items, so we can
+		 * get the next one.
+		 */
+		var i;
+		for (i = 0; i < onscreen.items.length; i++)
+		{
+			if (onscreen.items[i].node == current_item)
+				// Found it.
+				break;
+		}
+		if (i >= onscreen.items.length - 1)
+		{
+			/* Couldn't find current item, or we're at the
+			 * last item.
+			 */
+			// XXX - Perhaps oughtto load the next item
+			// from cache.
+		} else {
+			current_item = onscreen.items[++i].node;
+		}
+	}
+
+	add_class(current_item, "current-item");
+
+	// Scroll so that the new current item is at the top
+	window.scrollTo(0, current_item.offsetTop);
 }
 
 /* enter_item
