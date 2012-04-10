@@ -102,7 +102,7 @@ ChangeLog.svn:
 	svn log -v -rhead:\{`date +%Y-01-01`\} > $@
 
 # Recursive targets
-all clean depend::
+all clean distclean depend::
 	@for dir in ${RECURSIVE_DIRS}; do \
 		(cd "$$dir" && ${MAKE} -${MAKEFLAGS} $@); \
 	done
