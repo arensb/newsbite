@@ -67,11 +67,14 @@
   (if possible, only do entity translation, and throw out any markup).
 - Bug: On android, often title bar overflows to the right of the
   screen.
-- Pre-mark ads as read:
-	Can now have "$item['is_read'] = true" when adding an item.
-  This allows for plugins that mark items as read when they're parsed.
-  Things like WaPo's "Featured Advertiser".
-	Probably best to add a "body" hook.
+- WaPo articles have <wp:web-link>, <wp:mobile-link>, <wp:share-link>,
+  <wp:search-link>.
+	Perhaps that can be used somehow to generate a better link on
+  mobile devices.
+	The only currently-implementable solution is a hack: in "item"
+  hook, look for <wp:mobile-link> and append <!--MOBILE: http://...-->
+  to the body. Then, in 'items.php'(?), look for that comment and put
+  it in the URL.
 - Perhaps add another phase to collecting articles: examining
   individual posts. Plugins could go here.
 	The idea is: update_feed() fetches a given feed and parses it
