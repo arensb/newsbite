@@ -24,7 +24,6 @@ if (HTMLElement.prototype.toJSON == null)
 	HTMLElement.prototype.toJSON = function() { return undefined; };
 }
 
-var main_form;		// Form containing all the items.
 var mark_read = {};		// Hash of item_id -> is_read? values
 var mark_request = null;	// Data for marking items as read/unread
 var current_item = null;	// Current item, for keybindings and such
@@ -66,10 +65,6 @@ var item_tmpl = new Template(item_tmpl_text);
 function init()
 {
 	itemlist = document.getElementById("itemlist");
-
-	// The main form, the one that holds all the items, their
-	// checkboxes, the buttons at the top and bottom, etc.
-	main_form = document.forms[0];
 
 	// Bind some events
 	PatEvent.bind_event(itemlist, "click", ".collapse-bar",
