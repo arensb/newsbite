@@ -134,7 +134,7 @@ function Item(arg)
 
 Item.prototype.displaytitle = function()
 {
-	if (this.title == null)
+	if (this.title == null || this.title == "")
 		return "[no title]";
 	return this.title;
 }
