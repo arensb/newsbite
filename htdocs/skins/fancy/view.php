@@ -49,12 +49,10 @@ var start_offset = <?=jsonify($skin_vars['start'])?>;
 var item_tmpl_text = '<div class="item" id="item-@id@">\
   <table class="item-header">\
     <tr>\
-<?if ($skin_vars['mobile'] == "iPad"):?>
       <!-- Second set of checkboxes, for iPad -->\
       <td class="icon-box button-box-left">\
         <input class="mark-check" type="checkbox" name="cbX-@id@" value="1"/>\
       </td>\
-<?endif;?>
       <td class="info">\
         <h3 class="item-title">\
           <a href="@url@" @url_attr@>@title@</a>\
@@ -65,7 +63,7 @@ var item_tmpl_text = '<div class="item" id="item-@id@">\
         <span class="item-author">by @author@</span>,&nbsp;\
         <time datetime="@pub_date@" pubdate>@pretty_pub_date@</time>\
       </td>\
-      <td class="icon-box">\
+      <td class="icon-box button-box-right">\
         <label class="mark-read">Mark as read:&nbsp;</label>\
         <input class="mark-check" type="checkbox" name="cbt-@id@" value="1"/>\
       </td>\
@@ -95,11 +93,9 @@ var item_tmpl_text = '<div class="item" id="item-@id@">\
 \
   <table class="item-footer">\
     <tr>\
-<?if ($skin_vars['mobile'] == "iPad"):?>
       <td class="icon-box button-box-left">\
         <input class="mark-check" type="checkbox" name="cbY-@id@" value="1"/>\
       </td>\
-<?endif;?>
       <td class="bottom-link-box">\
         <ul class="bottom-links">\
           <li><a href="@url@">Read more</a></li>\
@@ -107,7 +103,7 @@ var item_tmpl_text = '<div class="item" id="item-@id@">\
           <li><a href="@comment_rss@">(feed)</a></li>\
         </ul>\
       </td>\
-      <td class="mark-td">\
+      <td class="mark-td button-box-right">\
         <label>Mark as read:&nbsp;</label>\
         <input class="mark-check" type="checkbox" name="cbb-@id@" value="1"/>\
       </td>\
@@ -116,7 +112,6 @@ var item_tmpl_text = '<div class="item" id="item-@id@">\
 </div>';
 </script>
 <title>NewsBite: <?=htmlspecialchars($feed['title'])?></title>
-<!-- <link rel="stylesheet" type="text/css" href="skins/<?=$skin_dir?>/style.css" media="all" /> -->
 <link rel="stylesheet" type="text/css" href="skins/<?=$skin_dir?>/view.css" media="all" />
 <?
 if (isset($mobile_css))
