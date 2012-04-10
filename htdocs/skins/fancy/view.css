@@ -158,6 +158,20 @@ input[type="submit"] {
 	border-bottom-color:	navy;
 }
 
+.item.old1d .item-header {
+	/* This should only apply to Safari and other webkit browsers */
+	background-image:
+		-webkit-gradient(linear, left top, left bottom,
+			from(#0000cc),
+			to(#000000));
+	background-image:
+		-moz-linear-gradient(top,
+			#0000cc,
+			#000066);
+	border-top-color:	#0000cc;
+	border-bottom-color:	#000066;
+}
+
 .item.item-read .item-header {
 	/* Mozilla: */
 	-moz-border-radius-bottomleft:	20px;
@@ -362,6 +376,10 @@ input[type="checkbox"].mark-check {
 	border-color:		navy;
 }
 
+.content-panes.old1d {
+	border-color:		#000066;
+}
+
 /* Summary of item */
 .item-summary,
 .item-content {
@@ -445,6 +463,17 @@ input[type="checkbox"].mark-check {
 				 #6060ff);
 }
 
+.upper-bar.old1d {
+	background-image:
+		-webkit-gradient(linear, left top, left bottom,
+				 from(#000066),
+				 to(#4040cc));
+	background-image:
+		-moz-linear-gradient(top,
+				 #000066,
+				 #4040cc);
+}
+
 .lower-bar {
 	background-image:
 		-webkit-gradient(linear, left top, left bottom,
@@ -456,6 +485,17 @@ input[type="checkbox"].mark-check {
 				 navy);
 }
 
+.lower-bar.old1d {
+	background-image:
+		-webkit-gradient(linear, left top, left bottom,
+				 from(#4040cc),
+				 to(#000066));
+	background-image:
+		-moz-linear-gradient(top,
+				 #4040cc,
+				 #000066);
+}
+
 .expand-bar {
 	background-image:
 		-webkit-gradient(linear, left top, left bottom,
@@ -465,6 +505,17 @@ input[type="checkbox"].mark-check {
 		-moz-linear-gradient(top,
 				 #6060ff,
 				 navy);
+}
+
+.expand-bar.old1d {
+	background-image:
+		-webkit-gradient(linear, left top, left bottom,
+				 from(#4040cc),
+				 to(#000066));
+	background-image:
+		-moz-linear-gradient(top,
+				 #4040cc,
+				 #000066);
 }
 
 /* Control box at bottom of item */
@@ -493,6 +544,10 @@ input[type="checkbox"].mark-check {
 	/* Safari: */
 	-webkit-border-bottom-left-radius:	20px;
 	-webkit-border-bottom-right-radius:	20px;
+}
+
+.item.old1d .item-footer {
+	background-color:	#000066;
 }
 
 #text {
