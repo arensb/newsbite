@@ -76,6 +76,8 @@ function init()
 
 	window.addEventListener("keydown", handle_key, false);
 
+	window.addEventListener("orientationchange", reorient, false);
+
 	/* On desktop, keep track of current item, and add key bindings
 	 * to navigate.
 	 */
@@ -850,6 +852,32 @@ function redraw_itemlist()
 
 	// Add the new list
 	itemlist.appendChild(new_itemlist);
+}
+
+function reorient(ev)
+{
+	var orientation = "up";	// Direction of top of device
+	switch (window.orientation)
+	{
+	    case 0:		// Portrait, right-side up
+		orientation = "up";
+		break;
+	    case 90:		// Landscape, top facing left
+		orientation = "left";
+		break;
+	    case -90:		// Landscape, top facing right
+		orientation = "right";
+		break;
+	    case 180:		// Portrait, upside-down
+		orientation = "down";
+		break;
+	    default:
+		// This should never happen
+		orientation = "up";
+		break;
+	}
+
+	document.body.setAttribute("orientation", orientation);
 }
 
 function refresh()

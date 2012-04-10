@@ -312,6 +312,11 @@ input[type="submit"] {
 	width:			6em;
 }
 
+.button-box-left,
+.button-box-left {
+	display:		none;
+}
+
 /* Checkboxes on the top left on the iPad */
 .item-header .icon-box.button-box-left {
 	text-align:		left;
