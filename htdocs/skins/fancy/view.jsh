@@ -790,6 +790,17 @@ function item2node(item)
 	new_node.innerHTML = item_node;
 	item_node = new_node.firstChild;
 
+	// Mark articles > 1 day old
+	var item_pub_date = Date.parse(item.pub_date.replace(/ /, "T"));
+		// Ugh: item.pub_date is of the form "2012-04-04 23:45:00",
+		// which Date.parse() can't handle. But it _can_ handle
+		// ISO-foo dates, of the form "2012-04-04T23:45:00". So we
+		// just replace the first space with a T.
+	var yesterday = new Date();
+	yesterday.setDate(yesterday.getDate()-1);
+	if (item_pub_date < yesterday)
+		add_class(item_node, "old1d");
+
 	return item_node;
 }
 
@@ -851,6 +862,9 @@ function refresh()
 // bottom button was pressed, and prepend or append articles to
 // onscreen.items accordingly.
 {
+	init_feeds_items();
+	return;
+
 	// XXX - Find the articles marked as read, and purge them from
 	// cache.
 
