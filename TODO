@@ -91,6 +91,8 @@
   sports articles.
 	The latter can also be done by looking at <pheedo:origLink>,
   to find articles at http://www.washingtonpost.com/sports/...
+- Possible improvement: move static content to a different domain, one
+  that doesn't requie cookies.
 - MySQL function FOUND_ROWS():
   http://dev.mysql.com/doc/refman/5.0/en/information-functions.html#function_found-rows
   'select <foo> from <bar> limit <baz>
