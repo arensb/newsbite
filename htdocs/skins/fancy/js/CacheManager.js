@@ -19,7 +19,7 @@
  */
 
 /* XXX - Interface:
- * - feeds() - Return the feeds structure currently in storage.
+ * x feeds() - Return the feeds structure currently in storage.
  *
  * - update_feeds(cb) - Send an AJAX request to get feed information,
  * and call cb(new_feeds) when it completes.
@@ -452,7 +452,9 @@ CacheManager.prototype._update_items_cb = function(value, user_cb)
 	user_cb(newitems);
 }
 
-// XXX - Save an article
+/* store_item
+ * Save an article to cache.
+ */
 CacheManager.prototype.store_item = function(item)
 {
 	this.setItem('item:'+item.id, item);
