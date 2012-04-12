@@ -380,7 +380,8 @@ function mark_item1(ev)
 		if (item.id != item_id)
 			continue;
 		item.is_read = item_div.is_read;
-		cache.store_item(item);		// Mark in the cache as well.
+		cache.store_item.defer(0, item);
+				// Mark in the cache as well.
 	}
 
 	/* XXX - If marking an item as read, bring up another item
