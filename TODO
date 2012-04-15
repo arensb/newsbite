@@ -69,12 +69,13 @@
   screen.
 - WaPo articles have <wp:web-link>, <wp:mobile-link>, <wp:share-link>,
   <wp:search-link>.
-	Perhaps that can be used somehow to generate a better link on
-  mobile devices.
-	The only currently-implementable solution is a hack: in "item"
-  hook, look for <wp:mobile-link> and append <!--MOBILE: http://...-->
-  to the body. Then, in 'items.php'(?), look for that comment and put
-  it in the URL.
+	<wp:mobile-link> is not, unfortunately, a link to a
+  mobile-friendly web page. It does, however, contain
+  <ece:field name="body">, which contains the full text of the
+  article, or at least a longer excerpt than the normal RSS feed. This
+  could conceivably be used to get a better 'content' field.
+	For efficiency, ought to fetch this only when an item is being
+  added, or when it has been modified since first publication.
 - Perhaps add another phase to collecting articles: examining
   individual posts. Plugins could go here.
 	The idea is: update_feed() fetches a given feed and parses it
