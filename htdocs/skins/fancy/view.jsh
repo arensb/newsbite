@@ -1,6 +1,6 @@
 /*						-*- JavaScript -*- */
 #include "js/debug.js"
-#include "js/defer.js"
+/*#include "js/defer.js"*/
 #include "js/xhr.js"
 #include "js/classes.js"
 #include "js/keybindings.js"
@@ -77,6 +77,10 @@ function init()
 	window.addEventListener("keydown", handle_key, false);
 
 	window.addEventListener("orientationchange", reorient, false);
+
+//	window.addEventListener("scroll", scroll_handler, false);
+			// Scroll handler to detect when window has
+			// moved.
 
 	/* On desktop, keep track of current item, and add key bindings
 	 * to navigate.
@@ -380,7 +384,7 @@ function mark_item1(ev)
 		if (item.id != item_id)
 			continue;
 		item.is_read = item_div.is_read;
-		cache.store_item.defer(0, item);
+		cache.store_item(item);
 				// Mark in the cache as well.
 	}
 
@@ -463,7 +467,8 @@ function mark_item1(ev)
 	 * immediately, in case there's a delay creating the HTTP
 	 * request.
 	 */
-	flush_queues.defer(0);
+//console.debug("flush_queues.defer");
+	flush_queues();
 }
 
 /* button_mark_item
@@ -903,4 +908,32 @@ function refresh()
 //				  );
 		redraw_itemlist();
 	}
+}
+
+/* scroll_handler
+ * Gets called when the user scrolls the window (event "scroll").
+ *
+ * XXX - A few problems/idiosyncracies to keep in mind: on the iPad,
+ * if you flick the page down, this event gets invoked only when the
+ * page has stopped moving, which can take a second or two.
+ *
+ * On Android, this works, but it looks as though maybe not every
+ * single scroll fires off an event.
+ *
+ * In Firefox and Safari, a single flick of the mouse wheel can
+ * trigger multiple "scroll" events. So presumably the Right Way to
+ * handle this is to have scroll_handler schedule a DTRT function some
+ * time (1sec?) in the future. scroll_handler should check whether
+ * this function has already been scheduled, and not do anything.
+ * Perhaps measure how quickly events get generated, and set the delay
+ * short enough that the page feels responsive, but long enough that
+ * we're likely to run the update once the user has stopped scrolling.
+ */
+function scroll_handler(ev)
+{
+//	msg_add("scroll("+ev+")");
+// From https://developer.mozilla.org/en/DOM/window.onscroll
+//	alert("scroll event detected! "+window.pageXOffset+" "+window.pageYOffset);
+//	note: you can use window.innerWidth and window.innerHeight to
+//	access the width and height of the viewing area
 }
