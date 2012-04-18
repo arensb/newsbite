@@ -28,7 +28,6 @@ Feed.prototype = {
 	// feed_url
 	// description
 	// last_update (time)
-	// ttl
 	// image (url to image)
 	// active (bool)
 
