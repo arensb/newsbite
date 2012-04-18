@@ -310,6 +310,17 @@ EOT;
 	if (!isset($args['read']) || !$args['read'])
 		array_push($conditions, "!items.is_read");
 
+	// XXX - Allow selection by mtime. At the very least, want
+	// mtime >= <timestamp>.
+	// What should the arg/value look like? ["mtime-ge" => 1334764047]?
+	// Or perhaps $args['mtime'] can itself be an array:
+	//	[">", 1334764047],
+	//	[">=", 1334764047],
+	//	["--, 1334764047, 1334765047],
+	//	...
+	// Or perhaps
+	//	mtime => t1 | t1- | t1-t2 | -t2
+
 	/* Add selection conditions to query */
 	if (count($conditions) > 0)
 	{
@@ -649,6 +660,12 @@ function db_update_feed($feed_id, $feed)
 		 * don't know whether this is portable or robust; it
 		 * just seems to work.
 		 */
+		/* XXX - Should
+		 * INSERT ... (col1, col2, ...) = (value1, value2...)
+		 * be changed to
+		 * INSERT ... set col1=value1, col2=value2, ...
+		 * for readability?
+		 */
 		/* XXX - Unfortunately, this sends the summary and
 		 * content to the database twice, which might be
 		 * undesirable for feeds that typically have long
@@ -668,6 +685,19 @@ function db_update_feed($feed_id, $feed)
 		 * the most recent of pub_date and last_update as the
 		 * sole publication time. 
 		 */
+		/* Note that "ON DUPLICATE KEY" is a MySQL-ism */
+		/* XXX - What with mtime, it's not obvious that "ON
+		 * DUPLICATE KEY" really does everything we want. It
+		 * might be better to do a SELECT by (feed_id, guid),
+		 * and then either
+		 * a) INSERT (if SELECT doesn't find anything), or
+		 * b) figure out what needs to change and UPDATE (if
+		 * SELECT finds an existing item).
+		 *
+		 * This would remove the non-standard "ON DUPLICATE
+		 * KEY", probably make the code more readable, and
+		 * also allow 'mtime' to work properly.
+		 */
 
 		$query = <<<EOT
 INSERT INTO	items
@@ -675,12 +705,14 @@ INSERT INTO	items
 		 comment_url, comment_rss, guid,
 		 pub_date,
 		 last_update,
-		 is_read)
+		 is_read,
+		 mtime)
 VALUES		(?,       ?,   ?,     ?,       ?,       ?,      ?,
 		 ?,           ?,           ?,
 		 IFNULL(FROM_UNIXTIME(?), NOW()),
 		 pub_date,
-		 IFNULL(?, FALSE))
+		 IFNULL(?, FALSE),
+		 NOW())
 ON DUPLICATE KEY UPDATE
 		url=?,
 		title=?,
@@ -690,8 +722,15 @@ ON DUPLICATE KEY UPDATE
 		category=?,
 		comment_url=?,
 		comment_rss=?,
-		pub_date=IFNULL(FROM_UNIXTIME(?), pub_date)
+		pub_date=IFNULL(FROM_UNIXTIME(?), pub_date),
+		mtime=NOW()
 EOT;
+		// XXX - Ought to update mtime iff any of the fields
+		// have changed. Currently, we're setting mtime to
+		// NOW() in any case. This means that the item gets
+		// updated every time we fetch the RSS feed, until the
+		// item drops out of the feed.
+
 		$stmt = $dbh->prepare($query);
 		$dummy_categories = NULL;	// XXX - Hack until I
 						// figure out how to
@@ -862,7 +901,8 @@ function db_mark_items($is_read, $items)
 	// Time it and see.
 	$query = sprintf(<<<EOT
 UPDATE	items
-SET	is_read=%s
+SET	is_read=%s,
+	mtime=NOW()
 WHERE	id IN(%s)
 EOT
 			 ,
@@ -891,7 +931,8 @@ return;
 
 	$query = sprintf(<<<EOT
 UPDATE	items
-SET	is_read=?
+SET	is_read=?,
+	mtime=NOW()
 WHERE	url=?
 EOT
 		);
