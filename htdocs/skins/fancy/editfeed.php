@@ -95,15 +95,6 @@ $feed = &$skin_vars['feed'];
     <td><?=$feed['last_update']?></td>
   </tr>
 
-<?/* XXX - Need better way of saying "don't update this more than once
-   * a day" or "don't update except on Tuesdays".
-   */
-?>
-  <tr>
-    <th>TTL</th>
-    <td><?=$feed['ttl']?></td>
-  </tr>
-
   <tr>
     <th>Image</th>
     <td>

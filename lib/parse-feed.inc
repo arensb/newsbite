@@ -84,7 +84,7 @@ require_once("hooks.inc");
 //			<generator version>	generator_version
 // <docs>					-
 // <cloud>					-
-// <ttl>					ttl (secs)
+// <ttl>					-
 // <image><url>		<icon>			image[url]
 // <image><title>				image[title]
 // <image><link>				image[link]

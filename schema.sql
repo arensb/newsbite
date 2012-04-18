@@ -44,7 +44,6 @@ CREATE TABLE feeds (
 	feed_url	VARCHAR(255),	# RSS feed URL
 	description	TINYTEXT,	# Brief description of the feed
 	last_update	DATETIME,	# When this feed was last updated
-	ttl		TIME,		# Time to live
 	image		VARCHAR(255),	# URL to image to use
 	active		BOOLEAN		# Is this feed active? Inactive feeds
 					# are usually seasonal ones, e.g.
@@ -87,6 +86,7 @@ CREATE TABLE items (
 	pub_date	DATETIME,	# Publication date
 	last_update	DATETIME,	# Time when item was last updated
 	is_read		BOOLEAN,	# Has the item been read?
+	mtime		TIMESTAMP,	# When the item was last altered
 	PRIMARY KEY(id),
 	UNIQUE KEY(feed_id, guid),	# Having (feed_id, guid)
 					# instead of (guid) may be
