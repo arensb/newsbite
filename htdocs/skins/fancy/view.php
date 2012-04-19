@@ -21,7 +21,7 @@ switch ($skin_vars['mobile'])
 	break;
 }
 
-## Tell the client to cache this for a week
+# Tell the client to cache this for a week
 $tomorrow = new DateTime("now + 1 week");
 header("Expires: " . $tomorrow->format("D, d M Y H:i:s T"));
 
