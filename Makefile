@@ -76,6 +76,8 @@ install::
 clean::
 	rm -rf dist
 
+distclean::	clean
+
 test check:	missing syntax-check
 # XXX - Should have a check to make sure that everything in MANIFEST
 # is in svn.
