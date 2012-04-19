@@ -67,6 +67,8 @@
   (if possible, only do entity translation, and throw out any markup).
 - Bug: On android, often title bar overflows to the right of the
   screen.
+- Add a /* SCHEMA */ comment everywhere where the code needs to be
+  modified when the schema changes.
 - WaPo articles have <wp:web-link>, <wp:mobile-link>, <wp:share-link>,
   <wp:search-link>.
 	<wp:mobile-link> is not, unfortunately, a link to a
