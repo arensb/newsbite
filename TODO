@@ -142,8 +142,6 @@
 - Template.expand should return a DOM object, not a string.
 - Kindle: make checkboxes bigger.
 - Integrate keybinding stuff into PatEvent.
-- Should get rid of "Apply Changes" button. Also probably
-  "Earlier"/"Later" links.
 - Move event handlers over to bind_event().
 	Fix update_feed(id) to work with bind_event (i.e., take only
   one argument).
@@ -1053,12 +1051,6 @@
 	- Some feeds don't include publishing or update times.
 	- Some feeds lie and give the current time for every item.
 	  (examples?)
-- Navigation arrows ("Earlier"/"Later") should be based on the number
-  of posts that match the display criteria. It is absurd to have an
-  "Earlier" link on a page that also says "There are no items to
-  display". Check numbers from db_get_feed_counts().
-	Would it make more sense to have something like a horizontal
-  bar representing a timeline
 - LJ feeds give the same URL for "read more" and comments. Does it
   make sense to combine the two in item.tpl?
 - Ought to support categories. WaPo feeds, in particular, have lots of

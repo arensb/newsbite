@@ -81,36 +81,6 @@ p {
 	padding-right:		0.3em;
 }
 
-/* navbar
- * Navigation bar, for going to earlier, later items.
- */
-.navbar {
-	margin-left:		1em;
-	margin-right:		1em;
-	/* For some reason, the parent block has to have a "position"
-	 * property in order for its children to be positioned.
-	 * {relative, 0, 0}, of course, means "position this block
-	 * exactly where you normally would". Go fig.
-	 */
-	position:		relative;
-	top:			0px;
-	left:			0px;
-}
-
-.navbar .earlier {
-	text-align:		left;
-	position:		absolute;
-	top:			0px;
-	left:			0px;
-}
-
-.navbar .later {
-	text-align:		right;
-	position:		absolute;
-	top:			0px;
-	right:			0px;
-}
-
 .button-box {
 	margin-left:		1em;
 	margin-right:		1em;
