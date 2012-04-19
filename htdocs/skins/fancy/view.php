@@ -168,31 +168,6 @@ foreach ($skin_vars as $k => $v)
 </ul>
 <button onclick="localStorage.clear()">Clear localStorage</button>
 
-<?
-/* Navigation bar. **/
-/* XXX - Should probably be a template, since it should be identical to
- * the one below.
- */
-?>
-<div class="navbar">
-  <span class="earlier">
-    <a href="<?=$skin_vars['prev_link']?>"><?=$skin_vars['prev_link_text']?></a>
-  </span>
-  <span class="later">
-    <a href="<?=$skin_vars['next_link']?>"><?=$skin_vars['next_link_text']?></a>
-  </span>
-<?
-  /* If the only things inside the navbar span are the links, Firefox
-   * and Safari render the navbar as a box of height 0, with the links
-   * dangling underneath. But if we put something, inside it, it will
-   * have the height of the contents.
-   * One problem: if the links are taller than expected, they'll still
-   * overflow the navbar div. CSS positioning sucks.
-   */
-?>
-  &nbsp;
-</div>
-
 <!-- List of items -->
 <?
 /* XXX - Should have navigation strip:
@@ -209,21 +184,6 @@ foreach ($skin_vars as $k => $v)
 
 <div class="button-box">
   <button onclick="refresh()">Refresh</button>
-</div>
-
-<?
-/* Navigation bar. */
-/* XXX - Should probably be a template, since it should be identical to
- * the one above.
- */
-?>
-<div class="navbar">
-  <span class="earlier">
-    <a href="<?=$skin_vars['prev_link']?>"><?=$skin_vars['prev_link_text']?></a>
-  </span>
-  <span class="later">
-    <a href="<?=$skin_vars['next_link']?>"><?=$skin_vars['next_link_text']?></a>
-  </span>
 </div>
 
 <p>User <?=$skin_vars['auth_user']?>, session expires <?=$skin_vars['auth_expiration']?>.</p>

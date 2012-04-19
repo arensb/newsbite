@@ -62,26 +62,6 @@ if (is_integer($feed_id))
 // at the top of the rendered page, so that scripts on that page can
 // tell what we're displaying.
 
-// XXX - Find out how many items there are in this list, so we can put
-// up a navigation bar.
-// XXX - At least, ought to find out how many items there are, so as
-// not to add "earlier" link when there's nothing earlier.
-/* Construct URL for earlier and later pages, and names for those links */
-$prev_link = htmlentities($_SERVER['PHP_SELF'] . "?id=$feed_id&s=" .
-			  ($start + $num_items));
-$prev_link_text = "Earlier";
-//$prev_link_text = "Earlier &#x2397;";	// With "previous page" symbol
-
-if ($start >= $num_items)
-{
-	$next_link = htmlentities($_SERVER['PHP_SELF'] . "?id=$feed_id&s=" .
-				  ($start - $num_items));
-	$next_link_text = "Later";
-//	$next_link_text = "Later &#x2398;";	// With "next page" symbol
-} else {
-	$next_link = $next_link_text = NULL;
-}
-
 if ($out_fmt == "json")
 {
 	echo jsonify($feed);
@@ -107,10 +87,6 @@ $skin->assign('start', $start);
 $skin->assign('feed', $feed);
 #if (isset($feeds))
 #	$skin->assign('feeds', $feeds);
-$skin->assign('prev_link', $prev_link);
-$skin->assign('prev_link_text', $prev_link_text);
-$skin->assign('next_link', $next_link);
-$skin->assign('next_link_text', $next_link_text);
 $skin->assign('mobile', $mobile);
 ## XXX - Debugging
 $skin->assign('auth_user', $auth_user);
