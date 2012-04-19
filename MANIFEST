@@ -12,6 +12,7 @@ fix-schema-r110.sql
 fix-schema-r206.sql
 fix-schema-r213.sql
 fix-schema-r367.sql
+fix-schema-r929.sql
 htdocs/.htaccess
 htdocs/addfeed.php
 htdocs/editfeed.php
