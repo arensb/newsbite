@@ -70,6 +70,7 @@ htdocs/skins/fancy/view.jsh
 htdocs/skins/fancy/view.php
 htdocs/unsubscribe.php
 htdocs/update.php
+htdocs/updates.php
 htdocs/view.php
 lib/common.inc
 lib/config.inc.sample

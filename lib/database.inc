@@ -372,6 +372,64 @@ EOT;
 	return $retval;
 }
 
+/* db_get_item_updates
+ * Given a time_t $t (UTC timestamp), return those items that have ben
+ * modified since $t, i.e., those with mtime later than $t.
+ *
+ * $feed_id: the feed whose updates we want.
+ *
+ * Optionally, takes a maximum number of items to return. Defaults to
+ * 100.
+ */
+function db_get_item_updates($t, $feed_id, $max_items=100)
+{
+
+	if (!is_int($max_items) ||
+	    $max_items > 100)
+		$max_items = 100;
+
+	/* Construct the query */
+	/* SCHEMA */
+	$query = sprintf(<<<EOT
+SELECT	id, feed_id, url, title,
+	summary, content,
+	author, category,
+	comment_url, comment_rss,
+	guid,
+	UNIX_TIMESTAMP(pub_date) as `pub_date`,
+	UNIX_TIMESTAMP(last_update) as `last_update`,
+	IF(is_read, 1,  0) as `is_read`,
+	UNIX_TIMESTAMP(mtime) as `mtime`
+FROM	items
+WHERE	%s
+	mtime > FROM_UNIXTIME(%ld)
+ORDER BY	mtime ASC
+LIMIT	%d
+EOT
+		,
+		(is_int($feed_id) ?
+		 "feed_id = $feed_id AND " :
+		 ""),
+		$t,
+		$max_items
+		);
+
+	/* Run the SQL query */
+	$dbh = db_connect();
+	$result = $dbh->query($query);
+			// XXX - Error-checking
+	$retval = array();
+
+	while ($row = $result->fetch_assoc())
+	{
+		# Make sure is_read is properly converted to boolean.
+		$row['is_read'] = $row['is_read'] ? TRUE : FALSE;
+		$retval[] = $row;
+	}
+
+	return $retval;
+}
+
 /* db_add_feed
  * Add a new feed entry to the database. $feed is an assoc of
  * key => value mappings, keyed by column name.
