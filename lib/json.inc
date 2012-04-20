@@ -3,17 +3,17 @@
  * Compatibility functions for hosts that don't have the JSON module.
  */
 
+if (!function_exists('json_encode')):
+		// Wrap the function definition inside a (probably
+		// redundant) existence test. That way, 'make test'
+		// still checks syntax, but without complaining about
+		// a builtin function being redefined.
 /* json_encode
  * Helper function for jsonify: takes one argument, and returns its
  * representation as a JSON string.
  */
-/* XXX - Normally, the json_encode() function already exists. So a
- * syntax check fails. Not sure what to do about it. Can't undelete a
- * function.
- */
 function json_encode($it)
 {
-
 	/* At this point, $it is the thing we're converting. Decide
 	 * how to handle it, depending on whether $it is a string, an
 	 * assoc, or an array.
@@ -56,4 +56,5 @@ function json_encode($it)
 
 	return $retval;
 }
+endif;
 ?>
