@@ -67,6 +67,50 @@
   (if possible, only do entity translation, and throw out any markup).
 - Bug: On android, often title bar overflows to the right of the
   screen.
+- Speed badness: the query to get unread items from all feeds is very
+  slow:
+	SELECT  items.*
+	FROM    items
+	  LEFT JOIN feeds
+	ON      items.feed_id = feeds.id
+	WHERE feeds.active
+	AND !items.is_read
+	ORDER BY items.last_update DESC, id DESC
+	LIMIT 25
+
+  The problem is that "order by x, y" is, in this case, takes 10 times
+  longer than "order by x".
+	It's worth doing an inner select:
+	SELECT a, b, c
+	FROM	(SELECT ...) AS inner
+	...
+
+	Need to be careful with this, to give consistent results: the
+  obvious solution would be to have the inner SELECT order by
+  last_update and return 25 results, then have the outer SELECT order
+  by both keys.
+	This fails because in the pessimal case, we might have the 100
+  newest items all with the same last_update. In that case, the inner
+  SELECT returns 25 of them at random, and we're not guaranteed to get
+  the same 25 the next time around.
+	A better approach would be:
+  1) find the last 25 distinct 'last_update's. That's certain to cover
+  all of the items we want.
+  2) select the items within those 25 last_updates, that match the
+  other criteria
+  3) sort the items by last_update, id, and keep 25.
+	Figure out how to do a left join(?) for this.
+- Perhaps add Xdebug extension for PHP: profiler.
+- Speed: jsonify() is apparently quite a time hog: adds ~15% time
+  to just using json_encode().
+	lib/json.inc
+	lib/common.inc
+	htdocs/markitems.php
+	htdocs/update.php
+	htdocs/skins/fancy/view.php
+	htdocs/items.php
+	htdocs/feeds.php
+	htdocs/view.php
 - Add a /* SCHEMA */ comment everywhere where the code needs to be
   modified when the schema changes.
 - WaPo articles have <wp:web-link>, <wp:mobile-link>, <wp:share-link>,
