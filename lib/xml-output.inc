@@ -78,7 +78,7 @@ function print_xml1($it)
 		return TRUE;
 	if (is_numeric($it))
 	{
-		echo $i;
+		echo $it;
 		return TRUE;
 	}
 	if (is_bool($it))
