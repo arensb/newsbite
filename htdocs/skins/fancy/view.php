@@ -178,12 +178,14 @@ foreach ($skin_vars as $k => $v)
 ?>
 <div class="button-box">
   <button onclick="refresh()">Refresh</button>
+  <button onclick="sync()">Sync</button>
 </div>
 
 <div id="itemlist"><img src="skins/<?=$skin_dir?>/Ajax-loader.gif"/></div>
 
 <div class="button-box">
   <button onclick="refresh()">Refresh</button>
+  <button onclick="sync()">Sync</button>
 </div>
 
 <p>User <?=$skin_vars['auth_user']?>, session expires <?=$skin_vars['auth_expiration']?>.</p>
