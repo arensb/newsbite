@@ -186,9 +186,6 @@ if ($out_fmt == "json")
 {
 	# XXX - In batch mode, would want to send $feed first, then
 	# each element of $items by itself.
-	# XXX - Dates (pub_date, last_update) should be in either
-	# time_t or ISO-8601 combined ("2011-11-26%23:16:09Z") format.
-	# Probably need to fix in lib/database.inc.
 	echo jsonify(
 		array("feed"	=> $feed,
 		      "items"	=> $items,
