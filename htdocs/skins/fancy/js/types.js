@@ -126,8 +126,10 @@ function Item(arg)
 	for (var field in arg)
 		this[field] = arg[field]
 
-	// XXX - Ought to convert pub_date and last_update to Date
-	// objects.
+	// Convert dates from time_t to Date objects.
+	this.pub_date    = new Date(parseInt(this.pub_date)    * 1000);
+	this.last_update = new Date(parseInt(this.last_update) * 1000);
+	this.mtime       = new Date(parseInt(this.mtime)       * 1000);
 }
 
 Item.prototype.displaytitle = function()
