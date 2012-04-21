@@ -279,7 +279,7 @@ function db_get_some_feed_items(/* varargs */)
 	/* Beginning of query */
 	/* SCHEMA */
 	$query = <<<EOT
-SELECT	items.id, items.url, items.title,
+SELECT	items.id, items.feed_id, items.url, items.title,
 	items.summary, items.content,
 	items.author, items.category,
 	items.comment_url, items.comment_rss, items.guid,
