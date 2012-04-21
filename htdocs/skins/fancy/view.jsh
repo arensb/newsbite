@@ -737,7 +737,7 @@ function init_feeds_items()
  * Create a DOM node from 'item' by substituting variables in the item
  * template, and creating a DOM node from that.
  */
-// XXX - Should this go in Item.prototype?
+// XXX - Should go in Item.prototype
 function item2node(item)
 {
 	var item_feed = feeds[item.feed_id];
@@ -794,14 +794,9 @@ function item2node(item)
 	item_node = new_node.firstChild;
 
 	// Mark articles > 1 day old
-	var item_pub_date = Date.parse(item.pub_date.replace(/ /, "T"));
-		// Ugh: item.pub_date is of the form "2012-04-04 23:45:00",
-		// which Date.parse() can't handle. But it _can_ handle
-		// ISO-foo dates, of the form "2012-04-04T23:45:00". So we
-		// just replace the first space with a T.
 	var yesterday = new Date();
 	yesterday.setDate(yesterday.getDate()-1);
-	if (item_pub_date < yesterday)
+	if (item.pub_date < yesterday)
 		add_class(item_node, "old1d");
 
 	return item_node;
@@ -908,6 +903,15 @@ function refresh()
 //				  );
 		redraw_itemlist();
 	}
+}
+
+function sync()
+{
+	// XXX - Place AJAX call to updates.php?id=<feed_id|"all">&t=<update-time>&o=json
+	// Receive response and update cache.
+	// Actually, the above should be in CacheManagers, and this
+	// function should just call that.
+	cache.get_updates(feed.id);
 }
 
 /* scroll_handler
