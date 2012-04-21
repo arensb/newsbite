@@ -127,9 +127,12 @@ function Item(arg)
 		this[field] = arg[field]
 
 	// Convert dates from time_t to Date objects.
-	this.pub_date    = new Date(parseInt(this.pub_date)    * 1000);
-	this.last_update = new Date(parseInt(this.last_update) * 1000);
-	this.mtime       = new Date(parseInt(this.mtime)       * 1000);
+	if (this['pub_date'] != undefined)
+		this.pub_date    = this._toDate(this.pub_date);
+	if (this['last_update'] != undefined)
+		this.last_update = this._toDate(this.last_update);
+	if (this['mtime'] != undefined)
+		this.mtime       = this._toDate(this.mtime);
 }
 
 Item.prototype.displaytitle = function()
@@ -137,5 +140,36 @@ Item.prototype.displaytitle = function()
 	if (this.title == null || this.title == "")
 		return "[no title]";
 	return this.title;
+}
+
+/* _toDate
+ * Helper function to convert various things to Date.
+ * We might get a date in various formats: an existing Date object, a
+ * string in ISO8601 format, a string representing a time_t. Try to
+ * figure out what we were given, and return the corresponding Date
+ * object.
+ */
+Item.prototype._toDate = function(value)
+{
+	if (typeof value == "string")
+	{
+		// 'value' might be an ISO8601 date, or it might be a
+		// time_t.
+		if (isNaN(value))
+			// It's not an integer; assume it's an ISO8601
+			// date from Date.toJSON().
+			return new Date(value);
+		else
+			// It's an integer; assume it's a time_t.
+			// Convert seconds to milliseconds, and create
+			// a Date.
+			return new Date(parseInt(value)*1000)
+	}
+	if (value instanceof Date)
+		// It's already a Date. Return it.
+		return value;
+
+	// It's none of the above.
+	return null;
 }
 #endif	// _types_js_
