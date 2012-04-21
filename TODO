@@ -1,3 +1,7 @@
+- Bug: In many cases, view.js doensn't notice when an AJAX call has
+  failed because the user is logged out. Figure out why.
+	Perhaps easiest to change common.inc to send the "you're not
+  logged in" headers, and make sure that's detected.
 - Bug: Title link to Pharyngula articles is sometimes "Array".
   Ditto Greta Christina.
 - Bug: When I changed the feed URL for The Atheist Experience, the
@@ -58,8 +62,6 @@
   up.
 	Assume that any text-type text (titles, summaries, contents)
   are HTML, and therefore need to be cleaned up.
-	Dates should be converted to SQL datetime in the database,
-  then sent as time_t to the client.
 	Email addresses are text, but should probably be sanitized.
 	Author names... not sure. There may be non-ASCII characters,
   and different people may deal with this differently (UTF-8 vs. HTML
@@ -402,23 +404,6 @@
 	See downspout:/folks/htdocs/app/app.js
   Could perhaps use u256d-u2570 (probably not, though), or u2596-u259f,
   u25d0-u25d3, u25d4-u25d7, u25dc-u25df, u25f4-u25f7
-- view.php: should get dates and times as Unix time_ts, not raw MySQL
-  strings.
-	See
-	htdocs/skins/fancy/item.php
-	htdocs/skins/default/view.php
-	htdocs/feeds.php
-	lib/database.inc
-
-	Database tables:
-	feeds.last_update
-	items.pub_date
-	items.last_update
-
-  Make sure that whenever they're pulled from the database in
-  lib/database.inc, they're in Unix format (be sure to check for
-  "select *"). Then, see which functions call the lib/database.inc
-  functions, what calls those functions, and so on.
 - Smart ordering: The system potentially has access to a lot of
   information about reading habits:
   - how often a given feed gets updated

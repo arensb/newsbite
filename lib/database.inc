@@ -277,10 +277,16 @@ function db_get_some_feed_items(/* varargs */)
 	}
 
 	/* Beginning of query */
-	# XXX - Ought to return dates in ISO-8601 ("2011-11-23T10:09:17Z")
-	# or time_t format.
+	/* SCHEMA */
 	$query = <<<EOT
-SELECT	items.*
+SELECT	items.id, items.url, items.title,
+	items.summary, items.content,
+	items.author, items.category,
+	items.comment_url, items.comment_rss, items.guid,
+	UNIX_TIMESTAMP(items.pub_date) as `pub_date`,
+	UNIX_TIMESTAMP(items.last_update) as `last_update`,
+	IF(is_read, 1, 0) as `is_read`,
+	UNIX_TIMESTAMP(mtime) as `mtime`
 FROM	items
   LEFT JOIN feeds
 ON	items.feed_id = feeds.id

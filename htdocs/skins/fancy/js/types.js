@@ -127,8 +127,7 @@ function Item(arg)
 		this[field] = arg[field]
 
 	// XXX - Ought to convert pub_date and last_update to Date
-	// objects. But it'd be easier if the server returned ISO-8601
-	// or time_t.
+	// objects.
 }
 
 Item.prototype.displaytitle = function()
