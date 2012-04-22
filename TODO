@@ -68,6 +68,7 @@
 - Perhaps add Xdebug extension for PHP: profiler.
 - Speed: jsonify() is apparently quite a time hog: adds ~15% time
   to just using json_encode().
+  UPDATE: or maybe not. Can't reproduce.
 	lib/json.inc
 	lib/common.inc
 	htdocs/markitems.php
