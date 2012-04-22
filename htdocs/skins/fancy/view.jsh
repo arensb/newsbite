@@ -770,8 +770,9 @@ function item2node(item)
 			// XXX - If ever use author URL, might want to
 			// wrap author name in <a href="mailto:...>.
 		pub_date:	item.pub_date,
-		pretty_pub_date:item.pub_date,
-			// XXX - Pretty-print the date.
+		pretty_pub_date:item.pub_date.toDateString() + ", " +
+				item.pub_date.toTimeString(),
+			// Pretty-print the date.
 		summary:	item.summary,
 		content:	item.content,
 		comment_url:	encodeURI(item.comment_url),
