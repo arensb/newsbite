@@ -58,6 +58,9 @@ function CacheManager()
 	this._ls_index = {};	// Metainformation about the data in
 				// localStorage.
 			// XXX - Keep track of size?
+	this.last_sync = undefined;
+				// Time of last update fetched through
+				// "updates.php".
 
 	/* Scan localStorage for stuff saved since last time.
 	 */
@@ -92,6 +95,7 @@ function CacheManager()
 			header.id = item.id;
 			header.feed_id = item.feed_id;
 			header.pub_date = item.pub_date;
+			header.mtime = item.mtime;
 			header.last_update = item.last_update;
 				// XXX - Which one do I want? pub_date, or
 				// last_update? Gah! So confused!
@@ -472,9 +476,112 @@ CacheManager.prototype.store_item = function(item)
 	header.feed_id = item.feed_id;
 	header.pub_date = item.pub_date;
 	header.is_read = item.is_read;
+	header.mtime = item.mtime;
 }
 
-// XXX - Delete an article?
-// Remove from this.headers, this.itemindex
+/* purge_item
+ * Delete an article from cache, by item_id.
+ */
+CacheManager.prototype.purge_item = function(item_id)
+{
+	// XXX - Test this.
+	this.removeItem("item:"+item_id);
+
+	for (var i in this.headers)
+	{
+		var h = this.headers[i];
+		if (h.id == item_id)
+			this.headers.splice(i,1);
+	}
+	delete this.itemindex[item_id];
+}
+
+/* get_updates
+ * Find the oldest mtime in the cache, get updates since that time, and
+ * apply them to the cache
+ */
+// XXX - Ought to take a callback, like update_items.
+CacheManager.prototype.get_updates = function(feed_id)
+{
+	// XXX - Get the latest mtime we have
+	var latest_mtime = this.last_sync;
+
+	if (latest_mtime == undefined)
+		latest_mtime = new Date(0);
+
+	for (var i = 0, n = this.headers.length; i < n; i++)
+	{
+		var hdr = this.headers[i];
+		var mtime;
+
+		if (hdr.mtime != null)
+			mtime = hdr.mtime;
+		else
+			mtime = hdr.last_update;
+		if (mtime > latest_mtime)
+			latest_mtime = mtime;
+	}
+
+	// Place AJAX call to
+	//	updates.php?
+	//		id=feed_id
+	//		o=json
+	//		t=<newest-mtime>
+	var me = this;	// Trick so that we can call _get_updates_cb
+			// as a method, not a regular function.
+	get_json_data("updates.php",
+		      { o:	"json",
+			id:	feed_id,
+			t:	Math.floor(latest_mtime.valueOf()/1000),
+		      },
+		      function(value) {
+			      me._get_updates_cb(value);
+		      }
+		     );
+}
+
+/* _get_updates_cb
+ * Callback function for get_updates(): receive a bunch of updated
+ * posts, and do something smart with them.
+ */
+CacheManager.prototype._get_updates_cb = function(value)
+{
+	var latest_mtime = new Date(0);
+			// Remember the most recent update, so we
+			// don't request things over and over:
+			// otherwise, get_updates() can return the
+			// same read articles over and over.
+
+	if (value == null)
+		// No updates.
+		return;
+
+	/* Process updated items from updates.php */
+	for (var i = 0, n = value.length; i < n; i++)
+	{
+		var item = new Item(value[i]);
+
+		if (item.is_read)
+		{
+			// Got an item marked read on the server.
+			// Remove it from cache.
+
+			/* XXX - Not so fast: ought to check the mtime
+			 * on the server and the mtime in our cache,
+			 * and keep the most recent one.
+			 */
+			this.purge_item(item.id);
+		} else {
+			// Got an unread item. Update it in cache.
+			this.store_item(item);
+		}
+
+		if (item.mtime > latest_mtime)
+			// Remember the most recent update
+			latest_mtime = item.mtime;
+	}
+
+	this.last_sync = latest_mtime;	// Remember for next time.
+}
 
 #endif	// _CacheManager_js_
