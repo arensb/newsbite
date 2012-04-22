@@ -276,6 +276,47 @@ function db_get_some_feed_items(/* varargs */)
 			$args[func_get_arg($i)] = func_get_arg($i+1);
 	}
 
+	/* About the query:
+	 * The most common query is going to be asking for the last 25
+	 * unread items in active feeds. This will wind up being:
+	 *	SELECT items.*
+	 *	FROM items,
+	 *	(SELECT DISTINCT	last_update
+	 *	 FROM	items
+	 *	 WHERE	!is_read
+	 *	 ORDER BY	last_update DESC
+	 *	 LIMIT 25)
+	 *	AS tmp,
+	 *	feeds
+	 *	WHERE items.last_update = tmp.last_update
+	 *	  AND items.feed_id = feeds.id
+	 *	  AND feeds.active
+	 *	  AND !items.is_read
+	 *	ORDER BY items.last_update DESC,
+	 *		items.id DESC
+	 *	LIMIT 25
+	 *
+	 * Note the
+	 * "SELECT FROM items LEFT JOIN feeds, (SELECT last_update)"
+	 * structure: the reason for this is that ordering by two
+	 * columns takes a long time (0.32 sec (wall time) with 35,000
+	 * items and 111 active feeds). I think this is because MySQL
+	 * can't optimize by picking the 25 latest last_update and
+	 * just sorting a small number of records, but has to sort all
+	 * 35,000 records before picking the last 25.
+	 *
+	 * Here, the inner (SELECT...), along with "WHERE
+	 * items.last_update = tmp.last_update" picks the 25 greatest
+	 * last_update values. We join this with `items`, to pick only
+	 * items with one of those 25 last_update values. This cuts
+	 * down tremendously on the number of records we need to sort
+	 * later.
+	 */
+
+	if (!isset($args['order']))
+		$args['order'] = "date_desc";	// Stop PHP from complaining
+						// later on.
+
 	/* Beginning of query */
 	/* SCHEMA */
 	$query = <<<EOT
@@ -287,13 +328,37 @@ SELECT	items.id, items.feed_id, items.url, items.title,
 	UNIX_TIMESTAMP(items.last_update) as `last_update`,
 	IF(is_read, 1, 0) as `is_read`,
 	UNIX_TIMESTAMP(mtime) as `mtime`
-FROM	items
-  LEFT JOIN feeds
-ON	items.feed_id = feeds.id
+FROM	items,
+	(SELECT DISTINCT	last_update
+	 FROM			items
+
+EOT;
+	if (!isset($args['read']) || !$args['read'])
+		$query .= "WHERE !is_read\n";
+	switch ($args['order'])
+	{
+	    case "date_asc":
+		$query .= "ORDER BY last_update ASC\n";
+		break;
+	    case "date_desc":
+	    default:
+		// XXX - This fall-through means we don't notice bogus
+		// values. Then again, we can probably trust the
+		// caller.
+		$query .= "ORDER BY last_update DESC\n";
+		break;
+	}
+
+	$query .= <<<EOT
+	) AS tmp,
+	feeds
 
 EOT;
 
-	$conditions = array();	// All of the "WHERE x AND y AND z" conditions
+	$conditions = array(	// All of the "WHERE x AND y AND z" conditions
+		"items.last_update = tmp.last_update",
+		"items.feed_id = feeds.id",
+		);
 
 	/* Were we asked for just one feed ID? */
 	// XXX - Would be nice to request some, but not all, feeds, by
@@ -316,17 +381,6 @@ EOT;
 	if (!isset($args['read']) || !$args['read'])
 		array_push($conditions, "!items.is_read");
 
-	// XXX - Allow selection by mtime. At the very least, want
-	// mtime >= <timestamp>.
-	// What should the arg/value look like? ["mtime-ge" => 1334764047]?
-	// Or perhaps $args['mtime'] can itself be an array:
-	//	[">", 1334764047],
-	//	[">=", 1334764047],
-	//	["--, 1334764047, 1334765047],
-	//	...
-	// Or perhaps
-	//	mtime => t1 | t1- | t1-t2 | -t2
-
 	/* Add selection conditions to query */
 	if (count($conditions) > 0)
 	{
@@ -336,8 +390,6 @@ EOT;
 	/* Specify order in query.
 	 * Use id as a tiebreaker, to ensure a consistent order.
 	 */
-	if (!isset($args['order']))
-		$args['order'] = "date_desc";	// Stop PHP from complaining
 	switch ($args['order'])
 	{
 	    case "date_asc":
