@@ -23,6 +23,10 @@ function msg_init()
  */
 function msg_add(msg, duration)
 {
+	if (msg_box == undefined)
+		// msg_init() apparently hasn't run yet. Just abort.
+		return;
+
 	if (!duration)
 		// XXX - Perhaps multiply the length of the message by
 		// some constant?
