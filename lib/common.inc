@@ -76,9 +76,11 @@ if (!(isset($NO_AUTH_CHECK) && $NO_AUTH_CHECK) &&
 	if (!isset($login_cookie))
 	{
 		// If output type is JSON, return a JSON string saying
-		// the user isn't logged in.
+		// the user isn't logged in. Also, send them a 401
+		// status code.
 		if ($_REQUEST['o'] == "json")
 		{
+			header("HTTP/1.0 401 You are not logged in");
 			header("Content-type: text/plain; charset=utf-8");
 			echo jsonify('state',	"error",
 				     'error',	"You are not logged in.");
