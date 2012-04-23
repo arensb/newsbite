@@ -24,6 +24,40 @@ if (HTMLElement.prototype.toJSON == null)
 	HTMLElement.prototype.toJSON = function() { return undefined; };
 }
 
+/* Hack for Date object on Android
+ * Apparently the Android browser's Date object can't even parse its
+ * own toJSON() output.
+ *
+ * First, we test to see if this is the case by creating a new Date(),
+ * converting it to a JSON string, parsing that string, creating a
+ * Date from that, and checking whether it's valid (if it is,
+ * isNaN(thedate.getTime()) should be false).
+ *
+ * If the date is invalid, we redefine the toJSON method. The simple
+ * approach would be to just use 'return this.valueOf()', but that
+ * returns milliseconds since the epoch. In other code, we assume that
+ * a numeric string should be interpreted as a Unix time_t, i.e.,
+ * seconds since the epoch. So instead we construct a string
+ * representation of the time.
+ */
+if (isNaN(new Date(JSON.parse(JSON.stringify(new Date()))).getTime()))
+	Date.prototype.toJSON = function() {
+		var year = this.getUTCFullYear();
+		var mon  = this.getUTCMonth() + 1;
+		var date = this.getUTCDate();
+		var hour = this.getUTCHours();
+		var min  = this.getUTCMinutes();
+		var sec  = this.getUTCSeconds();
+		// Return "yyyy-mm-dd HH:MM:SS GMT"
+		return year + "-" +
+			(mon  < 10 ? "0"+mon  : mon)  + "-" +
+			(date < 10 ? "0"+date : date) + " " +
+			(hour < 10 ? "0"+hour : hour) + ":" +
+			(min  < 10 ? "0"+min  : min)  + ":" +
+			(sec  < 10 ? "0"+sec  : sec) +
+			" GMT";
+	};
+
 var mark_read = {};		// Hash of item_id -> is_read? values
 var mark_request = null;	// Data for marking items as read/unread
 var current_item = null;	// Current item, for keybindings and such
