@@ -157,6 +157,9 @@ CacheManager.prototype.setItem = function(key, value)
 		// deleting old cruft.
 		// XXX - Check to make sure the error is actually
 		// "over quota".
+		// According to
+		// http://www.w3.org/TR/webstorage/#the-localstorage-attribute
+		// this should be QuotaExceededError.
 		this._ls_purge(key.length+str.length);
 	}
 
@@ -501,7 +504,7 @@ CacheManager.prototype.purge_item = function(item_id)
  * apply them to the cache
  */
 // XXX - Ought to take a callback, like update_items.
-CacheManager.prototype.get_updates = function(feed_id)
+CacheManager.prototype.get_updates = function(feed_id, cb)
 {
 	// XXX - Get the latest mtime we have
 	var latest_mtime = this.last_sync;
@@ -535,16 +538,17 @@ CacheManager.prototype.get_updates = function(feed_id)
 			t:	Math.floor(latest_mtime.valueOf()/1000),
 		      },
 		      function(value) {
-			      me._get_updates_cb(value);
-		      }
-		     );
+			      me._get_updates_cb(value, cb);
+		      },
+		      null,
+		      true);
 }
 
 /* _get_updates_cb
  * Callback function for get_updates(): receive a bunch of updated
  * posts, and do something smart with them.
  */
-CacheManager.prototype._get_updates_cb = function(value)
+CacheManager.prototype._get_updates_cb = function(value, user_cb)
 {
 	var latest_mtime = new Date(0);
 			// Remember the most recent update, so we
@@ -582,6 +586,11 @@ CacheManager.prototype._get_updates_cb = function(value)
 	}
 
 	this.last_sync = latest_mtime;	// Remember for next time.
+
+	/* Call user callback, if requested */
+	// XXX - What arguments should it take?
+	if (user_cb != null)
+		user_cb();
 }
 
 #endif	// _CacheManager_js_
