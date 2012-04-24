@@ -65,6 +65,9 @@
   (if possible, only do entity translation, and throw out any markup).
 - Bug: On android, often title bar overflows to the right of the
   screen.
+- Sync: "updates.php" only returns up to 100 updates. When syncing, if
+  we get 100 updates, ought to call it again, to see whether maybe
+  there's more that we've missed.
 - Perhaps add Xdebug extension for PHP: profiler.
 - Speed: jsonify() is apparently quite a time hog: adds ~15% time
   to just using json_encode().
