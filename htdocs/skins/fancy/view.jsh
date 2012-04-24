@@ -942,11 +942,12 @@ function refresh()
 
 function sync()
 {
-	// XXX - Place AJAX call to updates.php?id=<feed_id|"all">&t=<update-time>&o=json
-	// Receive response and update cache.
-	// Actually, the above should be in CacheManagers, and this
-	// function should just call that.
-	cache.get_updates(feed.id);
+	/* Get a list of updated items */
+	// XXX - Ought to have a callback to do something useful.
+	cache.get_updates(feed.id,
+			  function() {
+				msg_add("sync done");
+			  });
 }
 
 /* scroll_handler
