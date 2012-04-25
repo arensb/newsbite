@@ -49,6 +49,7 @@ else {
 $updates = db_get_item_updates($t, $feed_id, 100);
 #print_r($updates);
 
+$retval = array();
 while (count($updates) > 0)
 {
 	// Trim the stuff we don't need: if an article is read, just
