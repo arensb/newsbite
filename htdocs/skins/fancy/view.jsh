@@ -943,10 +943,11 @@ function refresh()
 function sync()
 {
 	/* Get a list of updated items */
-	// XXX - Ought to have a callback to do something useful.
+	// XXX - Ought to have the callback do something useful.
 	cache.get_updates(feed.id,
 			  function() {
 				msg_add("sync done");
+				redraw_itemlist();
 			  });
 }
 
