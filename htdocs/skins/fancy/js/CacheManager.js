@@ -503,26 +503,32 @@ CacheManager.prototype.purge_item = function(item_id)
  * Find the oldest mtime in the cache, get updates since that time, and
  * apply them to the cache
  */
-// XXX - Ought to take a callback, like update_items.
 CacheManager.prototype.get_updates = function(feed_id, cb)
 {
-	// XXX - Get the latest mtime we have
+	// Get the latest mtime we have
 	var latest_mtime = this.last_sync;
 
+	// If we already have a latest_mtime, use it as is, so we get
+	// all the updates that happened since then.
+
+	// Otherwise, assume that the page just loaded, so get the
+	// most recent mtime of all the articles.
 	if (latest_mtime == undefined)
+	{
 		latest_mtime = new Date(0);
 
-	for (var i = 0, n = this.headers.length; i < n; i++)
-	{
-		var hdr = this.headers[i];
-		var mtime;
+		for (var i = 0, n = this.headers.length; i < n; i++)
+		{
+			var hdr = this.headers[i];
+			var mtime;
 
-		if (hdr.mtime != null)
-			mtime = hdr.mtime;
-		else
-			mtime = hdr.last_update;
-		if (mtime > latest_mtime)
-			latest_mtime = mtime;
+			if (hdr.mtime != null)
+				mtime = hdr.mtime;
+			else
+				mtime = hdr.last_update;
+			if (mtime > latest_mtime)
+				latest_mtime = mtime;
+		}
 	}
 
 	// Place AJAX call to
