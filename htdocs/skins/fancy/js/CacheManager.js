@@ -86,6 +86,21 @@ function CacheManager()
 			// XXX - Wrap this in a try{}.
 			var item = new Item(JSON.parse(localStorage.getItem(key)));
 
+// XXX - Can't delete items while we're in this loop, since that
+// alters the array over which we're iterating. Presumably need to
+// make a note of which elements to delete.
+//			/* Delete items marked as read */
+//			// XXX - Is this too low-level? At this stage,
+//			// is CacheManager just a low-level interface
+//			// to localStorage? Of course, if so, we've
+//			// kinda blown it by knowing about the Item
+//			// class.
+//			if (item.is_read)
+//			{
+//				localStorage.removeItem(key);
+//				continue;
+//			}
+
 			this._ls_index[key] = {
 				"time":	new Date(),
 			};
@@ -110,6 +125,7 @@ function CacheManager()
 		 * to some other app on the same machine+port.
 		 */
 	}
+	return this;
 }
 
 /* localStorage wrappers */
@@ -561,37 +577,45 @@ CacheManager.prototype._get_updates_cb = function(value, user_cb)
 			// don't request things over and over:
 			// otherwise, get_updates() can return the
 			// same read articles over and over.
+var num_read = 0;
+var num_new = 0;
 
 	if (value == null)
+	{msg_add("sync: no updates");
 		// No updates.
-		return;
-
-	/* Process updated items from updates.php */
-	for (var i = 0, n = value.length; i < n; i++)
-	{
-		var item = new Item(value[i]);
-
-		if (item.is_read)
+	} else {
+		/* Process updated items from updates.php */
+		for (var i = 0, n = value.length; i < n; i++)
 		{
-			// Got an item marked read on the server.
-			// Remove it from cache.
+			var item = new Item(value[i]);
 
-			/* XXX - Not so fast: ought to check the mtime
-			 * on the server and the mtime in our cache,
-			 * and keep the most recent one.
-			 */
-			this.purge_item(item.id);
-		} else {
-			// Got an unread item. Update it in cache.
-			this.store_item(item);
+			if (item.is_read)
+			{
+				// Got an item marked read on the
+				// server. Remove it from cache.
+
+				/* XXX - Not so fast: ought to check
+				 * the mtime on the server and the
+				 * mtime in our cache, and keep the
+				 * most recent one.
+				 */
+num_read++;
+				this.purge_item(item.id);
+			} else {
+				// Got an unread item. Update it in
+				// cache.
+num_new++;
+				this.store_item(item);
+			}
+
+			if (item.mtime > latest_mtime)
+				// Remember the most recent update
+				latest_mtime = item.mtime;
 		}
 
-		if (item.mtime > latest_mtime)
-			// Remember the most recent update
-			latest_mtime = item.mtime;
+		this.last_sync = latest_mtime;	// Remember for next time.
 	}
-
-	this.last_sync = latest_mtime;	// Remember for next time.
+msg_add(value.length+" updates @ "+this.last_sync+": "+num_read+"/"+num_new);
 
 	/* Call user callback, if requested */
 	// XXX - What arguments should it take?
