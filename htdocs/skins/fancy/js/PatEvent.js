@@ -74,9 +74,9 @@ PatEvent._init = function()
 	 * something.
 	 */
 	if (Element.prototype.matchesSelector != null)
+	{
 		/* Everything's okay */
-		true;
-	else if (Element.prototype.mozMatchesSelector != null)
+	} else if (Element.prototype.mozMatchesSelector != null)
 	{
 		/* Mozilla */
 		Element.prototype.matchesSelector =
