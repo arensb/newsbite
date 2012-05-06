@@ -572,18 +572,19 @@ CacheManager.prototype.get_updates = function(feed_id, cb)
  */
 CacheManager.prototype._get_updates_cb = function(value, user_cb)
 {
-	var latest_mtime = new Date(0);
-			// Remember the most recent update, so we
-			// don't request things over and over:
-			// otherwise, get_updates() can return the
-			// same read articles over and over.
 var num_read = 0;
 var num_new = 0;
 
-	if (value == null)
-	{msg_add("sync: no updates");
+	if (value == null || value.length == 0)
+	{
 		// No updates.
 	} else {
+		var latest_mtime = new Date(0);
+			// Remember the most recent update, so we don't
+			// request things over and over: otherwise,
+			// get_updates() can return the same read articles
+			// over and over.
+
 		/* Process updated items from updates.php */
 		for (var i = 0, n = value.length; i < n; i++)
 		{
