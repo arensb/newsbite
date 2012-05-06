@@ -821,14 +821,12 @@ INSERT INTO	items
 		 comment_url, comment_rss, guid,
 		 pub_date,
 		 last_update,
-		 is_read,
-		 mtime)
+		 is_read)
 VALUES		(?,       ?,   ?,     ?,       ?,       ?,      ?,
 		 ?,           ?,           ?,
 		 IFNULL(FROM_UNIXTIME(?), NOW()),
 		 pub_date,
-		 IFNULL(?, FALSE),
-		 NOW())
+		 IFNULL(?, FALSE))
 ON DUPLICATE KEY UPDATE
 		url=?,
 		title=?,
@@ -838,8 +836,7 @@ ON DUPLICATE KEY UPDATE
 		category=?,
 		comment_url=?,
 		comment_rss=?,
-		pub_date=IFNULL(FROM_UNIXTIME(?), pub_date),
-		mtime=NOW()
+		pub_date=IFNULL(FROM_UNIXTIME(?), pub_date)
 EOT;
 		// XXX - Ought to update mtime iff any of the fields
 		// have changed. Currently, we're setting mtime to
