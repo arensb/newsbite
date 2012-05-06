@@ -17,6 +17,19 @@ body {
 	margin-right:		0px;
 }
 
+iframe {
+	/* The max-width, max-height seems to fix a problem whereby YouTube
+	 * <iframe>s cause the contents to be sized wider than the
+	 * display.
+	 */
+	/* XXX - This is, of course, not universally-applicable to all Android
+	 * devices. Ought to figure out something more general.
+	 */
+	max-width:	266px !important;
+	max-height:	200px !important;
+	outline:	2px dotted red;
+}
+
 .button-box {
 /*	font-size:	1pt;*/
 }
