@@ -947,7 +947,8 @@ function sync()
 	cache.get_updates(feed.id,
 			  function() {
 				msg_add("sync done");
-				redraw_itemlist();
+// XXX - Not ready to redraw automatically just yet.
+//				redraw_itemlist();
 			  });
 }
 
