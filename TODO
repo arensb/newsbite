@@ -1,3 +1,5 @@
+- Bug: "Refresh" button shows error when session has timed out. "Sync"
+  button doesn't.
 - Bug: Title link to Pharyngula articles is sometimes "Array".
   Ditto Greta Christina.
 - Bug: When I changed the feed URL for The Atheist Experience, the
@@ -63,12 +65,21 @@
   and different people may deal with this differently (UTF-8 vs. HTML
   entities). Perhaps safest to assume that they're HTML and clean up
   (if possible, only do entity translation, and throw out any markup).
+- Sync: Probably ought to split up "updates" into multiple phases:
+	- Send articles that have been marked read/unread
+	- Get articles that have been marked read/unread since time T
+	- Get new articles
+  Also, need to store time of last update in localStorage.
+	Probably not worth having a feed ID for getting list of marked
+  items.
 - Sync: "updates.php" only returns up to 100 updates. When syncing, if
   we get 100 updates, ought to call it again, to see whether maybe
   there's more that we've missed.
 	Perhaps MySQL found_rows() function can be used here: figure
   out whether there are more results, and add a "{more: true}" element
   at the end of the JS results.
+- It'd probably be useful to have a db_* function to get a particular
+  item.
 - WebStorage spec (http://www.w3.org/TR/webstorage/) says that when a
   value in localStorage is modified, it triggers an event in other
   Windows that have access to that database. This could be useful.
@@ -261,6 +272,7 @@
   - <article>
     - class="hentry"
     Firefox doesn't grok <article> yet. This breaks CSS.
+    Firefox 3 apparently groks <article>
   - class="entry-title" for post title.
   - <time class="updated" datetime="2011-10-24 10:11:12-0400" pubdate>whenever</time>
     "updated" for hAtom; "pubdate" for Reader.
