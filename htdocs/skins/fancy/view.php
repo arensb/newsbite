@@ -46,7 +46,7 @@ var start_offset = <?=jsonify($skin_vars['start'])?>;
 
 // XXX - This template needs an awful lot of work. See item.php
 // XXX - Don't show left checkboxes on non-iPads.
-var item_tmpl_text = '<div class="item" id="item-@id@">\
+var item_tmpl_text = '<article class="item" id="item-@id@">\
   <table class="item-header">\
     <tr>\
       <!-- Second set of checkboxes, for iPad -->\
@@ -109,7 +109,7 @@ var item_tmpl_text = '<div class="item" id="item-@id@">\
       </td>\
     </tr>\
   </table>\
-</div>';
+</article>';
 </script>
 <title>NewsBite: <?=htmlspecialchars($feed['title'])?></title>
 <link rel="stylesheet" type="text/css" href="skins/<?=$skin_dir?>/view.css" media="all" />
@@ -166,7 +166,6 @@ foreach ($skin_vars as $k => $v)
   <li><a href="unsubscribe.php?id=<?=$feed_id?>">Unsubscribe from feed</a></li>
 <?endif?>
 </ul>
-<button onclick="localStorage.clear()">Clear localStorage</button>
 
 <!-- List of items -->
 <?
@@ -177,6 +176,7 @@ foreach ($skin_vars as $k => $v)
  */
 ?>
 <div class="button-box">
+  <button onclick="localStorage.clear()">Clear localStorage</button>
   <button onclick="refresh()">Refresh</button>
   <button onclick="sync()">Sync</button>
 </div>
