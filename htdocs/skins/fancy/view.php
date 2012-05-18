@@ -177,15 +177,17 @@ foreach ($skin_vars as $k => $v)
 ?>
 <div class="button-box">
   <button onclick="localStorage.clear()">Clear localStorage</button>
-  <button onclick="refresh()">Refresh</button>
-  <button onclick="sync()">Sync</button>
+  <button onclick="this.blur();refresh()">Refresh</button>
+  <button onclick="this.blur();sync()">Sync</button>
+  <button onclick="this.blur(); get_marked()">Get Marked</button>
 </div>
 
 <div id="itemlist"><img src="skins/<?=$skin_dir?>/Ajax-loader.gif"/></div>
 
 <div class="button-box">
-  <button onclick="refresh()">Refresh</button>
-  <button onclick="sync()">Sync</button>
+  <button onclick="this.blur();refresh()">Refresh</button>
+  <button onclick="this.blur();sync()">Sync</button>
+  <button onclick="this.blur(); get_marked()">Get Marked</button>
 </div>
 
 <p>User <?=$skin_vars['auth_user']?>, session expires <?=$skin_vars['auth_expiration']?>.</p>
