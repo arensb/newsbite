@@ -72,6 +72,7 @@ htdocs/unsubscribe.php
 htdocs/update.php
 htdocs/updates.php
 htdocs/view.php
+htdocs/whatsread.php
 lib/common.inc
 lib/config.inc.sample
 lib/database.inc
