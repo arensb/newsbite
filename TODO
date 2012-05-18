@@ -80,6 +80,13 @@
   at the end of the JS results.
 - It'd probably be useful to have a db_* function to get a particular
   item.
+- List of Mobile Safari events:
+  http://developer.apple.com/library/safari/#documentation/AppleApplications/Reference/SafariWebContent/HandlingEvents/HandlingEvents.html#//apple_ref/doc/uid/TP40006511-SW5
+  (Select "Supported Events" if that doesn't work)
+  pageshow/pagehide:
+  https://developer.mozilla.org/En/Using_Firefox_1.5_caching#pageshow_event
+  Looks like they're similar to load/unload events, except they fire
+  even when a page is loaded from cache.
 - WebStorage spec (http://www.w3.org/TR/webstorage/) says that when a
   value in localStorage is modified, it triggers an event in other
   Windows that have access to that database. This could be useful.
