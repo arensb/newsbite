@@ -136,6 +136,12 @@ function init()
 		bind_key("S-e", expand_all);
 	}
 
+	/* Key bindings that I want on the Android */
+	bind_key("d", key_mark_item);
+	bind_key("c", toggle_collapse_item);
+	bind_key("k", move_up);
+	bind_key("j", move_down);
+
 	// Get feeds and items from cache.
 	feeds = cache.feeds();
 
@@ -947,6 +953,18 @@ function sync()
 	cache.get_updates(feed.id,
 			  function() {
 				msg_add("sync done");
+// XXX - Not ready to redraw automatically just yet.
+//				redraw_itemlist();
+			  });
+}
+
+function get_marked()
+{
+	/* Get a list of items marked read */
+	// XXX - Ought to have the callback do something useful.
+	cache.get_marked(feed.id,
+			  function() {
+				msg_add("get_marked done");
 // XXX - Not ready to redraw automatically just yet.
 //				redraw_itemlist();
 			  });

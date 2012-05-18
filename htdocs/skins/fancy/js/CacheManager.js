@@ -624,4 +624,104 @@ msg_add(value.length+" updates @ "+this.last_sync+": "+num_read+"/"+num_new);
 		user_cb();
 }
 
+/* get_marked
+ * Find the oldest mtime in the cache, get items that have been marked
+ * as read since then, and purge those from the cache.
+ */
+CacheManager.prototype.get_marked = function(feed_id, cb)
+{
+	// Get the latest mtime we have
+	var latest_mtime = this.last_sync;
+
+	// If we already have a latest_mtime, use it as is, so we get
+	// all the updates that happened since then.
+
+	// Otherwise, assume that the page just loaded, so get the
+	// most recent mtime of all the articles.
+
+	// XXX - I don't think this approach works. We're likely to
+	// overlook a bunch of stuff.
+	if (latest_mtime == undefined)
+	{
+		latest_mtime = new Date(0);
+
+		for (var i = 0, n = this.headers.length; i < n; i++)
+		{
+			var hdr = this.headers[i];
+			var mtime;
+
+			if (hdr.mtime != null)
+				mtime = hdr.mtime;
+			else
+				mtime = hdr.last_update;
+			if (mtime > latest_mtime)
+				latest_mtime = mtime;
+		}
+	}
+
+	// Place AJAX call to
+	//	whatsread.php?
+	//		o=json
+	//		t=<newest-mtime>
+	var me = this;	// Trick so that we can call _get_marked_cb
+			// as a method, not a regular function.
+	get_json_data("whatsread.php",
+		      { o:	"json",
+			t:	Math.floor(latest_mtime.valueOf()/1000),
+		      },
+		      function(value) {
+			      me._get_marked_cb(value, cb);
+		      },
+		      null,
+		      true);
+}
+
+/* _get_marked_cb
+ * Callback function for get_marked(): receive a bunch of records for
+ * items that have been marked as read, and purge them from cache.
+ */
+CacheManager.prototype._get_marked_cb = function(value, user_cb)
+{
+var num_read = 0;
+
+	if (value == null || value.length == 0)
+	{
+		// No updates.
+	} else {
+		var latest_mtime = new Date(0);
+			// Remember the most recent update, so we don't
+			// request things over and over: otherwise,
+			// get_marked() can return the same read articles
+			// over and over.
+
+		/* Process updated items from updates.php */
+		for (var i = 0, n = value.length; i < n; i++)
+		{
+			var item = new Item(value[i]);
+
+			// Got an item marked read on the server.
+			// Remove it from cache.
+
+			/* XXX - Not so fast: ought to check the mtime
+			 * on the server and the mtime in our cache,
+			 * and keep the most recent one.
+			 */
+num_read++;
+			this.purge_item(item.id);
+
+			if (item.mtime > latest_mtime)
+				// Remember the most recent update
+				latest_mtime = item.mtime;
+		}
+
+		this.last_sync = latest_mtime;	// Remember for next time.
+	}
+msg_add(value.length+" read @ "+this.last_sync+": "+num_read);
+
+	/* Call user callback, if requested */
+	// XXX - What arguments should it take?
+	if (user_cb != null)
+		user_cb();
+}
+
 #endif	// _CacheManager_js_
