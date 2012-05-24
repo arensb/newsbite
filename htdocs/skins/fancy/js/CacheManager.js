@@ -61,18 +61,19 @@ function CacheManager()
 	this.last_sync = undefined;
 				// Time of last update fetched through
 				// "updates.php".
+//	this.last_mark_time = localStorage(getItem("last_mark_time"));
 
 	/* Scan localStorage for stuff saved since last time.
 	 */
 	// XXX - How does this affect execution speed?
 	// XXX - Should _ls_index be saved across sessions?
-	for (var i = 0, n = localStorage.length; i < n; i++)
+	for (var key in localStorage)
 	{
-		var key = localStorage.key(i);
 		var matches;
 
 		if (key == "feeds" ||
-		    key == "onscreen")
+		    key == "onscreen" ||
+		    key == "last_mark_time")	// Last 'whatsread.php' time.
 		{
 			this._ls_index[key] = {
 				"time":	new Date(),
@@ -86,20 +87,17 @@ function CacheManager()
 			// XXX - Wrap this in a try{}.
 			var item = new Item(JSON.parse(localStorage.getItem(key)));
 
-// XXX - Can't delete items while we're in this loop, since that
-// alters the array over which we're iterating. Presumably need to
-// make a note of which elements to delete.
-//			/* Delete items marked as read */
-//			// XXX - Is this too low-level? At this stage,
-//			// is CacheManager just a low-level interface
-//			// to localStorage? Of course, if so, we've
-//			// kinda blown it by knowing about the Item
-//			// class.
-//			if (item.is_read)
-//			{
-//				localStorage.removeItem(key);
-//				continue;
-//			}
+			/* Delete items marked as read */
+			// XXX - Is this too low-level? At this stage,
+			// is CacheManager just a low-level interface
+			// to localStorage? Of course, if so, we've
+			// kinda blown it by knowing about the Item
+			// class.
+			if (item.is_read)
+			{
+				localStorage.removeItem(key);
+				continue;
+			}
 
 			this._ls_index[key] = {
 				"time":	new Date(),
@@ -125,6 +123,7 @@ function CacheManager()
 		 * to some other app on the same machine+port.
 		 */
 	}
+
 	return this;
 }
 
