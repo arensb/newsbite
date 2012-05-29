@@ -59,9 +59,13 @@ function CacheManager()
 				// localStorage.
 			// XXX - Keep track of size?
 	this.last_sync = undefined;
+// XXX - Is this.last_sync used? - Yes. Ought to remember it the same
+// way as last_whatsread.
 				// Time of last update fetched through
 				// "updates.php".
-//	this.last_mark_time = localStorage(getItem("last_mark_time"));
+	this.last_whatsread = localStorage.getItem("last_whatsread");
+				// Time of last update fetched through
+				// "whatsread.php".
 
 	/* Scan localStorage for stuff saved since last time.
 	 */
@@ -73,7 +77,7 @@ function CacheManager()
 
 		if (key == "feeds" ||
 		    key == "onscreen" ||
-		    key == "last_mark_time")	// Last 'whatsread.php' time.
+		    key == "last_whatsread")	// Last 'whatsread.php' time.
 		{
 			this._ls_index[key] = {
 				"time":	new Date(),
@@ -637,9 +641,9 @@ msg_add(value.length+" updates @ "+this.last_sync+": "+num_read+"/"+num_new);
 CacheManager.prototype.get_marked = function(feed_id, cb)
 {
 	// Get the latest mtime we have
-	var latest_mtime = this.last_sync;
+	var last_whatsread = this.last_whatsread;
 
-	// If we already have a latest_mtime, use it as is, so we get
+	// If we already have a last_whatsread, use it as is, so we get
 	// all the updates that happened since then.
 
 	// Otherwise, assume that the page just loaded, so get the
@@ -647,9 +651,9 @@ CacheManager.prototype.get_marked = function(feed_id, cb)
 
 	// XXX - I don't think this approach works. We're likely to
 	// overlook a bunch of stuff.
-	if (latest_mtime == undefined)
+	if (last_whatsread == undefined)
 	{
-		latest_mtime = new Date(0);
+		last_whatsread = new Date(0);
 
 		for (var i = 0, n = this.headers.length; i < n; i++)
 		{
@@ -660,8 +664,8 @@ CacheManager.prototype.get_marked = function(feed_id, cb)
 				mtime = hdr.mtime;
 			else
 				mtime = hdr.last_update;
-			if (mtime > latest_mtime)
-				latest_mtime = mtime;
+			if (mtime > last_whatsread)
+				last_whatsread = mtime;
 		}
 	}
 
@@ -673,7 +677,7 @@ CacheManager.prototype.get_marked = function(feed_id, cb)
 			// as a method, not a regular function.
 	get_json_data("whatsread.php",
 		      { o:	"json",
-			t:	Math.floor(latest_mtime.valueOf()/1000),
+			t:	Math.floor(last_whatsread.valueOf()/1000),
 		      },
 		      function(value) {
 			      me._get_marked_cb(value, cb);
@@ -697,12 +701,6 @@ var num_read = 0;
 	{
 		// No updates.
 	} else {
-		var latest_mtime = new Date(0);
-			// Remember the most recent update, so we don't
-			// request things over and over: otherwise,
-			// get_marked() can return the same read articles
-			// over and over.
-
 		/* Process updated items from updates.php */
 		for (var i = 0, n = value.length; i < n; i++)
 		{
@@ -718,14 +716,19 @@ var num_read = 0;
 num_read++;
 			this.purge_item(item.id);
 
-			if (item.mtime > latest_mtime)
-				// Remember the most recent update
-				latest_mtime = item.mtime;
+			if (item.mtime > this.last_whatsread)
+				// Remember the most recent update, so
+				// we don't request things over and
+				// over: otherwise, get_marked() can
+				// return the same read articles over
+				// and over.
+				this.last_whatsread = item.mtime;
 		}
 
-		this.last_sync = latest_mtime;	// Remember for next time.
+		this.setItem("last_whatsread", this.last_whatsread);
+				// Stash for next time.
 	}
-msg_add(value.length+" read @ "+this.last_sync+": "+num_read);
+msg_add(value.length+" read @ "+this.last_whatsread+": "+num_read);
 
 	/* Call user callback, if requested */
 	// XXX - What arguments should it take?
