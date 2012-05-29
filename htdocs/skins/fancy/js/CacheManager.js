@@ -93,6 +93,13 @@ function CacheManager()
 			// to localStorage? Of course, if so, we've
 			// kinda blown it by knowing about the Item
 			// class.
+
+			// XXX - It may be premature to delete read
+			// items here: the initialization happens in
+			// every window/tab, so deleting read items in
+			// one tab can affect other tabs, which may
+			// not be what we want. Then again, this whole
+			// thing isn't all that tab-friendly.
 			if (item.is_read)
 			{
 				localStorage.removeItem(key);
@@ -671,7 +678,10 @@ CacheManager.prototype.get_marked = function(feed_id, cb)
 		      function(value) {
 			      me._get_marked_cb(value, cb);
 		      },
-		      null,
+		      function(status, msg) {
+			      msg_add("Error getting marked items: "+
+				      status+": "+msg);
+		      },
 		      true);
 }
 
