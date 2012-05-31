@@ -63,16 +63,20 @@ function CacheManager()
 // way as last_whatsread.
 				// Time of last update fetched through
 				// "updates.php".
-	this.last_whatsread = localStorage.getItem("last_whatsread");
+	this.last_whatsread = new Date(localStorage.getItem("last_whatsread"));
 				// Time of last update fetched through
 				// "whatsread.php".
+	if (isNaN(this.last_whatsread))
+		this.last_whatsread = new Date();
 
 	/* Scan localStorage for stuff saved since last time.
 	 */
 	// XXX - How does this affect execution speed?
 	// XXX - Should _ls_index be saved across sessions?
-	for (var key in localStorage)
+	var todelete = [];	// Array of read articles to delete
+	for (var i = 0, n = localStorage.length; i < n; i++)
 	{
+		var key = localStorage.key(i);
 		var matches;
 
 		if (key == "feeds" ||
@@ -106,7 +110,7 @@ function CacheManager()
 			// thing isn't all that tab-friendly.
 			if (item.is_read)
 			{
-				localStorage.removeItem(key);
+				todelete.push(key);
 				continue;
 			}
 
@@ -134,6 +138,10 @@ function CacheManager()
 		 * to some other app on the same machine+port.
 		 */
 	}
+
+	/* Delete the articles marked read */
+	for (var key in todelete)
+		localStorage.removeItem(todelete[key]);
 
 	return this;
 }
@@ -675,6 +683,8 @@ CacheManager.prototype.get_marked = function(feed_id, cb)
 	//		t=<newest-mtime>
 	var me = this;	// Trick so that we can call _get_marked_cb
 			// as a method, not a regular function.
+//msg_add("last_whatsread: "+Math.floor(last_whatsread.valueOf()/1000));
+msg_add("last_whatsread: "+last_whatsread.valueOf());
 	get_json_data("whatsread.php",
 		      { o:	"json",
 			t:	Math.floor(last_whatsread.valueOf()/1000),
@@ -725,7 +735,7 @@ num_read++;
 				this.last_whatsread = item.mtime;
 		}
 
-		this.setItem("last_whatsread", this.last_whatsread);
+		this.setItem("last_whatsread", this.last_whatsread.valueOf());
 				// Stash for next time.
 	}
 msg_add(value.length+" read @ "+this.last_whatsread+": "+num_read);
