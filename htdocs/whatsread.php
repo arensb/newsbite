@@ -30,7 +30,8 @@ $t = $_REQUEST['t'];
 if (is_numeric($t) && is_integer($t+0))
 	$t = (int) $t;
 else {
-	header("HTTP/1.0 400 Invalid time");
+	header("HTTP/1.0 400 Invalid time ".$_REQUEST['t']);
+			# XXX - Remove time when done debugging.
 	exit(0);
 }
 
