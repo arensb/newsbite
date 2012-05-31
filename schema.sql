@@ -98,6 +98,7 @@ CREATE TABLE items (
 					# separate items.
 	# Indexes to speed up lookups
 	KEY `last_update` (`last_update`),
-	KEY `is_read` (`is_read`)
+	KEY `is_read` (`is_read`),
+	KEY `mtime` (`mtime`)
 )
 DEFAULT CHARSET=utf8;
