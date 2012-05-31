@@ -1,3 +1,4 @@
+- DB: create index on items.mtime: it really speeds up 'whatsread.php'
 - Bug: "Refresh" button shows error when session has timed out. "Sync"
   button doesn't.
 - Bug: Title link to Pharyngula articles is sometimes "Array".
