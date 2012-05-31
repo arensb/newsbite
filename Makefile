@@ -78,7 +78,7 @@ clean::
 
 distclean::	clean
 
-test check:	missing syntax-check
+test check:	missing extras syntax-check
 # XXX - Should have a check to make sure that everything in MANIFEST
 # is in svn.
 
@@ -87,6 +87,20 @@ missing:
 	@svn status -qv | \
 		perl -lane '$$f=$$F[-1]; print "Missing: $$f" if -f $$f' | \
 		fgrep -vf MANIFEST || true
+
+# Look for files in the manifest that don't exist.
+# The manifest includes files that are built from other files, hence
+# the 'all' dependency.
+# XXX - I suppose this really should build the 'dist' directory, then
+# match the files in MANIFEST against what's in dist/. That way, we're
+# matching against the distro, rather than the source tree.
+extras:	all
+	@cat MANIFEST | \
+	while read fname; do \
+		if [ ! -e "$$fname" ]; then \
+			echo "$$fname in MANIFEST doesn't exist"; \
+		fi \
+	done
 
 # Check for syntax errors in PHP files
 syntax-check:
