@@ -649,7 +649,13 @@ msg_add(value.length+" updates @ "+this.last_sync+": "+num_read+"/"+num_new);
 CacheManager.prototype.get_marked = function(feed_id, cb)
 {
 	// Get the latest mtime we have
-	var last_whatsread = this.last_whatsread;
+//	var last_whatsread = new Date(localStorage.getItem("last_whatsread"));
+	var last_whatsread;
+				// Time of last update fetched through
+				// "whatsread.php".
+	if (this.getItem("last_whatsread") != null)
+		last_whatsread = new Date(this.getItem("last_whatsread"));
+console.debug("first last_whatsread: "+last_whatsread);
 
 	// If we already have a last_whatsread, use it as is, so we get
 	// all the updates that happened since then.
@@ -659,9 +665,10 @@ CacheManager.prototype.get_marked = function(feed_id, cb)
 
 	// XXX - I don't think this approach works. We're likely to
 	// overlook a bunch of stuff.
-	if (last_whatsread == undefined)
+	if (isNaN(last_whatsread))
 	{
-		last_whatsread = new Date(0);
+		last_whatsread = new Date();
+console.debug("init last_whatsread: "+last_whatsread)
 
 		for (var i = 0, n = this.headers.length; i < n; i++)
 		{
@@ -672,8 +679,12 @@ CacheManager.prototype.get_marked = function(feed_id, cb)
 				mtime = hdr.mtime;
 			else
 				mtime = hdr.last_update;
-			if (mtime > last_whatsread)
+//console.debug("mtime: "+mtime);
+			if (mtime < last_whatsread)
+{
 				last_whatsread = mtime;
+console.debug("new last_whatsread: "+last_whatsread)
+}
 		}
 	}
 
@@ -684,7 +695,8 @@ CacheManager.prototype.get_marked = function(feed_id, cb)
 	var me = this;	// Trick so that we can call _get_marked_cb
 			// as a method, not a regular function.
 //msg_add("last_whatsread: "+Math.floor(last_whatsread.valueOf()/1000));
-msg_add("last_whatsread: "+last_whatsread.valueOf());
+//msg_add("last_whatsread: "+last_whatsread.valueOf());
+msg_add("last_whatsread: "+last_whatsread);
 	get_json_data("whatsread.php",
 		      { o:	"json",
 			t:	Math.floor(last_whatsread.valueOf()/1000),
@@ -711,6 +723,8 @@ var num_read = 0;
 	{
 		// No updates.
 	} else {
+		var latest_mtime = new Date(0);
+
 		/* Process updated items from updates.php */
 		for (var i = 0, n = value.length; i < n; i++)
 		{
@@ -726,15 +740,17 @@ var num_read = 0;
 num_read++;
 			this.purge_item(item.id);
 
-			if (item.mtime > this.last_whatsread)
+			if (item.mtime > latest_mtime)
 				// Remember the most recent update, so
 				// we don't request things over and
 				// over: otherwise, get_marked() can
 				// return the same read articles over
 				// and over.
-				this.last_whatsread = item.mtime;
+				latest_mtime = item.mtime;
 		}
 
+		this.last_whatsread = latest_mtime;
+console.debug("saving latest_mtime: "+this.last_whatsread.valueOf()+": "+this.last_whatsread);
 		this.setItem("last_whatsread", this.last_whatsread.valueOf());
 				// Stash for next time.
 	}
