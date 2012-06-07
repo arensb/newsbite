@@ -1,4 +1,6 @@
-- DB: create index on items.mtime: it really speeds up 'whatsread.php'
+- Bug: sometimes, the same one or two items keep coming up at the
+  bottom of the 'view' page. An off-by-one error in the "get some
+  items" code?
 - Bug: "Refresh" button shows error when session has timed out. "Sync"
   button doesn't.
 - Bug: Title link to Pharyngula articles is sometimes "Array".
