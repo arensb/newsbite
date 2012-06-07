@@ -151,6 +151,10 @@ input[type="submit"] {
 	/* Safari: */
 	-webkit-border-bottom-left-radius:	20px;
 	-webkit-border-bottom-right-radius:	20px;
+
+	/* Newer CSS */
+	border-bottom-left-radius:	20px;
+	border-bottom-right-radius:	20px;
 }
 
 .item.item-read .item-header .item-title {
@@ -207,6 +211,10 @@ input[type="submit"] {
 	/* Safari: */
 	-webkit-border-top-left-radius:		20px;
 	-webkit-border-top-right-radius:	20px;
+
+	/* Newer CSS */
+	border-top-left-radius:		20px;
+	border-top-right-radius:	20px
 }
 
 .item-header .info {
@@ -519,6 +527,10 @@ input[type="checkbox"].mark-check {
 	/* Safari: */
 	-webkit-border-bottom-left-radius:	20px;
 	-webkit-border-bottom-right-radius:	20px;
+
+	/* Newer CSS: */
+	border-bottom-left-radius:	20px;
+	border-bottom-right-radius:	20px;
 }
 
 .item.old1d .item-footer {
