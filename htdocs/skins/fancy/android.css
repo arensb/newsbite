@@ -30,6 +30,12 @@ iframe {
 	outline:	2px dotted red;
 }
 
+/* Don't let images overflow the item */
+.item img {
+	max-width:	100% !important;
+	height:		auto;	/* Preserve aspect ratio */
+}
+
 .button-box {
 /*	font-size:	1pt;*/
 }
