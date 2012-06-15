@@ -73,6 +73,18 @@
   and different people may deal with this differently (UTF-8 vs. HTML
   entities). Perhaps safest to assume that they're HTML and clean up
   (if possible, only do entity translation, and throw out any markup).
+- Problem with current sync (as of v988): say you have a browser
+  viewing only a feed like Zero Punctuation, which is only updated
+  once a week.
+	cache.get_marked() will get all marked items newer than the
+  oldest item in the cache. In this case, that means it'll have to
+  plow through hundreds or thousands of irrelevant updates with only
+  one or two items that are actually in cache.
+	Perhaps a better approach would be something more like PalmOS
+  syncing: the client says what it has in cache, and the server tells
+  it what it ought to have. Preferably this should come in both slow
+  and fast sync varieties: slow to get all changes, fast to, well, be
+  fast: only update those things that have changed since a given time.
 - Sync: Probably ought to split up "updates" into multiple phases:
 	- Send articles that have been marked read/unread
 	- Get articles that have been marked read/unread since time T
