@@ -445,10 +445,14 @@ function db_get_item_updates($t, $feed_id, $max_items=100)
 	    $max_items > 100)
 		$max_items = 100;
 
-	/* Construct the query */
+	/* Construct the query
+	 * The SQL_CALC_FOUND_ROWS is there to find how many rows
+	 * would have been returned without the LIMIT clause.
+	 */
 	/* SCHEMA */
 	$query = sprintf(<<<EOT
-SELECT	id, feed_id, url, title,
+SELECT	SQL_CALC_FOUND_ROWS
+	id, feed_id, url, title,
 	summary, content,
 	author, category,
 	comment_url, comment_rss,
@@ -484,7 +488,12 @@ EOT
 		$retval[] = $row;
 	}
 
-	return $retval;
+	# Find out how many rows we'd have gotten without the LIMIT
+	# clause.
+	$result = $dbh->query("SELECT found_rows() as all_updates");
+	$row = $result->fetch_assoc();
+	$num_results = $row['all_updates'];
+	return array($retval, $num_results);
 }
 
 /* db_get_read_items
