@@ -46,7 +46,7 @@ else {
 }
 
 /* Get the updates since that time. Limit it to 100 items */
-$updates = db_get_item_updates($t, $feed_id, 100);
+list($updates, $num_results) = db_get_item_updates($t, $feed_id, 100);
 #print_r($updates);
 
 $retval = array();
@@ -69,7 +69,9 @@ while (count($updates) > 0)
 switch ($out_fmt)
 {
     case "json":
-	echo jsonify($retval);
+	echo jsonify(array(
+		"updates"	=> $retval,
+		"num_updates"	=> $num_results));
 	break;
     case "xml":
 	require_once("xml-output.inc");
