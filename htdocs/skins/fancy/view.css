@@ -121,7 +121,7 @@ input[type="submit"] {
 			from(blue),
 			to(navy));
 	background-image:
-		-moz-linear-gradient(top,
+		-moz-linear-gradient(to bottom,
 			blue,
 			navy);
 	border-top-color:	blue;
@@ -143,11 +143,6 @@ input[type="submit"] {
 }
 
 .item.item-read .item-header {
-	/* Mozilla: */
-	-moz-border-radius-bottomleft:	20px;
-	-moz-border-radius-bottomright:	20px;
-/*	-moz-opacity:	.40;*/
-
 	/* Safari: */
 	-webkit-border-bottom-left-radius:	20px;
 	-webkit-border-bottom-right-radius:	20px;
@@ -203,10 +198,6 @@ input[type="submit"] {
 	border-top-style:	outset;
 	border-right-style:	outset;
 	border-color:		navy;
-
-	/* Mozilla: */
-	-moz-border-radius-topleft:	20px;
-	-moz-border-radius-topright:	20px;
 
 	/* Safari: */
 	-webkit-border-top-left-radius:		20px;
