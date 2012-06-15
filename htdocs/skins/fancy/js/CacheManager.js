@@ -593,10 +593,16 @@ CacheManager.prototype._get_updates_cb = function(value, user_cb)
 var num_read = 0;
 var num_new = 0;
 
-	if (value == null || value.length == 0)
+	if (value == null ||
+	    value.updates == null ||
+	    value.updates.length == 0)
 	{
 		// No updates.
+console.debug("no updates");
 	} else {
+		var updates = value['updates'];
+		var num_updates = value['num_updates'];
+msg_add("num_updates: "+num_updates);
 		var latest_mtime = new Date(0);
 			// Remember the most recent update, so we don't
 			// request things over and over: otherwise,
@@ -604,9 +610,9 @@ var num_new = 0;
 			// over and over.
 
 		/* Process updated items from updates.php */
-		for (var i = 0, n = value.length; i < n; i++)
+		for (var i = 0, n = updates.length; i < n; i++)
 		{
-			var item = new Item(value[i]);
+			var item = new Item(updates[i]);
 
 			if (item.is_read)
 			{
@@ -633,8 +639,8 @@ num_new++;
 		}
 
 		this.last_sync = latest_mtime;	// Remember for next time.
+msg_add(updates.length+" updates @ "+this.last_sync+": "+num_read+"/"+num_new+", "+num_updates+" tot");
 	}
-msg_add(value.length+" updates @ "+this.last_sync+": "+num_read+"/"+num_new);
 
 	/* Call user callback, if requested */
 	// XXX - What arguments should it take?
