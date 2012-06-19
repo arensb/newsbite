@@ -511,10 +511,6 @@ input[type="checkbox"].mark-check {
 	padding-left:		10px;
 	padding-right:		10px;
 
-	/* Mozilla: */
-	-moz-border-radius-bottomleft:	20px;
-	-moz-border-radius-bottomright:	20px;
-
 	/* Safari: */
 	-webkit-border-bottom-left-radius:	20px;
 	-webkit-border-bottom-right-radius:	20px;
