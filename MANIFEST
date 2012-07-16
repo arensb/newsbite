@@ -84,6 +84,7 @@ lib/parse-feed.inc
 lib/skin.inc
 lib/xml-output.inc
 php.ini
+plugins/addtoany.php
 plugins/ads.php
 plugins/bugs.php
 plugins/enclosure.php
