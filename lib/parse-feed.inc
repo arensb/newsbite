@@ -1540,6 +1540,9 @@ function atom_element_handler(
 			// XXX - Make sure $children is a string.
 			$retval['build_time'] = strtotime($children);
 				// See note on time at top of file
+			if ($retval['build_time'] === FALSE)
+				// Make sure we have an actual time
+				$retval['build_time'] = time();
 			break;
 
 		    default:
@@ -1819,6 +1822,9 @@ function atom_element_handler(
 			// XXX - Make sure $children is a string.
 			$retval['pub_time'] = strtotime($children);
 				// See note on time at top of file
+			if ($retval['pub_time'] === FALSE)
+				// Make sure we have an actual time
+				$retval['pub_time'] = time();
 			break;
 
 		    default:
