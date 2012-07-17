@@ -73,6 +73,9 @@
   and different people may deal with this differently (UTF-8 vs. HTML
   entities). Perhaps safest to assume that they're HTML and clean up
   (if possible, only do entity translation, and throw out any markup).
+- Since I'm no longer using Firefox 3 at work, can switch to simpler
+  way of iterating over localStorage, the one that was undone in r978
+  of htdocs/skins/fancy/js/CacheManager.js
 - Problem with current sync (as of v988): say you have a browser
   viewing only a feed like Zero Punctuation, which is only updated
   once a week.
