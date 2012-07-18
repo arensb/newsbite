@@ -375,6 +375,16 @@ CacheManager.prototype.getitems = function(feed_id, cur, before, after)
 			continue;
 		hdrs.push(h);
 	}
+
+	/* XXX - Why does this function often complain of
+	 * "reference to undefined property a.last_update" in FF 13?
+	 * The obvious answer is that 'a' has id, feed_id, pub_date, is_read,
+	 * and mtime, but not last_update. But why?
+	 if (a['last_update'] == undefined)
+	 console.debug(a);
+	 if (b['last_update'] == undefined)
+	 console.debug(b);
+	*/
 	hdrs.sort(function(a, b) {
 			// XXX - Does this function do what I want?
 			// Want to sort by last_update, from newest to
@@ -540,7 +550,13 @@ CacheManager.prototype.purge_item = function(item_id)
 CacheManager.prototype.get_updates = function(feed_id, cb)
 {
 	// Get the latest mtime we have
-	var latest_mtime = this.last_sync;
+//	var latest_mtime = this.last_sync;
+	var latest_mtime;
+
+	// Need to have a separate latest_mtime for each feed ID.
+	if (this.getItem("latest_mtime:"+feed_id) != null)
+		latest_mtime = new Date(this.getItem("latest_mtime:"+feed_id));
+//console.debug("first latest_mtime: "+latest_mtime);
 
 	// If we already have a latest_mtime, use it as is, so we get
 	// all the updates that happened since then.
@@ -578,7 +594,7 @@ CacheManager.prototype.get_updates = function(feed_id, cb)
 			t:	Math.floor(latest_mtime.valueOf()/1000),
 		      },
 		      function(value) {
-			      me._get_updates_cb(value, cb);
+			      me._get_updates_cb(feed_id, value, cb);
 		      },
 		      null,
 		      true);
@@ -588,10 +604,11 @@ CacheManager.prototype.get_updates = function(feed_id, cb)
  * Callback function for get_updates(): receive a bunch of updated
  * posts, and do something smart with them.
  */
-CacheManager.prototype._get_updates_cb = function(value, user_cb)
+CacheManager.prototype._get_updates_cb = function(feed_id, value, user_cb)
 {
 var num_read = 0;
 var num_new = 0;
+console.debug("inside _get_updates_cb: feed_id == "+feed_id);
 
 	if (value == null ||
 	    value.updates == null ||
@@ -639,6 +656,8 @@ num_new++;
 		}
 
 		this.last_sync = latest_mtime;	// Remember for next time.
+console.debug("saving latest_mtime: "+this.last_sync.valueOf()+": "+this.last_sync);
+		this.setItem("latest_mtime:"+feed_id, this.last_sync.valueOf());
 msg_add(updates.length+" updates @ "+this.last_sync+": "+num_read+"/"+num_new+", "+num_updates+" tot");
 	}
 
@@ -725,16 +744,24 @@ CacheManager.prototype._get_marked_cb = function(value, user_cb)
 {
 var num_read = 0;
 
-	if (value == null || value.length == 0)
+console.debug("In _get_marked_cb:");
+//console.debug(value);
+	if (value == null ||
+	    value.updates == null ||
+	    value.updates.length == 0)
 	{
 		// No updates.
+console.debug("no updates");
 	} else {
+		var updates = value['updates'];
+		var num_updates = value['num_updates'];
+console.debug("num_updates: "+num_updates);
 		var latest_mtime = new Date(0);
 
 		/* Process updated items from updates.php */
-		for (var i = 0, n = value.length; i < n; i++)
+		for (var i = 0, n = updates.length; i < n; i++)
 		{
-			var item = new Item(value[i]);
+			var item = new Item(updates[i]);
 
 			// Got an item marked read on the server.
 			// Remove it from cache.
@@ -759,8 +786,8 @@ num_read++;
 console.debug("saving latest_mtime: "+this.last_whatsread.valueOf()+": "+this.last_whatsread);
 		this.setItem("last_whatsread", this.last_whatsread.valueOf());
 				// Stash for next time.
+msg_add(value.length+" read @ "+this.last_whatsread+": "+num_read+", "+num_updates+" tot");
 	}
-msg_add(value.length+" read @ "+this.last_whatsread+": "+num_read);
 
 	/* Call user callback, if requested */
 	// XXX - What arguments should it take?
