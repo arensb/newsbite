@@ -36,14 +36,16 @@ else {
 }
 
 /* Get the updates since that time. Limit it to 100 items */
-$updates = db_get_read_items($t, 100);
+list($updates, $num_results) = db_get_read_items($t, 100);
 #print_r($updates);
 
 /* Send the results to the user */
 switch ($out_fmt)
 {
     case "json":
-	echo jsonify($updates);
+	echo jsonify(array(
+		"updates"	=> $updates,
+		"num_updates"	=> $num_results));
 	break;
     case "xml":
 	require_once("xml-output.inc");
