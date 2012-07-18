@@ -509,10 +509,14 @@ function db_get_read_items($t, $max_items=100)
 	    $max_items > 100)
 		$max_items = 100;
 
-	/* Construct the query */
+	/* Construct the query
+	 * The SQL_CALC_FOUND_ROWS is there to find how many rows
+	 * would have been returned without the LIMIT clause.
+	 */
 	/* SCHEMA */
 	$query = sprintf(<<<EOT
-SELECT	id,
+SELECT	SQL_CALC_FOUND_ROWS
+	id,
 	IF(is_read, 1,  0) as `is_read`,
 	UNIX_TIMESTAMP(mtime) as `mtime`
 FROM	items
@@ -539,7 +543,12 @@ EOT
 		$retval[] = $row;
 	}
 
-	return $retval;
+	# Find out how many rows we'd have gotten without the LIMIT
+	# clause.
+	$result = $dbh->query("SELECT found_rows() as num_read");
+	$row = $result->fetch_assoc();
+	$num_results = $row['num_read'];
+	return array($retval, $num_results);
 }
 
 /* db_add_feed
