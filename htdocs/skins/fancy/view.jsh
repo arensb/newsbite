@@ -433,6 +433,8 @@ function mark_item1(ev)
 	 * - If there are now > 25 items on screen, delete the topmost one.
 	 * - If the deleted item was marked read, purge it from cache.
 	 */
+	// XXX - Check whether item is in a known feed, and if not,
+	// delete it from cache?
 	addnewnode:
 	if (item_div.is_read)
 	{
@@ -450,11 +452,17 @@ function mark_item1(ev)
 				// The new item we're about to add.
 		var new_node = item2node(new_item);
 
-		new_node.item_id = new_item.id;
-		new_item.node = new_node;
+		if (new_node != null)
+			// XXX - This is ugly code. new_node shouldn't
+			// be null. If it is, it's probably because
+			// it's a member of a nonexistent feed.
+		{
+			new_node.item_id = new_item.id;
+			new_item.node = new_node;
 
-		itemlist.appendChild(new_node);
-		onscreen.items.push(new_item);
+			itemlist.appendChild(new_node);
+			onscreen.items.push(new_item);
+		}
 	}
 
 	/* Scroll so that the (collapsed) item is visible.
@@ -787,6 +795,7 @@ function item2node(item)
 	if (item_feed == null)
 	{
 		console.error("Undefined feed "+item.feed_id);
+		// XXX - Ought to delete this item from cache.
 		return null;
 	}
 
@@ -867,6 +876,12 @@ function redraw_itemlist()
 			continue;
 
 		var item_node = item2node(item);
+		if (item_node == null)
+			// XXX - This should probably never happen. If
+			// it does, it's likely because the item is in
+			// a nonexistent or unknown feed, and should
+			// therefore be removed from the cache.
+			continue;
 		item_node.item_id = item.id;
 		item.node = item_node;
 
