@@ -24,6 +24,12 @@ function pheedo_ad_hook($nodename, &$retval, &$context)
 		$retval);
 #echo "text 3: [", $retval, "]\n";
 
+	// Social sites, I think.
+	$retval = preg_replace(
+		'{^\s*<a\b.*href=[\'"]http://www.pheedcontent.com/.*</a>\r?\n?}m',
+		'',
+		$retval);
+
 	// Any number of web bugs
 	$retval = preg_replace(
 		'{<img[^>]*height="0" width="0"[^>]*/>}s',
