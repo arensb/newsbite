@@ -424,6 +424,7 @@ function mark_item1(ev)
 		if (item.id != item_id)
 			continue;
 		item.is_read = item_div.is_read;
+		item.mtime = new Date();
 		cache.store_item(item);
 				// Mark in the cache as well.
 	}
@@ -450,6 +451,7 @@ function mark_item1(ev)
 
 		var new_item = more_items.pop();
 				// The new item we're about to add.
+console.debug("new_item: "+new_item);
 		var new_node = item2node(new_item);
 
 		if (new_node != null)
