@@ -19,6 +19,10 @@ AuthUserFile /folks/htdocs/newsbite/.digest_pw
 
 	# Turn on output compression
 	php_value zlib.output_compression On
+
+	# Turn off escaping quotes in $_GET/$_POST/$_COOKIE. It breaks
+	# things.
+	php_value magic_quotes_gpc Off
 </IfModule>
 
 # Safari app manifest files
