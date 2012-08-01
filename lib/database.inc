@@ -1054,6 +1054,35 @@ EOT;
 	return $update_counts;
 }
 
+function db_get_items($items)
+{
+	$query = <<<EOT
+SELECT	*
+FROM	items
+WHERE	id
+EOT;
+
+	# We assume that $items is either an integer, or an array of integers.
+	if (is_array($items))
+		$query .= " in (" . implode(",", $items) . ")";
+	else
+		$query .= " = $items";
+
+	$dbh = db_connect();
+	$result = $dbh->query($query);
+
+	$retval = array();
+
+	while ($row = $result->fetch_assoc())
+	{
+		# Make sure is_read is properly converted to boolean.
+		$row['is_read'] = $row['is_read'] ? TRUE : FALSE;
+		$retval[] = $row;
+	}
+
+	return $retval;
+}
+
 /* db_mark_items
  * Mark a set of items as either read or unread.
  * $is_read is a boolean, either true (mark items as read) or false
