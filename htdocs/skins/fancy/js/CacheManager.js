@@ -303,6 +303,7 @@ CacheManager.prototype.update_feeds = function(counts, cb)
  * of Feed objects, store it in localStorage, and call the user
  * callback.
  */
+// XXX - Move this inside update_feeds()? Will 'this' be set correctly?
 CacheManager.prototype._update_feeds_cb = function(value, user_cb)
 {
 	// XXX - Ought to update existing feed info, rather than just
@@ -522,6 +523,7 @@ CacheManager.prototype.store_item = function(item)
 	header.id = item.id;
 	header.feed_id = item.feed_id;
 	header.pub_date = item.pub_date;
+	header.last_update = item.last_update;
 	header.is_read = item.is_read;
 	header.mtime = item.mtime;
 }
@@ -604,6 +606,7 @@ CacheManager.prototype.get_updates = function(feed_id, cb)
  * Callback function for get_updates(): receive a bunch of updated
  * posts, and do something smart with them.
  */
+// XXX - Move this inside get_updates()?
 CacheManager.prototype._get_updates_cb = function(feed_id, value, user_cb)
 {
 var num_read = 0;
@@ -740,6 +743,7 @@ msg_add("last_whatsread: "+last_whatsread);
  * Callback function for get_marked(): receive a bunch of records for
  * items that have been marked as read, and purge them from cache.
  */
+// XXX - Move this inside get_marked()?
 CacheManager.prototype._get_marked_cb = function(value, user_cb)
 {
 var num_read = 0;
@@ -793,6 +797,101 @@ msg_add(value.length+" read @ "+this.last_whatsread+": "+num_read+", "+num_updat
 	// XXX - What arguments should it take?
 	if (user_cb != null)
 		user_cb();
+}
+
+CacheManager.prototype.slow_sync = function(feed_id, user_cb, user_err_cb)
+{
+	var me = this;		// 'this' for child functions.
+
+	// get_json_data callback when things go well
+	function slow_sync_cb(value)
+	{
+//console.debug("In slow_sync_cb, me == "+me);
+		// XXX
+//console.debug("slow_sync_cb: got");
+//console.debug(value);
+		// XXX - Sanity checking for value: make sure it's an
+		// array, of length > 0.
+
+		// XXX - Delete nonexistent and read items
+		//	Get inspiration from _get_marked_cb()
+		for (var i in value)
+		{
+			var entry = value[i];
+
+//console.debug(entry);
+			if ('action' in entry &&
+			    entry['action'] == "delete")
+					// Use subscript notation
+					// because 'action' might not
+					// exist.
+			{
+				// This item doesn't exist in the
+				// database. Remove it from cache.
+console.debug("Deleted item "+entry.id);
+				me.purge_item(entry.id);
+				continue;
+			}
+
+			if (entry.is_read)
+			{
+				// This item is read. Remove from cache.
+console.debug("Marked read item "+entry.id);
+				me.purge_item(entry.id);
+				continue;
+			}
+
+			// This is a new item. Add it to cache.
+			try {
+			var item = new Item(entry);
+			me.store_item(item);
+console.debug("Added new item "+item.id+": "+item.title);
+//console.debug(localStorage["item:"+item.id]);
+			continue;
+			} catch(e) {
+				console.error("Can't add item: "+e);
+			}
+
+			// XXX - What's left?
+console.debug("What should I do with this?:");
+console.debug(entry);
+		}
+
+		// Call callback function
+		if (typeof(user_cb) == "function")
+			user_cb();
+	}
+
+	// get_json_data callback when there's an error
+	function slow_sync_error(status, msg)
+	{
+		alert("slow_sync_error "+status+"\n"+msg);
+		if (typeof(user_err_cb) == "function")
+			user_err_cb(status, msg);
+	}
+
+	/* Get list of items in cache */
+	var tosend = {};
+	for (var id in this.itemindex)
+	{
+		/* Compose list of {id, mtime, is_read} entries to send */
+		var header = this.itemindex[id];
+//console.debug("id "+header.id+", is_read "+header.is_read+", mtime "+header.mtime);
+		tosend[header.id] = {
+			     is_read:	header.is_read,
+			     mtime:	header.mtime,
+			};
+	}
+
+	/* Send to server */
+	get_json_data("sync.php",
+		      {id: feed_id,
+		       ihave: JSON.stringify(tosend),
+		      },
+		      slow_sync_cb,
+		      slow_sync_error,
+		      true);
+	// Response will be collected by slow_sync_cb
 }
 
 #endif	// _CacheManager_js_
