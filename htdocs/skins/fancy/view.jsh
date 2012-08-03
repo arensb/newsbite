@@ -131,7 +131,8 @@ function init()
 		bind_key("j", move_down);
 
 		// Key bindings
-		bind_key("C-r", refresh);
+		bind_key("C-r", slow_sync);
+		bind_key("S-r", slow_sync);	// XXX - Only on Chrome
 		bind_key("S-c", collapse_all);
 		bind_key("S-e", expand_all);
 	}
@@ -985,6 +986,19 @@ function get_marked()
 // XXX - Not ready to redraw automatically just yet.
 //				redraw_itemlist();
 			  });
+}
+
+function slow_sync()
+{
+	cache.slow_sync(feed.id,
+			function() {
+				// Once it's done, redraw as necessary
+				msg_add("Returned from slow_sync");
+				onscreen.items = cache.getitems(feed.id, null, 0, 25);
+				cache.setItem("onscreen", onscreen);
+				redraw_itemlist()
+			},
+			null);
 }
 
 /* scroll_handler
