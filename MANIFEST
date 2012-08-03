@@ -69,6 +69,7 @@ htdocs/skins/fancy/view.css
 htdocs/skins/fancy/view.js
 htdocs/skins/fancy/view.jsh
 htdocs/skins/fancy/view.php
+htdocs/sync.php
 htdocs/unsubscribe.php
 htdocs/update.php
 htdocs/updates.php
