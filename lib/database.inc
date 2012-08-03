@@ -1054,10 +1054,24 @@ EOT;
 	return $update_counts;
 }
 
+/* db_get_items
+ * Given a list of item IDs, look up those items.
+ */
 function db_get_items($items)
 {
+	if (is_array($items) && count($items) == 0)
+		# Degenerate case: no items to fetch.
+		return array();
+
 	$query = <<<EOT
-SELECT	*
+SELECT	items.id, items.feed_id, items.url, items.title,
+	items.summary, items.content,
+	items.author, items.category,
+	items.comment_url, items.comment_rss, items.guid,
+	UNIX_TIMESTAMP(items.pub_date) as `pub_date`,
+	UNIX_TIMESTAMP(items.last_update) as `last_update`,
+	IF(is_read, 1, 0) as `is_read`,
+	UNIX_TIMESTAMP(mtime) as `mtime`
 FROM	items
 WHERE	id
 EOT;
