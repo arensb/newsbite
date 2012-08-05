@@ -96,6 +96,34 @@ var itemlist;		// Div containing the items.
 var item_tmpl = new Template(item_tmpl_text);
 			// Defined in view.php
 
+var query_args = {};		// GET arguments passed in the URL
+// Parse the GET arguments.
+(function()
+{
+	var query = window.location.search.substring(1);
+		// window.location.search: "?a=1&b=2..."
+		// .substring(1): cut off the "?".
+	var vars = query.split("&");	// Split by variable assignment
+
+	// Parse each variable assignment
+	for (var i = 0; i < vars.length; i++)
+	{
+		var pair = vars[i].split("=");	// Split "var=value"
+			// If 'vars[i]' is of the form "var" rather than
+			// "var=value", then pair[1] should be the empty
+			// string.
+
+		query_args[pair[0]] =
+			decodeURIComponent(pair[1].replace(/\+/g, " "));
+			// First, we replace any "+"es in the value
+			// with spaces. Then we decode the value as a
+			// URI component.
+
+		// XXX - We don't decode the variable name, so if it's
+		// not ASCII, it won't work. Do we care?
+	}
+})()
+
 function init()
 {
 	itemlist = document.getElementById("itemlist");
