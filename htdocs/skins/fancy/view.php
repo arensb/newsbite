@@ -41,8 +41,8 @@ elseif ($skin_vars['mobile'] == "Android")
 // Set various useful variables to pass on to scripts
 // The parameters we were given were the feed ID, and the start offset.
 var mobile = "<?=$skin_vars['mobile']?>";
-var feed = <?=jsonify($skin_vars['feed'])?>;
-var start_offset = <?=jsonify($skin_vars['start'])?>;
+var XXXfeed = <?=jsonify($skin_vars['feed'])?>;
+var XXXstart_offset = <?=jsonify($skin_vars['start'])?>;
 
 // XXX - This template needs an awful lot of work. See item.php
 // XXX - Don't show left checkboxes on non-iPads.
@@ -177,18 +177,22 @@ foreach ($skin_vars as $k => $v)
 ?>
 <div class="button-box">
   <button onclick="localStorage.clear()">Clear localStorage</button>
+<!--
   <button onclick="this.blur();refresh()">Refresh</button>
   <button onclick="this.blur();sync()">Sync</button>
   <button onclick="this.blur(); get_marked()">Get Marked</button>
+-->
   <button onclick="this.blur(); slow_sync()">Slow Sync</button>
 </div>
 
 <div id="itemlist"><img src="skins/<?=$skin_dir?>/Ajax-loader.gif"/></div>
 
 <div class="button-box">
+<!--
   <button onclick="this.blur();refresh()">Refresh</button>
   <button onclick="this.blur();sync()">Sync</button>
   <button onclick="this.blur(); get_marked()">Get Marked</button>
+-->
   <button onclick="this.blur(); slow_sync()">Slow Sync</button>
 </div>
 
