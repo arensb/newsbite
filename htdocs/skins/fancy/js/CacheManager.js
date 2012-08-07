@@ -471,6 +471,8 @@ CacheManager.prototype.getitems = function(feed_id, cur, before, after)
  * start - Start offset
  * cb - callback function to call when the update is complete.
  */
+// XXX - Is this function still useful? If not, is items.php still
+// useful?
 CacheManager.prototype.update_items = function(feed_id, start, cb)
 {
 	var ajax_args = {
@@ -491,6 +493,7 @@ CacheManager.prototype.update_items = function(feed_id, start, cb)
 		      true);
 }
 
+// XXX - If update_items isn't used, this function can be deleted.
 CacheManager.prototype._update_items_cb = function(value, user_cb)
 {
 	var newitems = new Array();
@@ -549,6 +552,8 @@ CacheManager.prototype.purge_item = function(item_id)
  * Find the oldest mtime in the cache, get updates since that time, and
  * apply them to the cache
  */
+// XXX - Is this function still useful? If not, is updates.php still
+// useful?
 CacheManager.prototype.get_updates = function(feed_id, cb)
 {
 	// Get the latest mtime we have
@@ -606,6 +611,8 @@ CacheManager.prototype.get_updates = function(feed_id, cb)
  * Callback function for get_updates(): receive a bunch of updated
  * posts, and do something smart with them.
  */
+// XXX - If get_updates isn't needed anymore, this function can be
+// deleted.
 // XXX - Move this inside get_updates()?
 CacheManager.prototype._get_updates_cb = function(feed_id, value, user_cb)
 {
@@ -674,6 +681,8 @@ msg_add(updates.length+" updates @ "+this.last_sync+": "+num_read+"/"+num_new+",
  * Find the oldest mtime in the cache, get items that have been marked
  * as read since then, and purge those from the cache.
  */
+// XXX - Is this function still useful? If not, can whatsread.php be
+// deleted?
 CacheManager.prototype.get_marked = function(feed_id, cb)
 {
 	// Get the latest mtime we have
@@ -743,6 +752,7 @@ msg_add("last_whatsread: "+last_whatsread);
  * Callback function for get_marked(): receive a bunch of records for
  * items that have been marked as read, and purge them from cache.
  */
+// XXX - If get_marked is removed, get rid of this function as well.
 // XXX - Move this inside get_marked()?
 CacheManager.prototype._get_marked_cb = function(value, user_cb)
 {
