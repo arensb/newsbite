@@ -123,6 +123,24 @@ var query_args = {};		// GET arguments passed in the URL
 		// not ASCII, it won't work. Do we care?
 	}
 })()
+//console.debug("query_args:");
+//console.debug(query_args);
+//
+//console.debug("mobile: "+mobile);
+//console.debug("feed: "+feed);
+//console.debug("feed:");
+//console.debug(feed);
+//console.debug("start_offset: "+start_offset);
+
+var feed_id = query_args['id'];
+		// XXX - Check to make sure this is either "all", or a
+		// (string representation of a)n integer.
+		// XXX - What if it's invalid? What then?
+
+// XXX - var mobile: can we figure out what kind of mobile device this
+// is, without getting it from the server?
+// The code in common.inc can be adapted; just match the browser ID string
+// against a series of patterns.
 
 function init()
 {
@@ -186,7 +204,7 @@ function init()
 			cur_xpos:	0,
 			cur_ypos:	0,
 		};
-		onscreen.items = cache.getitems(feed.id, null, 0, 25);
+		onscreen.items = cache.getitems(feed_id, null, 0, 25);
 	}
 
 	// Draw what we've got so far, if anything
@@ -795,16 +813,19 @@ function init_feeds_items()
 		 * forever, so we'll do other stuff while that's
 		 * going.
 		 */
-		cache.update_items(feed.id, 0, item_callback);
+//		cache.update_items(feed_id, 0, item_callback);
+		cache.slow_sync(feed_id, item_callback);
 
 		feeds = value;
 	}
 
 	function item_callback(value)
 	{
+		msg_add("Initial slow_sync done");
+
 		// We're running for the first time, so get the top
 		// (latest) articles from the cache.
-		onscreen.items = cache.getitems(feed.id, null, 0, 25);
+		onscreen.items = cache.getitems(feed_id, null, 0, 25);
 		cache.setItem("onscreen", onscreen);
 
 		// Redraw itemlist
@@ -968,53 +989,53 @@ function reorient(ev)
 	document.body.setAttribute("orientation", orientation);
 }
 
-function refresh()
-// XXX - Perhaps ought to take an argument saying whether the top or
-// bottom button was pressed, and prepend or append articles to
-// onscreen.items accordingly.
-{
-	init_feeds_items();
-	return;
+//function refresh()
+//// XXX - Perhaps ought to take an argument saying whether the top or
+//// bottom button was pressed, and prepend or append articles to
+//// onscreen.items accordingly.
+//{
+//	init_feeds_items();
+//	return;
+//
+//	// XXX - Find the articles marked as read, and purge them from
+//	// cache.
+//
+//	// XXX - update onscreen
+//	if (feeds != null &&
+//	    onscreen.items != null &&
+//	    onscreen.items.length > 0)
+//	{
+//		onscreen.items = cache.getitems(feed.id, null, 0, 25);
+////		cache.update_items(feed.id, 0,
+////				   function(){}
+////				  );
+//		redraw_itemlist();
+//	}
+//}
 
-	// XXX - Find the articles marked as read, and purge them from
-	// cache.
+//function sync()
+//{
+//	/* Get a list of updated items */
+//	// XXX - Ought to have the callback do something useful.
+//	cache.get_updates(feed.id,
+//			  function() {
+//				msg_add("sync done");
+//// XXX - Not ready to redraw automatically just yet.
+////				redraw_itemlist();
+//			  });
+//}
 
-	// XXX - update onscreen
-	if (feeds != null &&
-	    onscreen.items != null &&
-	    onscreen.items.length > 0)
-	{
-		onscreen.items = cache.getitems(feed.id, null, 0, 25);
-//		cache.update_items(feed.id, 0,
-//				   function(){}
-//				  );
-		redraw_itemlist();
-	}
-}
-
-function sync()
-{
-	/* Get a list of updated items */
-	// XXX - Ought to have the callback do something useful.
-	cache.get_updates(feed.id,
-			  function() {
-				msg_add("sync done");
-// XXX - Not ready to redraw automatically just yet.
-//				redraw_itemlist();
-			  });
-}
-
-function get_marked()
-{
-	/* Get a list of items marked read */
-	// XXX - Ought to have the callback do something useful.
-	cache.get_marked(feed.id,
-			  function() {
-				msg_add("get_marked done");
-// XXX - Not ready to redraw automatically just yet.
-//				redraw_itemlist();
-			  });
-}
+//function get_marked()
+//{
+//	/* Get a list of items marked read */
+//	// XXX - Ought to have the callback do something useful.
+//	cache.get_marked(feed.id,
+//			  function() {
+//				msg_add("get_marked done");
+//// XXX - Not ready to redraw automatically just yet.
+////				redraw_itemlist();
+//			  });
+//}
 
 function slow_sync()
 {
