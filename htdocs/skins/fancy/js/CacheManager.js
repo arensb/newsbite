@@ -140,6 +140,10 @@ function CacheManager()
 	}
 
 	/* Delete the articles marked read */
+	// XXX - This takes a long time in Firefox. Perhaps stick this
+	// in a separate function, one that runs in the background.
+	// Perhaps limit it to 10 or 20 items at a time, to keep
+	// things responsive.
 	for (var key in todelete)
 		localStorage.removeItem(todelete[key]);
 
@@ -459,6 +463,12 @@ CacheManager.prototype.getitems = function(feed_id, cur, before, after)
 	for (var i = first; i <= last; i++)
 	{
 		var head = hdrs[i];
+		var el = this.get_item(head.id);
+		if (el == null)
+		{
+			console.error("Can't get_item("+head.id+")");
+			continue;
+		}
 		retval.push(this.get_item(head.id));
 	}
 
