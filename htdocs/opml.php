@@ -12,6 +12,7 @@ require_once("database.inc");
 $feeds = db_get_feeds();
 	// XXX - Error-checking
 header("Content-type: text/xml");
+header("Content-Disposition: attachment; filename=\"newsbite-subscriptions.xml\"");
 echo "<", '?xml version="1.0" encoding="UTF-8"?', ">\n";
 
 // The spec says the <dateCreated> must be in RFC822 format. RFC822
