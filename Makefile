@@ -20,46 +20,28 @@ DISTNAME =	${PROJECT}-r${REV}
 TAR =	tar
 GZIP =	gzip
 
-# XXX - Installation directories
-
-# Installation root
-INSTALL_ROOT =	/folks/htdocs/${PROJECT}
-
-# * Files that must be fetched by browser
-PUB_ROOT =	${INSTALL_ROOT}
-# ./htdocs
-# ./htdocs/js
-# * Files that are only read by PHP scripts
-PRIV_ROOT =	${INSTALL_ROOT}
-
-# ./lib		Outside of DocRoot
-INSTALL_LIB =	${PRIV_ROOT}/lib
-# ./plugins	Outside of DocRoot
-INSTALL_PLUGINS =	${PRIV_ROOT}/plugins
-# ./htdocs/skins/*
-INSTALL_SKINS =	${PRIV_ROOT}/skins
+all::
 
 # Include a site-local Makefile, if it exists.
 # The $(wildcard) statement is to see whether it exists. Then, if it
 # does, we include it.
 # The user can also use 'make MAKEFILE_LOCAL=/path/to/file'.
-MAKEFILE_LOCAL = $(wildcard Makefile.local)
-ifneq "${MAKEFILE_LOCAL}" ""
-include ${MAKEFILE_LOCAL}
-endif
+#MAKEFILE_LOCAL = $(wildcard Makefile.local)
+#ifneq "${MAKEFILE_LOCAL}" ""
+#include ${MAKEFILE_LOCAL}
+#endif
+include Makefile.common
 
 RECURSIVE_DIRS =	\
-	htdocs/skins/fancy
+	htdocs \
+	htdocs/skins/fancy \
+	lib \
+	plugins
 
 # XXX - Create htdocs/.htaccess based on the directories above
 # XXX - Create lib/config.inc based on the directories above
 
 .PHONY:	dist
-
-all::
-	@for dir in ${RECURSIVE_DIRS}; do \
-		(cd "$$dir" && ${MAKE}); \
-	done
 
 dist:	all
 	if [ ! -d dist ]; then mkdir dist; fi
@@ -118,7 +100,7 @@ ChangeLog.svn:
 	svn log -v -rhead:\{`date +%Y-01-01`\} > $@
 
 # Recursive targets
-all clean distclean depend::
+all install clean distclean depend::
 	@for dir in ${RECURSIVE_DIRS}; do \
 		(cd "$$dir" && ${MAKE} -${MAKEFLAGS} $@); \
 	done
