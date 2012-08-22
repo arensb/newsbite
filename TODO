@@ -528,7 +528,6 @@
 - Functions and scripts that take a feed ID should also take a group.
   In particular, "all" should be considered a group, not a special
   feed ID (though it can be considered a special group).
-- 'make install' (or 'make upgrade') should install everything.
 - Add "$Rev$" or something to some file, so we can tell which revision
   we should be at. Compare this to the database, and see if we need to
   upgrade.
