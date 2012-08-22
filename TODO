@@ -1,8 +1,6 @@
 - Bug: sometimes, the same one or two items keep coming up at the
   bottom of the 'view' page. An off-by-one error in the "get some
   items" code?
-- Bug: "Refresh" button shows error when session has timed out. "Sync"
-  button doesn't.
 - Bug: Title link to Pharyngula articles is sometimes "Array".
   Ditto Greta Christina.
 	Fri May 25 16:49:36 2012: Saw this with Fake Science (see
@@ -73,6 +71,16 @@
   and different people may deal with this differently (UTF-8 vs. HTML
   entities). Perhaps safest to assume that they're HTML and clean up
   (if possible, only do entity translation, and throw out any markup).
+- Is htdocs/skins/fancy/abort.php even used? If not, delete it.
+- Is htdocs/skins/fancy/feed-title.php even used? If not, delete it.
+- Is htdocs/skins/fancy/item.php even used? If not, delete it.
+- localStorage: performance sucks under Firefox. See
+  http://hacks.mozilla.org/2012/03/there-is-no-simple-solution-for-local-storage/
+  for possible replacements: IndexedDB (Chrome, Firefox) or WebSQL
+  (for mobile Safari, Android).
+	WebSQL is allegedly deprecated by w3. But mobile Safari and
+  Android seem to run fine. So perhaps just use IndexedDB on Firefox,
+  and retain localStorage on the others?
 - Since I'm no longer using Firefox 3 at work, can switch to simpler
   way of iterating over localStorage, the one that was undone in r978
   of htdocs/skins/fancy/js/CacheManager.js
