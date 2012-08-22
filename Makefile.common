@@ -1,0 +1,40 @@
+# 						-*- Makefile -*-
+# Include a site-local Makefile, if it exists.
+# The $(wildcard) statement is to see whether it exists. Then, if it
+# does, we include it.
+# The user can also use 'make MAKEFILE_LOCAL=/path/to/file'.
+
+# HERE: The directory containing this file, Makefile.common. We get
+# this by taking the last word of $(MAKEFILE_LIST), the most-recently
+# included Makefile, then taking its directory part.
+HERE =	$(dir $(lastword $(MAKEFILE_LIST)))
+
+# If MAKEFILE_LOCAL hasn't been set, default to "Makefile.local" in
+# the same directory as Makefile.common (the top directory).
+MAKEFILE_LOCAL ?= $(wildcard ${HERE}Makefile.local)
+
+ifneq "$(MAKEFILE_LOCAL)" ""
+include $(MAKEFILE_LOCAL)
+endif
+
+# Installation directories: where to install the various bits and
+# pieces.
+# XXX - Pick better defaults
+INSTALL_ROOT ?=		/lala
+INSTALL_BACKEND ?=	${INSTALL_ROOT}
+INSTALL_SKIN ?=		${INSTALL_ROOT}/skins
+INSTALL_LIB ?=		${INSTALL_ROOT}/lib
+INSTALL_PLUGINS ?=	${INSTALL_ROOT}/plugins
+INSTALL_HTMLPURIFY ?=	${INSTALL_ROOT}/HTMLpurify
+
+# Installation options: whether to gzip various files: "yes" to
+# compress, anything else to not compress.
+COMPRESS_HTDOCS ?=	yes
+COMPRESS_CSS ?=		${COMPRESS_HTDOCS}
+COMPRESS_JS ?=		${COMPRESS_HTDOCS}
+
+# Commands
+GZIP ?=			gzip
+
+clean::
+	rm -f *~ *.bak
