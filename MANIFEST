@@ -5,6 +5,8 @@ ChangeLog.2009
 INSTALL
 MANIFEST
 Makefile
+Makefile.common
+Makefile.local
 README
 README.hacking
 TODO
@@ -14,6 +16,7 @@ fix-schema-r213.sql
 fix-schema-r367.sql
 fix-schema-r929.sql
 fix-schema-r979.sql
+htdocs/Makefile
 htdocs/addfeed.php
 htdocs/editfeed.php
 htdocs/feeds.php
@@ -78,6 +81,7 @@ htdocs/update.php
 htdocs/updates.php
 htdocs/view.php
 htdocs/whatsread.php
+lib/Makefile
 lib/common.inc
 lib/config.inc.sample
 lib/database.inc
@@ -88,6 +92,7 @@ lib/parse-feed.inc
 lib/skin.inc
 lib/xml-output.inc
 php.ini
+plugins/Makefile
 plugins/addtoany.php
 plugins/ads.php
 plugins/bugs.php
