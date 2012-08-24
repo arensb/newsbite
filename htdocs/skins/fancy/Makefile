@@ -14,6 +14,7 @@ PHP_FILES =	$(wildcard *.php)
 JS_FILES = 	$(patsubst %.jsh,%.js,${JS_SRC})
 CSS_FILES =	$(wildcard *.css)
 IMAGE_FILES =	$(wildcard *.gif *.png *.jpg)
+OTHER_FILES =	htaccess.sample
 
 include ../../../Makefile.common
 
@@ -22,7 +23,7 @@ INSTALL_FANCY ?=	${INSTALL_SKIN}/${SKIN_NAME}
 
 .SUFFIXES:	.jsh .js
 
-all::	Make.depend ${JS_FILES}
+all::	Make.depend ${JS_FILES} ${OTHER_FILES}
 	@:
 
 # Include dependencies: which .js files depend on what
@@ -31,6 +32,9 @@ include Make.depend
 # How to build .js files from .jsh files: run them through cpp.
 .jsh.js:
 	$(CPP) $(CPP_FLAGS) -o $@ $<
+
+htaccess.sample:	htaccess.sample.in
+	sed ${SED_REPLACEMENTS} < htaccess.sample.in > $@
 
 clean::
 	$(RM) $(JS_FILES)
@@ -47,7 +51,7 @@ Make.depend:	${JS_SRC}
 		$(MAKEDEPEND) -MT `echo "$$i" | sed 's/\.jsh$$/.js/'` $$i >> $@; \
 	done
 
-install::	install-php install-css install-js install-images
+install::	install-php install-css install-js install-images install-other
 
 install-php:	${PHP_FILES}
 	mkdir -p ${INSTALL_FANCY}
@@ -76,5 +80,11 @@ install-js:	${JS_FILES}
 install-images:	${IMAGE_FILES}
 	mkdir -p ${INSTALL_FANCY}
 	for i in ${IMAGE_FILES}; do \
+		install -c -m 444 "$$i" ${INSTALL_FANCY}; \
+	done
+
+install-other:	${OTHER_FILES}
+	mkdir -p ${INSTALL_FANCY}
+	for i in ${OTHER_FILES}; do \
 		install -c -m 444 "$$i" ${INSTALL_FANCY}; \
 	done
