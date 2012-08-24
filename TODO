@@ -71,11 +71,11 @@
   and different people may deal with this differently (UTF-8 vs. HTML
   entities). Perhaps safest to assume that they're HTML and clean up
   (if possible, only do entity translation, and throw out any markup).
-- lib/config.inc: PLUGIN_DIR should be full pathname to the directory
-  specified by INSTALL_PLUGINS in Makefile.{common,local}.
-- .htaccess: Generate from a template. Actually, some of it is
-  relevant to the ui part, some to the back-end, and some to both.
-  'svn copy' it, and adapt as necessary
+- lib/config.inc: should be config.inc.sample, generated from
+  config.inc.sample.in.
+	PLUGIN_DIR should be full pathname to the directory specified
+  by INSTALL_PLUGINS in Makefile.{common,local}. Ditto the two
+  htaccess.sample files.
 - SED_REPLACEMENTS is bulky and awkward. It'd probably be best to
   generate a 'replace.sed' script (or something) in the top directory.
   It can then be used by every other Makefile.
