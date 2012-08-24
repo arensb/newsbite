@@ -20,8 +20,6 @@ DISTNAME =	${PROJECT}-r${REV}
 TAR =	tar
 GZIP =	gzip
 
-all::
-
 # Include a site-local Makefile, if it exists.
 # The $(wildcard) statement is to see whether it exists. Then, if it
 # does, we include it.
@@ -42,6 +40,8 @@ RECURSIVE_DIRS =	\
 # XXX - Create lib/config.inc based on the directories above
 
 .PHONY:	dist
+
+all::
 
 dist:	all
 	if [ ! -d dist ]; then mkdir dist; fi
