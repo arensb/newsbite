@@ -14,10 +14,11 @@ fix-schema-r213.sql
 fix-schema-r367.sql
 fix-schema-r929.sql
 fix-schema-r979.sql
-htdocs/.htaccess
 htdocs/addfeed.php
 htdocs/editfeed.php
 htdocs/feeds.php
+htdocs/htaccess.sample
+htdocs/htaccess.sample.in
 htdocs/index.php
 htdocs/items.php
 htdocs/js/profiler.js
@@ -43,6 +44,8 @@ htdocs/skins/fancy/feeds.js
 htdocs/skins/fancy/feeds.jsh
 htdocs/skins/fancy/feeds.php
 htdocs/skins/fancy/gray-bg.jpg
+htdocs/skins/fancy/htaccess.sample
+htdocs/skins/fancy/htaccess.sample.in
 htdocs/skins/fancy/index.css
 htdocs/skins/fancy/ipad.css
 htdocs/skins/fancy/iphone.css
