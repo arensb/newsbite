@@ -22,7 +22,7 @@ INSTALL_FANCY ?=	${INSTALL_SKIN}/${SKIN_NAME}
 
 .SUFFIXES:	.jsh .js
 
-all:	Make.depend ${JS_FILES}
+all::	Make.depend ${JS_FILES}
 	@:
 
 # Include dependencies: which .js files depend on what
