@@ -1,10 +1,15 @@
 include ../Makefile.common
 
 PHP_FILES =	$(wildcard *.php)
-OTHER_FILES =	.htaccess
+OTHER_FILES =	htaccess.sample
 
-all::
-	@:
+all::	$(OTHER_FILES)
+
+htaccess.sample:	htaccess.sample.in
+	sed ${SED_REPLACEMENTS} < htaccess.sample.in > $@
+
+clean::
+	rm -f htaccess.sample
 
 install::
 	mkdir -p ${INSTALL_BACKEND}
