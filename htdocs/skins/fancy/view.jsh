@@ -1039,11 +1039,11 @@ function reorient(ev)
 
 function slow_sync()
 {
-	cache.slow_sync(feed.id,
+	cache.slow_sync(feed_id,
 			function() {
 				// Once it's done, redraw as necessary
 				msg_add("Returned from slow_sync");
-				onscreen.items = cache.getitems(feed.id, null, 0, 25);
+				onscreen.items = cache.getitems(feed_id, null, 0, 25);
 				cache.setItem("onscreen", onscreen);
 				redraw_itemlist()
 			},
