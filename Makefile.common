@@ -33,8 +33,25 @@ COMPRESS_HTDOCS ?=	yes
 COMPRESS_CSS ?=		${COMPRESS_HTDOCS}
 COMPRESS_JS ?=		${COMPRESS_HTDOCS}
 
+# REPLACE_VARS: list of variables to replace in .in files (similar to
+# autoconf). Used by SED_REPLACEMENTS, below.
+REPLACE_VARS =	\
+	INSTALL_ROOT \
+	INSTALL_BACKEND \
+	INSTALL_SKIN \
+	INSTALL_LIB \
+	INSTALL_PLUGINS \
+	INSTALL_HTMLPURIFY
+
+# SED_REPLACEMENTS: Generates a sed script to replace "@VAR@" with the
+# value of ${VAR}. Used by various Makefiles to generate "somefile" from
+# "somefile.in".
+SED_REPLACEMENTS =	$(foreach i, ${REPLACE_VARS}, -e 's|@${i}@|${$i}|g')
+
 # Commands
 GZIP ?=			gzip
+
+all::
 
 clean::
 	rm -f *~ *.bak
