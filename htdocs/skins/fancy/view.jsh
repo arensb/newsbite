@@ -488,7 +488,7 @@ function mark_item1(ev)
 	{
 		var last_item = onscreen.items[onscreen.items.length-1];
 				// Get last item in onscreen.items.
-		var more_items = cache.getitems(feed.id, last_item, 0, 1);
+		var more_items = cache.getitems(feed_id, last_item, 0, 1);
 				// Get the next one after that in cache
 		if (more_items == null || more_items.length < 2)
 			// If getitems() returned < 2 items, then
