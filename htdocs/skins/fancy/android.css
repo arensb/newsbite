@@ -51,6 +51,7 @@ iframe {
 .item .item-summary,
 .item .item-content {
 	font-family:		Helvetica, sans-serif;
+	font-size:		12pt;
 }
 
 .item .item-header {
