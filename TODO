@@ -1,13 +1,6 @@
 - Bug: sometimes, the same one or two items keep coming up at the
   bottom of the 'view' page. An off-by-one error in the "get some
   items" code?
-- Bug: Title link to Pharyngula articles is sometimes "Array".
-  Ditto Greta Christina.
-	Fri May 25 16:49:36 2012: Saw this with Fake Science (see
-  "tests/fakescience.rss"), story "Einstein is sick of being silly.
-  See the rest on the full page...".
-  	Oddly, the problem only appears on "view.php?id=all", not on
-  the feed-specific page ("view.php?id=286").
 - Bug: When I changed the feed URL for The Atheist Experience, the
   posts appear out of order: last_update is when it was refreshed, but
   the pub_date is when the post was published:
@@ -81,6 +74,8 @@
   It can then be used by every other Makefile.
 - Are htdocs/skins/fancy/abort.php, abort.css even used? If not,
   delete them.
+	Yes: it's used by 'abort()' in lib/common.inc, so a URL like
+  'view.php?id=nonexistent' pops up a page that uses that template.
 - Is htdocs/skins/fancy/feed-title.php even used? If not, delete it.
 - Is htdocs/skins/fancy/item.php even used? If not, delete it.
 - localStorage: performance sucks under Firefox. See
