@@ -104,3 +104,9 @@ all install clean distclean depend::
 	@for dir in ${RECURSIVE_DIRS}; do \
 		(cd "$$dir" && ${MAKE} -${MAKEFLAGS} $@); \
 	done
+
+install::
+	@echo "Done. Please check your local customization file for updates:"
+	@echo "  ${INSTALL_LIB}/config.inc"
+	@echo "  ${INSTALL_BACKEND}/config.inc"
+	@echo "  ${INSTALL_SKIN}/.htaccess"
