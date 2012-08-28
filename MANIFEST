@@ -42,7 +42,6 @@ htdocs/skins/fancy/addfeed.php
 htdocs/skins/fancy/android.css
 htdocs/skins/fancy/editfeed.css
 htdocs/skins/fancy/editfeed.php
-htdocs/skins/fancy/feed-title.php
 htdocs/skins/fancy/feeds.js
 htdocs/skins/fancy/feeds.jsh
 htdocs/skins/fancy/feeds.php
@@ -52,7 +51,6 @@ htdocs/skins/fancy/htaccess.sample.in
 htdocs/skins/fancy/index.css
 htdocs/skins/fancy/ipad.css
 htdocs/skins/fancy/iphone.css
-htdocs/skins/fancy/item.php
 htdocs/skins/fancy/js/CacheManager.js
 htdocs/skins/fancy/js/PatEvent.js
 htdocs/skins/fancy/js/Template.js
