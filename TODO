@@ -76,8 +76,6 @@
   delete them.
 	Yes: it's used by 'abort()' in lib/common.inc, so a URL like
   'view.php?id=nonexistent' pops up a page that uses that template.
-- Is htdocs/skins/fancy/feed-title.php even used? If not, delete it.
-- Is htdocs/skins/fancy/item.php even used? If not, delete it.
 - localStorage: performance sucks under Firefox. See
   http://hacks.mozilla.org/2012/03/there-is-no-simple-solution-for-local-storage/
   for possible replacements: IndexedDB (Chrome, Firefox) or WebSQL
