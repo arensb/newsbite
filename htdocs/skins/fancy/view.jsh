@@ -137,11 +137,6 @@ var feed_id = query_args['id'];
 		// (string representation of a)n integer.
 		// XXX - What if it's invalid? What then?
 
-// XXX - var mobile: can we figure out what kind of mobile device this
-// is, without getting it from the server?
-// The code in common.inc can be adapted; just match the browser ID string
-// against a series of patterns.
-
 function init()
 {
 	itemlist = document.getElementById("itemlist");
