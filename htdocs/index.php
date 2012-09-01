@@ -14,9 +14,6 @@ $err = usort($feeds, "byname");
 
 $skin = new Skin();
 
-$skin->assign('feeds', $feeds);
-$skin->assign('counts', $counts);
-$skin->assign('mobile', $mobile);
 $skin->display("feeds");
 db_disconnect();
 
