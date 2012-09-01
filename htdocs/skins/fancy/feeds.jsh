@@ -2,6 +2,7 @@
  * JavaScript functions for the feed view.
  */
 #include "js/debug.js"
+#include "js/guess-mobile.js"
 // #include "js/defer.js"
 #include "js/xhr.js"
 #include "js/classes.js"

@@ -1,5 +1,6 @@
 /*						-*- JavaScript -*- */
 #include "js/debug.js"
+#include "js/guess-mobile.js"
 /*#include "js/defer.js"*/
 #include "js/xhr.js"
 #include "js/classes.js"
@@ -123,14 +124,6 @@ var query_args = {};		// GET arguments passed in the URL
 		// not ASCII, it won't work. Do we care?
 	}
 })()
-//console.debug("query_args:");
-//console.debug(query_args);
-//
-//console.debug("mobile: "+mobile);
-//console.debug("feed: "+feed);
-//console.debug("feed:");
-//console.debug(feed);
-//console.debug("start_offset: "+start_offset);
 
 var feed_id = query_args['id'];
 		// XXX - Check to make sure this is either "all", or a

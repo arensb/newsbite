@@ -5,22 +5,6 @@ $feed = &$skin_vars['feed'];
 $feed_id = $feed['id'];
 $items = &$skin_vars['items'];
 
-/* Figure out which mobile device, if any, we're on */
-switch ($skin_vars['mobile'])
-{
-    case 'iPhone':
-	$mobile_css = "iphone.css";
-	break;
-    case 'iPad':
-	$mobile_css = "ipad.css";
-	break;
-    case 'Android':
-	$mobile_css = "android.css";
-	break;
-    default:
-	break;
-}
-
 # Tell the client to cache this for a week
 $tomorrow = new DateTime("now + 1 week");
 header("Expires: " . $tomorrow->format("D, d M Y H:i:s T"));
@@ -41,37 +25,6 @@ elseif ($skin_vars['mobile'] == "Android")
 // Set various useful variables to pass on to scripts
 var skin_dir = "<?=$skin_dir?>";	// Needed because we need to be able
 					// find the CSS file.
-
-// mobile: try to guess what kind of mobile device this is, by examining
-// the user-agent string. Yes, this is an ugly hack, and it's better to
-// check for the existence of specific functions.
-
-// In my defense, this is mostly used to load an appropriate
-// stylesheet, and in a few other cases where we want one look for the
-// desktop and another for all mobile devices; rather than
-// distinguishing one mobile device from another.
-var mobile = function(){
-	var user_agent = "";
-	try {
-		user_agent = navigator.userAgent;
-	} catch (e) {
-		// Leave it as empty string
-	}
-
-	if (user_agent.match(/Mozilla\/\S+ \(iPod;/))
-		return "iPhone";
-	else if (user_agent.match(/Mozilla\/\S+ \(iPad;/))
-		return "iPad";
-	else if (user_agent.match(/Mozilla\/\S+ .*Kindle/))
-		// This needs to go above the Android line, because
-		// the user-agent string is
-		// Mozilla/5.0 (X11; U; Linux armv7l like Android; en-us) AppleWebKit/531.2+ (KHTML, like Gecko) Version/5.0 Safari/533.2+ Kindle/3.0+
-		// so it matches /^Mozilla.*Android.*Kindle/.
-		return "Kindle";
-	else if (user_agent.match(/Mozilla\/\S+ .*Android/))
-		return "Android";
-	return false;
-}();
 
 // XXX - This template needs an awful lot of work.
 // XXX - Don't show left checkboxes on non-iPads.
@@ -142,20 +95,6 @@ var item_tmpl_text = '<article class="item" id="item-@id@">\
 </script>
 <title>NewsBite: <?=htmlspecialchars($feed['title'])?></title>
 <link rel="stylesheet" type="text/css" href="skins/<?=$skin_dir?>/view.css" media="all" />
-<?
-#if (isset($mobile_css))
-#	echo "<link rel=\"stylesheet\" type=\"text/css\" href=\"skins/$skin_dir/$mobile_css\" media=\"screen\" />\n";
-?>
-<script type="text/javascript">
-// Load the mobile CSS file, if necessary
-if (mobile)
-{
-	document.write('<link rel="stylesheet" type="text/css" href="skins/' +
-		       skin_dir +
-		       '/' +
-		       mobile.toLowerCase()+'.css" media="screen" />');
-}
-</script>
 <script type="text/javascript" src="skins/<?=$skin_dir?>/view.js"></script>
 </head>
 <body id="view-body">
