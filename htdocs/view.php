@@ -83,11 +83,8 @@ if ($out_fmt == "xml")
 /* If we get this far, user has requested HTML output */
 $skin = new Skin();
 
-$skin->assign('start', $start);
 $skin->assign('feed', $feed);
-#if (isset($feeds))
-#	$skin->assign('feeds', $feeds);
-$skin->assign('mobile', $mobile);
+#$skin->assign('mobile', $mobile);
 ## XXX - Debugging
 $skin->assign('auth_user', $auth_user);
 $skin->assign('auth_expiration', strftime("%c", $auth_expiration));
