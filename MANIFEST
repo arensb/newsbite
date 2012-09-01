@@ -52,6 +52,7 @@ htdocs/skins/fancy/index.css
 htdocs/skins/fancy/ipad.css
 htdocs/skins/fancy/iphone.css
 htdocs/skins/fancy/js/CacheManager.js
+htdocs/skins/fancy/js/Makefile
 htdocs/skins/fancy/js/PatEvent.js
 htdocs/skins/fancy/js/Template.js
 htdocs/skins/fancy/js/classes.js
