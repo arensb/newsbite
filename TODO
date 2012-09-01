@@ -1156,17 +1156,6 @@
 - Add a customized error page for when can't authenticate?
 	ErrorDocument /path/to/page.html
   in .htaccess
-- navigator.platform
-  Gives the hardware on which the browser is running, e.g.:
-	iPad
-	SunOS sun4u
-	MacPPC
-  More generally, see
-	http://www.quirksmode.org/js/detect.html
-	http://www.w3schools.com/jsref/obj_navigator.asp
-  for detecting the browser. However, this should be avoided. Better
-  to check whether the browser has a particular feature.
-	Can also use navigator.userAgent to guess which browser this is.
 # Local Variables:
 # fill-prefix: "  "
 # mode: auto-fill

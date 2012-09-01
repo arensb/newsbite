@@ -4,8 +4,14 @@
  * Try to guess what kind of mobile device this is, by examining the
  * user-agent string. Yes, this is an ugly hack, and it's better to
  * check for the existence of specific functions.
+ *
+ * navigator.platform also gives the hardware/OS that the browser is
+ * running on, though this doesn't seem terribly useful.
+ * More generally, see
+ *	http://www.quirksmode.org/js/detect.html
+ *	http://www.w3schools.com/jsref/obj_navigator.asp
+ * for detecting the browser.
  */
-
 
 // In my defense, this is mostly used to load an appropriate
 // stylesheet, and in a few other cases where we want one look for the
