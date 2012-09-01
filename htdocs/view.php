@@ -84,7 +84,6 @@ if ($out_fmt == "xml")
 $skin = new Skin();
 
 $skin->assign('feed', $feed);
-#$skin->assign('mobile', $mobile);
 ## XXX - Debugging
 $skin->assign('auth_user', $auth_user);
 $skin->assign('auth_expiration', strftime("%c", $auth_expiration));
