@@ -130,7 +130,6 @@
 	htdocs/markitems.php
 	htdocs/update.php
 	htdocs/skins/fancy/view.php
-	htdocs/items.php
 	htdocs/feeds.php
 	htdocs/view.php
 - Add a /* SCHEMA */ comment everywhere where the code needs to be

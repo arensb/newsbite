@@ -801,7 +801,6 @@ function init_feeds_items()
 		 * forever, so we'll do other stuff while that's
 		 * going.
 		 */
-//		cache.update_items(feed_id, 0, item_callback);
 		cache.slow_sync(feed_id, item_callback);
 
 		feeds = value;
@@ -976,54 +975,6 @@ function reorient(ev)
 
 	document.body.setAttribute("orientation", orientation);
 }
-
-//function refresh()
-//// XXX - Perhaps ought to take an argument saying whether the top or
-//// bottom button was pressed, and prepend or append articles to
-//// onscreen.items accordingly.
-//{
-//	init_feeds_items();
-//	return;
-//
-//	// XXX - Find the articles marked as read, and purge them from
-//	// cache.
-//
-//	// XXX - update onscreen
-//	if (feeds != null &&
-//	    onscreen.items != null &&
-//	    onscreen.items.length > 0)
-//	{
-//		onscreen.items = cache.getitems(feed.id, null, 0, 25);
-////		cache.update_items(feed.id, 0,
-////				   function(){}
-////				  );
-//		redraw_itemlist();
-//	}
-//}
-
-//function sync()
-//{
-//	/* Get a list of updated items */
-//	// XXX - Ought to have the callback do something useful.
-//	cache.get_updates(feed.id,
-//			  function() {
-//				msg_add("sync done");
-//// XXX - Not ready to redraw automatically just yet.
-////				redraw_itemlist();
-//			  });
-//}
-
-//function get_marked()
-//{
-//	/* Get a list of items marked read */
-//	// XXX - Ought to have the callback do something useful.
-//	cache.get_marked(feed.id,
-//			  function() {
-//				msg_add("get_marked done");
-//// XXX - Not ready to redraw automatically just yet.
-////				redraw_itemlist();
-//			  });
-//}
 
 function slow_sync()
 {
