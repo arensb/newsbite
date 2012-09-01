@@ -23,7 +23,6 @@ htdocs/feeds.php
 htdocs/htaccess.sample
 htdocs/htaccess.sample.in
 htdocs/index.php
-htdocs/items.php
 htdocs/js/profiler.js
 htdocs/loadopml.php
 htdocs/login.php

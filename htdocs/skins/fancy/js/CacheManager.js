@@ -40,9 +40,6 @@
  * up to 'before' items before 'ptr', and up to 'after' items after
  * 'ptr'. If ptr is null, then 'before' is ignored; if ptr is -1, then
  * 'after' is ignored.
- *
- * - update_items(feed_id, ?, cb) - Send an AJAX request to get more items
- * from feed_id, then call cb() when it completes.
  */
 /* XXX - Perhaps have callback functions called when feeds/items get
  * updated? For when things change in the background. Or would that be
@@ -473,48 +470,6 @@ CacheManager.prototype.getitems = function(feed_id, cur, before, after)
 	}
 
 	return retval;
-}
-
-/* update_items
- * Get items from the server.
- * feed_id - ID of the feed to update, or "all".
- * start - Start offset
- * cb - callback function to call when the update is complete.
- */
-// XXX - Is this function still useful? If not, is items.php still
-// useful?
-CacheManager.prototype.update_items = function(feed_id, start, cb)
-{
-	var ajax_args = {
-		o:	"json",
-		id:	feed_id,
-		s:	start + 0,
-		};
-
-	var me = this;
-	get_json_data("items.php",
-		      ajax_args,
-		      function(value) {
-			      me._update_items_cb(value, cb);
-		      },
-		      function(status, msg) {	// Error handler
-			      msg_add("JSON failed: "+status+": "+msg);
-		      },
-		      true);
-}
-
-// XXX - If update_items isn't used, this function can be deleted.
-CacheManager.prototype._update_items_cb = function(value, user_cb)
-{
-	var newitems = new Array();
-	for (var i in value.items)
-	{
-		var item = new Item(value.items[i]);
-		newitems.push(item);
-		this.store_item(item);
-	}
-
-	user_cb(newitems);
 }
 
 /* store_item
