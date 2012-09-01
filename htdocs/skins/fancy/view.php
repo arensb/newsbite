@@ -15,12 +15,6 @@ echo '<', '?xml version="1.0" encoding="UTF-8"?', ">\n";
 	"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html>
 <head>
-<? /* Include a device-specific viewport, if necessary */
-if ($skin_vars['mobile'] == "iPhone")
-	echo '<meta name="viewport" content="width = device-width, initial-scale=0.5" />', "\n";
-elseif ($skin_vars['mobile'] == "Android")
-	echo '<meta name="viewport" content="width = device-width, initial-scale=1.0" />', "\n";
-?>
 <script type="text/javascript">
 // Set various useful variables to pass on to scripts
 var skin_dir = "<?=$skin_dir?>";	// Needed because we need to be able

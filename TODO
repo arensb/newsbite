@@ -64,7 +64,6 @@
   and different people may deal with this differently (UTF-8 vs. HTML
   entities). Perhaps safest to assume that they're HTML and clean up
   (if possible, only do entity translation, and throw out any markup).
-- Move <viewport> to js/guess-mobile.js
 - Add htdocs/skins/fancy/js/Makefile.
 	all: nothing
 	clean: standard rules

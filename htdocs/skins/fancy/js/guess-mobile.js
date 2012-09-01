@@ -36,6 +36,13 @@ var mobile = function(){
 
 if (mobile)
 {
+	// Set the viewport, if necessary.
+	if (mobile == "iPhone")
+		document.write('<meta name="viewport" content="width = device-width, initial-scale=0.5" />');
+	else if (mobile == "Android")
+		document.write('<meta name="viewport" content="width = device-width, initial-scale=1.0" />');
+
+	// Load a device-specific stylesheet
 	document.write('<link rel="stylesheet" type="text/css" href="skins/' +
 		       skin_dir +
 		       '/' +
