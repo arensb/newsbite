@@ -11,27 +11,6 @@ $skin_dir = $skin_vars['skin'];
 <title>NewsBite: Feeds</title>
 <link rel="stylesheet" type="text/css" href="skins/<?=$skin_dir?>/style.css" media="all" />
 <link rel="stylesheet" type="text/css" href="skins/<?=$skin_dir?>/index.css" media="all" />
-<?
-/* Include a mobile device-specific stylesheet. */
-switch ($skin_vars['mobile'])
-{
-    case 'iPhone':
-	$mobile_css = "iphone.css";
-	break;
-    case 'iPad':
-	$mobile_css = "ipad.css";
-	break;
-    case 'Android':
-	$mobile_css = "android.css";
-	break;
-    default:
-	break;
-}
-if (isset($mobile_css))
-{
-	echo "<link rel=\"stylesheet\" type=\"text/css\" href=\"skins/$skin_vars[skin]/$mobile_css\" media=\"screen\" />\n";
-}
-?>
 <script type="text/javascript">
   /* XXX - Which of these variables are actually needed? */
   var skin_dir = "skins/<?=$skin_dir?>";
