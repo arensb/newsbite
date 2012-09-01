@@ -33,6 +33,7 @@ include Makefile.common
 RECURSIVE_DIRS =	\
 	htdocs \
 	htdocs/skins/fancy \
+	htdocs/skins/fancy/js \
 	lib \
 	plugins
 
