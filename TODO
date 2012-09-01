@@ -64,9 +64,6 @@
   and different people may deal with this differently (UTF-8 vs. HTML
   entities). Perhaps safest to assume that they're HTML and clean up
   (if possible, only do entity translation, and throw out any markup).
-- Add htdocs/skins/fancy/js/Makefile.
-	all: nothing
-	clean: standard rules
 - lib/config.inc: should be config.inc.sample, generated from
   config.inc.sample.in.
 	PLUGIN_DIR should be full pathname to the directory specified
