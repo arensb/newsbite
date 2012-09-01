@@ -31,29 +31,6 @@ switch (isset($_REQUEST['o']) ? $_REQUEST['o'] : "")
 	break;
 }
 
-/* Try to guess whether we're viewing this on an iPhone or other
- * mobile device.
- */
-$mobile = false;
-if (preg_match(',Mozilla/\S+ \(iPod;,', $_SERVER['HTTP_USER_AGENT']))
-{
-	$mobile = "iPhone";
-} else if (preg_match(',Mozilla/\S+ \(iPad;,', $_SERVER['HTTP_USER_AGENT']))
-{
-	$mobile = "iPad";
-} else if (preg_match(',Mozilla/\S+ .*Kindle,', $_SERVER['HTTP_USER_AGENT']))
-{
-	# This needs to go above the Android line, because the user-agent
-	# string is
-	# Mozilla/5.0 (X11; U; Linux armv7l like Android; en-us) AppleWebKit/531.2+ (KHTML, like Gecko) Version/5.0 Safari/533.2+ Kindle/3.0+
-	# so it matches /^Mozilla.*Android.*Kindle/.
-	$mobile = "Kindle";
-} else if (preg_match(',Mozilla/\S+ .*Android,', $_SERVER['HTTP_USER_AGENT']))
-{
-	$mobile = "Android";
-} else
-	$mobile = FALSE;
-
 /* Check to make sure the user is properly logged in. We put this here
  * because common.php is included by every script.
  *
