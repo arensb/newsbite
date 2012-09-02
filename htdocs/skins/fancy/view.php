@@ -118,15 +118,6 @@ else
 ?>
 <div class="feed-description"><?=$description?></div>
 <?endif?>
-<?
-// XXX - Debugging
-#echo "feed: [<pre>"; print_r($feed); echo "</pre>]<br/>\n";
-/*echo "skin vars:<br/>\n";
-foreach ($skin_vars as $k => $v)
-{
-	echo "[", $k, "]<br/>\n";
-}*/
-?>
 
 <ul class="feed-tools">
   <li><a href="index.php">Feed index</a></li>
@@ -139,32 +130,14 @@ foreach ($skin_vars as $k => $v)
 <?endif?>
 </ul>
 
-<!-- List of items -->
-<?
-/* XXX - Should have navigation strip:
- *  <- first [20] [21] [22] _23_ [24] [25] [26] last ->
- * Put this at top and bottom. So probably ought to have a separate
- * template for it.
- */
-?>
 <div class="button-box">
   <button onclick="localStorage.clear()">Clear localStorage</button>
-<!--
-  <button onclick="this.blur();refresh()">Refresh</button>
-  <button onclick="this.blur();sync()">Sync</button>
-  <button onclick="this.blur(); get_marked()">Get Marked</button>
--->
   <button onclick="this.blur(); slow_sync()">Slow Sync</button>
 </div>
 
 <div id="itemlist"><img src="skins/<?=$skin_dir?>/Ajax-loader.gif"/></div>
 
 <div class="button-box">
-<!--
-  <button onclick="this.blur();refresh()">Refresh</button>
-  <button onclick="this.blur();sync()">Sync</button>
-  <button onclick="this.blur(); get_marked()">Get Marked</button>
--->
   <button onclick="this.blur(); slow_sync()">Slow Sync</button>
 </div>
 
