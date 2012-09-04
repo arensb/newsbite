@@ -338,9 +338,14 @@ function redraw_feed_list()
 	{
 		var feed = sorted_feeds[i];
 
+try {
 		// Skip empty feeds if user wants.
 		if (feed.num_unread == 0 && !show_empty)
 			continue;
+} catch (e) {
+console.error("feed.num_unread error: "+e);
+console.debug(feed);
+}
 
 		// Skip inactive feeds if user wants.
 		if (feed.active != 1 && !show_inactive)
