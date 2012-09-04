@@ -1,7 +1,4 @@
 <?
-require_once("hooks.inc");
-load_hooks(PLUGIN_DIR);
-
 // Give some of the skin variables shorter names
 $skin_dir = $skin_vars['skin'];
 $feed = &$skin_vars['feed'];
@@ -117,8 +114,6 @@ else
 
 <?if (isset($feed['description']) && $feed['description'] != ""):
 	$description = $feed['description'];
-	# XXX - Need to move clean-html to lib/parse-feed.inc
-	run_hooks("clean-html", array(&$description))
 ?>
 <div class="feed-description"><?=$description?></div>
 <?endif?>
