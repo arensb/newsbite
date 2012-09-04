@@ -64,6 +64,10 @@
   and different people may deal with this differently (UTF-8 vs. HTML
   entities). Perhaps safest to assume that they're HTML and clean up
   (if possible, only do entity translation, and throw out any markup).
+- Chrome, Safari, even Firefox have better debugging and profiling
+  tools than my home-rolled ones. Get rid of those. Debugging too, I
+  think. I think I can just use console.debug for everything.
+	Which browsers don't have window.console?
 - lib/config.inc: should be config.inc.sample, generated from
   config.inc.sample.in.
 	PLUGIN_DIR should be full pathname to the directory specified
@@ -1140,6 +1144,16 @@
 
   Apparently currently (May 2010) neither iPod Touch nor iPad consider
   themselves handheld devices. Go figure.
+	Sep 2012: 
+  http://stackoverflow.com/questions/3893342/do-iphone-android-browsers-support-css-media-handheld
+
+  says that Apple chose not to implement "@media handheld", since the
+  iPhone can display things on a par with desktop browsers. Presumably
+  Android ignores it as well for similar reasons.
+	That page recommends using
+  <link rel="stylesheet" type="text/css" media="screen and (max-device-width: 480px) and (resolution: 163dpi)" href="shetland.css" />
+  which does seem a reasonable approach, especially given the wide
+  variety of device sizes.
 - CSS: replace -moz-box-shadow, -webkit-box-shadow with box-shadow
   once enough browsers support it.
 - CSS media queries described at
