@@ -803,7 +803,7 @@ CacheManager.prototype.slow_sync = function(feed_id, user_cb, user_err_cb)
 			{
 				// This item doesn't exist in the
 				// database. Remove it from cache.
-console.debug("Deleted item "+entry.id);
+//console.debug("Deleted item "+entry.id);
 				me.purge_item(entry.id);
 				continue;
 			}
@@ -811,7 +811,7 @@ console.debug("Deleted item "+entry.id);
 			if (entry.is_read)
 			{
 				// This item is read. Remove from cache.
-console.debug("Marked read item "+entry.id);
+//console.debug("Marked read item "+entry.id);
 				me.purge_item(entry.id);
 				continue;
 			}
@@ -820,7 +820,7 @@ console.debug("Marked read item "+entry.id);
 			try {
 			var item = new Item(entry);
 			me.store_item(item);
-console.debug("Added new item "+item.id+": "+item.title);
+//console.debug("Added new item "+item.id+": "+item.title);
 //console.debug(localStorage["item:"+item.id]);
 			continue;
 			} catch(e) {
