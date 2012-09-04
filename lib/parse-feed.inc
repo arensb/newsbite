@@ -814,14 +814,19 @@ error_log("After hooks, link is array\n");
 		break;
 
 	    case "description":
+		# Clean up HTML in description.
+		run_hooks("clean-html", array(&$children));
+		# XXX - There's a danger that channel/description could
+		# wind up being > 255 characters long. In this case, it'd
+		# get truncated when saved to the database, and we'd
+		# wind up with unclosed tags on the final page.
+		# Perhaps one workaround is to clean-html in feeds.php:
+		# read truncated HTML from the database, and clean it up
+		# before sending it to the client.
+
 		switch ($parent)
 		{
 		    case "item":
-			# Clean up HTML
-# Cleans body HTML. Needed.
-#echo "Clean-html 2 [$children]<br/>\n";
-			run_hooks("clean-html", array(&$children));
-#echo "After clean-html 2 [$children]<br/>\n";
 			# Run any other required hooks on the summary
 			run_hooks("summary",
 				  array($elt_name, &$children, &$context));
