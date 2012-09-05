@@ -96,6 +96,7 @@ var onscreen;		// List of displayed items
 var itemlist;		// Div containing the items.
 var item_tmpl = new Template(item_tmpl_text);
 			// Defined in view.php
+var page_top_tmpl = new Template(page_top_tmpl_text);
 
 var query_args = {};		// GET arguments passed in the URL
 // Parse the GET arguments.
@@ -179,6 +180,8 @@ function init()
 
 	// Get feeds and items from cache.
 	feeds = cache.feeds();
+	set_feed_fields();	// XXX - Set the page title,
+				// description, and so on.
 
 	// Fetch the list of what was on screen last time we started
 	cur_item = cache.getItem("cur_item");
@@ -804,6 +807,9 @@ function init_feeds_items()
 		cache.slow_sync(feed_id, item_callback);
 
 		feeds = value;
+
+		// XXX - Now that we have the most current value for
+		// feeds, update the page: title, description, etc.
 	}
 
 	function item_callback(value)
@@ -948,6 +954,48 @@ function redraw_itemlist()
 
 	// Add the new list
 	itemlist.appendChild(new_itemlist);
+}
+
+/* set_feed_fields
+ * Set various fields in the page to whichever feed we're displaying at the
+ * moment.
+ */
+function set_feed_fields()
+{
+	var feed;
+
+	if (feed_id == "all")
+	{
+		feed = {
+			id:		"all",
+			title:		"All feeds",
+			url:		null,
+			subtitle:	"",
+			description:	"",
+		};
+	} else if (!feed_id in feeds)
+	{
+		console.error("Can't find feed_id "+feed_id+" in feeds.");
+		return;
+	} else
+		feed = feeds[feed_id];
+
+	// Set the page title.
+	try {
+		var title_field = document.getElementsByTagName("title")[0];
+		title_field.innerHTML = "Newsbite: "+feed.title;
+	} catch (e) {
+		// Android browser throws
+		// NO_MODIFICATION_ALLOWED_ERR: DOM Exception 7
+		// XXX - Ought to check that this is in fact the error
+		// we got, and re-throw if it isn't.
+	}
+
+	// Expand the page-top template, which has a bunch of stuff
+	// like the feed title, subtitle, description, as well as URLs
+	// that have the feed ID as an argument.
+	var page_top = document.getElementById("page-top");
+	page_top.innerHTML = page_top_tmpl.expand(feed);
 }
 
 function reorient(ev)

@@ -64,10 +64,15 @@
   and different people may deal with this differently (UTF-8 vs. HTML
   entities). Perhaps safest to assume that they're HTML and clean up
   (if possible, only do entity translation, and throw out any markup).
+- Probably time to switch to a real JS template library. Perhaps
+  http://handlebarsjs.com/
+  unless there's something better. JQuery apparently has some good
+  stuff.
 - Chrome, Safari, even Firefox have better debugging and profiling
   tools than my home-rolled ones. Get rid of those. Debugging too, I
   think. I think I can just use console.debug for everything.
 	Which browsers don't have window.console?
+	I think all the ones I care about do.
 - lib/config.inc: should be config.inc.sample, generated from
   config.inc.sample.in.
 	PLUGIN_DIR should be full pathname to the directory specified
