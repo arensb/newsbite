@@ -1,9 +1,6 @@
 <?
 // Give some of the skin variables shorter names
 $skin_dir = $skin_vars['skin'];
-$feed = &$skin_vars['feed'];
-$feed_id = $feed['id'];
-$items = &$skin_vars['items'];
 
 # Tell the client to cache this for a week
 $tomorrow = new DateTime("now + 1 week");
@@ -19,6 +16,21 @@ echo '<', '?xml version="1.0" encoding="UTF-8"?', ">\n";
 // Set various useful variables to pass on to scripts
 var skin_dir = "<?=$skin_dir?>";	// Needed because we need to be able
 					// find the CSS file.
+
+var page_top_tmpl_text = '<img class="feed-icon" src="@image@"/>\
+\
+<!-- Shouldn\'t be a link if there\'s no URL -->\
+<h1><a href="@url@">@title@</a></h1>\
+<div class="feed-subtitle">@subtitle@</div>\
+\
+<div class="feed-description">@description@</div>\
+\
+<ul class="feed-tools">\
+  <li><a href="index.php">Feed index</a></li>\
+  <li><a href="update.php?id=@id@">Update feed</a></li>\
+  <li><a href="editfeed.php?id=@id@">Edit feed</a></li>\
+  <li><a href="unsubscribe.php?id=@id@">Unsubscribe from feed</a></li>\
+</ul>';
 
 // XXX - This template needs an awful lot of work.
 // XXX - Don't show left checkboxes on non-iPads.
@@ -87,47 +99,13 @@ var item_tmpl_text = '<article class="item" id="item-@id@">\
   </table>\
 </article>';
 </script>
-<title>NewsBite: <?=htmlspecialchars($feed['title'])?></title>
+<title>NewsBite</title>
 <link rel="stylesheet" type="text/css" href="skins/<?=$skin_dir?>/view.css" media="all" />
 <script type="text/javascript" src="skins/<?=$skin_dir?>/view.js"></script>
 </head>
 <body id="view-body">
 
-<?if (isset($feed['image']) && $feed['image'] != ""): ?>
-<img class="feed-icon" src="<?=$feed['image']?>"/>
-<?endif?>
-
-<h1><?
-# Feed title
-if (!isset($feed['url']) || $feed['url'] == "")
-	echo htmlspecialchars($feed['title']);
-else
-	echo "<a href=\"",
-		htmlspecialchars($feed['url']),
-		"\">",
-		htmlspecialchars($feed['title']),
-		"</a>";
-?></h1>
-<?if (isset($feed['subtitle']) && $feed['subtitle'] != ""):?>
-<div class="feed-subtitle"><?=htmlspecialchars($feed['subtitle'])?></div>
-<?endif?>
-
-<?if (isset($feed['description']) && $feed['description'] != ""):
-	$description = $feed['description'];
-?>
-<div class="feed-description"><?=$description?></div>
-<?endif?>
-
-<ul class="feed-tools">
-  <li><a href="index.php">Feed index</a></li>
-<?if ($feed_id == ""):?>
-  <li><a href="update.php?id=all">Update all feeds</a></li>
-<?else:?>
-  <li><a href="update.php?id=<?=$feed_id?>">Update feed</a></li>
-  <li><a href="editfeed.php?id=<?=$feed_id?>">Edit feed</a></li>
-  <li><a href="unsubscribe.php?id=<?=$feed_id?>">Unsubscribe from feed</a></li>
-<?endif?>
-</ul>
+<div id="page-top">Feed information goes here</div>
 
 <div class="button-box">
   <button onclick="localStorage.clear()">Clear localStorage</button>

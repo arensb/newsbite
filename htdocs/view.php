@@ -37,7 +37,6 @@ unset($feed['passwd']);
 /* If we get this far, user has requested HTML output */
 $skin = new Skin();
 
-$skin->assign('feed', $feed);
 ## XXX - Debugging
 $skin->assign('auth_user', $auth_user);
 $skin->assign('auth_expiration', strftime("%c", $auth_expiration));
