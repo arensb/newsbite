@@ -13,7 +13,4 @@ $skin->assign('auth_user', $auth_user);
 $skin->assign('auth_expiration', strftime("%c", $auth_expiration));
 ## XXX - end debugging
 $skin->display("view");
-
-db_disconnect();
-
 ?>
