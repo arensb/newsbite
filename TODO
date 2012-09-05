@@ -457,23 +457,6 @@
 - plugins/xml-media.php:
 	<media:group> indicates a group of <media:content> items that
   all represent the same thing, in one form or another.
-- Makefile: gzip all static files (*.js, *.css). If possible, allow
-  the end-user to turn this off if they don't have mod_mime turned on.
-	Not sure whether this should be done by 'make dist' or 'make
-  install'.
-	Perhaps easiest if one can 'make compress' after 'make
-  install'.
-
-	For testing:
-  wget -S --header="Accept-Encoding: gzip,deflate" http://www.ooblick.com/foo/stuff.php
-  Apparently sufficient to add
-	zlib.output_compression = On
-  to php.ini.
-	Don't turn on both mod_mime and zlib.output_compression, lest
-  you wind up with double-gzipped output from PHP scripts.
-	Test this.
-	Figure out how to serve uncompressed files to browsers that
-  don't grok gzip.
 - Create icon, startup images for mobile app
   http://commons.wikimedia.org/wiki/File:Newspaper_Cover.svg
   http://commons.wikimedia.org/wiki/RSS
