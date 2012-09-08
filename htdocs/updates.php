@@ -55,6 +55,12 @@ while (count($updates) > 0)
 	// Trim the stuff we don't need: if an article is read, just
 	// send the ID, is_read, and mtime. Don't resend the whole
 	// article.
+
+	// XXX - Need to run clean-html hooks on a number of fields:
+	//	title
+	//	summary
+	//	content
+	//	author?
 	$item = array_shift($updates);
 	if ($item['is_read'])
 		$item = array(
