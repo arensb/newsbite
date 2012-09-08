@@ -3,8 +3,8 @@
  */
 #ifndef _keybindings_js_
 #define _keybindings_js_
+#define NEW_KEYTAB	1	/* Try the new one-dimensional keytab */
 
-/* XXX - Module: keybindings.js */
 /* keytab
  * This is the main table for mapping keystrokes to functions.
  * It's actually a 5-dimensional array, with the first four dimensions
@@ -12,6 +12,9 @@
  * Meta, and Alt. The fifth dimension is the keycode found in key
  * events.
  */
+#if NEW_KEYTAB
+var keytab = {};
+#else	// NEW_KEYTAB
 var keytab = [];
 for (var ctrl = 0; ctrl <= 1; ctrl++)
 {
@@ -29,6 +32,7 @@ for (var ctrl = 0; ctrl <= 1; ctrl++)
 		}
 	}
 }
+#endif	// NEW_KEYTAB
 
 /* bind_key
  * Similar to define-key in Emacs. 'key' is a human-readable string
@@ -66,10 +70,41 @@ function bind_key(key, func)
 		shift = true;
 
 	/* Bind the key to the function */
+#if NEW_KEYTAB
+	var keystr =
+		String.fromCharCode((ctrl  + 0 << 3) |
+				    (shift + 0 << 2) |
+				    (meta  + 0 << 1) |
+				    (alt   + 0)) +
+		"-" +
+		ltr.toUpperCase();
+console.log("set keystr: ["+keystr+"]");
+	keytab[keystr] = func;
+#else	// NEW_KEYTAB
 	keytab[ctrl+0][shift+0][meta+0][alt+0][ltr.toUpperCase().charCodeAt()] = func;
+#endif	// NEW_KEYTAB
 }
 
 /* Handle keys */
+/* XXX - According to Chrome's profile tool, this is the function
+ * where we spend the most time. I wonder if the 5-dimensionality of
+ * the keytab array is to blame (perhaps especially because four of
+ * those dimensions are just binary).
+ *
+ * Maybe it'd be better to just have a one-dimensional array keyed on
+ * either "C-S-123" for "ctrl-shift-keycode(123)", or
+ * "<modifier>-<keycode>" or "<modifier>-<char>".
+ *
+ * <modifier> can be a four-character sequence representing ctrl,
+ * shift, meta, and alt respectively, and indicating whether they're
+ * on or off. Thus, the binding for "C-S-x" could be stored under
+ * "1100-120" (ctrl yes, shift yes, meta no, alt no, charcode 120).
+ *
+ * Or, since the modifiers are binary, the lead character could be the
+ * one with charCode 0x0c == 12.
+ *
+ * OTOH, I'm not convinced that it makes a whole lot of difference.
+ */
 function handle_key(evt)
 {
 // evt: object KeyboardEvent
@@ -86,7 +121,20 @@ function handle_key(evt)
 // altKey (false)
 // view (object Window)
 
+#if NEW_KEYTAB
+	var keystr =
+		String.fromCharCode((evt.ctrlKey  + 0 << 3) |
+				    (evt.shiftKey + 0 << 2) |
+				    (evt.metaKey  + 0 << 1) |
+				    (evt.altKey   + 0)) +
+		"-" +
+		String.fromCharCode(evt.keyCode).toUpperCase();
+console.log("get keystr: ["+keystr+"]");
+	var func = keytab[keystr];
+#else	// NEW_KEYTAB
 	var func = keytab[evt.ctrlKey+0][evt.shiftKey+0][evt.metaKey+0][evt.altKey+0][evt.keyCode];
+#endif	// NEW_KEYTAB
+
 	if (func != undefined)
 	{
 		func(evt);
