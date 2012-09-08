@@ -345,6 +345,9 @@ try {
 } catch (e) {
 console.error("feed.num_unread error: "+e);
 console.debug(feed);
+try {
+	console.trace();
+} catch (e) { /* Ignore */ }
 }
 
 		// Skip inactive feeds if user wants.
