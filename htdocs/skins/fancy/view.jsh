@@ -467,6 +467,24 @@ function mark_item1(ev)
 				// Mark in the cache as well.
 	}
 
+// XXX - Deferring the following block seems to improve performance
+// (in that mark_item1() is no longer the function in which we spend
+// most of our time. OTOH I think it breaks scrolling, particularly at
+// the bottom of the page:
+//
+// If the reader marks the bottommost article as read, it gets
+// collapsed to a thin sliver. The code after the defer()red block
+// tries to scroll so that the top of this sliver is at the top of the
+// window, and fails because the window contents aren't that tall
+// (there's nothing at the bottom).
+//
+// Then the deferred code runs, and brings up a much taller new
+// article, which could easily fill the page. If things are fast
+// enough, the user shouldn't notice anything. But the article he just
+// marked is at the bottom of the page, rather than at the top, where
+// he expected.
+
+//(function() {
 	/* XXX - If marking an item as read, bring up another item
 	 * from cache.
 	 * - If there are now > 25 items on screen, delete the topmost one.
@@ -504,6 +522,7 @@ console.log("new_item:\n%o", new_item);
 			onscreen.items.push(new_item);
 		}
 	}
+//}).defer(1, null);
 
 	/* Scroll so that the (collapsed) item is visible.
 	 * Let's say the item is long; the user has read the item, and
