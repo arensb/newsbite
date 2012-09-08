@@ -6,8 +6,9 @@
 #define _CacheManager_js_
 /* XXX - Add functions to mark items as read/unread.
  */
-#include "types.js"		/* Feed and Item classes */
+#include "types.js"		// Feed and Item classes
 #include "xhr.js"		// For AJAX requests
+#include "defer.js"		// Put off long initialization until later
 
 /* CacheManager.js
  * Manage local storage.
@@ -136,15 +137,41 @@ function CacheManager()
 		 */
 	}
 
-	/* Delete the articles marked read */
-	// XXX - This takes a long time in Firefox. Perhaps stick this
-	// in a separate function, one that runs in the background.
-	// Perhaps limit it to 10 or 20 items at a time, to keep
-	// things responsive.
-	for (var key in todelete)
-		localStorage.removeItem(todelete[key]);
+	/* Delete the articles marked read.
+	 * Deleting takes a long time in Firefox, so we stick this
+	 * part in a separate function that runs deferred. Hopefully
+	 * this will make the app more responsive.
+	 */
+	_purge_stuff.defer(1, null, todelete);
 
 	return this;
+}
+
+/* _purge_stuff
+ * Takes a list of keys, and deletes entries with those keys from
+ * localStorage, 100 at a time (because this takes a long time in
+ * Firefox).
+ */
+// XXX - This probably ought to be a CacheManager method rather than a
+// standalone top-level function.
+function _purge_stuff(todelete)
+{
+	if (!(todelete instanceof Array))
+		return;
+
+	var i = 0;	// Number of items deleted in this run
+	var key;
+	while ((key = todelete.shift()) != null)
+	{
+		localStorage.removeItem(key);
+		if (++i > 100)
+		{
+			// We've done enough for now. Give someone
+			// else a chance to run.
+			_purge_stuff.defer(1, null, todelete);
+			return;
+		}
+	}
 }
 
 /* localStorage wrappers */
