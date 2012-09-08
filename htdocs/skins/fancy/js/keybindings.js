@@ -78,7 +78,7 @@ function bind_key(key, func)
 				    (alt   + 0)) +
 		"-" +
 		ltr.toUpperCase();
-console.log("set keystr: ["+keystr+"]");
+//console.log("set keystr: ["+keystr+"]");
 	keytab[keystr] = func;
 #else	// NEW_KEYTAB
 	keytab[ctrl+0][shift+0][meta+0][alt+0][ltr.toUpperCase().charCodeAt()] = func;
@@ -129,7 +129,7 @@ function handle_key(evt)
 				    (evt.altKey   + 0)) +
 		"-" +
 		String.fromCharCode(evt.keyCode).toUpperCase();
-console.log("get keystr: ["+keystr+"]");
+//console.log("get keystr: ["+keystr+"]");
 	var func = keytab[keystr];
 #else	// NEW_KEYTAB
 	var func = keytab[evt.ctrlKey+0][evt.shiftKey+0][evt.metaKey+0][evt.altKey+0][evt.keyCode];
