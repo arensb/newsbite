@@ -257,7 +257,7 @@ PatEvent._add_binding = function(node, evtype, selector, handler, capture)
 		if (node.matchesSelector(selector))
 			node.addEventListener(evtype, handler, capture);
 	} catch (e) {
-		console.error("Can't attach root listener: "+e);
+		console.error("Can't attach root listener:\n%o", e);
 	}
 
 	// Attach the event to any matching child nodes

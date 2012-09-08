@@ -139,8 +139,8 @@ function get_json_callback_batch(req, user_func, user_err, batch)
 			value = JSON.parse(req.responseText);
 		} catch (e) {
 			// XXX - Do something smarter?
-			console.error("Can't parse response: "+e);
-			console.debug(req.responseText);
+			console.error("Can't parse response: %o", e);
+			console.log(req.responseText);
 			value = undefined;
 		}
 		user_func(value);

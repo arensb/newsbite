@@ -490,7 +490,7 @@ CacheManager.prototype.getitems = function(feed_id, cur, before, after)
 		var el = this.get_item(head.id);
 		if (el == null)
 		{
-			console.error("Can't get_item("+head.id+")");
+			console.error("Can't get_item(%s)", head.id);
 			continue;
 		}
 		retval.push(this.get_item(head.id));
@@ -610,14 +610,14 @@ CacheManager.prototype._get_updates_cb = function(feed_id, value, user_cb)
 {
 var num_read = 0;
 var num_new = 0;
-console.debug("inside _get_updates_cb: feed_id == "+feed_id);
+console.log("inside _get_updates_cb: feed_id == %d", feed_id);
 
 	if (value == null ||
 	    value.updates == null ||
 	    value.updates.length == 0)
 	{
 		// No updates.
-console.debug("no updates");
+console.log("no updates");
 	} else {
 		var updates = value['updates'];
 		var num_updates = value['num_updates'];
@@ -658,7 +658,9 @@ num_new++;
 		}
 
 		this.last_sync = latest_mtime;	// Remember for next time.
-console.debug("saving latest_mtime: "+this.last_sync.valueOf()+": "+this.last_sync);
+console.log("saving latest_mtime: %s: %o",
+    this.last_sync.valueOf(),
+    this.last_sync);
 		this.setItem("latest_mtime:"+feed_id, this.last_sync.valueOf());
 msg_add(updates.length+" updates @ "+this.last_sync+": "+num_read+"/"+num_new+", "+num_updates+" tot");
 	}
@@ -684,7 +686,7 @@ CacheManager.prototype.get_marked = function(feed_id, cb)
 				// "whatsread.php".
 	if (this.getItem("last_whatsread") != null)
 		last_whatsread = new Date(this.getItem("last_whatsread"));
-console.debug("first last_whatsread: "+last_whatsread);
+console.log("first last_whatsread: %s", last_whatsread);
 
 	// If we already have a last_whatsread, use it as is, so we get
 	// all the updates that happened since then.
@@ -697,7 +699,7 @@ console.debug("first last_whatsread: "+last_whatsread);
 	if (isNaN(last_whatsread))
 	{
 		last_whatsread = new Date();
-console.debug("init last_whatsread: "+last_whatsread)
+console.log("init last_whatsread: %s", last_whatsread)
 
 		for (var i = 0, n = this.headers.length; i < n; i++)
 		{
@@ -708,11 +710,10 @@ console.debug("init last_whatsread: "+last_whatsread)
 				mtime = hdr.mtime;
 			else
 				mtime = hdr.last_update;
-//console.debug("mtime: "+mtime);
 			if (mtime < last_whatsread)
 {
 				last_whatsread = mtime;
-console.debug("new last_whatsread: "+last_whatsread)
+console.log("new last_whatsread: %s", last_whatsread)
 }
 		}
 	}
@@ -750,18 +751,17 @@ CacheManager.prototype._get_marked_cb = function(value, user_cb)
 {
 var num_read = 0;
 
-console.debug("In _get_marked_cb:");
-//console.debug(value);
+console.log("In _get_marked_cb:\n%o", value);
 	if (value == null ||
 	    value.updates == null ||
 	    value.updates.length == 0)
 	{
 		// No updates.
-console.debug("no updates");
+console.log("no updates");
 	} else {
 		var updates = value['updates'];
 		var num_updates = value['num_updates'];
-console.debug("num_updates: "+num_updates);
+console.log("num_updates: %d", num_updates);
 		var latest_mtime = new Date(0);
 
 		/* Process updated items from updates.php */
@@ -789,7 +789,9 @@ num_read++;
 		}
 
 		this.last_whatsread = latest_mtime;
-console.debug("saving latest_mtime: "+this.last_whatsread.valueOf()+": "+this.last_whatsread);
+console.log("saving latest_mtime: %s: %o",
+	    this.last_whatsread.valueOf(),
+	    this.last_whatsread);
 		this.setItem("last_whatsread", this.last_whatsread.valueOf());
 				// Stash for next time.
 msg_add(value.length+" read @ "+this.last_whatsread+": "+num_read+", "+num_updates+" tot");
@@ -851,12 +853,11 @@ CacheManager.prototype.slow_sync = function(feed_id, user_cb, user_err_cb)
 //console.debug(localStorage["item:"+item.id]);
 			continue;
 			} catch(e) {
-				console.error("Can't add item: "+e);
+				console.error("Can't add item: %o", e);
 			}
 
 			// XXX - What's left?
-console.debug("What should I do with this?:");
-console.debug(entry);
+console.log("What should I do with this?:\n%o", entry);
 		}
 
 		// Call callback function
