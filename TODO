@@ -64,6 +64,12 @@
   and different people may deal with this differently (UTF-8 vs. HTML
   entities). Perhaps safest to assume that they're HTML and clean up
   (if possible, only do entity translation, and throw out any markup).
+- Mutation events (like "DOMNodeInserted" in js/PatEvent.js) are
+  apparently now deprecated in favor of the DOM MutationObserver:
+  https://hacks.mozilla.org/2012/05/dom-mutationobserver-reacting-to-dom-changes-without-killing-browser-performance/
+- document.querySelector() and .querySelectorAll() look massively
+  useful:
+  http://www.javascriptkit.com/dhtmltutors/css_selectors_api.shtml
 - Probably time to switch to a real JS template library. Perhaps
   http://handlebarsjs.com/
   unless there's something better. JQuery apparently has some good
