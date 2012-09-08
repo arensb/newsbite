@@ -489,7 +489,7 @@ function mark_item1(ev)
 
 		var new_item = more_items.pop();
 				// The new item we're about to add.
-console.debug("new_item: "+new_item);
+console.log("new_item:\n%o", new_item);
 		var new_node = item2node(new_item);
 
 		if (new_node != null)
@@ -555,7 +555,6 @@ console.debug("new_item: "+new_item);
 	 * immediately, in case there's a delay creating the HTTP
 	 * request.
 	 */
-//console.debug("flush_queues.defer");
 	flush_queues();
 }
 
@@ -975,7 +974,7 @@ function set_feed_fields()
 		};
 	} else if (!feed_id in feeds)
 	{
-		console.error("Can't find feed_id "+feed_id+" in feeds.");
+		console.error("Can't find feed_id %d in feeds.", feed_id);
 		return;
 	} else
 		feed = feeds[feed_id];

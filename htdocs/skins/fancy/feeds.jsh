@@ -343,8 +343,8 @@ try {
 		if (feed.num_unread == 0 && !show_empty)
 			continue;
 } catch (e) {
-console.error("feed.num_unread error: "+e);
-console.debug(feed);
+console.error("feed.num_unread error: %s", e);
+console.log("feed:\n%o", feed);
 try {
 	console.trace();
 } catch (e) { /* Ignore */ }
