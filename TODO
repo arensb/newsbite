@@ -74,11 +74,6 @@
   http://handlebarsjs.com/
   unless there's something better. JQuery apparently has some good
   stuff.
-- Chrome, Safari, even Firefox have better debugging and profiling
-  tools than my home-rolled ones. Get rid of those. Debugging too, I
-  think. I think I can just use console.debug for everything.
-	Which browsers don't have window.console?
-	I think all the ones I care about do.
 - lib/config.inc: should be config.inc.sample, generated from
   config.inc.sample.in.
 	PLUGIN_DIR should be full pathname to the directory specified
@@ -98,9 +93,6 @@
 	WebSQL is allegedly deprecated by w3. But mobile Safari and
   Android seem to run fine. So perhaps just use IndexedDB on Firefox,
   and retain localStorage on the others?
-- Since I'm no longer using Firefox 3 at work, can switch to simpler
-  way of iterating over localStorage, the one that was undone in r978
-  of htdocs/skins/fancy/js/CacheManager.js
 - Problem with current sync (as of v988): say you have a browser
   viewing only a feed like Zero Punctuation, which is only updated
   once a week.
