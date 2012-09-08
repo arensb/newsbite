@@ -1,5 +1,4 @@
 /*						-*- JavaScript -*- */
-#include "js/debug.js"
 #include "js/guess-mobile.js"
 /*#include "js/defer.js"*/
 #include "js/xhr.js"
