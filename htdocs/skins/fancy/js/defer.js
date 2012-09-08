@@ -29,8 +29,6 @@ if (!("defer" in Function.prototype))
 			for(var i=1; i<arguments.length; i++)
 				a.push(arguments[i]);
 			var that = this;
-console.debug("defer("+n+", "+o+")");
-console.debug(a);
 			window.setTimeout(function(){return that.apply(o,a);},n);
 		};
 }
