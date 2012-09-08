@@ -10,6 +10,17 @@ if (!("defer" in Function.prototype))
 	 * JavaScript engine is idle.
 	 *
 	 * From http://www.jslab.dk/library/Function.defer
+	 *
+	 * defer(Number n, Object o, [Mixed a2...an])
+	 * Defer execution of the function for 'n' milliseconds.
+	 * If object 'o' is supplied, then the function is executed as
+	 * a method on the object. Any additional argumetns 'a2'...'an'
+	 * are passed to the function.
+	 *
+	 * To call 'foo(a,b,c)' in 300 ms:
+	 *	foo.defer(300, null, a, b, c);
+	 * To call myObj.theMethod(d,e,f) in 300 ms:
+	 *	myObj.theMethod.defer(300, myObj, d, e, f);
 	 */
 	Function.prototype.defer =
 		function(n,o) {
