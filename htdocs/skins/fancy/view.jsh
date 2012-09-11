@@ -821,7 +821,12 @@ function init_feeds_items()
 		 * forever, so we'll do other stuff while that's
 		 * going.
 		 */
-		cache.slow_sync(feed_id, item_callback);
+msg_add("starting slow_sync 1");
+		cache.slow_sync(feed_id,
+				item_callback,
+				function(status, msg) {
+					msg_add("slow_sync 1 failed ("+status+"):"+msg);
+				});
 
 		feeds = value;
 
@@ -831,7 +836,7 @@ function init_feeds_items()
 
 	function item_callback(value)
 	{
-		msg_add("Initial slow_sync done");
+		msg_add("slow_sync 1 done");
 
 		// We're running for the first time, so get the top
 		// (latest) articles from the cache.
@@ -1043,6 +1048,7 @@ function reorient(ev)
 
 function slow_sync()
 {
+msg_add("starting slow_sync 2");
 	cache.slow_sync(feed_id,
 			function() {
 				// Once it's done, redraw as necessary
@@ -1051,7 +1057,9 @@ function slow_sync()
 				cache.setItem("onscreen", onscreen);
 				redraw_itemlist()
 			},
-			null);
+			function(status, msg) {
+				msg_add("slow_sync 2 failed ("+status+"):"+msg);
+			});
 }
 
 /* scroll_handler
