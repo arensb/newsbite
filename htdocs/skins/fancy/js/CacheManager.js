@@ -57,15 +57,9 @@ function CacheManager()
 				// localStorage.
 			// XXX - Keep track of size?
 	this.last_sync = undefined;
-// XXX - Is this.last_sync used? - Yes. Ought to remember it the same
-// way as last_whatsread.
+// XXX - Is this.last_sync used? - Yes. Ought to remember it
 				// Time of last update fetched through
 				// "updates.php".
-	this.last_whatsread = new Date(localStorage.getItem("last_whatsread"));
-				// Time of last update fetched through
-				// "whatsread.php".
-	if (isNaN(this.last_whatsread))
-		this.last_whatsread = new Date();
 
 	/* Scan localStorage for stuff saved since last time.
 	 */
@@ -78,8 +72,7 @@ function CacheManager()
 		var matches;
 
 		if (key == "feeds" ||
-		    key == "onscreen" ||
-		    key == "last_whatsread")	// Last 'whatsread.php' time.
+		    key == "onscreen")
 		{
 			this._ls_index[key] = {
 				"time":	new Date(),
@@ -538,138 +531,6 @@ CacheManager.prototype.purge_item = function(item_id)
 			this.headers.splice(i,1);
 	}
 	delete this.itemindex[item_id];
-}
-
-/* get_marked
- * Find the oldest mtime in the cache, get items that have been marked
- * as read since then, and purge those from the cache.
- */
-// XXX - Is this function still useful? If not, can whatsread.php be
-// deleted?
-CacheManager.prototype.get_marked = function(feed_id, cb)
-{
-	// Get the latest mtime we have
-//	var last_whatsread = new Date(localStorage.getItem("last_whatsread"));
-	var last_whatsread;
-				// Time of last update fetched through
-				// "whatsread.php".
-	if (this.getItem("last_whatsread") != null)
-		last_whatsread = new Date(this.getItem("last_whatsread"));
-console.log("first last_whatsread: %s", last_whatsread);
-
-	// If we already have a last_whatsread, use it as is, so we get
-	// all the updates that happened since then.
-
-	// Otherwise, assume that the page just loaded, so get the
-	// most recent mtime of all the articles.
-
-	// XXX - I don't think this approach works. We're likely to
-	// overlook a bunch of stuff.
-	if (isNaN(last_whatsread))
-	{
-		last_whatsread = new Date();
-console.log("init last_whatsread: %s", last_whatsread)
-
-		for (var i = 0, n = this.headers.length; i < n; i++)
-		{
-			var hdr = this.headers[i];
-			var mtime;
-
-			if (hdr.mtime != null)
-				mtime = hdr.mtime;
-			else
-				mtime = hdr.last_update;
-			if (mtime < last_whatsread)
-{
-				last_whatsread = mtime;
-console.log("new last_whatsread: %s", last_whatsread)
-}
-		}
-	}
-
-	// Place AJAX call to
-	//	whatsread.php?
-	//		o=json
-	//		t=<newest-mtime>
-	var me = this;	// Trick so that we can call _get_marked_cb
-			// as a method, not a regular function.
-//msg_add("last_whatsread: "+Math.floor(last_whatsread.valueOf()/1000));
-//msg_add("last_whatsread: "+last_whatsread.valueOf());
-msg_add("last_whatsread: "+last_whatsread);
-	get_json_data("whatsread.php",
-		      { o:	"json",
-			t:	Math.floor(last_whatsread.valueOf()/1000),
-		      },
-		      function(value) {
-			      me._get_marked_cb(value, cb);
-		      },
-		      function(status, msg) {
-			      msg_add("Error getting marked items: "+
-				      status+": "+msg);
-		      },
-		      true);
-}
-
-/* _get_marked_cb
- * Callback function for get_marked(): receive a bunch of records for
- * items that have been marked as read, and purge them from cache.
- */
-// XXX - If get_marked is removed, get rid of this function as well.
-// XXX - Move this inside get_marked()?
-CacheManager.prototype._get_marked_cb = function(value, user_cb)
-{
-var num_read = 0;
-
-console.log("In _get_marked_cb:\n%o", value);
-	if (value == null ||
-	    value.updates == null ||
-	    value.updates.length == 0)
-	{
-		// No updates.
-console.log("no updates");
-	} else {
-		var updates = value['updates'];
-		var num_updates = value['num_updates'];
-console.log("num_updates: %d", num_updates);
-		var latest_mtime = new Date(0);
-
-		/* Process updated items from updates.php */
-		for (var i = 0, n = updates.length; i < n; i++)
-		{
-			var item = new Item(updates[i]);
-
-			// Got an item marked read on the server.
-			// Remove it from cache.
-
-			/* XXX - Not so fast: ought to check the mtime
-			 * on the server and the mtime in our cache,
-			 * and keep the most recent one.
-			 */
-num_read++;
-			this.purge_item(item.id);
-
-			if (item.mtime > latest_mtime)
-				// Remember the most recent update, so
-				// we don't request things over and
-				// over: otherwise, get_marked() can
-				// return the same read articles over
-				// and over.
-				latest_mtime = item.mtime;
-		}
-
-		this.last_whatsread = latest_mtime;
-console.log("saving latest_mtime: %s: %o",
-	    this.last_whatsread.valueOf(),
-	    this.last_whatsread);
-		this.setItem("last_whatsread", this.last_whatsread.valueOf());
-				// Stash for next time.
-msg_add(value.length+" read @ "+this.last_whatsread+": "+num_read+", "+num_updates+" tot");
-	}
-
-	/* Call user callback, if requested */
-	// XXX - What arguments should it take?
-	if (user_cb != null)
-		user_cb();
 }
 
 CacheManager.prototype.slow_sync = function(feed_id, user_cb, user_err_cb)
