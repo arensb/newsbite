@@ -482,6 +482,12 @@ function mark_item1(ev)
 // enough, the user shouldn't notice anything. But the article he just
 // marked is at the bottom of the page, rather than at the top, where
 // he expected.
+//
+// Note that this is probably only a problem at the bottom of the
+// page. A better approach might be to monitor the viewport's
+// movements (by capturing page scroll events or something), and
+// updating the viewport so that there are always 10 items above and
+// below what's currently visible.
 
 //(function() {
 	/* XXX - If marking an item as read, bring up another item
