@@ -77,7 +77,6 @@ htdocs/sync.php
 htdocs/unsubscribe.php
 htdocs/update.php
 htdocs/view.php
-htdocs/whatsread.php
 lib/Makefile
 lib/common.inc
 lib/config.inc.sample
