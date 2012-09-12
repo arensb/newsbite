@@ -97,6 +97,7 @@ syntax-check:
 	done
 
 # Generate ChangeLog file from the beginning of this year until now
+.PHONY:	ChangeLog.svn	# Force it to be rebuilt
 ChangeLog.svn:
 	svn log -v -rhead:\{`date +%Y-01-01`\} > $@
 
