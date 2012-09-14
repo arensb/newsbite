@@ -143,6 +143,7 @@ function init()
 			    button_mark_item, false);
 
 	window.addEventListener("keydown", handle_key, false);
+		// XXX - This should probably go in js/keybindings.js
 
 	window.addEventListener("orientationchange", reorient, false);
 
@@ -159,10 +160,6 @@ function init()
 				    enter_item, false);
 		PatEvent.bind_event(itemlist, "_exit", ".item",
 				    exit_item, false);
-		bind_key("d", key_mark_item);
-		bind_key("c", toggle_collapse_item);
-		bind_key("k", move_up);
-		bind_key("j", move_down);
 
 		// Key bindings
 		bind_key("C-r", slow_sync);
