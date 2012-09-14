@@ -1627,9 +1627,21 @@ function atom_element_handler(
 				// Make sure the type is correct:
 				// <link rel=alternate type=text/html ...>
 				// refers to a human-readable page.
+
+				// XXX - This code breaks with XKCD what-if:
+				// its my-web-page link doesn't have "rel=alternate"
+
+				//	<feed xmlns="http://www.w3.org/2005/Atom">
+				//	  <title>What If?</title>
+				//	  <link href="http://what-if.xkcd.com/feed.atom" rel="self"/>
+				//	  <link href="http://what-if.xkcd.com"/>
+				// I think this violates the Atom
+				// standard, but I'm not sure.
 				if (preg_match(',^application/(rss|atom)\+xml$,',
 					       $attrs['type']))
 					$retval['feed_url'] = $attrs['href'];
+				else
+					$retval['url'] = $attrs['href'];
 				break;
 
 			    case "replies":
