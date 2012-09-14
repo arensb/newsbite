@@ -64,6 +64,20 @@
   and different people may deal with this differently (UTF-8 vs. HTML
   entities). Perhaps safest to assume that they're HTML and clean up
   (if possible, only do entity translation, and throw out any markup).
+- Bug: keybindings.js doesn't handle non-letter bindings well: "?"
+  gets turned into Spanish upside-down question mark by toUpperCase().
+	Need a notation to bind Esc.
+- Le Monde titles: apparently their RSS feed uses UTF-8 for nearly
+  everything, but Windows-1252 for _some_ titles. Can't fix. Won't fix.
+- Apparently unused functions:
+	lib/database.inc:
+		db_get_item_updates
+		db_get_read_items
+	lib/parse-feed.inc:
+		mangle_summary
+		mangle_content
+		mangle_item
+		mangle_feed
 - Mutation events (like "DOMNodeInserted" in js/PatEvent.js) are
   apparently now deprecated in favor of the DOM MutationObserver:
   https://hacks.mozilla.org/2012/05/dom-mutationobserver-reacting-to-dom-changes-without-killing-browser-performance/
@@ -73,12 +87,7 @@
 - Probably time to switch to a real JS template library. Perhaps
   http://handlebarsjs.com/
   unless there's something better. JQuery apparently has some good
-  stuff.
-- lib/config.inc: should be config.inc.sample, generated from
-  config.inc.sample.in.
-	PLUGIN_DIR should be full pathname to the directory specified
-  by INSTALL_PLUGINS in Makefile.{common,local}. Ditto the two
-  htaccess.sample files.
+  stuff, including a template plugin.
 - SED_REPLACEMENTS is bulky and awkward. It'd probably be best to
   generate a 'replace.sed' script (or something) in the top directory.
   It can then be used by every other Makefile.
@@ -168,12 +177,6 @@
   to find articles at http://www.washingtonpost.com/sports/...
 - Possible improvement: move static content to a different domain, one
   that doesn't requie cookies.
-- MySQL function FOUND_ROWS():
-  http://dev.mysql.com/doc/refman/5.0/en/information-functions.html#function_found-rows
-  'select <foo> from <bar> limit <baz>
-   select found_rows()'
-  returns the number of rows that would have been returned if there
-  were no "limit" clause.
 - Perhaps a way to get row number, and get the N rows around a given row:
   http://jimlife.wordpress.com/2008/09/09/displaying-row-number-rownum-in-mysql/
 - Perhaps install PHP pcntl module? Includes fork(), exec(). This
@@ -274,15 +277,6 @@
   page.
 - Feeds page drop-down menus: use an onclick to toggle menu on and
   off, for mobile devices and such.
-- Hint: To create a DOM node from an HTML fragment:
-  http://stackoverflow.com/questions/494143/how-do-i-create-a-new-dom-element-from-an-html-string-using-built-in-dom-methods
-	// HTML string
-	var s = '<li>text</li>';
-
-	var div = document.createElement('div');
-	div.innerHTML = s;
-	var elements = div.childNodes;
-  (or div.firstChild if you know there's only one, obviously)
 - Editing feed details: instead of (or in addition to) a separate
   "edit feed" page, have an "edit" button on the page for a given
   feed. When clicked, highlight the parts that can be edited: title
@@ -290,8 +284,6 @@
 	Actually, the nickname is the only visible element that it
   makes sense to edit this way. For the rest, there could be a form
   overlaid over the feed.
-- Cache resources like .js, .css files. Ideally also static parts of
-  PHP script output. See mod_cache.
 - To make things really fancy, could have live updating of article
   status on multiple devices: Have the client open a persistent
   connection to the server (basically, a PHP script that never exits).
@@ -411,8 +403,6 @@
   collect statistics and see which plugins run when. In particular, we
   want to see when a plugin stops working because the feed changed the
   format of its web bugs or whatever.
-- Should the username and password be stored locally, so that the
-  cookie can be renewed automatically as needed?
 - Standalone app: put up a spinner or something when updating cache.
 	See downspout:/folks/htdocs/app/app.js
   Could perhaps use u256d-u2570 (probably not, though), or u2596-u259f,
@@ -452,13 +442,6 @@
   be done.
 	Or maybe just set another cookie with the version, and check
   that in common.inc.
-- plugins/xml-media.php:
-	<media:group> indicates a group of <media:content> items that
-  all represent the same thing, in one form or another.
-- Create icon, startup images for mobile app
-  http://commons.wikimedia.org/wiki/File:Newspaper_Cover.svg
-  http://commons.wikimedia.org/wiki/RSS
-  Perhaps use the RSS logo as a background, with the newspaper in front.
 - Differences between various versions:
   * Article title links
 	- Desktop: regular <a>. Middle-click to open in new tab
@@ -524,7 +507,6 @@
   http://svnbook.red-bean.com/en/1.4/svn.advanced.props.special.keywords.html
   which suggests using 'svnversion', because no in-file keyword gives
   the head revision.
-- Build htdocs/.htaccess file as part of 'make all'.
 - Add hook for links to mobile versions of URLs (view.php).
 	Probably should add a subdirectory underneath "plugins".
 - For error messages, and any other time when the app needs to talk to
@@ -557,12 +539,6 @@
   }
 - AJAX requests can be blocked due to authentication. Should return a
   status code of some sort, and allow the user to log in. How?
-- It'd be nice to compress files in advance. Have Apache figure out
-  that if the user is asking for "foo.css", and the browser accepts
-  gzipped compression, and "foo.css.gz" exists, then just return that.
-	This doesn't work for actual data feeds, like JSON requests
-  for articles. For that, need to have PHP gzip the content and set
-  the headers appropriately.
 - Worker threads could be useful. However, iPad doesn't seem to
   support them.
 	One way to handle this might to have synthetic events: with
@@ -587,8 +563,6 @@
 	checkpoint.doneWith("that");
 	checkpoint.doneWith("theother");
   and once they've all checked in, checkpoint runs cont_func().
-- It'd be nice if PLUGIN_DIR could optionally be an array.
-  Unfortunately, PHP constants have to be scalars.
 - Maybe just give up on maintaining ChangeLog. Just use 'svn log -r
   head:1' in Makefile. Or 'svn log -r "head:{2010-01-01}"' to get this
   year's changes.
