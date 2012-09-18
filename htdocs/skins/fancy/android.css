@@ -75,6 +75,24 @@ iframe {
  * right	yes		no
  * down		yes		no
  */
+
+/* First, a set of dummy CSS rules for the body. It looks as though,
+ * without this, Android doesn't notice that new CSS rules need to be
+ * applied. IOW this just kicks it into noticing.
+ */
+body[orientation="up"] {
+	color:			black;
+}
+body[orientation="left"] {
+	color:			black;
+}
+body[orientation="right"] {
+	color:			black;
+}
+body[orientation="down"] {
+	color:			black;
+}
+
 body[orientation="right"] .button-box-left,
 body[orientation="down"]  .button-box-left {
 	display:		table-cell;
