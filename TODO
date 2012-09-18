@@ -1,3 +1,4 @@
+- Bug: Friendly Atheist feed doesn't have 'url', just 'feed_url'.
 - Bug: sometimes, the same one or two items keep coming up at the
   bottom of the 'view' page. An off-by-one error in the "get some
   items" code?
@@ -67,6 +68,12 @@
 - Bug: keybindings.js doesn't handle non-letter bindings well: "?"
   gets turned into Spanish upside-down question mark by toUpperCase().
 	Need a notation to bind Esc.
+- Profiling: according to 
+  http://fuelyourcoding.com/webkits-javascript-profiler-explained/
+  can turn Webkit (Chrome/Safari) profiling on and off with
+	console.profile("my profile name");
+	<code to profile>
+	console.profileEnd("my profile name");
 - Le Monde titles: apparently their RSS feed uses UTF-8 for nearly
   everything, but Windows-1252 for _some_ titles. Can't fix. Won't fix.
 - Apparently unused functions:
