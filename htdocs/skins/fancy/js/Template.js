@@ -14,12 +14,17 @@ function Template(tmpl)
  */
 Template.prototype.expand = function(values)
 {
+try {
 	return this.template.replace(/@(\w+)@/g,
 		       function(dummy, match) {
 			       if (values[match] == undefined)
 				       return "";
 			       return values[match];
 		       });
+} catch (e) {
+console.error("Error in Template.expand: "+e);
+console.trace();
+}
 }
 
 #endif	// _template_js_
