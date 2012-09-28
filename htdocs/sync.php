@@ -148,6 +148,8 @@ foreach ($all_items as $item)
 	array_push($retval, $item);
 #if ($item['is_read'])
 #fwrite($fh, "Hey! This item is already read!\n");
+	# XXX - Do we need to run clean-html on anything?
+	# Fixed-length fields in 'items'.
 }
 
 #fwrite($fh, "Returning:\n");
