@@ -1,3 +1,9 @@
+- Bug: When subscribing to a feed, the initial display doesn't work:
+  subscribe to a new feed, which gets ID 999. This redirects you to
+  .../view.php?id=999.
+	init() gets 'feeds' from cache, then calls set_feed_fields().
+	set_feed_fields() tries to get its information from 'feeds',
+  but that's a cached version that doesn't have the new feed yet.
 - Bug: Friendly Atheist feed doesn't have 'url', just 'feed_url'.
 - Bug: sometimes, the same one or two items keep coming up at the
   bottom of the 'view' page. An off-by-one error in the "get some
@@ -91,6 +97,21 @@
 - document.querySelector() and .querySelectorAll() look massively
   useful:
   http://www.javascriptkit.com/dhtmltutors/css_selectors_api.shtml
+- location.replace(url): fills in url in the URL bar, and immediately
+  redirects to that location.
+	However, if the current and new URLs differ only in the bit
+  after "#", it doesn't reload anything. So this is a way to change
+  the current URL in the URL bar, without having to reload the page.
+	This works in Chrome, but Firefox throws an
+  apparently-harmless exception.
+- <element>.getBoundingClientRect():
+  https://developer.mozilla.org/en-US/docs/DOM/element.getBoundingClientRect
+  returns a struct with the top, bottom, left, right of the element,
+  relative to the window, I think. Basically, this means that:
+	el = <some element>
+	box = el.getBoundingClientRect()
+  If box.top < 0, the top of the element is above the viewport.
+  If box.bottom < 0, the bottom of the element is above the viewport.
 - Probably time to switch to a real JS template library. Perhaps
   http://handlebarsjs.com/
   unless there's something better. JQuery apparently has some good
@@ -1121,7 +1142,7 @@
   <link rel="stylesheet" type="text/css" media="screen and (max-device-width: 480px) and (resolution: 163dpi)" href="shetland.css" />
   which does seem a reasonable approach, especially given the wide
   variety of device sizes.
-- CSS: replace -moz-box-shadow, -webkit-box-shadow with box-shadow
+- CSS: replace -webkit-box-shadow with box-shadow
   once enough browsers support it.
 - CSS media queries described at
   http://www.w3.org/TR/2002/CR-css3-mediaqueries-20020708/
