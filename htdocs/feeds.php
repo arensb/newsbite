@@ -4,6 +4,9 @@
  */
 require_once("common.inc");
 require_once("database.inc");
+require_once("hooks.inc");
+
+load_hooks(PLUGIN_DIR);
 
 $want_stats = isset($_REQUEST['s']);
 				# Add stats (# read/unread items)
@@ -43,6 +46,14 @@ foreach ($feeds as $id => $data)
 	$desc['image']           = $data['image'];
 	$desc['active']          = $data['active'];
 	$desc['stale']           = $data['stale'];
+
+#echo "before hooks: <pre>", $desc['description'], "</pre>\n";
+	run_hooks("clean-html", array(&$desc['title']));
+	run_hooks("clean-html", array(&$desc['subtitle']));
+	run_hooks("clean-html", array(&$desc['description']));
+#echo "after hooks:  <pre>", $desc['description'], "</pre>\n";
+	# XXX - What else needs to be cleaned up?
+
 	if ($want_stats)
 	{
 		$desc['num_read']        = $counts[$id]['read'];
