@@ -537,6 +537,9 @@ CacheManager.prototype.slow_sync = function(feed_id, user_cb, user_err_cb)
 {
 	var me = this;		// 'this' for child functions.
 
+	/* XXX - Ought to move the inner functions to the end of the
+	 * function body, for readability.
+	 */
 	// get_json_data callback when things go well
 	function slow_sync_cb(value)
 	{
@@ -603,13 +606,15 @@ console.log("What should I do with this?:\n%o", entry);
 			user_err_cb(status, msg);
 	}
 
+	/** slow_sync body **/
+
 	/* Get list of items in cache */
 	var tosend = {};
 	for (var id in this.itemindex)
 	{
 		/* Compose list of {id, mtime, is_read} entries to send */
 		var header = this.itemindex[id];
-//console.debug("id "+header.id+", is_read "+header.is_read+", mtime "+header.mtime);
+//console.log("id %d, is_read %o, mtime %o", header.id, header.is_read, header.mtime);
 		tosend[header.id] = {
 			     is_read:	header.is_read,
 			     mtime:	header.mtime,
