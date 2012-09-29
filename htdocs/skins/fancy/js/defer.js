@@ -26,7 +26,12 @@ if (!("defer" in Function.prototype))
 		function(n,o) {
 			// Get arguments as array
 			var a = [];
-			for(var i=1; i<arguments.length; i++)
+
+			// The 2, below, comes from the fact that we
+			// want to strip off the 'n' and 'o' arguments
+			// we were given, an keep only the "proper"
+			// arguments intended for the target function.
+			for(var i=2; i<arguments.length; i++)
 				a.push(arguments[i]);
 			var that = this;
 			window.setTimeout(function(){return that.apply(o,a);},n);
