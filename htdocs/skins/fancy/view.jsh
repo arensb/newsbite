@@ -173,6 +173,7 @@ function init()
 	bind_key("c", toggle_collapse_item);
 	bind_key("k", move_up);
 	bind_key("j", move_down);
+bind_key("l", recenter);
 
 	// Get feeds and items from cache.
 	feeds = cache.feeds();
@@ -1004,6 +1005,19 @@ function set_feed_fields()
 		return;
 	} else
 		feed = feeds[feed_id];
+	// XXX - On a newly-subscribed feed, this will be null. Ought
+	// to refresh the feed list, and try again. But also should
+	// make sure not to go into an infinite loop (i.e., someone
+	// could go to "view.php?id=9999", where 9999 is a nonexistent
+	// feed ID; set_feed_fields() would see that it doesn't have a
+	// feed 9999, request a new feed list from the server, call
+	// set_feed_fields() again, and the cycle would continue. We
+	// want to avoid that.)
+	if (feed == null)
+	{
+		alert("Feed information not cached. Please refresh index");
+		return;
+	}
 
 	// Set the page title.
 	try {
@@ -1091,4 +1105,66 @@ function scroll_handler(ev)
 //	alert("scroll event detected! "+window.pageXOffset+" "+window.pageYOffset);
 //	note: you can use window.innerWidth and window.innerHeight to
 //	access the width and height of the viewing area
+}
+
+/* recenter
+ * Figure out what the user it looking at (i.e., where the top of the
+ * window is, wrt to the list of articles), and ensure that there are
+ * 10 unread articles above and below the current one.
+ */
+function recenter()
+{
+	var items = document.querySelectorAll("#itemlist article");
+//console.log("recenter: items: %d: %o", items.length, items);
+	var topmost_item = null;
+
+	/* Find the topmost visible item: the first item whose bottom
+	 * is not above the top of the window/viewport.
+	 */
+	// XXX - This could use some improvement: this might catch an
+	// item where only the bottommost row of pixels is visible,
+	// which seems intuitively bogus. So for one thing, it'd be
+	// better to ignore the bottom border and check whether the
+	// content pane is visible.
+	//
+	// Then we might have a case where only the bottommost pixel
+	// of the last row of letters is visible. So instead of
+	// comparing to the top of the window, we might want to draw
+	// an imaginary line a centimeter or two down the window, and
+	// compare to that.
+	for (var i = 0, l = items.length; i < l; i++)
+	{
+		var item = items[i];
+//console.log("Examining item %o", item);
+		var box = item.getBoundingClientRect();
+				// Reminder: 'box' coordinates are
+				// relative to the viewport.
+//console.log("box top: %d, height, %d, both: %d", box.top, box.height, box.top+box.height);
+
+		// See whether this item's bottom edge is above the
+		// top of the window.
+		if (box.bottom < 0)
+			continue;
+
+		topmost_item = item;
+		break;
+	}
+
+//console.log("topmost_item:");
+//console.log(topmost_item);
+	if (topmost_item != null)
+	{
+		topmost_item.style.backgroundColor = "red";
+	}
+
+	// XXX - Get ID of current item.
+	var item_id;
+	if (topmost_item == null)
+		// No items on page
+		item_id = null;
+	else
+		item_id = topmost_item.item_id;
+console.log("Topmost item %o, ID: %d", topmost_item, item_id);
+
+	// XXX - cache.getitems(...)
 }
