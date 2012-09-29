@@ -268,6 +268,37 @@
 - Perhaps have "login" as an AJAX service. Send credentials to a
   password-protected page; have the page send back a JSON status
   message and a cookie that can be used to retrieve the other pages.
+
+	When an AJAX request to sync.php is made and the session has
+  expired, the server sends back:
+
+	[17:50:19.852] <?xml version="1.0" encoding="UTF-8"?>
+	<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+		"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+	<html>
+	<head>
+	<title>NewsBite: Error</title>
+	<link rel="stylesheet" type="text/css" href="skins/fancy/style.css"
+	  media="all" />
+	<link rel="stylesheet" type="text/css" href="skins/fancy/abort.css"
+	  media="all" />
+	</head>
+	<body id="abort-body">
+	
+	<h1>Error</h1>
+	
+	<p>Invalid feed ID: &quot;&quot;.</p>
+	
+	<hr/>
+	
+	<ul>
+	  <li><a href="index.php">Feed index</a></li>
+	</ul>
+	
+	</body>
+	</html>
+	 @ http://www.ooblick.com/newsbite/skins/fancy/view.js:145
+
 - Maybe ought to store a feed's language, so that we can figure out
   how to sort its name correctly in the main feed display (e.g.,
   "Le Monde" (fr) => "MONDE LE", and "El Mundo" (es) => "MUNDO EL").
@@ -1144,6 +1175,7 @@
   variety of device sizes.
 - CSS: replace -webkit-box-shadow with box-shadow
   once enough browsers support it.
+	Only Android browser doesn't support it.
 - CSS media queries described at
   http://www.w3.org/TR/2002/CR-css3-mediaqueries-20020708/
 - CSS3 supports "target" attributes for opening links in new
