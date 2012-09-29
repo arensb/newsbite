@@ -92,6 +92,9 @@ function get_json_data(url, params, handler, err_handler, batch)
 	return true;	// Success
 }
 
+// XXX - Move get_json_callback_batch() inside get_json_data(). This
+// should also help us remember how the request was originally
+// submitted.
 function get_json_callback_batch(req, user_func, user_err, batch)
 {
 	switch (req.readyState)
@@ -135,10 +138,21 @@ function get_json_callback_batch(req, user_func, user_err, batch)
 
 		// Use a try{}, in case the server sent bad JSON.
 		var value;
+console.log("req.status: %d", req.status);
 		try {
 			value = JSON.parse(req.responseText);
 		} catch (e) {
 			// XXX - Do something smarter?
+
+			// XXX - When the session times out, this is
+			// where things fail, because the server
+			// returns HTTP. Probably ought to check the
+			// status code; if it's 401, then we need to
+			// log back in, then resubmit the AJAX
+			// request.
+			// Is there any memory anywhere of the URL,
+			// parameters, etc. of the original request?
+			console.error(req);
 			console.error("Can't parse response: %o", e);
 			console.log(req.responseText);
 			value = undefined;
