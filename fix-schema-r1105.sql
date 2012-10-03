@@ -1,0 +1,3 @@
+ALTER TABLE	items
+CHANGE COLUMN	url
+		url		VARCHAR(511);

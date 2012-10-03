@@ -72,7 +72,7 @@ CREATE TABLE items (
 					# the same article shows up in two
 					# different feeds?
 	feed_id		INT NOT NULL,	# ID of feed
-	url		VARCHAR(255),	# Link to the full item
+	url		VARCHAR(511),	# Link to the full item
 	title		TINYTEXT,	# Title of the item
 	summary		TEXT,		# Summary of the item
 	content		TEXT,		# Full content of the item
