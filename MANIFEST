@@ -16,6 +16,7 @@ fix-schema-r213.sql
 fix-schema-r367.sql
 fix-schema-r929.sql
 fix-schema-r979.sql
+fix-schema-r1105.sql
 htdocs/Makefile
 htdocs/addfeed.php
 htdocs/editfeed.php
