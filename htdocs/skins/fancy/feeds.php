@@ -16,7 +16,7 @@ $skin_dir = $skin_vars['skin'];
   var skin_dir = "skins/<?=$skin_dir?>";
   var show_details = false;
   var show_tools = false;
-  var feed_title_tmpl_text = '<a href="view.php?id=@id@">@display_title@</a>&nbsp;<span class="feed-details">(<a href="@url@">site</a>, <a href="@feed_url@">RSS</a>)</span>';
+  var feed_title_tmpl_text = '<a href="view.php#id=@id@">@display_title@</a>&nbsp;<span class="feed-details">(<a href="@url@">site</a>, <a href="@feed_url@">RSS</a>)</span>';
   var feed_tools_tmpl_text = '<a href="update.php?id=@id@" onclick="return update_feed(@id@)">update</a>&nbsp;<a href="editfeed.php?id=@id@">edit</a>&nbsp;<a href="unsubscribe.php?id=@id@">unsub</a> <img src="skins/fancy/Attraction_transfer_icon.gif"/>';
 </script>
 <script type="text/javascript" src="skins/<?=$skin_dir?>/feeds.js"></script>
@@ -29,7 +29,7 @@ $skin_dir = $skin_vars['skin'];
 
 <ul class="tools">
   <li><a href="update.php?id=all" onclick="return update_feed('all')">Update all feeds</a></li>
-  <li><a href="view.php?id=all">View all feeds</a></li>
+  <li><a href="view.php#id=all">View all feeds</a></li>
   <li class="submenu">
     <span class="submenu-title">Feeds</span>
     <ul class="tools-menu">

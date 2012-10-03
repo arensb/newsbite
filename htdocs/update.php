@@ -223,7 +223,7 @@ if (is_numeric($feed_id) && is_int($feed_id+0))
 
 	// XXX - Prettier output
 	if ($out_fmt == "html")
-		echo "<p><a href=\"view.php?id=$feed_id\">Read feed</a></p>\n";
+		echo "<p><a href=\"view.php#id=$feed_id\">Read feed</a></p>\n";
 } elseif ($feed_id == "all")
 {
 	/* Update all feeds */
@@ -245,7 +245,7 @@ if (is_numeric($feed_id) && is_int($feed_id+0))
 
 	// XXX - Prettier output
 	if ($out_fmt == "html")
-		echo "<p><a href=\"view.php?id=$feed_id\">Read feeds</a></p>\n";
+		echo "<p><a href=\"view.php#id=$feed_id\">Read feeds</a></p>\n";
 } else {
 	/* Invalid feed ID. Abort with an error message */
 	abort("Invalid feed ID: $feed_id");

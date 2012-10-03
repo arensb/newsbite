@@ -134,7 +134,7 @@ function update_feed_info($feed_id)
 
 	/* Redirect to the feed view page */
 	if ($new['active'])
-		redirect_to("view.php?id=$feed_id");
+		redirect_to("view.php#id=$feed_id");
 	else
 		redirect_to("index.php");
 }
