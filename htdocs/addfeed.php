@@ -109,7 +109,7 @@ if (isset($feed_url))
 		abort($err['errmsg']);
 
 	/* Redirect to the feed's page */
-	redirect_to("view.php?id=$feed_id");
+	redirect_to("view.php#id=$feed_id");
 	exit(0);
 }
 
