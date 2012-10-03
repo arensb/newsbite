@@ -101,9 +101,22 @@ var query_args = {};		// GET arguments passed in the URL
 // Parse the GET arguments.
 (function()
 {
-	var query = window.location.search.substring(1);
-		// window.location.search: "?a=1&b=2..."
-		// .substring(1): cut off the "?".
+	// XXX - For debugging: error if a script passes in a query
+	// string the wrong way.
+	if (window.location.search.length > 0)
+		console.error("Someone passed in a search string: %s",
+			      window.location.search);
+
+	var query = (window.location.hash.length > 0 ?
+		     window.location.hash :
+		     window.location.search)
+		.substring(1);
+		// If window.location.hash is nonempty, then we're
+		// looking at a URL of the form "...#a=x&b=y", so use
+		// the hash. Otherwise, use window.location.search,
+		// because we were given "...?a=x&b=y".
+		//
+		// The ".substring(1)" chops off the leading "#" or "?".
 	var vars = query.split("&");	// Split by variable assignment
 
 	// Parse each variable assignment
@@ -124,6 +137,16 @@ var query_args = {};		// GET arguments passed in the URL
 		// not ASCII, it won't work. Do we care?
 	}
 })()
+
+// XXX - Should add "hashchange" event listener to window, to detect
+// when window.location.hash changes.
+// Firefox: event has
+//	oldURL (what it used to be)
+//	newURL (what it has changed to)
+// Then again, that might be a bad idea: it's probably best to use
+// some function that knows what's going on (and replaces the page,
+// and things like that), than to just change the .hash and hope for
+// the best. So don't use this to update the page.
 
 var feed_id = query_args['id'];
 		// XXX - Check to make sure this is either "all", or a
@@ -1008,7 +1031,7 @@ function set_feed_fields()
 	// XXX - On a newly-subscribed feed, this will be null. Ought
 	// to refresh the feed list, and try again. But also should
 	// make sure not to go into an infinite loop (i.e., someone
-	// could go to "view.php?id=9999", where 9999 is a nonexistent
+	// could go to "view.php#id=9999", where 9999 is a nonexistent
 	// feed ID; set_feed_fields() would see that it doesn't have a
 	// feed 9999, request a new feed list from the server, call
 	// set_feed_fields() again, and the cycle would continue. We
@@ -1116,7 +1139,7 @@ function recenter()
 {
 	var items = document.querySelectorAll("#itemlist article");
 //console.log("recenter: items: %d: %o", items.length, items);
-	var topmost_item = null;
+	var topmost_item_div = null;
 
 	/* Find the topmost visible item: the first item whose bottom
 	 * is not above the top of the window/viewport.
@@ -1146,25 +1169,58 @@ function recenter()
 		if (box.bottom < 0)
 			continue;
 
-		topmost_item = item;
+		topmost_item_div = item;
 		break;
 	}
 
-//console.log("topmost_item:");
-//console.log(topmost_item);
-	if (topmost_item != null)
+//console.log("topmost_item_div:");
+//console.log(topmost_item_div);
+	// XXX - Debugging/tracing:
+	if (topmost_item_div != null)
 	{
-		topmost_item.style.backgroundColor = "red";
+		topmost_item_div.style.backgroundColor = "red";
 	}
 
-	// XXX - Get ID of current item.
+	// Get ID of current item.
 	var item_id;
-	if (topmost_item == null)
+	if (topmost_item_div == null)
 		// No items on page
 		item_id = null;
 	else
-		item_id = topmost_item.item_id;
-console.log("Topmost item %o, ID: %d", topmost_item, item_id);
+		item_id = topmost_item_div.item_id;
+console.log("Topmost item %o, ID: %d", topmost_item_div, item_id);
 
-	// XXX - cache.getitems(...)
+	// XXX - Get the corresponding item in onscreen
+	var topmost_item = null;
+	for (var i = 0, l = onscreen.items.length; i < l; i++)
+	{
+		var item = onscreen.items[i];
+
+		if (item.id == item_id)
+		{
+			topmost_item = item;
+			break;
+		}
+	}
+
+	if (topmost_item == null)
+	{
+		console.error("onscreen.items doesn't have an item with ID %d", item_id);
+		return;
+	}
+
+	// Get the surrounding items
+console.log("Calling cache.getitems(%s, %s, ...)", feed_id, item_id);
+	var newitems = cache.getitems(feed_id, topmost_item, 2, 2);
+			// XXX - 2 should be 10, or something, in production.
+//console.log("newitems:");
+//console.log(newitems);
+
+	// XXX - Find topmost_item in newitems.
+	// XXX - What if the topmost item is marked read?
+
+	// XXX - Remove all but 10 read items above topmost_item.
+	// XXX - Make the parts above topmost_item match newitesm
+	// XXX - Remove all but 10 read items below topmost_item.
+	// XXX - Make the parts below topmost_item match newitesm
 }
