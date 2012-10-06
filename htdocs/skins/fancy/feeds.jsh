@@ -381,7 +381,15 @@ try {
 		/* Number of unread articles */
 		cell = document.createElement("td");
 		add_class(cell, "count-col");
-		cell.innerHTML = feed.num_unread;
+		if (feed.num_unread == null)
+		{
+			// I think 'num_unread' doesn't get cached. So
+			// if we're just starting out, and don't have
+			// a value, don't display "undefined".
+console.log("wha? "+feed.num_unread);
+			cell.innerHTML = "?";
+		} else
+			cell.innerHTML = feed.num_unread;
 		line.appendChild(cell);
 		line.count_cell = cell;
 
