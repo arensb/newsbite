@@ -457,6 +457,10 @@ function mark_item1(ev)
 		/* Something's wrong. Abort */
 		return;
 
+	var old_boundbox = item_div.getBoundingClientRect();
+			// Get the element's current size and
+			// position, so we can scroll correctly later.
+
 	var is_read = item_div.is_read;
 		// If item_div.is_read isn't set, it defaults to false
 
@@ -469,6 +473,8 @@ function mark_item1(ev)
 		item_div.is_read = true;
 		add_class(item_div, "item-read");
 	}
+
+	var new_boundbox = item_div.getBoundingClientRect();
 
 	var item_id = item_div.item_id;
 
@@ -570,28 +576,14 @@ console.log("new_item:\n%o", new_item);
 	if (item_div.is_read &&
 	    item_div.offsetTop < window.pageYOffset)
 	{
-		// Window has been scrolled so that top of item is no
-		// longer visible.
-		/* XXX - If the top is no longer visible, but the
-		 * bottom is still visible, then we want to scroll so
-		 * that the bottom is still in the same position.
+		/* Window has been scrolled so that top of item is no
+		 * longer visible.
 		 *
-		 * Unfortunately, we only know how tall the item is
-		 * right now; we don't know how tall it'll be once it
-		 * has been collapsed. So we don't know how much to
-		 * scroll by. And there doesn't seem to be a "when
-		 * element's size changes" event.
-		 *
-		 * We can probably make an educated guess from the
-		 * height of the item-header, but that seems like a
-		 * hack.
+		 * Scroll so that the bottom stays put. This is less
+		 * visually jarring than having the window jump
+		 * around.
 		 */
-		window.scrollTo(window.pageXOffset,
-					// X offset: if user has
-					// zoomed the window (on
-					// Android or iPad), don't
-					// scroll to the left.
-				item_div.offsetTop);
+		window.scrollBy(0, new_boundbox.height - old_boundbox.height);
 	}
 
 	/* There are several checkboxes for each item. Find them all,
