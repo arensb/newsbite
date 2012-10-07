@@ -575,13 +575,23 @@ console.log("new_item:\n%o", new_item);
 		/* XXX - If the top is no longer visible, but the
 		 * bottom is still visible, then we want to scroll so
 		 * that the bottom is still in the same position.
+		 *
+		 * Unfortunately, we only know how tall the item is
+		 * right now; we don't know how tall it'll be once it
+		 * has been collapsed. So we don't know how much to
+		 * scroll by. And there doesn't seem to be a "when
+		 * element's size changes" event.
+		 *
+		 * We can probably make an educated guess from the
+		 * height of the item-header, but that seems like a
+		 * hack.
 		 */
-		/* XXX - Likewise, if the user has zoomed the window,
-		 * and the left edge is hidden, shouldn't scroll to
-		 * the left edge. This means replacing the 0, below,
-		 * with something else.
-		 */
-		window.scrollTo(0, item_div.offsetTop);
+		window.scrollTo(window.pageXOffset,
+					// X offset: if user has
+					// zoomed the window (on
+					// Android or iPad), don't
+					// scroll to the left.
+				item_div.offsetTop);
 	}
 
 	/* There are several checkboxes for each item. Find them all,
