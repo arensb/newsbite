@@ -200,6 +200,12 @@ bind_key("l", recenter);
 
 	// Get feeds and items from cache.
 	feeds = cache.feeds();
+if (feed_id == "all" ||
+    feed_id in feeds)
+{
+console.log("I have this feed: ["+feed_id+"]");
+}else
+console.log("I don't have this feed: ["+feed_id+"]");
 	set_feed_fields();	// XXX - Set the page title,
 				// description, and so on.
 
@@ -457,10 +463,6 @@ function mark_item1(ev)
 		/* Something's wrong. Abort */
 		return;
 
-	var old_boundbox = item_div.getBoundingClientRect();
-			// Get the element's current size and
-			// position, so we can scroll correctly later.
-
 	var is_read = item_div.is_read;
 		// If item_div.is_read isn't set, it defaults to false
 
@@ -473,8 +475,6 @@ function mark_item1(ev)
 		item_div.is_read = true;
 		add_class(item_div, "item-read");
 	}
-
-	var new_boundbox = item_div.getBoundingClientRect();
 
 	var item_id = item_div.item_id;
 
@@ -557,33 +557,19 @@ console.log("new_item:\n%o", new_item);
 //}).defer(1, null);
 
 	/* Scroll so that the (collapsed) item is visible.
-	 * Let's say the item is long; the user has read the item, and
-	 * has clicked on the bottom checkbox to mark the item as
-	 * read. By this time, the top of the item has scrolled past
-	 * the top of the window. If we just collapse the item, the
-	 * viewport will jump to a random position lower down on the
-	 * window.
-	 * To avoid this, we scroll the window so that the top of the
-	 * item is at the top of the window, and the user can see the
-	 * next item on the page.
-	 * We don't want to do this if the top of the element is
-	 * already visible, because unnecessary scrolling is jarring.
-	 * We also don't want to do this when unchecking items,
-	 * because collapsed items are already small enough that the
-	 * whole thing is visible, so the problem described above
-	 * doesn't occur.
+	 * If the user has scrolled such that the top of the item is
+	 * no longer visible, scroll so that the top of the
+	 * now-collapsed article is at the top of the window.
 	 */
 	if (item_div.is_read &&
 	    item_div.offsetTop < window.pageYOffset)
 	{
-		/* Window has been scrolled so that top of item is no
-		 * longer visible.
-		 *
-		 * Scroll so that the bottom stays put. This is less
-		 * visually jarring than having the window jump
-		 * around.
-		 */
-		window.scrollBy(0, new_boundbox.height - old_boundbox.height);
+		// XXX - This isn't quite right: item_div.offsetTop is
+		// the offset from the top of item_div's container to
+		// the to of item_div (or something like that). What
+		// we really want is the offset from the top of the
+		// page to the top of item_div.
+		window.scrollTo(window.pageXOffset, item_div.offsetTop);
 	}
 
 	/* There are several checkboxes for each item. Find them all,
