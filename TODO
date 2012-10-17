@@ -74,6 +74,44 @@
 - Bug: keybindings.js doesn't handle non-letter bindings well: "?"
   gets turned into Spanish upside-down question mark by toUpperCase().
 	Need a notation to bind Esc.
+- "use strict": apparently modern implementations grok
+	"use strict";
+  https://developer.mozilla.org/en-US/docs/JavaScript/Reference/Functions_and_function_scope/Strict_mode
+	Put '"use strict";' at the top of the script, at the global
+  level, to turn on strictness for an entire script. Or after the
+  opening brace to turn it on for a function.
+	- Variables must be declared; using an undeclared variable is
+  an error.
+	- Assignments that would normally fail silently throw an
+  error.
+	- Deleting undeletable properties throws an error.
+	- Can't have duplicate properties in object literal:
+	  var o = { foo: 1, foo:2 };
+	  works normally, but fails under strict.
+	- Require unique argument names to functions.
+	- Forbids octal syntax.
+  Apparently JSLint prefers the syntax
+	(function() {
+		"use strict";
+		... body of script ...
+	})();
+- document.write(...): JSLint complains because this can be used to
+  inject code (e.g.,
+	document.write('<script src=...>');
+  ). I think I mainly use it to insert meta headers, stylesheets, and
+  other single nodes. Perhaps it'd be better to insert those with DOM
+  manipulation functions.
+- What is navigator.getDeviceStorage() ?
+- Vibrating:
+	window.navigator.vibrate(200)
+		Vibrate for 200 ms.
+	window.navigator.vibrate([200, 100, 200])
+		Vibrate for 200ms, then pause for 100ms, then vibrate
+		for 200ms
+  Unfortunately, only Firefox for Android currently supports this
+  AFAIK.
+- Getters and setters:
+  https://developer.mozilla.org/en-US/docs/JavaScript/Guide/Working_with_Objects?redirectlocale=en-US&redirectslug=Core_JavaScript_1.5_Guide%2FWorking_with_Objects#Defining_getters_and_setters
 - Profiling: according to 
   http://fuelyourcoding.com/webkits-javascript-profiler-explained/
   can turn Webkit (Chrome/Safari) profiling on and off with
