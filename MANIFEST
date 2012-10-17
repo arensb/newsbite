@@ -95,7 +95,6 @@ plugins/ads.php
 plugins/bugs.php
 plugins/enclosure.php
 plugins/feedburner.php
-plugins/gocomics.php
 plugins/google_news.php
 plugins/htmlpurifier.php
 plugins/no-style.php
