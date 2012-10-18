@@ -107,7 +107,10 @@ function run_hooks($hook, $args)
 	// Call each hook in turn
 	foreach ($hooks[$hook] as $h)
 		call_user_func_array($h, $args);
+			// XXX - Perhaps ought to define an error
+			// value for the hook to return; and if it
+			// does, do something intelligent.
 
-	// XXX - This should probably return something
+	return true;
 }
 ?>
