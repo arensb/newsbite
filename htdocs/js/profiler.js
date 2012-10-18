@@ -52,12 +52,15 @@ Profiler.prototype.report = function()
 {
 	var box = document.getElementById("profiler");
 	if (box == undefined)
+	{
+		console.error("Can't find profiler div");
 		return;
+	}
 
 	var totals = {};
 	var context = [];
 
-	for (var i = 0; i < this.stamps.length; i++)
+	for (var i = 0, l = this.stamps.length; i < l; i++)
 	{
 		var event = this.stamps[i];
 			// [0]: type
