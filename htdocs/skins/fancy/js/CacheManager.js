@@ -154,10 +154,12 @@ function _purge_stuff(todelete)
 
 	var i = 0;	// Number of items deleted in this run
 	var key;
+console.log("purging %d items", todelete.length);
+console.trace();
 	while ((key = todelete.shift()) != null)
 	{
 		localStorage.removeItem(key);
-		if (++i > 100)
+		if (++i > 25)
 		{
 			// We've done enough for now. Give someone
 			// else a chance to run.
@@ -184,6 +186,8 @@ CacheManager.prototype.getItem = function(key)
 		retval = JSON.parse(str);
 	} catch (e) {
 		// The item doesn't parse, or something. Delete it.
+		console.error("Error parsing JSON: "+e);
+		console.trace();
 		this.removeItem(key);
 		return null;
 	}
@@ -215,6 +219,8 @@ CacheManager.prototype.setItem = function(key, value)
 		// According to
 		// http://www.w3.org/TR/webstorage/#the-localstorage-attribute
 		// this should be QuotaExceededError.
+		console.log("Error in setItem: "+e);
+		console.trace();
 		this._ls_purge(key.length+str.length);
 	}
 
@@ -375,9 +381,6 @@ CacheManager.prototype.get_item = function(id)
 // XXX - Ought to be able to specify more details.
 CacheManager.prototype.getitems = function(feed_id, cur, before, after)
 {
-//console.debug("CacheManager.getitems("+feed_id+", "+cur+", "+before+", "+after+")");
-//if (cur != null)
-//console.debug("cur.last_update: "+cur.last_update);
 	var retval = new Array();
 
 	// XXX - Get the unread articles from whichever feed we're
@@ -387,7 +390,6 @@ CacheManager.prototype.getitems = function(feed_id, cur, before, after)
 
 	/* Sort headers by last_update, just like lib/database.inc. */
 	var hdrs = [];
-//msg_add("this.headers.length: "+this.headers.length);
 	for (var i = 0, l = this.headers.length; i < l; i++)
 	{
 		var h = this.headers[i];
@@ -398,20 +400,8 @@ CacheManager.prototype.getitems = function(feed_id, cur, before, after)
 		hdrs.push(h);
 	}
 
-	/* XXX - Why does this function often complain of
-	 * "reference to undefined property a.last_update" in FF 13?
-	 * The obvious answer is that 'a' has id, feed_id, pub_date, is_read,
-	 * and mtime, but not last_update. But why?
-	 if (a['last_update'] == undefined)
-	 console.debug(a);
-	 if (b['last_update'] == undefined)
-	 console.debug(b);
-	*/
+	// The sort function gets called a lot. Don't pessimize it.
 	hdrs.sort(function(a, b) {
-			// XXX - Does this function do what I want?
-			// Want to sort by last_update, from newest to
-			// youngest; use id (larger id goes first) as
-			// a tiebreaker.
 			if (a.last_update > b.last_update)
 				return -1;
 			else if (a.last_update < b.last_update)
@@ -420,7 +410,6 @@ CacheManager.prototype.getitems = function(feed_id, cur, before, after)
 				return b.id - a.id;
 		});
 	var hlen = hdrs.length;
-//msg_add("hlen: "+hlen);
 
 	if (hlen == 0)
 		// No items cached
@@ -543,10 +532,6 @@ CacheManager.prototype.slow_sync = function(feed_id, user_cb, user_err_cb)
 	// get_json_data callback when things go well
 	function slow_sync_cb(value)
 	{
-//console.debug("In slow_sync_cb, me == "+me);
-		// XXX
-//console.debug("slow_sync_cb: got");
-//console.debug(value);
 		// XXX - Sanity checking for value: make sure it's an
 		// array, of length > 0.
 
@@ -556,7 +541,6 @@ CacheManager.prototype.slow_sync = function(feed_id, user_cb, user_err_cb)
 		{
 			var entry = value[i];
 
-//console.debug(entry);
 			if ('action' in entry &&
 			    entry['action'] == "delete")
 					// Use subscript notation
@@ -565,7 +549,6 @@ CacheManager.prototype.slow_sync = function(feed_id, user_cb, user_err_cb)
 			{
 				// This item doesn't exist in the
 				// database. Remove it from cache.
-//console.debug("Deleted item "+entry.id);
 				me.purge_item(entry.id);
 				continue;
 			}
@@ -573,7 +556,6 @@ CacheManager.prototype.slow_sync = function(feed_id, user_cb, user_err_cb)
 			if (entry.is_read)
 			{
 				// This item is read. Remove from cache.
-//console.debug("Marked read item "+entry.id);
 				me.purge_item(entry.id);
 				continue;
 			}
@@ -582,11 +564,10 @@ CacheManager.prototype.slow_sync = function(feed_id, user_cb, user_err_cb)
 			try {
 			var item = new Item(entry);
 			me.store_item(item);
-//console.debug("Added new item "+item.id+": "+item.title);
-//console.debug(localStorage["item:"+item.id]);
 			continue;
 			} catch(e) {
 				console.error("Can't add item: %o", e);
+				console.trace();
 			}
 
 			// XXX - What's left?
@@ -614,7 +595,6 @@ console.log("What should I do with this?:\n%o", entry);
 	{
 		/* Compose list of {id, mtime, is_read} entries to send */
 		var header = this.itemindex[id];
-//console.log("id %d, is_read %o, mtime %o", header.id, header.is_read, header.mtime);
 		tosend[header.id] = {
 			     is_read:	header.is_read,
 			     mtime:	header.mtime,
