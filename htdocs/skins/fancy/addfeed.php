@@ -34,7 +34,12 @@ function register_feed_reader()
 // If this is Firefox, put in a link to add NewsBite as an RSS subscriber.
 if (navigator.registerContentHandler)
 {
-	document.write('<a href="" onclick="javascript:register_feed_reader()">Add one-click subscription</a>');
+	var sub_button = document.createElement("button");
+
+	sub_button.type = "button";
+	sub_button.onclick = register_feed_reader;
+	sub_button.innerHTML = "Add one-click subscription";
+	document.body.appendChild(sub_button);
 }
 </script>
 
