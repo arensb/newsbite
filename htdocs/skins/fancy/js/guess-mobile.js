@@ -43,16 +43,41 @@ var mobile = function(){
 if (mobile)
 {
 	// Set the viewport, if necessary.
+	// XXX - Should there be a default viewport for iPad?
 	if (mobile == "iPhone")
-		document.write('<meta name="viewport" content="width = device-width, initial-scale=0.5" />');
-	else if (mobile == "Android")
-		document.write('<meta name="viewport" content="width = device-width, initial-scale=1.0" />');
+	{
+		// Define a viewport:
+		// <meta name="viewport" content="width=device-width, initial-scale=0.5" />
+		var meta_node = document.createElement("meta");
 
-	// Load a device-specific stylesheet
-	document.write('<link rel="stylesheet" type="text/css" href="skins/' +
-		       skin_dir +
-		       '/' +
-		       mobile.toLowerCase()+'.css" media="screen" />');
+		meta_node.name = "viewport";
+		meta_node.content = "width=device-width, initial-scale=0.5";
+		document.head.appendChild(meta_node);
+	} else if (mobile == "Android")
+	{
+		// Define a viewport:
+		// <meta name="viewport"
+		//	content="width=device-width, initial-scale=1.0" />
+		var meta_node = document.createElement("meta");
+
+		meta_node.name = "viewport";
+		meta_node.content = "width=device-width, initial-scale=1.0";
+		document.head.appendChild(meta_node);
+	}
+
+	// Load a device-specific stylesheet:
+	// <link rel="stylesheet"
+	//	type="text/css"
+	//	href="path/to/mobile.css"
+	//	media="screen" />
+	var link_node = document.createElement("link");
+
+	link_node.rel = "stylesheet";
+	link_node.type = "text/css";
+	link_node.href = "skins/" + skin_dir + "/" +
+		mobile.toLowerCase() + ".css";
+	link_node.media = "screen";
+	document.head.appendChild(link_node);
 }
 
 #endif	// _mobile_js_
