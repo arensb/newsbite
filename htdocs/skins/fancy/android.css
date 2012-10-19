@@ -10,24 +10,23 @@ body {
 	background-color:	#8080c0;
 	background-image:	none;
 		/* Graphics slow things down */
-/*	background-repeat:	no-repeat;*/
-/*	background-attachment:	fixed;*/
-/*	color:			black;*/
 	margin-left:		0px;
 	margin-right:		0px;
 }
 
-iframe {
-	/* The max-width, max-height seems to fix a problem whereby YouTube
-	 * <iframe>s cause the contents to be sized wider than the
-	 * display.
-	 */
-	/* XXX - This is, of course, not universally-applicable to all Android
-	 * devices. Ought to figure out something more general.
-	 */
-	max-width:	266px !important;
-	max-height:	200px !important;
-	outline:	2px dotted red;
+/* Restrictions for smaller screens */
+@media only screen and (max-width: 570px) {
+	iframe {
+		/* The max-width, max-height seems to fix a problem whereby
+		 * YouTube <iframe>s cause the contents to be sized
+		 * wider than the display.
+		 *
+		 * We put this inside a @media section so that it only
+		 * applies to small displays.
+		 */
+		max-width:	266px !important;
+		max-height:	200px !important;
+	}
 }
 
 /* Don't let images overflow the item */
@@ -55,7 +54,6 @@ iframe {
 }
 
 .item .item-header {
-/*	background-image:	none;*/
 		/* Graphics slow things down */
 	border-top-color:	blue;
 	border-bottom-color:	navy;
@@ -118,8 +116,6 @@ body[orientation="left"]  .button-box-right {
 }
 
 input[type="checkbox"] {
-/*	background:	yellow;
-	color:		red;*/
 	width:		1em;
 	border:		3px dashed green outset;
 	outline:	3px dashed pink outset;
