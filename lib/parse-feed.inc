@@ -162,10 +162,6 @@ $url2handler = array(		// Handlers for specific URLs
 // flickr	http://flickr.com/services/feeds/
 // itunes	http://www.itunes.com/dtds/podcast-1.0.dtd
 // lj		http://www.livejournal.org/rss/lj/1.0/
-# XXX - Nothing implemented yet
-#	"http://www.livejournal.org/rss/lj/1.0/" => array(
-#		"element"	=> lj_element_handler,	// XXX - Write this
-#		),
 // media       http://search.yahoo.com/mrss/
 //		Handled by plugins/xml-media.php
 // openSearch	http://a9.com/-/spec/opensearchrss/1.0/
@@ -394,8 +390,8 @@ function _element_start_handler($parser, $fullname, $attrs)
 		if (isset($url2handler[$ns_url]["init"]) &&
 		    function_exists($url2handler[$ns_url]["init"]))
 		{
-			# XXX - Pass along $attrs as an additional argument:
-			# can give a hint to the parser whether which version
+			# Pass along $attrs as an additional argument: can
+			# give a hint to the parser whether which version
 			# of RSS we're dealing with.
 			$err = $url2handler[$ns_url]["init"](
 				$ns_url,
@@ -535,17 +531,18 @@ function _element_end_handler($parser, $fullname)
  *	<title>foo&amp;bar</title>
  * it'll be called for "foo", "&", and "bar".
  * It also gets called for whitespace between elements.
+ *
+ * It doesn't look as though we can tell whether this function was
+ * called from inside a <![CDATA[[ ]]> or not. The only difference
+ * between
+ *	<title>one &lt;i&gt;two&lt;/i&gt; three</title>
+ * and
+ *	<title><![CDATA[one <i>two</i> three]]></title>
+ * is that in the former case, _cdata_handler() gets called a bunch of
+ * times, while in the latter it only gets called once.
+ *
+ * However, in both case we get "<" rather than "&lt;".
  */
-// XXX - It doesn't look as though we can tell whether this function
-// was called from inside a <![CDATA[[ ]]> or not. The only difference
-// between
-// <title>one &lt;i&gt;two&lt;/i&gt; three</title>
-// and
-// <title><![CDATA[one <i>two</i> three]]></title>
-// is that in the former case, _cdata_handler() gets called a bunch of
-// times, while in the latter it only gets called once.
-
-// However, in both case we get "<" rather than "&lt;".
 function _cdata_handler($parser, $data)
 {
 	global $_context;
@@ -568,21 +565,6 @@ function _cdata_handler($parser, $data)
 		$parent['retval']['#text'] = $data;
 }
 
-// XXX - This version takes 3 arguments. The version documented at php.net
-// takes four:
-//	($parser, $user_data, $prefix, $uri)
-// Fortunately, it's possible to define a function inside an
-// if-statement, if I can find out how to tell which one is required:
-//
-// if (some condition)
-// {
-//	function foo($a, $b, $c) { ... }
-// } else {
-//	function foo($a, $b, $c, $d) { ... }
-// }
-// The simplest workaround might be to have the handler function
-// defined this way, and have it call a helper function that does the
-// real work.
 function _namespace_handler($parser, $prefix, $url)
 {
 	global $url2handler;
@@ -610,11 +592,12 @@ function _namespace_handler($parser, $prefix, $url)
 	$url2ns[$url] = $prefix;
 
 	/* If there's an initialization hook for this URL, call it */
-	$dummy = null;
+	$dummy = null;		// Placeholder for the list of
+				// attributes. Namespace declarations
+				// don't have attributes, so there's
+				// nothing to pass in.
 	if (isset($url2handler[$url]['init']) &&
 	    function_exists($url2handler[$url]['init']))
-		// XXX - url2handler[init] expects a third argument, a
-		// list of attributes. Do we have that?
 		$url2handler[$url]['init']($url, $prefix, $dummy);
 }
 
@@ -814,15 +797,14 @@ error_log("After hooks, link is array\n");
 		break;
 
 	    case "description":
-		# Clean up HTML in description.
-		run_hooks("clean-html", array(&$children));
-		# XXX - There's a danger that channel/description could
-		# wind up being > 255 characters long. In this case, it'd
-		# get truncated when saved to the database, and we'd
-		# wind up with unclosed tags on the final page.
-		# Perhaps one workaround is to clean-html in feeds.php:
-		# read truncated HTML from the database, and clean it up
-		# before sending it to the client.
+		# Normally, we'd call
+		#	run_hooks("clean-html")
+		# here, but either the raw or clean description could wind
+		# up being longer than the database field, and we'd end up
+		# with unclosed tags.
+		#	So instead, we'll store the raw description, and
+		# clean the HTML in htdocs/feeds.php, just before sending
+		# it to the client.
 
 		switch ($parent)
 		{
