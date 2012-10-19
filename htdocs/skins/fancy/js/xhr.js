@@ -12,38 +12,15 @@
 //	createXMLHttpRequest = function() ...
 // rather than
 //	function createXMLHttpRequest()
-var createXMLHttpRequest = undefined;
-if (window.XMLHttpRequest && typeof XMLHttpRequest != "undefined")
+var createXMLHttpRequest = function()
 {
-	/* Firefox, Safari, etc. */
-	createXMLHttpRequest = function()
-	{
-		var request = false;
-		try {
-			request = new XMLHttpRequest();
-		} catch (e) {
-			request = false;
-		}
-		return request;
+	var request = false;
+	try {
+		request = new XMLHttpRequest();
+	} catch (e) {
+		request = false;
 	}
-} else if (window.ActiveXObject) {
-	/* IE */
-	createXMLHttpRequest = function()
-	{
-		var request = false;
-
-		/* Create a new ActiveX XMLHTTP object */
-		try {
-			request = new ActiveXObject('Msxml2.XMLHTTP');
-		} catch (e) {
-			request = false;
-		}
-		return request;
-	}
-} else {
-	// Don't define createXMLHttpRequest.
-	// Hopefully this will never happen, especially with
-	// newer browsers.
+	return request;
 }
 
 /* get_json_data
