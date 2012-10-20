@@ -313,46 +313,42 @@ CacheManager.prototype.update_feeds = function(counts, cb)
 	if (counts)
 		ajax_args['s'] = "true";
 
-	var me = this;
+	var self = this;	// Remember 'this' to pass to callback
+				// function.
 	get_json_data("feeds.php",
 		      ajax_args,
-		      function(value) {
-			      me._update_feeds_cb(value, cb);
-		      },
+		      update_feeds_callback,
 		      function(status, msg) {	// Error handler
 			      msg_add("JSON failed: "+status+": "+msg);
 		      },
 		      true);
-}
 
-/* _update_feeds_cb
- * Callback for update_feeds. Parse the returned string into an array
- * of Feed objects, store it in localStorage, and call the user
- * callback.
- */
-// XXX - Move this inside update_feeds()? Will 'this' be set correctly?
-CacheManager.prototype._update_feeds_cb = function(value, user_cb)
-{
-	// XXX - Ought to update existing feed info, rather than just
-	// replace what's there. In particular, if 'value' doesn't
-	// contain the read/unread counts, ought to keep the old
-	// value.
-	var newfeeds = {};
-	for (var i in value)
-		newfeeds[i] = new Feed(value[i]);
+	function update_feeds_callback(value)
+	{
+		// XXX - Ought to update existing feed info, rather
+		// than just replace what's there. In particular, if
+		// 'value' doesn't contain the read/unread counts,
+		// ought to keep the old value.
+		var newfeeds = {};
+		for (var i in value)
+		{
+			newfeeds[i] = new Feed(value[i]);
+		}
 
-	this.store_feeds(newfeeds);	// Save a copy of the feed info
+		self.store_feeds(newfeeds);	// Save a copy of the feed info
 
-	/* XXX - If the user has unsubscribed from some feed, we may
-	 * have cached items from no-longer-existing feeds. Ought to
-	 * go through the cache and delete them.
-	 * Best not to do it in this function, though, since the
-	 * browser user is waiting for stuff to happen. Rather, ought
-	 * to wait a bit and do maintenance while other stuff is going
-	 * on.
-	 */
+		/* XXX - If the user has unsubscribed from some feed, we may
+		 * have cached items from no-longer-existing feeds. Ought to
+		 * go through the cache and delete them.
+		 * Best not to do it in this function, though, since the
+		 * browser user is waiting for stuff to happen. Rather, ought
+		 * to wait a bit and do maintenance while other stuff is going
+		 * on.
+		 */
 
-	user_cb(newfeeds);
+		if (cb != null)
+			cb(newfeeds);
+	}
 }
 
 /* store_feeds
