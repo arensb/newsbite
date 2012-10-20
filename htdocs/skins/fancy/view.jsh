@@ -61,20 +61,9 @@ if (isNaN(new Date(JSON.parse(JSON.stringify(new Date()))).getTime()))
 var mark_read = {};		// Hash of item_id -> is_read? values
 var mark_request = null;	// Data for marking items as read/unread
 var current_item = null;	// Current item, for keybindings and such
-	// XXX - Replace 'current_item' with 'cur_item'.
 
 var cache = new CacheManager();	// Cache manager for locally-stored data
 var feeds;		// List of feeds
-
-// XXX - Perhaps should just remember current item:
-//	ID
-//	xpos, ypos: position of top left corner of the item div
-//	last_update or something?
-var cur_item = {
-	id:	null,
-	xpos:	null,
-	ypos:	null,
-	};
 var onscreen;		// List of displayed items
 	// XXX - {
 	// current item - ID of item that has focus
@@ -210,7 +199,6 @@ console.log("I don't have this feed: ["+feed_id+"]");
 				// description, and so on.
 
 	// Fetch the list of what was on screen last time we started
-	cur_item = cache.getItem("cur_item");
 	// XXX - Initialize it if empty. Or initialize any missing
 	// bits even if not empty.
 
