@@ -93,6 +93,7 @@
 .submenu-title {
 	display:		inline;
 	font-weight:		bold;
+	cursor:			context-menu;
 }
 
 .submenu .tools-menu {
