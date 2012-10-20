@@ -335,8 +335,6 @@ CacheManager.prototype.update_feeds = function(counts, cb)
 			newfeeds[i] = new Feed(value[i]);
 		}
 
-		self.store_feeds(newfeeds);	// Save a copy of the feed info
-
 		/* XXX - If the user has unsubscribed from some feed, we may
 		 * have cached items from no-longer-existing feeds. Ought to
 		 * go through the cache and delete them.
@@ -345,6 +343,11 @@ CacheManager.prototype.update_feeds = function(counts, cb)
 		 * to wait a bit and do maintenance while other stuff is going
 		 * on.
 		 */
+
+		self.store_feeds(newfeeds);	// Save a copy of the feed info
+				// XXX - This can be deferred. But if so,
+				// we ought to do the cleanup described
+				// above.
 
 		if (cb != null)
 			cb(newfeeds);
@@ -372,17 +375,21 @@ CacheManager.prototype.get_item = function(id)
 
 /* getitems
  * Get some items from the given feed
+ *
+ * feed_id: the ID of the feed for which to get items, or "all".
+ * cur: an Item object, the reference item for 'before' and 'after'; or:
+ *	null: get the first available items.
+ *	-1: get the last available items.
+ * before: integer. The number of items to return that come before 'cur',
+ *	i.e., whose publication/modification time is more recent than
+ *	'cur'.
+ * after: integer. Like 'before', but items coming after 'cur', i.e. whose
+ *	publication time is older than 'cur'.
  */
-// XXX - Document the arguments
 // XXX - Ought to be able to specify more details.
 CacheManager.prototype.getitems = function(feed_id, cur, before, after)
 {
 	var retval = new Array();
-
-	// XXX - Get the unread articles from whichever feed we're
-	// reading.
-	// Sort them. Find the spot, then return the surrounding
-	// articles.
 
 	/* Sort headers by last_update, just like lib/database.inc. */
 	var hdrs = [];
@@ -506,7 +513,6 @@ CacheManager.prototype.store_item = function(item)
  */
 CacheManager.prototype.purge_item = function(item_id)
 {
-	// XXX - Test this.
 	this.removeItem("item:"+item_id);
 
 	for (var i in this.headers)
@@ -522,17 +528,36 @@ CacheManager.prototype.slow_sync = function(feed_id, user_cb, user_err_cb)
 {
 	var me = this;		// 'this' for child functions.
 
-	/* XXX - Ought to move the inner functions to the end of the
-	 * function body, for readability.
-	 */
+	/* Get list of items in cache */
+	var tosend = {};
+	for (var id in this.itemindex)
+	{
+		/* Compose list of {id, mtime, is_read} entries to send */
+		var header = this.itemindex[id];
+		tosend[header.id] = {
+			     is_read:	header.is_read,
+			     mtime:	header.mtime,
+			};
+	}
+
+	/* Send to server */
+	get_json_data("sync.php",
+		      {id: feed_id,
+		       ihave: JSON.stringify(tosend),
+		      },
+		      slow_sync_cb,
+		      slow_sync_error,
+		      true);
+	// Response will be collected by slow_sync_cb
+
+	/* Inner helper functions */
+
 	// get_json_data callback when things go well
 	function slow_sync_cb(value)
 	{
 		// XXX - Sanity checking for value: make sure it's an
 		// array, of length > 0.
 
-		// XXX - Delete nonexistent and read items
-		//	Get inspiration from _get_marked_cb()
 		for (var i in value)
 		{
 			var entry = value[i];
@@ -582,30 +607,6 @@ console.log("What should I do with this?:\n%o", entry);
 		if (typeof(user_err_cb) == "function")
 			user_err_cb(status, msg);
 	}
-
-	/** slow_sync body **/
-
-	/* Get list of items in cache */
-	var tosend = {};
-	for (var id in this.itemindex)
-	{
-		/* Compose list of {id, mtime, is_read} entries to send */
-		var header = this.itemindex[id];
-		tosend[header.id] = {
-			     is_read:	header.is_read,
-			     mtime:	header.mtime,
-			};
-	}
-
-	/* Send to server */
-	get_json_data("sync.php",
-		      {id: feed_id,
-		       ihave: JSON.stringify(tosend),
-		      },
-		      slow_sync_cb,
-		      slow_sync_error,
-		      true);
-	// Response will be collected by slow_sync_cb
 }
 
 #endif	// _CacheManager_js_
