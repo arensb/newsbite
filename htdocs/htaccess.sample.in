@@ -12,8 +12,7 @@ AuthUserFile @INSTALL_ROOT@/.digest_pw
 # Make sure PHP can find all of its libraries
 <IfModule mod_php5.c>
 	# Say where the lib files are to be found.
-	# XXX - Is "." necessary?
-	php_value include_path ".:@INSTALL_LIB@"
+	php_value include_path "@INSTALL_LIB@"
 
 	# If update.php times out, uncomment this and adjust as needed.
 	# php_value max_execution_time	90
