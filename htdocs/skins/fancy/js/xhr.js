@@ -67,78 +67,86 @@ function get_json_data(url, params, handler, err_handler, batch)
 		// XXX - Error-checking
 
 	return true;	// Success
-}
 
-// XXX - Move get_json_callback_batch() inside get_json_data(). This
-// should also help us remember how the request was originally
-// submitted.
-function get_json_callback_batch(req, user_func, user_err, batch)
-{
-	switch (req.readyState)
+	/* Inner helper functions */
+
+	// XXX - Most or all of these parameters are no longer needed.
+	// XXX - Get rid of unnecessary parameters and/or variables.
+	function get_json_callback_batch(req, user_func, user_err, batch)
 	{
-	    case 0:		// Uninitialized
-	    case 1:		// Loading
-		return;
-	    case 2:		// Loaded
-		// XXX - Do something intelligent in case of error
-		var err;
-		var errmsg;
-
-		/* Get HTTP status */
-		try {
-			err = req.status;
-			errmsg = req.statusText;
-		} catch (e) {
-			err = 1;
-		}
-
-		/* If the HTTP status isn't 200, abort the request */
-		if (err != 200)
+		switch (req.readyState)
 		{
-			req.abort();
-			req.aborted = true;
-
-			// Call a user function, if defined.
-			if (user_err != null)
-				user_err(req.status, req.statusText);
-		}
-		return;
-	    case 3:		// Got partial text
-		// XXX - Call handler if !batch
-		return;
-	    case 4:
-		// The response is a JSON object.
-		if (req.responseText == "")
-			// XXX - No text given. Should have better
-			// error-handling.
+		    case 0:		// Uninitialized
+		    case 1:		// Loading
 			return;
+		    case 2:		// Loaded
+			// XXX - Do something intelligent in case of error
+			var err;
+			var errmsg;
 
-		// Use a try{}, in case the server sent bad JSON.
-		var value;
-console.log("req.status: %d", req.status);
-		try {
-			value = JSON.parse(req.responseText);
-		} catch (e) {
-			// XXX - Do something smarter?
+			/* Get HTTP status */
+			try {
+				err = req.status;
+				errmsg = req.statusText;
+			} catch (e) {
+				err = 1;
+			}
 
-			// XXX - When the session times out, this is
-			// where things fail, because the server
-			// returns HTTP. Probably ought to check the
-			// status code; if it's 401, then we need to
-			// log back in, then resubmit the AJAX
-			// request.
-			// Is there any memory anywhere of the URL,
-			// parameters, etc. of the original request?
-			console.error(req);
-			console.error("Can't parse response: %o", e);
-			console.log(req.responseText);
-			value = undefined;
+			/* If the HTTP status isn't 200, abort the request */
+			if (err != 200)
+			{
+				req.abort();
+				req.aborted = true;
+
+				// Call a user function, if defined.
+				// XXX - If the status is 401 (not
+				// logged in), then ought to log in
+				// through login.php, then resubmit
+				// the original request.
+				if (user_err != null)
+					user_err(req.status, req.statusText);
+			}
+			return;
+		    case 3:		// Got partial text
+			// XXX - Call handler if !batch
+			return;
+		    case 4:
+			// The response is a JSON object.
+			if (req.responseText == "")
+				// XXX - No text given. Should have better
+				// error-handling.
+				return;
+
+			// Use a try{}, in case the server sent bad JSON.
+			var value;
+			console.log("req.status: %d", req.status);
+			try {
+				value = JSON.parse(req.responseText);
+			} catch (e) {
+				// XXX - Do something smarter?
+
+				// XXX - When the session times out, this is
+				// where things fail, because the server
+				// returns HTTP. Probably ought to check the
+				// status code; if it's 401, then we need to
+				// log back in, then resubmit the AJAX
+				// request.
+				// Is there any memory anywhere of the URL,
+				// parameters, etc. of the original request?
+				console.error(req);
+				console.error("Can't parse response: %o", e);
+				console.log(req.responseText);
+				value = undefined;
+			}
+			user_func(value);
+			break;
+		    default:
+			return;
 		}
-		user_func(value);
-		break;
-	    default:
-		return;
 	}
+
+	// XXX - Add a non-batch handler. Get inspiration from the one
+	// in feeds.jsh.
 }
 
 #endif	// _xhr_js_
