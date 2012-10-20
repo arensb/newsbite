@@ -86,15 +86,6 @@ if (isset($skin_vars['feed_list'])):
     </td>
   </tr>
 <? endif ?>
-<?
-  /* XXX - Ought to manage passwords separately, so can have one
-   * username/password for all of livejournal.com.
-   *
-   * There's also the problem that Firefox stores passwords for sites
-   * and fills them in automatically in pages. So this can fill in the
-   * wrong password.
-   */
-?>
   <tr>
     <th>Username</th>
     <td>
