@@ -19,8 +19,7 @@ endif
 
 # Installation directories: where to install the various bits and
 # pieces.
-# XXX - Pick better defaults
-INSTALL_ROOT ?=		/lala
+INSTALL_ROOT ?=		/usr/local/newsbite
 INSTALL_BACKEND ?=	${INSTALL_ROOT}
 INSTALL_SKIN ?=		${INSTALL_ROOT}/skins
 INSTALL_LIB ?=		${INSTALL_ROOT}/lib
