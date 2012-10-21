@@ -13,9 +13,7 @@ $skin_dir = $skin_vars['skin'];
 <link rel="stylesheet" type="text/css" href="skins/<?=$skin_dir?>/index.css" media="all" />
 <script type="text/javascript">
   /* XXX - Which of these variables are actually needed? */
-  var skin_dir = "skins/<?=$skin_dir?>";
-  var show_details = false;
-  var show_tools = false;
+  var skin_dir = "skins/<?=$skin_dir?>";	// XXX - Used to display "Loading.gif"
   var feed_title_tmpl_text = '<a href="view.php#id=@id@">@display_title@</a>&nbsp;<span class="feed-details">(<a href="@url@">site</a>, <a href="@feed_url@">RSS</a>)</span>';
   var feed_tools_tmpl_text = '<a href="update.php?id=@id@" onclick="return update_feed(@id@)">update</a>&nbsp;<a href="editfeed.php?id=@id@">edit</a>&nbsp;<a href="unsubscribe.php?id=@id@">unsub</a> <img src="skins/fancy/Attraction_transfer_icon.gif"/>';
 </script>
