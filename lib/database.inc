@@ -139,7 +139,6 @@ EOT
  *		'unread'		=> 12,
  *	);
  */
-// XXX - Should accept $feed_id == NULL, to count all items.
 function db_get_feed_counts($feed_id)
 {
 	$dbh = db_connect();
@@ -187,10 +186,10 @@ function db_get_all_feed_counts()
 {
 	$dbh = db_connect();
 
-	/* Get the number of read/unread items in each feed */
-	// XXX - When a feed doesn't have any items, this returns NULL
-	// for all the counts. We fix this below with a hack, but
-	// there's got to be a better way.
+	/* Get the number of read/unread items in each feed.
+	 * The ISNULL() calls are there because the sum of an empty
+	 * set is NULL, not 0.
+	 */
 	$query = <<<EOT
 SELECT		feeds.id AS `feed_id`,
 		IFNULL(SUM(items.is_read), 0) AS `read`,
@@ -238,12 +237,12 @@ EOT;
  *	How many items to fetch.
  * order => date_desc (default) | date_asc
  *	Order in which to return the items
- * read => bool
- *	If false, returns only unread items. If true, also returns read
- *	items.
+ * read => string:
+ *	"read": return only items with is_read == true.
+ *	"unread": return only items with is_read == false.
+ *	"both": return both.
+ *	defaults to "unread"
  */
-// XXX - Would it be useful to have a keyword for "just give me the
-// summary, not the content"?
 function db_get_some_feed_items(/* varargs */)
 {
 	$argc = func_num_args();
@@ -268,9 +267,6 @@ function db_get_some_feed_items(/* varargs */)
 		}
 
 		/* Turn the argument list into an assoc */
-		// XXX - There might be a better way to do this, but I don't
-		// know what it is. None of the array functions seem to do the
-		// job.
 		$args = array();
 		for ($i = 0; $i < $argc; $i += 2)
 			$args[func_get_arg($i)] = func_get_arg($i+1);
@@ -361,8 +357,6 @@ EOT;
 		);
 
 	/* Were we asked for just one feed ID? */
-	// XXX - Would be nice to request some, but not all, feeds, by
-	// listing their IDs.
 	if (isset($args['feed_id']) && is_numeric($args['feed_id']))
 	{
 		$c = sprintf("items.feed_id=%d\n", $args['feed_id']);
@@ -378,6 +372,27 @@ EOT;
 	/* XXX - Ought to be able to select "give me only read items",
 	 * "give me only unread items", or "give me both".
 	 */
+	if (isset($args['read']))
+	{
+		switch ($args['read'])
+		{
+		    case "read":	# Return only read items
+			array_push($conditions, "items.is_read");
+			break;
+		    case "unread":	# Return only unread items
+			array_push($conditions, "!items.is_read");
+			break;
+		    case "both":
+			break;
+		    default:		# Invalid 'read' value
+			error_log("db_get_some_feed_items: Invalid 'read' value: ".$args['read']);
+			return NULL;
+		}
+	} else {
+		// Default to returning only unread items
+		array_push($conditions, "!items.is_read");
+	}
+
 	if (!isset($args['read']) || !$args['read'])
 		array_push($conditions, "!items.is_read");
 

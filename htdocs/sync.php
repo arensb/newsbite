@@ -126,7 +126,7 @@ foreach ($ids as $id)
 # Get items with db_get_some_feed_items(), like items.php.
 # If there are any that don't appear in $ihave, add them to $retval.
 $get_feed_args = array(
-	"read"		=> false,
+	"read"		=> "unread",
 	"max_items"	=> 100,	# XXX - What's the best value?
 	);
 if (is_integer($feed_id))
