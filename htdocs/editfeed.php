@@ -71,35 +71,6 @@ function update_feed_info($feed_id)
 
 	$ok = true;
 	$errors = array();
-/*
-	// XXX - For testing, don't allow "xxx" in any of these
-	// values.
-	if (strstr($new['nickname'], "xxx"))
-	{
-		$ok = false;
-		$errors['nickname'] = "Can't have xxx in nickname.";
-	}
-	if (strstr($new['url'], "xxx"))
-	{
-		$ok = false;
-		$errors['url'] = "Can't have xxx in url.";
-	}
-	if (strstr($new['feed_url'], "xxx"))
-	{
-		$ok = false;
-		$errors['feed_url'] = "Can't have xxx in feed url.";
-	}
-	if (strstr($new['username'], "xxx"))
-	{
-		$ok = false;
-		$errors['username'] = "Can't have xxx in username.";
-	}
-	if (strstr($new['passwd'], "xxx"))
-	{
-		$ok = false;
-		$errors['passwd'] = "Can't have xxx in password.";
-	}
-*/
 
 	if (!$ok)
 	{
