@@ -5,6 +5,9 @@
  */
 require_once("config.inc");
 
+define('DB_MAX_RESULTS', 50);	// Max # of results to return, if not
+				// otherwise specified.
+
 $dbh = NULL;		// Database handle
 
 /* db_errno, db_errmsg
@@ -411,12 +414,9 @@ EOT;
 	}
 
 	/* Add limit and offset to query */
-	if (is_int($args['max_items']))
-		$query .= "LIMIT " . $args['max_items'] . "\n";
-	else
-		// XXX - Should probably put the default limit in a
-		// constant.
-		$query .= "LIMIT 50\n";
+	if (!is_int($args['max_items']))
+		$args['max_items'] = DB_MAX_RESULTS;
+	$query .= "LIMIT " . $args['max_items'] . "\n";
 
 	if (is_int($args['start_at']))
 		$query .= "OFFSET " . $args['start_at'] . "\n";
@@ -424,7 +424,16 @@ EOT;
 	/* Run the SQL query */
 	$dbh = db_connect();
 	$result = $dbh->query($query);
-			// XXX - Error-checking
+	if (!$result)
+	{
+		global $db_errno;
+		$db_errno = $dbh->errno;
+		global $db_errmsg;
+		$db_errmsg = $dbh->error;
+
+		return NULL;
+	}
+
 	$retval = array();
 	while ($row = $result->fetch_assoc())
 	{
@@ -484,7 +493,16 @@ EOT
 	/* Run the SQL query */
 	$dbh = db_connect();
 	$result = $dbh->query($query);
-			// XXX - Error-checking
+	if (!$result)
+	{
+		global $db_errno;
+		$db_errno = $dbh->errno;
+		global $db_errmsg;
+		$db_errmsg = $dbh->error;
+
+		return NULL;
+	}
+
 	$retval = array();
 
 	while ($row = $result->fetch_assoc())
@@ -539,7 +557,16 @@ EOT
 	/* Run the SQL query */
 	$dbh = db_connect();
 	$result = $dbh->query($query);
-			// XXX - Error-checking
+	if (!$result)
+	{
+		global $db_errno;
+		$db_errno = $dbh->errno;
+		global $db_errmsg;
+		$db_errmsg = $dbh->error;
+
+		return NULL;
+	}
+
 	$retval = array();
 
 	while ($row = $result->fetch_assoc())
