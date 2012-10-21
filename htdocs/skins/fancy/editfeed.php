@@ -39,7 +39,7 @@ $feed = &$skin_vars['feed'];
 
   <tr>
     <th>Subtitle</th>
-    <td><?=htmlspecialchars($feed['subtitle']) || "&nbsp;"?></td>
+    <td><?=$feed['subtitle'] ? htmlspecialchars($feed['subtitle']) : "&nbsp;"?></td>
   </tr>
 
 <?/* User-settable nickname */ ?>
@@ -54,7 +54,12 @@ $feed = &$skin_vars['feed'];
   </tr>
 
 <?/* XXX - There should be a button or something to try to
-   * auto-discover the feed URL from the site URL.
+   * auto-discover the feed URL from the site URL. Presumably the way
+   * to do this is to fetch the site URL and check for "link
+   * rel=alternate", where the MIME type is RSS or Atom.
+   *
+   * However, I'm not sure this can be done in JavaScript: we can't
+   * just fetch an arbitrary URL.
    */
 ?>
   <tr>
