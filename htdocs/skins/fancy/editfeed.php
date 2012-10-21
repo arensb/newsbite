@@ -31,7 +31,6 @@ $feed = &$skin_vars['feed'];
     <td><?=$feed['id']?></td>
   </tr>
 
-<?/* XXX - Is it worth displaying the title? It's right above */?>
   <tr>
     <th>Title</th>
     <td><?=htmlspecialchars($feed['title'])?></td>
