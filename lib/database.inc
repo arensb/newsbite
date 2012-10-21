@@ -365,13 +365,7 @@ EOT;
 		array_push($conditions, "feeds.active");
 	}
 
-	/* Do we want read items, or just unread ones? */
-	// Without an explicit condition, SQL will return both read
-	// and unread items, but that's not the default behavior we
-	// want. So we really test for !($args['read'] == true)
-	/* XXX - Ought to be able to select "give me only read items",
-	 * "give me only unread items", or "give me both".
-	 */
+	/* Do we want just read items, or just unread ones, or both? */
 	if (isset($args['read']))
 	{
 		switch ($args['read'])
@@ -392,9 +386,6 @@ EOT;
 		// Default to returning only unread items
 		array_push($conditions, "!items.is_read");
 	}
-
-	if (!isset($args['read']) || !$args['read'])
-		array_push($conditions, "!items.is_read");
 
 	/* Add selection conditions to query */
 	if (count($conditions) > 0)
