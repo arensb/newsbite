@@ -149,6 +149,15 @@ $url2handler = array(		// Handlers for specific URLs
 		"element"	=> 'rdf_element_handler',
 		),
 
+	// XML
+	// I don't think this namespace is explicitly declared. It's
+	// assumed for XML documents. See
+	// http://www.w3.org/XML/1998/namespace
+	"http://www.w3.org/XML/1998/namespace"	=> array(
+		"element"	=> 'xml_element_handler',
+		"attribute"	=> 'xml_attribute_handler',
+		),
+
 // Other namespaces I've seen, for additional features inside a feed:
 // admin	http://webns.net/mvcb/
 // blogChannel	http://backend.userland.com/blogChannelModule
@@ -176,6 +185,8 @@ load_hooks(PLUGIN_DIR);
 
 $url2ns = array(	// Map URLs to their namespace prefixes
 	""	=> "",	// Default
+	"http://www.w3.org/XML/1998/namespace"	=> "xml",
+			// Implicit XML namespace
 	);
 $ns2url = array();	// Map namespace prefixes to their URLs
 
@@ -614,8 +625,6 @@ function _end_namespace_handler($parser, $prefix)
  * handler does. This function is called after the closing tag has
  * been seen, and any other hooks have run.
  *
- * XXX - Move the following description to the formal documentation.
- *
  * The job of this function is to look at the values returned by the
  * handlers that looked at the contents of the element, and fill in
  * $retval.
@@ -722,6 +731,10 @@ function rss_init($url, $prefix, &$attrs)
 {
 	// XXX - Look at $attrs['version'] to see which version of RSS
 	// we're dealing with.
+if (isset($attrs['version']))
+error_log("RSS version [$attrs[version]]: $url");
+else
+error_log("RSS without version: $url");
 	return true;
 }
 
@@ -2241,4 +2254,31 @@ function mangle_feed($nodename, &$retval, &$context)
 	echo "</ul>\n";
 }
 #add_hook("feed", "mangle_feed");
+
+/********** XML ***********************************************/
+function xml_element_handler(
+	$ns_url,	// URL of this element's namespace
+	$prefix,	// Namespace of this element
+	$elt_name,	// Name of this element, without prefix
+	&$attrs,	// Attributes
+	&$children,	// Contents of this element
+	&$retval,	// Fill in the blanks here
+	&$context)	// Where we are at the moment
+{
+	error_log("Inside xml_element_handler($elt_name)");
+	return true;
+}
+
+function xml_attribute_handler(
+	$ns_url,	// URL of this element's namespace
+	$prefix,	// Prefix of the attribute
+	$name,		// Name of the attribute
+	$value,		// Value of the attribute
+	&$retval,	// Fill in the blanks
+	&$context	// Where we are at the moment
+	)
+{
+	error_log("Inside xml_attribute_handler($name)");
+	return true;
+}
 ?>
