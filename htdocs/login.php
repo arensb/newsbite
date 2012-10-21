@@ -78,6 +78,19 @@ if (isset($_SERVER['REMOTE_USER']))
 	 * to go.
 	 */
 	set_auth_cookie($_SERVER['REMOTE_USER']);
+
+	// If $out_fmt is "json", then send a JSON object saying the
+	// user is authenticated.
+	if ($out_fmt == "json")
+	{
+		echo jsonify(
+			'status',	"logged in"
+			);
+		exit(0);
+	}
+
+	// Otherwise (HTML output, presumably) redirect to where they
+	// came from.
 	redirect_to($from);
 ?>
 <html>
