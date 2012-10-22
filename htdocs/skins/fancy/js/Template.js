@@ -24,6 +24,7 @@ try {
 } catch (e) {
 console.error("Error in Template.expand: "+e);
 console.trace();
+return null;
 }
 }
 
