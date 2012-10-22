@@ -18,6 +18,7 @@ var createXMLHttpRequest = function()
 	try {
 		request = new XMLHttpRequest();
 	} catch (e) {
+		console.error("Error creating XMLHttpRequest: "+e);
 		request = false;
 	}
 	return request;
@@ -38,7 +39,6 @@ function get_json_data(url, params, handler, err_handler, batch)
 	var request = createXMLHttpRequest();
 	if (!request)
 		return null;
-			// XXX - Better error-reporting?
 
 	request.open('POST', url, batch);
 	request.setRequestHeader('Content-Type',
@@ -54,15 +54,7 @@ function get_json_data(url, params, handler, err_handler, batch)
 	}
 
 	if (handler)
-	{
-		request.onreadystatechange =
-			function() {
-				get_json_callback_batch(request,
-							handler,
-							err_handler,
-							batch);
-			};
-	}
+		request.onreadystatechange = get_json_callback_batch;
 	request.send(param_string);
 		// XXX - Error-checking
 
@@ -70,11 +62,12 @@ function get_json_data(url, params, handler, err_handler, batch)
 
 	/* Inner helper functions */
 
-	// XXX - Most or all of these parameters are no longer needed.
-	// XXX - Get rid of unnecessary parameters and/or variables.
-	function get_json_callback_batch(req, user_func, user_err, batch)
+	/* get_json_callback_batch
+	 * XMLHttpRequest callback for batch mode.
+	 */
+	function get_json_callback_batch()
 	{
-		switch (req.readyState)
+		switch (request.readyState)
 		{
 		    case 0:		// Uninitialized
 		    case 1:		// Loading
@@ -86,8 +79,8 @@ function get_json_data(url, params, handler, err_handler, batch)
 
 			/* Get HTTP status */
 			try {
-				err = req.status;
-				errmsg = req.statusText;
+				err = request.status;
+				errmsg = request.statusText;
 			} catch (e) {
 				err = 1;
 			}
@@ -95,16 +88,17 @@ function get_json_data(url, params, handler, err_handler, batch)
 			/* If the HTTP status isn't 200, abort the request */
 			if (err != 200)
 			{
-				req.abort();
-				req.aborted = true;
+				request.abort();
+				request.aborted = true;
 
 				// Call a user function, if defined.
 				// XXX - If the status is 401 (not
 				// logged in), then ought to log in
 				// through login.php, then resubmit
 				// the original request.
-				if (user_err != null)
-					user_err(req.status, req.statusText);
+				if (err_handler != null)
+					err_handler(request.status,
+						    request.statusText);
 			}
 			return;
 		    case 3:		// Got partial text
@@ -112,16 +106,16 @@ function get_json_data(url, params, handler, err_handler, batch)
 			return;
 		    case 4:
 			// The response is a JSON object.
-			if (req.responseText == "")
+			if (request.responseText == "")
 				// XXX - No text given. Should have better
 				// error-handling.
 				return;
 
 			// Use a try{}, in case the server sent bad JSON.
 			var value;
-			console.log("req.status: %d", req.status);
+			console.log("request.status: %d", request.status);
 			try {
-				value = JSON.parse(req.responseText);
+				value = JSON.parse(request.responseText);
 			} catch (e) {
 				// XXX - Do something smarter?
 
@@ -133,12 +127,12 @@ function get_json_data(url, params, handler, err_handler, batch)
 				// request.
 				// Is there any memory anywhere of the URL,
 				// parameters, etc. of the original request?
-				console.error(req);
+				console.error(request);
 				console.error("Can't parse response: %o", e);
-				console.log(req.responseText);
+				console.log(request.responseText);
 				value = undefined;
 			}
-			user_func(value);
+			handler(value);
 			break;
 		    default:
 			return;
@@ -147,6 +141,9 @@ function get_json_data(url, params, handler, err_handler, batch)
 
 	// XXX - Add a non-batch handler. Get inspiration from the one
 	// in feeds.jsh.
+
+	return true;	// Apparently necessary to make Firefox think
+			// this function always returns a value.
 }
 
 #endif	// _xhr_js_
