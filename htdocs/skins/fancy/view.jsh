@@ -809,8 +809,7 @@ function exit_item(ev)
  */
 function init_feeds_items()
 {
-	cache.update_feeds(feed_callback);
-
+	/* Inner helper functions */
 	function feed_callback(value)
 	{
 		/* Start the next AJAX request going. It'll take
@@ -842,6 +841,9 @@ msg_add("starting slow_sync 1");
 		// Redraw itemlist
 		redraw_itemlist();
 	}
+
+	/* init_feeds_items() main */
+	cache.update_feeds(feed_callback);
 }
 
 /* item2node
