@@ -816,7 +816,7 @@ function init_feeds_items()
 	 * directly to getting a list of items, and update the feeds
 	 * later.
 	 */
-	cache.update_feeds(false, feed_callback);
+	cache.update_feeds(true, feed_callback);
 
 	function feed_callback(value)
 	{
