@@ -306,16 +306,7 @@ CacheManager.prototype.feeds = function()
  */
 CacheManager.prototype.update_feeds = function(cb)
 {
-	var self = this;	// Remember 'this' to pass to callback
-				// function.
-	get_json_data("feeds.php",
-		      { o:	"json" },
-		      update_feeds_callback,
-		      function(status, msg) {	// Error handler
-			      msg_add("feeds.php JSON failed: "+status+": "+msg);
-		      },
-		      true);
-
+	/* Inner helper functions */
 	function update_feeds_callback(value)
 	{
 		// XXX - Ought to update existing feed info, rather
@@ -346,6 +337,17 @@ CacheManager.prototype.update_feeds = function(cb)
 		if (cb != null)
 			cb(newfeeds);
 	}
+
+	/* update_feeds() main */
+	var self = this;	// Remember 'this' to pass to callback
+				// function.
+	get_json_data("feeds.php",
+		      { o:	"json" },
+		      update_feeds_callback,
+		      function(status, msg) {	// Error handler
+			      msg_add("feeds.php JSON failed: "+status+": "+msg);
+		      },
+		      true);
 }
 
 /* store_feeds
@@ -520,30 +522,6 @@ CacheManager.prototype.purge_item = function(item_id)
 
 CacheManager.prototype.slow_sync = function(feed_id, user_cb, user_err_cb)
 {
-	var me = this;		// 'this' for child functions.
-
-	/* Get list of items in cache */
-	var tosend = {};
-	for (var id in this.itemindex)
-	{
-		/* Compose list of {id, mtime, is_read} entries to send */
-		var header = this.itemindex[id];
-		tosend[header.id] = {
-			     is_read:	header.is_read,
-			     mtime:	header.mtime,
-			};
-	}
-
-	/* Send to server */
-	get_json_data("sync.php",
-		      {id: feed_id,
-		       ihave: JSON.stringify(tosend),
-		      },
-		      slow_sync_cb,
-		      slow_sync_error,
-		      true);
-	// Response will be collected by slow_sync_cb
-
 	/* Inner helper functions */
 
 	// get_json_data callback when things go well
@@ -601,6 +579,32 @@ console.log("What should I do with this?:\n%o", entry);
 		if (typeof(user_err_cb) == "function")
 			user_err_cb(status, msg);
 	}
+
+	/* slow_sync() main */
+
+	var me = this;		// 'this' for child functions.
+
+	/* Get list of items in cache */
+	var tosend = {};
+	for (var id in this.itemindex)
+	{
+		/* Compose list of {id, mtime, is_read} entries to send */
+		var header = this.itemindex[id];
+		tosend[header.id] = {
+			     is_read:	header.is_read,
+			     mtime:	header.mtime,
+			};
+	}
+
+	/* Send to server */
+	get_json_data("sync.php",
+		      {id: feed_id,
+		       ihave: JSON.stringify(tosend),
+		      },
+		      slow_sync_cb,
+		      slow_sync_error,
+		      true);
+	// Response will be collected by slow_sync_cb
 }
 
 #endif	// _CacheManager_js_

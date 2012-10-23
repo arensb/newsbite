@@ -36,30 +36,6 @@ var createXMLHttpRequest = function()
  */
 function get_json_data(url, params, handler, err_handler, batch)
 {
-	var request = createXMLHttpRequest();
-	if (!request)
-		return null;
-
-	request.open('POST', url, batch);
-	request.setRequestHeader('Content-Type',
-		'application/x-www-form-urlencoded');
-
-	var param_string = "";
-	for (var p in params)
-	{
-		if (param_string != "")
-			param_string += "&";
-		param_string += p + "=" +
-			encodeURIComponent(params[p]);
-	}
-
-	if (handler)
-		request.onreadystatechange = get_json_callback_batch;
-	request.send(param_string);
-		// XXX - Error-checking
-
-	return true;	// Success
-
 	/* Inner helper functions */
 
 	/* get_json_callback_batch
@@ -144,8 +120,31 @@ console.trace();
 	// XXX - Add a non-batch handler. Get inspiration from the one
 	// in feeds.jsh.
 
-	return true;	// Apparently necessary to make Firefox think
-			// this function always returns a value.
+	/* get_json_data() main */
+
+	var request = createXMLHttpRequest();
+	if (!request)
+		return null;
+
+	request.open('POST', url, batch);
+	request.setRequestHeader('Content-Type',
+		'application/x-www-form-urlencoded');
+
+	var param_string = "";
+	for (var p in params)
+	{
+		if (param_string != "")
+			param_string += "&";
+		param_string += p + "=" +
+			encodeURIComponent(params[p]);
+	}
+
+	if (handler)
+		request.onreadystatechange = get_json_callback_batch;
+	request.send(param_string);
+		// XXX - Error-checking
+
+	return true;	// Success
 }
 
 #endif	// _xhr_js_

@@ -59,24 +59,6 @@ function init()
 // feed's data) store in local cache.
 function update_feed(id)
 {
-	// XXX - If updating one feed, ought to only clear that line
-	clear_status();
-
-	var request = createXMLHttpRequest();
-	if (!request)
-		return true;
-
-	var err;
-	var last_off = 0;	// Last offset we've seen.
-
-	request.open('GET',
-		"update.php?id="+id+"&o=json",
-		true);	// batch
-	request.onreadystatechange = parse_response;
-	request.send(null);
-
-	return false;
-
 	/* Inner helper functions */
 
 	/* XXX - Bug: if the backend script times out, it stops giving
@@ -200,6 +182,26 @@ function update_feed(id)
 			break;
 		}
 	}
+
+	/* update_feed() main */
+
+	// XXX - If updating one feed, ought to only clear that line
+	clear_status();
+
+	var request = createXMLHttpRequest();
+	if (!request)
+		return true;
+
+	var err;
+	var last_off = 0;	// Last offset we've seen.
+
+	request.open('GET',
+		"update.php?id="+id+"&o=json",
+		true);	// batch
+	request.onreadystatechange = parse_response;
+	request.send(null);
+
+	return false;
 }
 
 function clear_status()
