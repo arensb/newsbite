@@ -319,7 +319,7 @@ CacheManager.prototype.update_feeds = function(counts, cb)
 		      ajax_args,
 		      update_feeds_callback,
 		      function(status, msg) {	// Error handler
-			      msg_add("JSON failed: "+status+": "+msg);
+			      msg_add("feeds.php JSON failed: "+status+": "+msg);
 		      },
 		      true);
 
