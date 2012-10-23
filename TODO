@@ -4,7 +4,6 @@
 	init() gets 'feeds' from cache, then calls set_feed_fields().
 	set_feed_fields() tries to get its information from 'feeds',
   but that's a cached version that doesn't have the new feed yet.
-- Bug: Friendly Atheist feed doesn't have 'url', just 'feed_url'.
 - Bug: sometimes, the same one or two items keep coming up at the
   bottom of the 'view' page. An off-by-one error in the "get some
   items" code?
@@ -74,6 +73,10 @@
 - Bug: keybindings.js doesn't handle non-letter bindings well: "?"
   gets turned into Spanish upside-down question mark by toUpperCase().
 	Need a notation to bind Esc.
+- Currently (Tue Oct 23 2012) cache.update_feeds() is always called
+  with 'true' as the first argument, to get feed counts.
+	Is there ever a time when we don't want to get feed counts? If
+  not, can just assume that we always do, and simplify the code.
 - "use strict": apparently modern implementations grok
 	"use strict";
   https://developer.mozilla.org/en-US/docs/JavaScript/Reference/Functions_and_function_scope/Strict_mode
