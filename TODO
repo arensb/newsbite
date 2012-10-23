@@ -71,6 +71,9 @@
 	Put '"use strict";' at the top of the script, at the global
   level, to turn on strictness for an entire script. Or after the
   opening brace to turn it on for a function.
+	Tue Oct 23 09:06:52 2012: But this doesn't seem to change
+  anything. Perhaps because javascript.options.strict is already
+  turned on in about:config.
 	- Variables must be declared; using an undeclared variable is
   an error.
 	- Assignments that would normally fail silently throw an
