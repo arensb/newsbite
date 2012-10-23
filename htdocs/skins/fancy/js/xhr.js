@@ -88,6 +88,8 @@ function get_json_data(url, params, handler, err_handler, batch)
 			/* If the HTTP status isn't 200, abort the request */
 			if (err != 200)
 			{
+console.log("JSON "+url+" failed, status "+request.status+", text ["+request.statusText+"]");
+console.trace();
 				request.abort();
 				request.aborted = true;
 
