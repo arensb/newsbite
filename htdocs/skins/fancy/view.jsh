@@ -807,15 +807,8 @@ function exit_item(ev)
  * launches an XHR request for items. The callback for that one
  * updates the displayed list.
  */
-/* XXX - Should this take arguments like the feed to update, and a
- * callback function?
- */
 function init_feeds_items()
 {
-	/* XXX - If we have feeds but no items, then ought to skip
-	 * directly to getting a list of items, and update the feeds
-	 * later.
-	 */
 	cache.update_feeds(true, feed_callback);
 
 	function feed_callback(value)
@@ -855,17 +848,20 @@ msg_add("starting slow_sync 1");
  * Create a DOM node from 'item' by substituting variables in the item
  * template, and creating a DOM node from that.
  */
-// XXX - Should go in Item.prototype
+// XXX - Should go in Item.prototype. Then again, this is very
+// skin-specific, so maybe not.
 function item2node(item)
 {
 	var item_feed = feeds[item.feed_id];
 
-	// XXX - Check to make sure that feeds[item.feed_id] exists,
-	// that we haven't been given an item from a nonexistent feed?
+	// Check to make sure that feeds[item.feed_id] exists; that we
+	// haven't been given an item from a nonexistent feed
 	if (item_feed == null)
 	{
 		console.error("Undefined feed "+item.feed_id);
 		// XXX - Ought to delete this item from cache.
+		// cache.purge_item(item.id).defer(something)
+		// Need to specify 'cache' as the object it applies to.
 		return null;
 	}
 
