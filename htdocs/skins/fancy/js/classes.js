@@ -201,7 +201,6 @@ document.addEventListener("DOMContentLoaded", function() {
 	 * If 'elem' has 'classA', replace that with 'classB', and vice-versa.
 	 * This is logically equivalent
 	 */
-	// XXX - Use classList 
 	toggle_class = have_classList ?
 		function(elem, classA, classB)
 		{
