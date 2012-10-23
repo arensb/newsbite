@@ -37,14 +37,6 @@
 	Update editfeed.php to allow supplying a new parameter.
 	What about when a feed URL is good, but includes a (wanted)
   redirect? Ought to have some list of redirects to ignore.
-- Bug: When starting, sometimes, the feeds page displays "undefined"
-  in the "number of unread articles" column.
-	I suspect this is because when view.jsh fetches feeds, it
-  fetches them without item counts, then stores the result in
-  localStorage.
-	Presumably ought to be smarter about updating 'feeds': don't
-  just replace the entire structure; rather, update the fields that
-  have changed.
 - Bug?: There are some old articles in the database. Why aren't they
   being cleaned out properly?
 	db_update_feed() only cleans out whichever feed it was called
@@ -73,10 +65,6 @@
 - Bug: keybindings.js doesn't handle non-letter bindings well: "?"
   gets turned into Spanish upside-down question mark by toUpperCase().
 	Need a notation to bind Esc.
-- Currently (Tue Oct 23 2012) cache.update_feeds() is always called
-  with 'true' as the first argument, to get feed counts.
-	Is there ever a time when we don't want to get feed counts? If
-  not, can just assume that we always do, and simplify the code.
 - "use strict": apparently modern implementations grok
 	"use strict";
   https://developer.mozilla.org/en-US/docs/JavaScript/Reference/Functions_and_function_scope/Strict_mode

@@ -8,11 +8,6 @@ require_once("hooks.inc");
 
 load_hooks(PLUGIN_DIR);
 
-$want_stats = isset($_REQUEST['s']);
-				# Add stats (# read/unread items)
-				# if requested.
-				# Generating stats is currently slow.
-
 # Make sure the requested output format is sane
 if ($out_fmt != 'json' && $out_fmt != "xml")
 {
@@ -23,8 +18,7 @@ if ($out_fmt != 'json' && $out_fmt != "xml")
 
 # Gather information about the feeds
 $feeds = db_get_feeds(TRUE);
-if ($want_stats)
-	$counts = db_get_all_feed_counts();
+$counts = db_get_all_feed_counts();
 
 # Collect the gathered information into one array
 $output = Array();
@@ -47,18 +41,13 @@ foreach ($feeds as $id => $data)
 	$desc['active']          = $data['active'];
 	$desc['stale']           = $data['stale'];
 
-#echo "before hooks: <pre>", $desc['description'], "</pre>\n";
 	run_hooks("clean-html", array(&$desc['title']));
 	run_hooks("clean-html", array(&$desc['subtitle']));
 	run_hooks("clean-html", array(&$desc['description']));
-#echo "after hooks:  <pre>", $desc['description'], "</pre>\n";
 	# XXX - What else needs to be cleaned up?
 
-	if ($want_stats)
-	{
-		$desc['num_read']        = $counts[$id]['read'];
-		$desc['num_unread']      = $counts[$id]['unread'];
-	}
+	$desc['num_read']        = $counts[$id]['read'];
+	$desc['num_unread']      = $counts[$id]['unread'];
 
 	$output[$id] = $desc;
 }

@@ -269,7 +269,7 @@ function init_feed_list()
 	// XXX - Ought to set a spinny icon.
 
 	// Request a list of feeds
-	cache.update_feeds(true, receive_feed_list);
+	cache.update_feeds(receive_feed_list);
 }
 
 /* refresh_feed_list
@@ -280,7 +280,7 @@ function refresh_feed_list()
 {
 	// XXX - Ought to set a spinny icon.
 	// Request a list of feeds
-	cache.update_feeds(true, receive_feed_list);
+	cache.update_feeds(receive_feed_list);
 }
 
 function receive_feed_list(value)
