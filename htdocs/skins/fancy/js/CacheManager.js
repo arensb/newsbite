@@ -300,23 +300,16 @@ CacheManager.prototype.feeds = function()
 }
 
 /* update_feeds
- * Send an AJAX request to update feed information. If 'counts' is true,
- * request counts of read/unread items (which is slow).
+ * Send an AJAX request to update feed information.
  * Once the request completes, call cb(items), where 'items' is the
  * new array of feeds.
  */
-CacheManager.prototype.update_feeds = function(counts, cb)
+CacheManager.prototype.update_feeds = function(cb)
 {
-	var ajax_args = {
-		o:	"json",
-		};
-	if (counts)
-		ajax_args['s'] = "true";
-
 	var self = this;	// Remember 'this' to pass to callback
 				// function.
 	get_json_data("feeds.php",
-		      ajax_args,
+		      { o:	"json" },
 		      update_feeds_callback,
 		      function(status, msg) {	// Error handler
 			      msg_add("feeds.php JSON failed: "+status+": "+msg);
@@ -326,9 +319,10 @@ CacheManager.prototype.update_feeds = function(counts, cb)
 	function update_feeds_callback(value)
 	{
 		// XXX - Ought to update existing feed info, rather
-		// than just replace what's there. In particular, if
+		// than just replace what's there. [[In particular, if
 		// 'value' doesn't contain the read/unread counts,
-		// ought to keep the old value.
+		// ought to keep the old value.]] Is the [[]] part
+		// still applicable?
 		var newfeeds = {};
 		for (var i in value)
 		{

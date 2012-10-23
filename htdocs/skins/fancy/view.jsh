@@ -809,7 +809,7 @@ function exit_item(ev)
  */
 function init_feeds_items()
 {
-	cache.update_feeds(true, feed_callback);
+	cache.update_feeds(feed_callback);
 
 	function feed_callback(value)
 	{
