@@ -74,8 +74,7 @@ if (mobile)
 
 	link_node.rel = "stylesheet";
 	link_node.type = "text/css";
-	link_node.href = "skins/" + skin_dir + "/" +
-		mobile.toLowerCase() + ".css";
+	link_node.href = skin_dir + "/" + mobile.toLowerCase() + ".css";
 	link_node.media = "screen";
 	document.head.appendChild(link_node);
 }
