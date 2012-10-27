@@ -116,6 +116,10 @@ var query_args = {};		// GET arguments passed in the URL
 			// "var=value", then pair[1] should be the empty
 			// string.
 
+		if (pair.length != 2)
+			// We only want "var=value" (for now).
+			continue;
+
 		query_args[pair[0]] =
 			decodeURIComponent(pair[1].replace(/\+/g, " "));
 			// First, we replace any "+"es in the value
@@ -137,10 +141,21 @@ var query_args = {};		// GET arguments passed in the URL
 // and things like that), than to just change the .hash and hope for
 // the best. So don't use this to update the page.
 
-var feed_id = query_args['id'];
-		// XXX - Check to make sure this is either "all", or a
-		// (string representation of a)n integer.
-		// XXX - What if it's invalid? What then?
+var feed_id;		// Which feed are we looking at?
+if ('id' in query_args)
+{
+	// XXX - Check to make sure this is either "all", or a
+	// (string representation of a)n integer.
+
+	feed_id = query_args['id'];
+} else {
+	console.warn("No feed_id given. Using \"all\"");
+	feed_id = "all";
+}
+
+var mydomain = location.protocol + "//" +
+	location.host;
+	// Perhaps it'd be nice to add the subdirectory.
 
 function init()
 {
@@ -162,6 +177,12 @@ function init()
 //	window.addEventListener("scroll", scroll_handler, false);
 			// Scroll handler to detect when window has
 			// moved.
+//window.addEventListener("storage",
+//	function(ev) {
+//		console.log("Got a storage event: %s was %s, now %s",
+//			    ev.key, ev.oldValue, ev.newValue);
+//	},
+//	false);
 
 	/* On desktop, keep track of current item, and add key bindings
 	 * to navigate.
@@ -527,7 +548,7 @@ function mark_item1(ev)
 
 		var new_item = more_items.pop();
 				// The new item we're about to add.
-console.log("new_item:\n%o", new_item);
+//console.log("new_item:\n%o", new_item);
 		var new_node = item2node(new_item);
 
 		if (new_node != null)
