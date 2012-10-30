@@ -52,8 +52,6 @@ function init()
 // need the paradoxical 'return false'. But we'd need an event object
 // to call it on, so we'd need to attach a "click" listener to the
 // individual links. Perhaps with PatEvent.
-// XXX - Use get_json_data() from js/xhr.js. But to do that, need to
-// fix get_json_data to allow non-batch queries.
 // XXX - When receiving data, store in a local array.
 // XXX - After receiving data (or perhaps after receiving an individual
 // feed's data) store in local cache.
@@ -61,6 +59,9 @@ function update_feed(id)
 {
 	/* Inner helper functions */
 
+	/* update_feed_handler
+	 * Take a status line from 'update.php' and display the upshot.
+	 */
 	/* XXX - Bug: if the backend script times out, it stops giving
 	 * updates, and we can get into a state where a feed's indicator is
 	 * spinning, but there's never been a line to stop it. When get to the
@@ -70,115 +71,65 @@ function update_feed(id)
 	 * To do this, we need to keep track of each feed and its state, so we
 	 * know which feeds we have and haven't set the indicator for.
 	 */
-	function parse_response()
+	function update_feed_handler(line)
 	{
-		switch (request.readyState)
+		if (line.feed_id == undefined)
 		{
-		    case 0:	// Uninitialized
-		    case 1:	// Loading
-		    case 2:	// Loaded
+			// no feed_id.
+			// XXX - Tell user, perhaps?
+			return;
+		}
+
+		var feed_row = document.getElementById("feed-" + line.feed_id);
+		if (feed_row == undefined)
+		{
+			// Can't find row feed-$id
+			// XXX - Do something intelligent
+			return;
+		}
+
+		// XXX - Really ought to look these up better. Don't
+		// hardcode positions.
+		var status_cell = feed_row.firstChild;
+		var count_cell = status_cell.nextSibling;
+		var title_cell = count_cell.nextSibling;
+
+		// XXX - Paths to images / skin name shouldn't be
+		// hardcoded. Perhaps add a class to the cell.
+		switch (line.state)
+		{
+		    case 'start':
+			status_cell.innerHTML = '<img src="' +
+				skin_dir +
+				'/Loading.gif"/>';
 			break;
-		    case 3:	// Got partial text
-		    case 4:	// Got all text
-			/* Get text from where we stopped last time to the end
-			 * of what we've got now.
-			 */
-			var str = request.responseText.substr(last_off);
-
-			/* Remember how much of the string we've gotten so far */
-			last_off = request.responseText.length;
-
-			/* Split the current input into lines */
-			var lines = str.split("\n");
-			for (var i = 0; i < lines.length; i++)
-			{
-				var l;
-				var line = lines[i];
-
-				if (line.length == 0)
-					// Got a blank line.
-					continue;
-				if (line[0] != '{')
-					// There might be non-JSON lines in there.
-					// Ignore them. For that matter, ignore
-					// any JSON lines that aren't objects.
-					continue;
-				try {
-					// Inside a try{} in case the server sent
-					// bad JSON.
-					l = JSON.parse(line);
-				} catch (e) {
-					// If this isn't a complete line, put it
-					// back for later. Yeah, this is a bit of
-					// a hack.
-					if (i == lines.length-1)
-						last_off -= line.length;
-					continue;
-				}
-
-				if (l.feed_id == undefined)
-				{
-					// no feed_id.
-					// XXX - Tell user, perhaps?
-					continue;
-				}
-
-				var feed_row = document.getElementById("feed-" + l.feed_id);
-				if (feed_row == undefined)
-				{
-					// Can't find row feed-$id
-					continue;
-				}
-
-				// XXX - Really ought to look these up better. Don't
-				// hardcode positions.
-				var status_cell = feed_row.firstChild;
-				var count_cell = status_cell.nextSibling;
-				var title_cell = count_cell.nextSibling;
-
-				// XXX - Paths to images / skin name shouldn't
-				// be hardcoded. Perhaps add a class to the cell.
-				switch (l.state)
-				{
-				    case 'start':
-					status_cell.innerHTML = '<img src="' +
-						skin_dir +
-						'/Loading.gif"/>';
-					break;
-				    case "end":
-					status_cell.innerHTML = '&nbsp;';
-					status_cell.style.backgroundColor = null;
-					count_cell.innerHTML = l.counts.unread;
-					break;
-				    case "error":
-					var title;
-					if (l.feed_id in feeds)
-						title = feeds[l.feed_id].title;
-					else
-						title = "feed "+l.feed_id;
-					msg_add("Error in "+title+" ("+l.feed_id+"): "+l.error, 10000);
-					// XXX - The 'alt=' and/or 'title='
-					// means you can get error message by
-					// hovering pointer over the error
-					// icon, but it'd probably be better
-					// to use a CSS-based tooltip.
-					status_cell.innerHTML =
-						'<img src="' +
-						skin_dir +
-						'/Attention_niels_epting.png" title="' +
-						l.error +
-						'" alt="' +
-						l.error +
-						'"/>';
-					break;
-				    default:
-					status_cell.innerHTML = l.state;
-					break;
-				}
-			}
+		    case "end":
+			status_cell.innerHTML = '&nbsp;';
+			status_cell.style.backgroundColor = null;
+			count_cell.innerHTML = line.counts.unread;
+			break;
+		    case "error":
+			var title;
+			if (line.feed_id in feeds)
+				title = feeds[line.feed_id].title;
+			else
+				title = "feed "+line.feed_id;
+			msg_add("Error in "+title+" ("+line.feed_id+"): "+line.error, 10000);
+			// XXX - The 'alt=' and/or 'title=' means you
+			// can get error message by hovering pointer
+			// over the error icon, but it'd probably be
+			// better to use a CSS-based tooltip.
+			status_cell.innerHTML =
+				'<img src="' +
+				skin_dir +
+				'/Attention_niels_epting.png" title="' +
+				line.error +
+				'" alt="' +
+				line.error +
+				'"/>';
 			break;
 		    default:
-			/* This should never happen */
+			status_cell.innerHTML = line.state;
 			break;
 		}
 	}
@@ -188,18 +139,17 @@ function update_feed(id)
 	// XXX - If updating one feed, ought to only clear that line
 	clear_status();
 
-	var request = createXMLHttpRequest();
-	if (!request)
-		return true;
-
-	var err;
-	var last_off = 0;	// Last offset we've seen.
-
-	request.open('GET',
-		"update.php?id="+id+"&o=json",
-		true);	// batch
-	request.onreadystatechange = parse_response;
-	request.send(null);
+	get_json_data("update.php",
+		      { o:	"json",
+			id:	id,
+		      },
+		      update_feed_handler,
+		      function(status, msg) {
+			      console.error("update_feed error: status "+
+					    status +
+					    ", msg " + msg);
+		      },
+		      false);
 
 	return false;
 }
