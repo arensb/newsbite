@@ -95,7 +95,6 @@
   ). I think I mainly use it to insert meta headers, stylesheets, and
   other single nodes. Perhaps it'd be better to insert those with DOM
   manipulation functions.
-- What is navigator.getDeviceStorage() ?
 - Vibrating:
 	window.navigator.vibrate(200)
 		Vibrate for 200 ms.
@@ -249,12 +248,6 @@
   Also, need to store time of last update in localStorage.
 	Probably not worth having a feed ID for getting list of marked
   items.
-- Sync: "updates.php" only returns up to 100 updates. When syncing, if
-  we get 100 updates, ought to call it again, to see whether maybe
-  there's more that we've missed.
-	Perhaps MySQL found_rows() function can be used here: figure
-  out whether there are more results, and add a "{more: true}" element
-  at the end of the JS results.
 - List of Mobile Safari events:
   http://developer.apple.com/library/safari/#documentation/AppleApplications/Reference/SafariWebContent/HandlingEvents/HandlingEvents.html#//apple_ref/doc/uid/TP40006511-SW5
   (Select "Supported Events" if that doesn't work)
@@ -265,6 +258,12 @@
 - WebStorage spec (http://www.w3.org/TR/webstorage/) says that when a
   value in localStorage is modified, it triggers an event in other
   Windows that have access to that database. This could be useful.
+	window.addEventListener("storage",
+		function(ev) {
+			console.log("Got a storage event: %s was %s, now %s",
+				    ev.key, ev.oldValue, ev.newValue);
+		},
+		false);
 - Perhaps add Xdebug extension for PHP: profiler.
 - Speed: jsonify() is apparently quite a time hog: adds ~15% time
   to just using json_encode().
