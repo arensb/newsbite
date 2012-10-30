@@ -36,6 +36,8 @@ var createXMLHttpRequest = function()
  */
 function get_json_data(url, params, handler, err_handler, batch)
 {
+	var last_off = 0;	// Last offset we've seen, for get_json_callback_nonbatch().
+
 	/* Inner helper functions */
 
 	/* get_json_callback_batch
@@ -91,7 +93,6 @@ console.trace();
 
 			// Use a try{}, in case the server sent bad JSON.
 			var value;
-			console.log("request.status: %d", request.status);
 			try {
 				value = JSON.parse(request.responseText);
 			} catch (e) {
@@ -106,7 +107,7 @@ console.trace();
 				// Is there any memory anywhere of the URL,
 				// parameters, etc. of the original request?
 				console.error(request);
-				console.error("Can't parse response: %o", e);
+				console.error("Can't parse response: "+e);
 				console.log(request.responseText);
 				value = undefined;
 			}
@@ -117,8 +118,99 @@ console.trace();
 		}
 	}
 
-	// XXX - Add a non-batch handler. Get inspiration from the one
-	// in feeds.jsh.
+	/* get_json_callback_nonbatch
+	 * XMLHttpRequest callback function for non-batch mode: the
+	 * response is a series of JSON objects, separated by
+	 * newlines.
+	 * As each one comes in, we parse it and call the user's handler.
+	 */
+	function get_json_callback_nonbatch()
+	{
+		switch (request.readyState)
+		{
+		    case 0:		// Uninitialized
+		    case 1:		// Loading
+			return;
+		    case 2:		// Loaded
+			// XXX - Do something intelligent in case of error
+			var err;
+			var errmsg;
+
+			/* Get HTTP status */
+			try {
+				err = request.status;
+				errmsg = request.statusText;
+			} catch (e) {
+				err = 1;
+			}
+
+			/* If the HTTP status isn't 200, abort the request */
+			if (err != 200)
+			{
+console.log("JSON "+url+" failed, status "+request.status+", text ["+request.statusText+"]");
+console.trace();
+				request.abort();
+				request.aborted = true;
+
+				// Call a user function, if defined.
+				// XXX - If the status is 401 (not
+				// logged in), then ought to log in
+				// through login.php, then resubmit
+				// the original request.
+				if (err_handler != null)
+					err_handler(request.status,
+						    request.statusText);
+			}
+			return;
+		    case 3:		// Got partial text
+		    case 4:
+			/* Get text from where we stopped last time to the end
+			 * of what we've got now.
+			 */
+			var str = request.responseText.substr(last_off);
+
+			/* Remember how much of the string we've gotten so far */
+			last_off = request.responseText.length;
+
+			/* Split the current input into lines */
+			var lines = str.split("\n");
+			for (var i = 0; i < lines.length; i++)
+			{
+				var l;
+				var line = lines[i];
+
+				if (line.length == 0)
+					// Got a blank line.
+					continue;
+				try {
+					// Inside a try{} in case the server sent
+					// bad JSON.
+					l = JSON.parse(line);
+				} catch (e) {
+					console.error("Can't parse JSON: "+e+
+						      ", offending string: "+
+						      line);
+					// If this isn't a complete line, put it
+					// back for later. Yeah, this is a bit of
+					// a hack.
+					if (i == lines.length-1)
+						last_off -= line.length;
+					continue;
+				}
+
+				handler(l);
+					// XXX - If there are multiple
+					// lines in this pass, should
+					// we pass them all to the
+					// handler at once, rather
+					// than calling the handler
+					// multiple times?
+			}
+			break;
+		    default:
+			return;
+		}
+	}
 
 	/* get_json_data() main */
 
@@ -126,7 +218,7 @@ console.trace();
 	if (!request)
 		return null;
 
-	request.open('POST', url, batch);
+	request.open('POST', url);
 	request.setRequestHeader('Content-Type',
 		'application/x-www-form-urlencoded');
 
@@ -140,7 +232,11 @@ console.trace();
 	}
 
 	if (handler)
-		request.onreadystatechange = get_json_callback_batch;
+	{
+		request.onreadystatechange = batch ?
+			get_json_callback_batch :
+			get_json_callback_nonbatch;
+	}
 	request.send(param_string);
 		// XXX - Error-checking
 
