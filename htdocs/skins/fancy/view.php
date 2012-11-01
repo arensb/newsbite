@@ -14,7 +14,7 @@ echo '<', '?xml version="1.0" encoding="UTF-8"?', ">\n";
 <head>
 <script type="text/javascript">
 // Set various useful variables to pass on to scripts
-var skin_dir = "<?=$skin_dir?>";	// Needed because we need to be able
+var skin_dir = "skins/<?=$skin_dir?>";	// Needed because we need to be able
 					// find the CSS file.
 
 var page_top_tmpl_text = '<img class="feed-icon" src="@image@"/>\
