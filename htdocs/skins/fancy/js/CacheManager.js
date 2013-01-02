@@ -154,7 +154,7 @@ function _purge_stuff(todelete)
 
 	var i = 0;	// Number of items deleted in this run
 	var key;
-console.log("purging %d items", todelete.length);
+console.log("purging "+todelete.length+" items");
 console.trace();
 	while ((key = todelete.shift()) != null)
 	{
