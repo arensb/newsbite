@@ -49,6 +49,9 @@ SED_REPLACEMENTS =	$(foreach i, ${REPLACE_VARS}, -e 's|@${i}@|${$i}|g')
 
 # Commands
 GZIP ?=			gzip
+PHP ?=			php
+EGREP ?=		egrep
+TAR ?=			tar
 
 all::
 
