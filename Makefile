@@ -1,9 +1,6 @@
 # Variables
 PROJECT =	newsbite
 
-PHP =		php
-EGREP =		egrep
-
 # REV_CMD: command to figure out which svn revision we're using.
 REV_CMD =	svn status -uq | grep "Status against revision:"|awk '{print $$4}'
 
@@ -15,10 +12,6 @@ REV_CMD =	svn status -uq | grep "Status against revision:"|awk '{print $$4}'
 REV =		$(shell ${REV_CMD})
 
 DISTNAME =	${PROJECT}-r${REV}
-
-# Commands
-TAR =	tar
-GZIP =	gzip
 
 # Include a site-local Makefile, if it exists.
 # The $(wildcard) statement is to see whether it exists. Then, if it
