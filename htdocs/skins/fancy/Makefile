@@ -1,11 +1,9 @@
 TOP =		../../..
 SKIN_NAME =	fancy
 
-CPP =		cpp
 INCLUDES =	# -Ijs
 CPP_FLAGS =	-P $(INCLUDES)
 RM =		rm -f
-MAKEDEPEND =	cpp -M
 
 JS_SRC =	view.jsh feeds.jsh
 
