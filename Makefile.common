@@ -52,6 +52,8 @@ GZIP ?=			gzip
 PHP ?=			php
 EGREP ?=		egrep
 TAR ?=			tar
+CPP ?=			cpp
+MAKEDEPEND ?=		cpp -M
 
 all::
 
