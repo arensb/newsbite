@@ -1,17 +1,21 @@
 include ../Makefile.common
 
 PHP_FILES =	$(wildcard *.php)
-OTHER_FILES =	htaccess.sample
+OTHER_FILES =	htaccess.sample \
+		newsbite.manifest
 
 all::	$(OTHER_FILES)
 
 htaccess.sample:	htaccess.sample.in
 	sed ${SED_REPLACEMENTS} < htaccess.sample.in > $@
 
+newsbite.manifest:	FORCE
+	$(PHP) newsbite.manifest.php > $@
+
 clean::
 	rm -f htaccess.sample
 
-install::
+install::	all
 	mkdir -p ${INSTALL_BACKEND}
 	for i in ${PHP_FILES} ${OTHER_FILES}; do \
 		install -c -m 444 "$$i" ${INSTALL_BACKEND}; \
@@ -25,3 +29,5 @@ distclean::	clean
 
 depend::
 	@:
+
+FORCE:
