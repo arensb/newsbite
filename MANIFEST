@@ -28,6 +28,7 @@ htdocs/js/profiler.js
 htdocs/loadopml.php
 htdocs/login.php
 htdocs/markitems.php
+htdocs/newsbite.manifest.php
 htdocs/opml.php
 htdocs/setskin.php
 htdocs/skins/fancy/Ajax-loader.gif
