@@ -12,6 +12,15 @@ echo '<', '?xml version="1.0" encoding="UTF-8"?', ">\n";
 	"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html manifest="newsbite.manifest">
 <head>
+<!-- Icon for standalone app -->
+<link rel="apple-touch-icon" href="skins/<?=$skin_dir?>/newsbite-icon.png"/>
+<!-- Splash screen for standalone app, iPad, portrait: -->
+<link rel="apple-touch-startup-image"
+      href="skins/<?=$skin_dir?>/newsbite-splash-ipad.png"
+      media="screen
+      and (min-device-width: 481) and (orientation: portrait)"/>
+<!-- iOS: This standalone app runs in full-screen mode -->
+<meta name="apple-mobile-web-app-capable" content="yes" />
 <script type="text/javascript">
 // Set various useful variables to pass on to scripts
 var skin_dir = "skins/<?=$skin_dir?>";	// Needed because we need to be able
