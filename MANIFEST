@@ -64,6 +64,9 @@ htdocs/skins/fancy/js/load_module.js
 htdocs/skins/fancy/js/status-msg.js
 htdocs/skins/fancy/js/types.js
 htdocs/skins/fancy/js/xhr.js
+htdocs/skins/fancy/newsbite-icon.png
+htdocs/skins/fancy/newsbite-splash-ipad.png
+htdocs/skins/fancy/newsbite-splash.png
 htdocs/skins/fancy/opml.css
 htdocs/skins/fancy/opml.php
 htdocs/skins/fancy/setskin.css
