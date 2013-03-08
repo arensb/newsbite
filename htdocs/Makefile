@@ -9,11 +9,14 @@ all::	$(OTHER_FILES)
 htaccess.sample:	htaccess.sample.in
 	sed ${SED_REPLACEMENTS} < htaccess.sample.in > $@
 
+clean::
+	rm -f htaccess.sample
+
 newsbite.manifest:	FORCE
 	$(PHP) newsbite.manifest.php > $@
 
 clean::
-	rm -f htaccess.sample
+	rm -f newsbite.manifest
 
 install::	all
 	mkdir -p ${INSTALL_BACKEND}
