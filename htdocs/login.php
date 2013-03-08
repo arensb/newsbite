@@ -55,6 +55,10 @@ require_once("common.inc");
 
 $from = urldecode($_REQUEST['from']);	// Where did user come from?
 
+if ($from == "")
+	# If no "from=" specified, dump them back to the main page.
+	$from = dirname($_SERVER['REQUEST_URI']);
+
 function set_auth_cookie($user)
 {
 	// Set "user" cookie to
