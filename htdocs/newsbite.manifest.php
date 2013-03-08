@@ -10,6 +10,8 @@ view.php
 #CACHE:
 skins/fancy/style.css
 skins/fancy/index.css
+skins/fancy/android.css
+skins/fancy/ipad.css
 skins/fancy/feeds.js
 skins/fancy/gray-bg.jpg
 skins/fancy/Ajax-loader.gif
