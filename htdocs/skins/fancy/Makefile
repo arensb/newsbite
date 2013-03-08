@@ -2,6 +2,11 @@ TOP =		../../..
 SKIN_NAME =	fancy
 
 INCLUDES =	# -Ijs
+# Need to force CPP, apparently. Can also use
+# gcc -E -x c
+# (or any other language). Otherwise gcc complains that "linking not
+# done" and doesn't generate the output file.
+CPP =		cpp
 CPP_FLAGS =	-P $(INCLUDES)
 RM =		rm -f
 
