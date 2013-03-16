@@ -189,6 +189,12 @@ function db_get_all_feed_counts()
 {
 	$dbh = db_connect();
 
+	// XXX - This query takes way too long. I don't know that it
+	// can be optimized. It might be necessary to add a couple of
+	// columns to the 'feeds' table, giving the number of read and
+	// unread items, and update these counts every time an
+	// items.is_read field is added, deleted, or changed. :-(
+
 	/* Get the number of read/unread items in each feed.
 	 * The ISNULL() calls are there because the sum of an empty
 	 * set is NULL, not 0.
@@ -458,145 +464,6 @@ EOT;
 	}
 
 	return $retval;
-}
-
-/* db_get_item_updates
- * Given a time_t $t (UTC timestamp), return those items that have been
- * modified since $t, i.e., those with mtime later than $t.
- *
- * $feed_id: the feed whose updates we want.
- *
- * Optionally, takes a maximum number of items to return. Defaults to
- * 100.
- */
-function db_get_item_updates($t, $feed_id, $max_items=100)
-{
-	if (!is_int($max_items) ||
-	    $max_items > 100)
-		$max_items = 100;
-
-	/* Construct the query
-	 * The SQL_CALC_FOUND_ROWS is there to find how many rows
-	 * would have been returned without the LIMIT clause.
-	 */
-	/* SCHEMA */
-	$query = sprintf(<<<EOT
-SELECT	SQL_CALC_FOUND_ROWS
-	id, feed_id, url, title,
-	summary, content,
-	author, category,
-	comment_url, comment_rss,
-	guid,
-	UNIX_TIMESTAMP(pub_date) as `pub_date`,
-	UNIX_TIMESTAMP(last_update) as `last_update`,
-	IF(is_read, 1,  0) as `is_read`,
-	UNIX_TIMESTAMP(mtime) as `mtime`
-FROM	items
-WHERE	%s
-	mtime > FROM_UNIXTIME(%ld)
-ORDER BY	mtime ASC
-LIMIT	%d
-EOT
-		,
-		(is_int($feed_id) ?
-		 "feed_id = $feed_id AND " :
-		 ""),
-		$t,
-		$max_items
-		);
-
-	/* Run the SQL query */
-	$dbh = db_connect();
-	$result = $dbh->query($query);
-	if (!$result)
-	{
-		global $db_errno;
-		$db_errno = $dbh->errno;
-		global $db_errmsg;
-		$db_errmsg = $dbh->error;
-
-		return NULL;
-	}
-
-	$retval = array();
-
-	while ($row = $result->fetch_assoc())
-	{
-		# Make sure is_read is properly converted to boolean.
-		$row['is_read'] = $row['is_read'] ? TRUE : FALSE;
-		$retval[] = $row;
-	}
-
-	# Find out how many rows we'd have gotten without the LIMIT
-	# clause.
-	$result = $dbh->query("SELECT found_rows() as all_updates");
-	$row = $result->fetch_assoc();
-	$num_results = $row['all_updates'];
-	return array($retval, $num_results);
-}
-
-/* db_get_read_items
- * Given a time_t $t (UTC timestamp), return those items that have been
- * modified since $t, and which are marked as read.
- *
- * Optionally, takes a maximum number of items to return. Defaults to
- * 100.
- */
-function db_get_read_items($t, $max_items=100)
-{
-	if (!is_int($max_items) ||
-	    $max_items > 100)
-		$max_items = 100;
-
-	/* Construct the query
-	 * The SQL_CALC_FOUND_ROWS is there to find how many rows
-	 * would have been returned without the LIMIT clause.
-	 */
-	/* SCHEMA */
-	$query = sprintf(<<<EOT
-SELECT	SQL_CALC_FOUND_ROWS
-	id,
-	IF(is_read, 1,  0) as `is_read`,
-	UNIX_TIMESTAMP(mtime) as `mtime`
-FROM	items
-WHERE	mtime > FROM_UNIXTIME(%ld)
-  AND	is_read
-ORDER BY	mtime ASC
-LIMIT	%d
-EOT
-		,
-		$t,
-		$max_items
-		);
-
-	/* Run the SQL query */
-	$dbh = db_connect();
-	$result = $dbh->query($query);
-	if (!$result)
-	{
-		global $db_errno;
-		$db_errno = $dbh->errno;
-		global $db_errmsg;
-		$db_errmsg = $dbh->error;
-
-		return NULL;
-	}
-
-	$retval = array();
-
-	while ($row = $result->fetch_assoc())
-	{
-		# Make sure is_read is properly converted to boolean.
-		$row['is_read'] = $row['is_read'] ? TRUE : FALSE;
-		$retval[] = $row;
-	}
-
-	# Find out how many rows we'd have gotten without the LIMIT
-	# clause.
-	$result = $dbh->query("SELECT found_rows() as num_read");
-	$row = $result->fetch_assoc();
-	$num_results = $row['num_read'];
-	return array($retval, $num_results);
 }
 
 /* db_add_feed
