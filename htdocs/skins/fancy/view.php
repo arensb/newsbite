@@ -19,8 +19,14 @@ echo '<', '?xml version="1.0" encoding="UTF-8"?', ">\n";
       href="skins/<?=$skin_dir?>/newsbite-splash-ipad.png"
       media="screen
       and (min-device-width: 481) and (orientation: portrait)"/>
-<!-- iOS: This standalone app runs in full-screen mode -->
-<meta name="apple-mobile-web-app-capable" content="yes" />
+<?
+// Actually, don't use this: it make iOS consider this app a
+// standalone app, which means that all links open a separate instance
+// of Mobile Safari (rather than just a new tab), which is inelegant.
+// Also makes startup seem longer.
+//<!-- iOS: This standalone app runs in full-screen mode -->
+//<meta name="apple-mobile-web-app-capable" content="yes" />
+?>
 <script type="text/javascript">
 // Set various useful variables to pass on to scripts
 var skin_dir = "skins/<?=$skin_dir?>";	// Needed because we need to be able
