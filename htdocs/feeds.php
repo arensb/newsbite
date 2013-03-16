@@ -2,6 +2,15 @@
 /* feeds.php
  * Send list of feeds.
  */
+// XXX - There are two things that take this script take forever:
+// 1) db_get_all_feed_counts() takes about 1.5 sec, apparently because
+// it takes forever to count all the items in all feeds.
+//
+// 2) run_hooks("clean-html"...) add another 0.25 sec to execution
+// time. This seems rather pointless, since the title, subtitle,
+// description of a feed don't change often. Perhaps this information
+// could be cached.
+
 require_once("common.inc");
 require_once("database.inc");
 require_once("hooks.inc");
