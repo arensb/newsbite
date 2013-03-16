@@ -275,6 +275,10 @@ function db_get_some_feed_items(/* varargs */)
 			$args[func_get_arg($i)] = func_get_arg($i+1);
 	}
 
+	/* Add limit and offset to query */
+	if (!is_int($args['max_items']))
+		$args['max_items'] = DB_MAX_RESULTS;
+
 	/* About the query:
 	 * The most common query is going to be asking for the last 25
 	 * unread items in active feeds. This will wind up being:
@@ -296,7 +300,7 @@ function db_get_some_feed_items(/* varargs */)
 	 *	LIMIT 25
 	 *
 	 * Note the
-	 * "SELECT FROM items LEFT JOIN feeds, (SELECT last_update)"
+	 * "SELECT FROM items, (SELECT last_update), feeds"
 	 * structure: the reason for this is that ordering by two
 	 * columns takes a long time (0.32 sec (wall time) with 35,000
 	 * items and 111 active feeds). I think this is because MySQL
@@ -332,8 +336,20 @@ FROM	items,
 	 FROM			items
 
 EOT;
+	// Collect the various conditions for the inner "(SELECT"
+	// subquery. Put them in the $conditions array. Once we know
+	// what they all are, join them together with "AND", and add a
+	// "WHERE" in front.
+	$subconditions = array();
+	if (is_int($args['feed_id']))
+		array_push($subconditions,
+			   sprintf("feed_id=%d", $args['feed_id']));
 	if (!isset($args['read']) || !$args['read'])
-		$query .= "WHERE !is_read\n";
+		array_push($subconditions,
+			   "!is read");
+	if (count($subconditions) > 0)
+		$query .= "WHERE " . implode("\nAND ", $subconditions) . "\n";
+
 	switch ($args['order'])
 	{
 	    case "date_asc":
@@ -347,6 +363,8 @@ EOT;
 		$query .= "ORDER BY last_update DESC\n";
 		break;
 	}
+
+	$query .= "\tLIMIT " . $args['max_items'] . "\n";
 
 	$query .= <<<EOT
 	) AS tmp,
@@ -413,9 +431,6 @@ EOT;
 		break;
 	}
 
-	/* Add limit and offset to query */
-	if (!is_int($args['max_items']))
-		$args['max_items'] = DB_MAX_RESULTS;
 	$query .= "LIMIT " . $args['max_items'] . "\n";
 
 	if (is_int($args['start_at']))
