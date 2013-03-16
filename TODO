@@ -65,7 +65,7 @@
 - Bug: keybindings.js doesn't handle non-letter bindings well: "?"
   gets turned into Spanish upside-down question mark by toUpperCase().
 	Need a notation to bind Esc.
-- "use strict": apparently modern implementations grok
+- "use strict": apparently modern JavaScript implementations grok
 	"use strict";
   https://developer.mozilla.org/en-US/docs/JavaScript/Reference/Functions_and_function_scope/Strict_mode
 	Put '"use strict";' at the top of the script, at the global
@@ -123,15 +123,6 @@
   fix.
 	Or maybe they use Windows-1252 for everything, and just claim
   that it's UTF-8.
-- Apparently unused functions:
-	lib/database.inc:
-		db_get_item_updates
-		db_get_read_items
-	lib/parse-feed.inc:
-		mangle_summary
-		mangle_content
-		mangle_item
-		mangle_feed
 - Mutation events (like "DOMNodeInserted" in js/PatEvent.js) are
   apparently now deprecated in favor of the DOM MutationObserver:
   https://hacks.mozilla.org/2012/05/dom-mutationobserver-reacting-to-dom-changes-without-killing-browser-performance/
