@@ -18,6 +18,9 @@ skins/fancy/Ajax-loader.gif
 skins/fancy/Attraction_transfer_icon.gif
 skins/fancy/view.css
 skins/fancy/view.js
+skins/fancy/newsbite-icon.png
+skins/fancy/newsbite-splash-ipad.png
+skins/fancy/newsbite-splash.png
 # Fetch anything else from the network, always.
 NETWORK:
 *
