@@ -350,9 +350,31 @@ EOT;
 	if (is_int($args['feed_id']))
 		array_push($subconditions,
 			   sprintf("feed_id=%d", $args['feed_id']));
-	if (!isset($args['read']) || !$args['read'])
-		array_push($subconditions,
-			   "!is read");
+	if (isset($args['read']))
+	{
+		// We need to specify "is_read" or "!is_read" as a
+		// subcondition: otherwise, what might happen is this:
+		// the 100 most recent articles are read, but lots of
+		// others are unread. So this subquery returns a list
+		// of 100 times that don't correspond to any unread
+		// articles.
+		// Yes, specifying "is_read" or "!is_read" is
+		// redundant, but it's necessary.
+		switch ($args['read'])
+		{
+		    case "read":	# Return only read items
+			array_push($subconditions, "is_read");
+			break;
+		    case "unread":	# Return only unread items
+			array_push($subconditions, "!is_read");
+			break;
+		    case "both":
+			break;
+		    default:		# Invalid 'read' value
+			error_log("db_get_some_feed_items: Invalid 'read' value: ".$args['read']);
+			return NULL;
+		}
+	}
 	if (count($subconditions) > 0)
 		$query .= "WHERE " . implode("\nAND ", $subconditions) . "\n";
 
