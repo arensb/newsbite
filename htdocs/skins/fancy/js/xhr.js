@@ -56,11 +56,16 @@ function get_json_data(url, params, handler, err_handler, batch)
 			var errmsg;
 
 			/* Get HTTP status */
+			// XXX - Is this try/catch even necessary?
+			// AFAICT it comes from the earliest revision
+			// of this function, when I may have been
+			// overly paranoid.
 			try {
 				err = request.status;
 				errmsg = request.statusText;
 			} catch (e) {
 				err = 1;
+msg_add("I caught a weird error: "+e);
 			}
 
 			/* If the HTTP status isn't 200, abort the request */
@@ -68,6 +73,7 @@ function get_json_data(url, params, handler, err_handler, batch)
 			{
 console.log("JSON "+url+" failed, status "+request.status+", text ["+request.statusText+"]");
 console.trace();
+msg_add("JSON "+url+" failed, status "+request.status);
 				request.abort();
 				request.aborted = true;
 
@@ -108,6 +114,7 @@ console.trace();
 				// parameters, etc. of the original request?
 				console.error(request);
 				console.error("Can't parse response: "+e);
+msg_add("get_json_data: Can't parse response");
 				console.log(request.responseText);
 				value = undefined;
 			}
@@ -149,6 +156,7 @@ console.trace();
 			{
 console.log("JSON "+url+" failed, status "+request.status+", text ["+request.statusText+"]");
 console.trace();
+msg_add("JSON "+url+" failed, status "+request.status);
 				request.abort();
 				request.aborted = true;
 
@@ -190,6 +198,7 @@ console.trace();
 					console.error("Can't parse JSON: "+e+
 						      ", offending string: "+
 						      line);
+msg_add("Can't parse JSON line");
 					// If this isn't a complete line, put it
 					// back for later. Yeah, this is a bit of
 					// a hack.
@@ -216,7 +225,10 @@ console.trace();
 
 	var request = createXMLHttpRequest();
 	if (!request)
+	{
+msg_add("get_json_data: can't createXMLHttpRequest: "+request);
 		return null;
+	}
 
 	request.open('POST', url);
 	request.setRequestHeader('Content-Type',
