@@ -12,6 +12,18 @@
 #include "js/status-msg.js"
 
 document.addEventListener("DOMContentLoaded", init, false);
+document.addEventListener("online",
+	function(ev)
+	{
+		msg_add("Now we're online.");
+	},
+	false);
+document.addEventListener("offline",
+	function(ev)
+	{
+		msg_add("Now we're offline.");
+	},
+	false);
 
 // Set HTMLElement's toJSON method, so that JSON.stringify() of
 // structures containing a DOM node doesn't fail with an error.
