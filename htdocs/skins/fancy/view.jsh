@@ -209,6 +209,7 @@ function init()
 		// Key bindings
 		bind_key("C-r", slow_sync);
 		bind_key("S-r", slow_sync);	// XXX - Only on Chrome
+		bind_key(".", slow_sync);	// Same as Twitter
 		bind_key("S-c", collapse_all);
 		bind_key("S-e", expand_all);
 	}
