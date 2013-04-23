@@ -38,6 +38,7 @@ function init()
 	bind_key("d", toggle_details);
 	bind_key("t", toggle_tools);
 	bind_key("C-r", refresh_feed_list);	// C-r: refresh list of feeds.
+	bind_key(".", refresh_feed_list);	// Same as Twitter
 
 	init_feed_list();
 }
