@@ -203,8 +203,6 @@ function init()
 	{
 		PatEvent.bind_event(itemlist, "_enter", ".item",
 				    enter_item, false);
-		PatEvent.bind_event(itemlist, "_exit", ".item",
-				    exit_item, false);
 
 		// Key bindings
 		bind_key("C-r", slow_sync);
@@ -803,24 +801,18 @@ function move_down()
  */
 function enter_item(ev)
 {
+	// Mark the element we've just entered as current.
 	var elt = ev.currentTarget;
 	if (!is_in_class(elt, "item"))
 		return false;
+
+	// Unmark the previous current item, if there is one.
+	if (current_item != null &&
+	    is_in_class(current_item, "item"))
+		remove_class(current_item, "current-item");
+
 	add_class(elt, "current-item");
 	current_item = elt;
-	return true;
-}
-
-/* exit_item
- * Called when mouse has left an item. Unhighlight it.
- */
-function exit_item(ev)
-{
-	var elt = ev.currentTarget;
-	if (!is_in_class(elt, "item"))
-		return false;
-	remove_class(elt, "current-item");
-	current_item = null;
 	return true;
 }
 
