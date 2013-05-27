@@ -538,6 +538,7 @@ function fetch_url($url, $username = NULL, $passwd = NULL)
 
 function _http_status(&$text)
 {
+	$content_encoding = NULL;
 	$extra = array();	# Extra data we might return.
 				# Only the location of the redirect, so far.
 
@@ -601,8 +602,35 @@ function _http_status(&$text)
 				$extra["redirect"] = $match[1];
 #error_log("Redirected to [$extra[redirect]]");
 			}
+
+			# Get the Content-Encoding header, if any.
+			if (preg_match('{^Content-Encoding:\s*(\S+)(\r?\n|$)}m', $header , $match))
+				$content_encoding = $match[1];
 		}
 	} while (substr($text, 0, 5) == "HTTP/");
+
+	# Uncompress the body, if necessary, and if we know how.
+	switch ($content_encoding)
+	{
+	    case "gzip":
+#		$text = gzuncompress($text);
+#		$text = gzinflate($text);
+
+		# XXX - Ye gods, what an ugly hack. For some reason,
+		# gzuncompress($text) and gzinflate($text) complain of
+		# "data error" in Jalopnik's RSS feed.
+		# This code writes the compressed feed out to a temporary
+		# file, then reads it back in with "compress.zlib://",
+		# and for some reason this works.
+		$tmpf = tempnam("/tmp", "gz_fix");
+		file_put_contents($tmpf, $text);
+		$text = file_get_contents("compress.zlib://$tmpf");
+		unlink($tmpf);			# Delete temp file
+		break;
+	    case NULL:
+	    default:
+		break;
+	}
 
 	return array($http_status, $http_error, $extra);
 }
