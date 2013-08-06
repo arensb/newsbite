@@ -80,6 +80,22 @@ p {
 	padding-right:		0.3em;
 }
 
+/* navbar */
+#navbar {
+	background-color:	rgba(0, 0, 0, 0.5);
+}
+
+#navbar.closed .close-button,
+#navbar.closed .content {
+	display:		none;
+}
+
+#navbar.open .open-button {
+	display:		none;
+}
+
+/* End navbar */
+
 .button-box {
 	margin-left:		1em;
 	margin-right:		1em;
@@ -295,9 +311,24 @@ input[type="submit"] {
 			/* Line between this and item title */
 }
 
-input[type="checkbox"].mark-check {
+.mark-check {
+/*	display:	none;*/
+}
+
+.mark-check label {
 	width:			1.2em;
 	height:			1.2em;
+/*margin:	1em;
+background-color:	red;
+background-image: url("Checkbox.svg");
+*/
+}
+
+input[type="checkbox"].mark-check:checked label {
+/*margin:	1em;
+background-color:	pink;
+background-image: url("Checkbox-red.svg");
+*/
 }
 
 /* The next few rules are for toggling between expanded and collapsed
