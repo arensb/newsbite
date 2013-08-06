@@ -118,7 +118,12 @@ var item_tmpl_text = '<article class="item" id="item-@id@">\
 <link rel="stylesheet" type="text/css" href="skins/<?=$skin_dir?>/view.css" media="all" />
 <script type="text/javascript" src="skins/<?=$skin_dir?>/view.js"></script>
 </head>
-<body id="view-body">
+<body id="view-body" orientation="up">
+<div id="navbar" class="open">
+  <div class="content">This is the navbar</div>
+  <div class="open-button">&gt;</div>
+  <div class="close-button">&lt;</div>
+</div>
 
 <div id="page-top">Feed information goes here</div>
 
