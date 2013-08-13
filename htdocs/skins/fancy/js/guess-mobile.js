@@ -53,6 +53,15 @@ if (mobile)
 		meta_node.name = "viewport";
 		meta_node.content = "width=device-width, initial-scale=0.5";
 		document.head.appendChild(meta_node);
+	} else if (mobile == "iPad")
+	{
+		// Define a viewport:
+		// <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		var meta_node = document.createElement("meta");
+
+		meta_node.name = "viewport";
+		meta_node.content = "width=device-width, initial-scale=1.0";
+		document.head.appendChild(meta_node);
 	} else if (mobile == "Android")
 	{
 		// Define a viewport:
