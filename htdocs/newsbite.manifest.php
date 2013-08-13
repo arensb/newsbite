@@ -21,6 +21,8 @@ skins/fancy/view.js
 skins/fancy/newsbite-icon.png
 skins/fancy/newsbite-splash-ipad.png
 skins/fancy/newsbite-splash.png
+#skins/fancy/Checkbox.svg
+#skins/fancy/Checkbox-red.svg
 # Fetch anything else from the network, always.
 NETWORK:
 *
