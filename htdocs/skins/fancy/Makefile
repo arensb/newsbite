@@ -16,7 +16,10 @@ JS_SRC =	view.jsh feeds.jsh
 PHP_FILES =	$(wildcard *.php)
 JS_FILES = 	$(patsubst %.jsh,%.js,${JS_SRC})
 CSS_FILES =	$(wildcard *.css)
-IMAGE_FILES =	$(wildcard *.gif *.png *.jpg)
+IMAGE_FILES =	$(wildcard *.gif *.png *.jpg *.svg)
+# Credits:
+# http://commons.wikimedia.org/wiki/File:Checkbox.svg
+# http://commons.wikimedia.org/wiki/File:Checkbox-red.svg
 OTHER_FILES =	htaccess.sample
 
 include ../../../Makefile.common
