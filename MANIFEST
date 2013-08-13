@@ -34,6 +34,8 @@ htdocs/setskin.php
 htdocs/skins/fancy/Ajax-loader.gif
 htdocs/skins/fancy/Attention_niels_epting.png
 htdocs/skins/fancy/Attraction_transfer_icon.gif
+htdocs/skins/fancy/Checkbox-red.svg
+htdocs/skins/fancy/Checkbox.svg
 htdocs/skins/fancy/Loading.gif
 htdocs/skins/fancy/Makefile
 htdocs/skins/fancy/abort.css
