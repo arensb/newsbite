@@ -141,8 +141,7 @@ function update_feed(id)
 	clear_status();
 
 	get_json_data("update.php",
-		      { o:	"json",
-			id:	id,
+		      { id:	id,
 		      },
 		      update_feed_handler,
 		      function(status, msg) {
