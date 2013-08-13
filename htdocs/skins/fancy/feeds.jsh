@@ -32,7 +32,8 @@ function init()
 {
 	feed_table = document.getElementById("feeds");
 
-	window.addEventListener("keydown", handle_key, false);
+	window.addEventListener("keypress", handle_key, false);
+		// XXX - This should probably go in js/keybindings.js
 
 	// Key bindings
 	bind_key("d", toggle_details);
