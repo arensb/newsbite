@@ -181,7 +181,7 @@ function init()
 	PatEvent.bind_event(itemlist, "click", ".mark-check",
 			    button_mark_item, false);
 
-	window.addEventListener("keydown", handle_key, false);
+	window.addEventListener("keypress", handle_key, false);
 		// XXX - This should probably go in js/keybindings.js
 
 	window.addEventListener("orientationchange", reorient, false);
