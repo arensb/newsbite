@@ -122,9 +122,13 @@ input[type="checkbox"] {
 	-webkit-appearance:	checkbox;
 }
 
-input[type="checkbox"].mark-check {
+.mark-check + label {
 	width:			3.0em;
 	height:			3.0em;
+}
+
+.mark-check:checked + label {
+/* XXX - What goes here? */
 }
 
 input[type="submit"],
