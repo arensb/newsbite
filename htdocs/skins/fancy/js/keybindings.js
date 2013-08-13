@@ -120,6 +120,24 @@ function handle_key(evt)
 // metaKey (false)
 // altKey (false)
 // view (object Window)
+	/* *Sigh* Keyboard event handling is apparently a mess.
+	 * There's evt.keyCode, which says which key was pressed, and
+	 * there's evt.charCode, which says which character that is,
+	 * if that makes sense (e.g., "Shift" or "F12" doesn't
+	 * correspond to a character). On top of which, keyCodes are
+	 * inconsistent across browsers, and even versions of
+	 * browsers, especially for things other than ASCII letters.
+	 *
+	 * According to
+	 * https://developer.mozilla.org/en-US/docs/Web/API/event.keyCode
+	 * either charCode or keyCode is set, never both; and only the
+	 * "keypress" event (not "keydown" or "keyup" event) has
+	 * charCode set.
+	 *
+	 * However, "evt.which" is supposed to give either the
+	 * charCode or keyCode, as appropriate, and appears to exist
+	 * in FireFox, Chrome, and Safari.
+	 */
 
 #if NEW_KEYTAB
 	var keystr =
@@ -128,7 +146,7 @@ function handle_key(evt)
 				    (evt.metaKey  + 0 << 1) |
 				    (evt.altKey   + 0)) +
 		"-" +
-		String.fromCharCode(evt.keyCode).toUpperCase();
+		String.fromCharCode(evt.which).toUpperCase();
 //console.log("get keystr: ["+keystr+"]");
 	var func = keytab[keystr];
 #else	// NEW_KEYTAB
