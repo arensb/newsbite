@@ -172,9 +172,21 @@ function update_all_feeds($handler)
 		// happen, and prevents busy-waiting on
 		// curl_multi_exec().
 		if ($err == -1)
+		{
 			// An error of some kind (from select())
 			// XXX - Probably ought to figure out what happened
+
+			// According to comments at
+			// http://us3.php.net/manual/en/function.curl-multi-select.php
+			// you really really need to have
+			// curl_multi_exec() after any
+			// curl_multi_select(). So here it is.
+			do {
+				$exec_stat = curl_multi_exec($mh, $active);
+#echo "2nd curl_multi_exec returned [$exec_stat]\n";
+			} while ($exec_stat == CURLM_CALL_MULTI_PERFORM);
 			continue;
+		}
 
 		/* Check to see whether any transfers have completed */
 		$in_queue = NULL;
