@@ -340,7 +340,7 @@ CacheManager.prototype.update_feeds = function(cb)
 	var self = this;	// Remember 'this' to pass to callback
 				// function.
 	get_json_data("feeds.php",
-		      { o:	"json" },
+		      { },
 		      update_feeds_callback,
 		      function(status, msg) {	// Error handler
 			      msg_add("feeds.php JSON failed: "+status+": "+msg);
