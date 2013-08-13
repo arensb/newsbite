@@ -367,8 +367,7 @@ function flush_queues()
 	}
 
 	get_json_data("markitems.php",
-		      { o:	"json",
-		        "mark-read":	mark_request.read.join(","),
+		      { "mark-read":	mark_request.read.join(","),
 		        "mark-unread":	mark_request.unread.join(","),
 		      },
 		      function(value) {
@@ -801,16 +800,14 @@ function move_down()
  */
 function enter_item(ev)
 {
-	// Mark the element we've just entered as current.
-	var elt = ev.currentTarget;
-	if (!is_in_class(elt, "item"))
-		return false;
-
 	// Unmark the previous current item, if there is one.
 	if (current_item != null &&
 	    is_in_class(current_item, "item"))
 		remove_class(current_item, "current-item");
 
+	var elt = ev.currentTarget;
+	if (!is_in_class(elt, "item"))
+		return false;
 	add_class(elt, "current-item");
 	current_item = elt;
 	return true;
