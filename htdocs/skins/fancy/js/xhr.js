@@ -234,7 +234,7 @@ msg_add("get_json_data: can't createXMLHttpRequest: "+request);
 	request.setRequestHeader('Content-Type',
 		'application/x-www-form-urlencoded');
 
-	var param_string = "";
+	var param_string = "o=json";
 	for (var p in params)
 	{
 		if (param_string != "")
