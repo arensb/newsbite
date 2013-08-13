@@ -32,10 +32,10 @@ function db_connect()
 		return $dbh;
 
 	// Create a new connection
-	$dbh = new mysqli($DB_HOST, $DB_USER, $DB_PASS, $DB_NAME);
+	@$dbh = new mysqli($DB_HOST, $DB_USER, $DB_PASS, $DB_NAME);
 	if (mysqli_connect_errno())
 	{
-		printf("Connect failed: %s<br/>\n", mysqli_connect_error());
+		abort("Connect failed: ". mysqli_connect_error());
 		exit();
 	}
 
