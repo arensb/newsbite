@@ -481,7 +481,7 @@ function _element_start_handler($parser, $fullname, $attrs)
 	}
 
 	/* Process this node: push it onto the context stack */
-	array_push($_context, &$node);
+	array_push($_context, $node);
 }
 
 /* _element_end_handler
