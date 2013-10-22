@@ -65,6 +65,16 @@
 - Bug: keybindings.js doesn't handle non-letter bindings well: "?"
   gets turned into Spanish upside-down question mark by toUpperCase().
 	Need a notation to bind Esc.
+- Is it worth making the back-end RESTful? See:
+  http://www.infoq.com/articles/rest-introduction
+  This might be more of a headache than it's worth: to do it elegantly
+  would mean fixing all of the back-end scripts to accept methods
+  other than GET and POST: DELETE, PUT, etc. (see
+  http://www.w3.org/Protocols/rfc2616/rfc2616-sec9.html ) would all
+  have their own meanings.
+	Plus, apparently REST encourages you to use full URLs for
+  resources, rather than internal identifiers. But here we don't
+  really have anything worth sharing with the wider world, IMHO.
 - "use strict": apparently modern JavaScript implementations grok
 	"use strict";
   https://developer.mozilla.org/en-US/docs/JavaScript/Reference/Functions_and_function_scope/Strict_mode
