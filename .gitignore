@@ -1,5 +1,5 @@
+*.bak
 ChangeLog
 dist
-HTMLPurifier
 newsbite-r*.tar.gz
 Makefile.local
