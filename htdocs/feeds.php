@@ -11,6 +11,12 @@
 // description of a feed don't change often. Perhaps this information
 // could be cached.
 
+#if ($_SERVER['REQUEST_METHOD'] == "PUT")
+#{
+#  echo "Hey, you tried to PUT something.\n";
+#  exit(0);
+#}
+
 require_once("common.inc");
 require_once("database.inc");
 require_once("hooks.inc");
