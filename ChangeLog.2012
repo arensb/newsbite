@@ -1,0 +1,984 @@
+2012-11-01  Andrew Arensburger  <arensb@moist.ooblick.com>
+
+	* htdocs/skins/fancy/view.php: Fix JS skin_dir to match feeds.php,
+	for consistency.
+
+2012-10-30  Andrew Arensburger  <arensb@moist.ooblick.com>
+
+	* htdocs/skins/fancy/feeds.jsh: Switch update_feed() to using
+	get_json_data(), for standardness.
+
+	* htdocs/skins/fancy/js/xhr.js: Added handler for non-batch JSON
+	requests.
+	(bug fix) XMLHttpRequest.open()'s 'async' parameter is not the
+	same as 'batch'.
+
+	* lib/net.inc: Log error message to error log, not to stdout.
+
+2012-10-27  Andrew Arensburger  <arensb@moist.ooblick.com>
+
+	* htdocs/skins/fancy/view.jsh: Better error-checking. When started
+	without a "#id=123" parameter, assume "id=all".
+
+	* htdocs/skins/fancy/js/guess-mobile.js: Fix path to skins.
+
+2012-10-23  Andrew Arensburger  <arensb@moist.ooblick.com>
+
+	* htdocs/skins/fancy/js/classes.js (minor) Remove a "to do"
+	comment.
+
+	* htdocs/skins/fancy/feeds.jsh,
+	htdocs/skins/fancy/js/CacheManager.js,
+	htdocs/skins/fancy/js/xhr.js, htdocs/skins/fancy/view.jsh: Move
+	inner functions to top of outer function, as apparently required
+	by newer versions of JS/ECMA, at least in strict mode.
+
+	* htdocs/feeds.php, htdocs/skins/fancy/js/CacheManager.js,
+	htdocs/skins/fancy/view.jsh, htdocs/skins/fancy/feeds.jsh: Assume
+	we always want to get read/unread counts for feeds (even though
+	comments say this is slow).
+	CacheManager.update_feeds() no longer takes the 'counts' argument.
+	feeds.php no longer takes the 's' parameter.
+	All calls to update_feeds() updated.
+
+	* htdocs/skins/fancy/view.jsh: Clean up some "to do" comments and
+	such.
+
+	* htdocs/skins/fancy/js/xhr.js: More, better error-tracing.
+
+	* htdocs/skins/fancy/js/CacheManager.js (minor) Better error
+	message.
+
+	* htdocs/skins/fancy/view.jsh (bug fix) When initializing feeds,
+	get counts as well. This avoids messing up the count on the feeds
+	page.
+
+2012-10-22  Andrew Arensburger  <arensb@moist.ooblick.com>
+
+	* htdocs/skins/fancy/js/xhr.js: Better error logging in
+	createXMLHttpRequest(). Shut up Firefox warning in
+	get_json_data(). get_json_data() handler doesn't require special
+	arguments anymore.
+
+	* htdocs/skins/fancy/js/Template.js: Return a value (in debugging
+	code) to get rid of warning message in Firefox.
+
+2012-10-21  Andrew Arensburger  <arensb@moist.ooblick.com>
+
+	* htdocs/skins/fancy/editfeed.php: Removed an outdated "to do"
+	comment.
+
+	* lib/parse-feed.inc: Added handler for implicit XML namespace.
+	Log the version of RSS that we're seeing, in case we can do
+	something with that later.
+
+	* htdocs/editfeed.php: Removed old comment.
+
+	* htdocs/skins/fancy/editfeed.php: Removed unneeded "to do"
+	comment.
+
+	* htdocs/skins/fancy/editfeed.php (bug fix) Display feed subtitle
+	correctly.
+
+	* lib/database.inc: Minor changes: add DB_MAX_RESULTS constant.
+	More error-checking.
+
+	* lib/database.inc: Forgot to clean up old code.
+
+	* lib/database.inc, htdocs/sync.php: db_get_some_feed_items():
+	"read" is now a three-way switch: return only read items, only
+	unread items, or both.
+
+	* htdocs/login.php: If $out_fmt is JSON, send a JSON object back
+	when user has logged in.
+
+	* htdocs/skins/fancy/feeds.php: Removed a couple of unused
+	variables.
+
+2012-10-20  Andrew Arensburger  <arensb@moist.ooblick.com>
+
+	* htdocs/skins/fancy/addfeed.php: Remove a "to do" comment.
+
+	* Makefile.common: Somewhat better default installation directory.
+
+	* plugins/slashdot.php, plugins/feedburner.php, plugins/ads.php,
+	plugins/bugs.php: Minor cleanup.
+
+	* htdocs/skins/fancy/js/xhr.js: Move get_json_callback_batch()
+	inside get_json_data(), as a local helper function.
+
+	* htdocs/skins/fancy/feeds.jsh: Move parse_response() into
+	update_feed(), as a local function. Get rid of reqobj: we have a
+	closure, so we don't need that extra variable. Fix error message
+	code to not reference a nonexistent field ("l.title").
+
+	* htdocs/skins/fancy/js/CacheManager.js: Minor changes. Rearrange
+	some code and comments for readability. Document getitems()
+	arguments.
+
+	* htdocs/skins/fancy/index.css: Add a menu cursor for the menu
+	titles.
+
+	* htdocs/htaccess.sample.in (security) Apparently the dot in PHP's
+	'include_path' isn't necessary. Take it out.
+
+	* htdocs/skins/fancy/view.jsh: Removed cur_item. Dunno what I was
+	thinking.
+
+	* htdocs/skins/fancy/js/CacheManager.js: Move _update_feeds_cb()
+	to update_feeds_callback() inside update_feeds(), as a local
+	function.
+
+2012-10-19  Andrew Arensburger  <arensb@moist.ooblick.com>
+
+	* lib/parse-feed.inc: Minor cleanup, mostly involving removing or
+	cleaning up old "to do" comments. Don't run 'clean-html' hook on
+	feed description: we do it in htdocs/feeds.php.
+
+	* htdocs/skins/fancy/js/xhr.js: Screw IE. It's not supported. Just
+	assume everyone has XMLHttpRequest.
+
+	* htdocs/skins/fancy/android.css: Add a @media section for small
+	screens to avoid iframes that overflow the window. Remove some old
+	comments.
+
+	* htdocs/skins/fancy/js/guess-mobile.js: Use DOM methods to define
+	viewport, rather than document.write(). Makes JSLint happier
+
+	* htdocs/skins/fancy/addfeed.php: Use DOM methods to create "Add
+	one-click subscription" button, rather than document.write().
+	Makes JSLint happier
+
+2012-10-18  Andrew Arensburger  <arensb@moist.ooblick.com>
+
+	* lib/hooks.inc: run_hooks() now returns an entirely symbolic and
+	rather meaningless value. But it returns one.
+
+	* htdocs/skins/fancy/js/CacheManager.js: _purge_stuff() deletes in
+	25-item chunks, rather than 100-item chunks. Clean up old "to do"
+	comments and trace statements.
+
+	* htdocs/js/profiler.js: Minor style changes.
+
+2012-10-17  Andrew Arensburger  <arensb@moist.ooblick.com>
+
+	* plugins/gocomics.php (deleted), MANIFEST: Delete Gocomics
+	plugin, since it doesn't work (and probably never will).
+
+2012-10-12  Andrew Arensburger  <arensb@moist.ooblick.com>
+
+	* plugins/htmlpurifier.php (bug fix) YouTube iframe can use simple
+	quotes for attributes.
+
+	* htdocs/skins/fancy/view.jsh: Simplify and fix the way long
+	articles collapse when marked read.
+
+2012-10-07  Andrew Arensburger  <arensb@moist.ooblick.com>
+
+	* htdocs/skins/fancy/view.jsh: Better scrolling when marking an
+	item as read whose top has scrolled off the top of the window.
+
+	* htdocs/skins/fancy/view.jsh (bug fix) When marking an item, and
+	the window has been scrolled to the right, don't jump to the left.
+
+2012-10-06  Andrew Arensburger  <arensb@moist.ooblick.com>
+
+	* htdocs/skins/fancy/feeds.jsh: When updating feed list, and we
+	don't have a count of unread articles, display "?" instead of
+	"undefined".
+
+2012-10-03  Andrew Arensburger  <arensb@moist.ooblick.com>
+
+	* MANIFEST: Add missing file.
+
+	* fix-schema-r1105.sql (added), schema.sql: Extend items.url to
+	511 chars, because some feeds LOUSes (Links of Unusual Size).
+
+	* htdocs/skins/fancy/view.jsh: Prefer passing in arguments through
+	the hash part of the URL, rather than through the query
+	part ("view.php#arg=value" rather than "view.php?arg=value"). A
+	bit more work on recenter().
+
+	* htdocs/addfeed.php, htdocs/editfeed.php, htdocs/update.php,
+	htdocs/skins/fancy/feeds.php: Use hash, not HTTP arguments, to
+	pass arguments to view.php. That is, change "view.php?arg=value"
+	to "view.php#arg=value".
+
+2012-09-29  Andrew Arensburger  <arensb@moist.ooblick.com>
+
+	* htdocs/skins/fancy/view.jsh: First test draft of recenter().
+
+	* htdocs/skins/fancy/js/xhr.js: "to do" comments.
+
+	* htdocs/skins/fancy/js/CacheManager.js: Minor comments and such.
+
+	* htdocs/skins/fancy/js/defer.js (bug fix) Off-by-one error in
+	defer(), passing in a bogus argument to the target function.
+
+2012-09-28  Andrew Arensburger  <arensb@moist.ooblick.com>
+
+	* htdocs/sync.php: "to do" comment.
+
+	* htdocs/skins/fancy/js/Template.js: More explicit error message.
+
+	* TODO: "-moz-box-shadow" is gone.
+
+	* htdocs/skins/fancy/index.css: Apparently newer versions of
+	Firefox no longer recognize "-moz-box-shadow". Use "box-shadow",
+	which is standard anyway.
+
+	* htdocs/feeds.php: Fixed-length fields in 'feeds' table can have
+	missing closing tags. Run them through the "clean-html" hooks to
+	clean up.
+
+2012-09-18  Andrew Arensburger  <arensb@moist.ooblick.com>
+
+	* htdocs/skins/fancy/android.css: Add rules that are apparently
+	needed to kick browser into redrawing after orientation change.
+
+2012-09-14  Andrew Arensburger  <arensb@moist.ooblick.com>
+
+	* lib/parse-feed.inc: Handle Atom link-to-self of the form
+	<feed><link rel=alternate type=text/html...>
+
+	* htdocs/skins/fancy/view.jsh (bug fix): Remove duplicate
+	keybindings on Android.
+
+2012-09-12  Andrew Arensburger  <arensb@moist.ooblick.com>
+
+	* Makefile: Force rebuilding ChangeLog.svn
+
+2012-09-11  Andrew Arensburger  <arensb@moist.ooblick.com>
+
+	* htdocs/skins/fancy/view.jsh: "to do" comment.
+
+	* htdocs/skins/fancy/view.jsh: More trace messages and
+	error-checking.
+
+	* htdocs/skins/fancy/js/CacheManager.js, htdocs/whatsread.php,
+	MANIFEST: CacheManager.get_marked() (plus associated callback and
+	localStorage variables) no longer needed. Delete.
+	htdocs/whatsread.php no longer needed. Delete.
+	Remove htdocs/whatsread.php from MANIFEST.
+
+	* htdocs/skins/fancy/js/CacheManager.js, htdocs/updates.php,
+	MANIFEST: CacheManager.get_updates() (and associated callback) no
+	longer needed. Delete.
+	htdocs/update.php no longer needed. Delete.
+	Remove htdocs/update.php from MANIFEST.
+
+2012-09-08  Andrew Arensburger  <arensb@moist.ooblick.com>
+
+	* htdocs/skins/fancy/js/keybindings.js: Remove some unwanted trace
+	statements.
+
+	* htdocs/updates.php: "to do" comment.
+
+	* MANIFEST, htdocs/skins/fancy/view.jsh,
+	htdocs/skins/fancy/feeds.jsh, htdocs/skins/fancy/js/debug.js
+	(deleted): Delete js/debug.js: all the browsers I care about have
+	a logging console.
+
+	* htdocs/skins/fancy/view.jsh: Playing with improving efficiency
+	by defer()ing code.
+
+	* htdocs/skins/fancy/view.jsh, htdocs/skins/fancy/feeds.jsh,
+	htdocs/skins/fancy/js/CacheManager.js,
+	htdocs/skins/fancy/js/xhr.js, htdocs/skins/fancy/js/PatEvent.js:
+	Use console.log() rather than console.debug(), as it's deprecated.
+	Fancy formatted console logging.
+
+	* htdocs/skins/fancy/js/keybindings.js: cpp conditionals to try
+	out a new keytab, to see if it improves performance.
+
+	* htdocs/skins/fancy/js/defer.js: Drop some trace statements.
+
+	* htdocs/skins/fancy/feeds.jsh: If we get the feed.num_unread
+	error again, try dumping a stack trace so we can find where it
+	happened.
+
+	* htdocs/skins/fancy/js/CacheManager.js: Add _purge_stuff(), to
+	perform initial deletion of unwanted localStorage items in the
+	background.
+
+	* htdocs/skins/fancy/js/defer.js: Usage examples in comment.
+
+2012-09-05  Andrew Arensburger  <arensb@moist.ooblick.com>
+
+	* htdocs/view.php: Oops. More brush to clear.
+
+	* Makefile: Fix message saying which paths to check.
+
+	* htdocs/view.php: Not using PHP as template anymore, so we can
+	remove a whole lot of code, including database lookups.
+
+	* htdocs/skins/fancy/view.php, htdocs/skins/fancy/view.css,
+	htdocs/skins/fancy/view.jsh, htdocs/view.php: Switch from PHP
+	template to JS template, so that the file can be cached on the
+	client.
+
+2012-09-04  Andrew Arensburger  <arensb@moist.ooblick.com>
+
+	* htdocs/skins/fancy/feeds.jsh: Add a try/catch/log statement to
+	help debug.
+
+	* htdocs/skins/fancy/js/CacheManager.js: Comment out some of the
+	noisier log messages.
+
+	* lib/parse-feed.inc: In RDF parser, run all <description>
+	elements through clean-html, not just the ones under "item".
+
+	* htdocs/skins/fancy/view.php: Remove clean-html hooks. And hooks
+	in general, really.
+
+	* htdocs/skins/fancy/view.php: Add hook-related stuff, since we
+	need it here (and it's not in htdocs/view.php anymore).
+
+2012-09-02  Andrew Arensburger  <arensb@moist.ooblick.com>
+
+	* htdocs/skins/fancy/view.php: Remove some unused (mostly
+	commented-out) sections.
+
+2012-09-01  Andrew Arensburger  <arensb@moist.ooblick.com>
+
+	* htdocs/view.php: Remove a bunch of unneeded stuff: hooks,
+	"start" parameter, leftover code for fetching items, non-HTML
+	output.
+
+	* htdocs/index.php: Remove nearly everything: this script
+	basically just displays a static page.
+
+	* lib/common.inc: Don't try to guess whether the browser is
+	mobile.
+
+	* htdocs/index.php: Remove unused skin variables.
+
+	* htdocs/items.php (deleted),
+	htdocs/skins/fancy/js/CacheManager.js,
+	htdocs/skins/fancy/view.jsh, MANIFEST: htdocs/sync.php has
+	superseded htdocs/items.php, so htdocs/index.php and the stuff
+	that used it can be removed.
+
+	* htdocs/view.php: Remove remnants of $mobile skin variable.
+
+	* htdocs/skins/fancy/js/Makefile (added), MANIFEST, Makefile: Add
+	htdocs/skins/fancy/js/Makefile, mainly so that 'make clean' works
+	properly.
+
+	* htdocs/skins/fancy/view.php,
+	htdocs/skins/fancy/js/guess-mobile.js,
+	htdocs/skins/fancy/feeds.php: Move viewport stuff to
+	js/guess-mobile.js, out of individual PHP template files.
+
+	* MANIFEST: Add js/guess-mobile.js
+
+	* htdocs/skins/fancy/view.jsh, htdocs/skins/fancy/view.php,
+	htdocs/skins/fancy/feeds.jsh, htdocs/skins/fancy/feeds.php: Move
+	mobile browser detection to js/guess-mobile.js
+
+	* htdocs/skins/fancy/js/guess-mobile.js (added): mobile browser
+	detection.
+
+	* htdocs/view.php: Remove some skin variables that are no longer
+	used.
+
+2012-08-31  Andrew Arensburger  <arensb@moist.ooblick.com>
+
+	* htdocs/skins/fancy/view.php, htdocs/skins/fancy/view.jsh: Move
+	mobile device detection to JS; prefer that over PHP.
+
+2012-08-28  Andrew Arensburger  <arensb@moist.ooblick.com>
+
+	* Get rid of some unused files: htdocs/skins/fancy/item.php,
+	htdocs/skins/fancy/feed-title.php. Update MANIFEST.
+
+	* ., htdocs, htdocs/skins/fancy: Add generated files to
+	svn:ignore: Makefile.local, htaccess.sample.
+
+	* Makefile: Add a note to check for customization after
+	installation.
+
+	* plugins/origlink.php (bug fix) Sometimes an article's url would
+	be "Array" due to multiple <feedburner:origLink> elements. Fixed.
+
+2012-08-27  Andrew Arensburger  <arensb@moist.ooblick.com>
+
+	* htdocs/skins/fancy/android.css: Increase font size for article
+	text.
+
+2012-08-24  Andrew Arensburger  <arensb@moist.ooblick.com>
+
+	* MANIFEST: Add missing Makefiles.
+
+	* htdocs/skins/fancy/view.jsh (bug fix) Use 'feed_id', not
+	'feed.id' (again).
+
+	* htdocs/skins/fancy/view.jsh (bug fix) Use 'feed_id', not
+	'feed.id'.
+
+	* htdocs/skins/fancy/htaccess.sample.in,
+	htdocs/htaccess.sample.in: Add some variable replacements. Add
+	adjustments from production .htaccess .
+
+	* MANIFEST: Don't overwrite existing .htaccess. Include two sample
+	htaccess files.
+
+	* htdocs/skins/fancy/Makefile: Install htaccess.sample.
+
+	* htdocs/skins/fancy/htaccess.sample.in (added): Separate
+	.htaccess template for the UI/skin directory, separate from
+	back-end.
+
+	* htdocs/skins/fancy/Makefile: Fix colon.
+
+	* Makefile.common: Added SED_REPLACEMENTS. Added empty "all::"
+	target, so that 'make' with no arguments DTRT.
+
+	* Makefile: Move "all::" back to where it was.
+
+	* htdocs/Makefile: Build htaccess.sample from htaccess.sample.in
+	and Makefile variables. Install htaccess.sample.
+
+	* htdocs/.htaccess, htdocs/htaccess.sample.in: Rename .htaccess to
+	htaccess.sample.in. htaccess.sample will be automatically
+	generated.
+
+2012-08-22  Andrew Arensburger  <arensb@moist.ooblick.com>
+
+	* Makefile, Makefile.common (added), htdocs/Makefile (added),
+	htdocs/skins/fancy/Makefile, lib/Makefile (added),
+	plugins/Makefile (added): Add "install" to recursive targets. Make
+	'make install' work.
+	Common parameters (like where to install stuff) is set in
+	Makefile.common.
+	Other values common to all Makefiles also set in Makefile.common.
+	Allow overriding in Makefile.local
+
+2012-08-20  Andrew Arensburger  <arensb@moist.ooblick.com>
+
+	* htdocs/skins/fancy/js/CacheManager.js: Error-checking.
+
+	* htdocs/opml.php: Add Content-Disposition header, to specify
+	filename.
+
+2012-08-07  Andrew Arensburger  <arensb@moist.ooblick.com>
+
+	* htdocs/skins/fancy/view.jsh: Get GET arguments (in particular,
+	'?id=XXX') from the URL. Use 'feed_id' obtained this way, rather
+	than 'feed' which used to come from view.php. Comment out some
+	functions that shouldn't be used anymore.
+
+	* htdocs/skins/fancy/js/CacheManager.js: "to do" comments.
+
+2012-08-06  Andrew Arensburger  <arensb@moist.ooblick.com>
+
+	* htdocs/skins/fancy/view.php: Don't use the 'feed' and
+	'start_offset' skin vars; hoping to get rid of them. Comment out
+	the "Refresh", "Sync", and "Get Marked" buttons, in favor of just
+	"Slow Sync".
+
+	* htdocs/sync.php: Working draft. Remove trace log.
+
+2012-08-05  Andrew Arensburger  <arensb@moist.ooblick.com>
+
+	* htdocs/skins/fancy/view.jsh: Parse GET arguments passed in as
+	part of the URL.
+
+2012-08-03  Andrew Arensburger  <arensb@moist.ooblick.com>
+
+	* MANIFEST: Added htdocs/sync.php
+
+	* htdocs/skins/fancy/view.php: Added "Slow Sync" button.
+
+	* htdocs/skins/fancy/view.jsh: Added slow_sync() function. Rebind
+	C-r (and S-r, for Chrome) to slow_sync().
+
+	* htdocs/sync.php (added) Sync the client's item cache with the
+	database.
+
+	* lib/database.inc: db_get_items(): Handle degenerate case (no
+	IDs). Copy selection string from elsewhere, to get all the Unix
+	timestamps and whatnot.
+
+	* htdocs/skins/fancy/js/CacheManager.js (bug fix) store_item()
+	wasn't recording header entry properly. Added slow_sync(). Some
+	"to do" comments.
+
+2012-08-01  Andrew Arensburger  <arensb@moist.ooblick.com>
+
+	* lib/database.inc: Add db_get_items, to get individual items'
+	entries.
+
+	* htdocs/skins/fancy/js/xhr.js: get_json_callback_batch: if can't
+	parse JSON, log an error message to the console.
+
+2012-07-31  Andrew Arensburger  <arensb@moist.ooblick.com>
+
+	* htdocs/.htaccess: Turn off escaping quotes in HTTP input.
+
+	* htdocs/skins/fancy/view.jsh: Update item's mtime when marking it
+	read or unread. Add trace statement to help debug.
+
+2012-07-18  Andrew Arensburger  <arensb@moist.ooblick.com>
+
+	* plugins/pheedo-ads.php: Remove more pheedo noise.
+
+	* htdocs/skins/fancy/view.jsh: Error-handling for items that are
+	in nonexistent or unknown feeds.
+
+	* htdocs/skins/fancy/js/CacheManager.js: whatsread.php now returns
+	a tuple: the actual results, plus the total number of results if
+	it weren't for the cap. Keep separate latest_mtime in cache for
+	each feed (and "all").
+
+	* htdocs/whatsread.php: Update for db_get_read_items() returning a
+	tuple. Pass this tuple on to the client.
+
+	* lib/database.inc: db_get_read_items() now returns a tuple: the
+	list of read items, and the total number of results that would be
+	returned if it weren't for the LIMIT clause. This allows the
+	client to figure out whether we have all the changes it wants.
+
+2012-07-17  Andrew Arensburger  <arensb@moist.ooblick.com>
+
+	* lib/parse-feed.inc: XKCD's "What If?" feed has bogus (English)
+	strings instead of dates. Do error-handling for this case.
+
+2012-07-16  Andrew Arensburger  <arensb@moist.ooblick.com>
+
+	* MANIFEST: Added plugins/addtoany.php
+
+2012-06-19  Andrew Arensburger  <arensb@moist.ooblick.com>
+
+	* htdocs/skins/fancy/view.css: Removing YA no-longer-needed
+	Mozilla-ism.
+
+2012-06-15  Andrew Arensburger  <arensb@moist.ooblick.com>
+
+	* htdocs/skins/fancy/js/CacheManager.js: updates.php now returns a
+	structure with two elements: the list of elements it has always
+	returned, and a count of total updates. This allows us to find out
+	whether there are more updates that we could get.
+
+	* htdocs/updates.php: db_get_item_updates() now returns two
+	arguments. Get both, and send them off to the client.
+
+	* lib/database.inc: db_get_item_updates(): Find out how many rows
+	would have been returned if it weren't for the LIMIT clause.
+	Return an array of two elements: the number of rows (above) and
+	the LIMITed results.
+
+	* plugins/addtoany.php (added): Remove addtoany.com social links
+	from Catholic League.
+
+	* htdocs/skins/fancy/view.css: Update -moz-linear-gradient for
+	newer CSS. Remove Mozilla-isms that aren't needed with newer CSS.
+
+2012-06-08  Andrew Arensburger  <arensb@moist.ooblick.com>
+
+	* htdocs/skins/fancy/android.css: Restrict images to the width of
+	the screen on Android devices.
+
+2012-06-07  Andrew Arensburger  <arensb@moist.ooblick.com>
+
+	* htdocs/skins/fancy/js/CacheManager.js: Separate "updates.php"
+	and "whatsread.php" handling: keep track of last-update times
+	separately. Store time of last "wahtsread.php" across sessions.
+
+2012-06-06  Andrew Arensburger  <arensb@moist.ooblick.com>
+
+	* htdocs/skins/fancy/view.css: Newer CSS border radius rules.
+
+2012-05-31  Andrew Arensburger  <arensb@moist.ooblick.com>
+
+	* schema.sql: Add mtime index.
+
+	* MANIFEST: Add fix-schema-r979.sql.
+
+	* fix-schema-r979.sql: Add an index on items.mtime.
+
+	* Makefile: Check for extra files in manifest.
+
+	* htdocs/whatsread.php: Give invalid time in response, for easier
+	debugging.
+
+	* htdocs/skins/fancy/js/CacheManager.js: Revert to old way of
+	iterating over localStorage (stupid Firefox 3!). Save
+	last_whatsread across sessions.
+
+2012-05-29  Andrew Arensburger  <arensb@moist.ooblick.com>
+
+	* htdocs/skins/fancy/js/CacheManager.js: Split up last update time
+	into two values: the last time updates.php and whatsread.php were
+	called. Remember last time "whatsread.php" gave us, so we don't
+	keep requesting the same updates over and over. Optimize some
+	variables away.
+
+	* htdocs/skins/fancy/js/CacheManager.js: get_marked(): complain
+	when there's an error.
+
+2012-05-24  Andrew Arensburger  <arensb@moist.ooblick.com>
+
+	* htdocs/skins/fancy/js/CacheManager.js: Initialization loop: use
+	"for (key in localStorage)" instead of using numerical indexes of
+	keys. It seems to violate the spec, but every device I care about
+	supports it. While we're at it, delete read items from
+	localStorage.
+
+	* plugins/ads.php: Strip ads/social links in the Onion.
+
+2012-05-18  Andrew Arensburger  <arensb@moist.ooblick.com>
+
+	* htdocs/skins/fancy/js/CacheManager.js,
+	htdocs/skins/fancy/view.jsh, htdocs/whatsread.php,
+	lib/database.inc, MANIFEST: Function for getting those items that
+	have been marked read (separate from getting list of all changes
+	since a given time).
+
+	* htdocs/skins/fancy/view.php: Remove focus from buttons after
+	they've been clicked, so space bar doesn't trigger them again.
+
+2012-05-11  Andrew Arensburger  <arensb@moist.ooblick.com>
+
+	* htdocs/skins/fancy/view.php: Use <article> instead of <div>.
+	Move "Clear localStorage" button to the button bar.
+
+2012-05-08  Andrew Arensburger  <arensb@moist.ooblick.com>
+
+	* htdocs/skins/fancy/view.jsh: Don't redraw items automatically
+	when sync()ing.
+
+2012-05-06  Andrew Arensburger  <arensb@moist.ooblick.com>
+
+	* htdocs/skins/fancy/js/CacheManager.js: Minor cleanup. Move
+	latest_mtime variable inside the block where it's used.
+
+	* TODO: Spring cleaning.
+
+	* htdocs/skins/fancy/js/PatEvent.js: Stop Firefox from complaining
+	about "useless expression".
+
+	* lib/database.inc: Don't explicitly set mtime: it gets updated to
+	NOW() automatically when a record changes.
+
+	* htdocs/skins/fancy/js/CacheManager.js: Added, commented out code
+	to remove read items in constructor. When updating, call the user
+	callback function even if there were no updates.
+
+	* htdocs/skins/fancy/android.css (bug fix) Hack to fix the problem
+	of YouTube videos making the contents overflow the width of the
+	window.
+
+2012-04-27  Andrew Arensburger  <arensb@moist.ooblick.com>
+
+	* htdocs/skins/fancy/js/CacheManager.js: get_updates(): If we have
+	a last_mtime, use it as is; don't try to get a newer one from the
+	cached articles.
+
+2012-04-25  Andrew Arensburger  <arensb@moist.ooblick.com>
+
+	* htdocs/skins/fancy/view.jsh: Redraw items after syncing.
+
+	* htdocs/updates.php: Initialize $retval to an empty array: if
+	there are no updates, return an empty array, rather than NULL.
+
+2012-04-23  Andrew Arensburger  <arensb@moist.ooblick.com>
+
+	* htdocs/skins/fancy/view.jsh: Call CacheManager.get_updates()
+	with a callback.
+
+	* htdocs/skins/fancy/js/CacheManager.js: get_updates() now takes a
+	callback argument, and calls it when the data is available.
+	(bug fix) Call get_json_data() correctly, with all required
+	arguments.
+
+	* htdocs/skins/fancy/view.jsh (bug fix) Date.toJSON() on Android.
+
+2012-04-22  Andrew Arensburger  <arensb@moist.ooblick.com>
+
+	* htdocs/skins/fancy/js/status-msg.js: Don't do anything until
+	intializer has run.
+
+	* htdocs/skins/fancy/view.jsh: Pretty(ish)-print the date when
+	displaying an item.
+
+2012-04-21  Andrew Arensburger  <arensb@moist.ooblick.com>
+
+	* lib/database.inc: Hopefully speed up the most common items
+	query, perhaps by a factor of 10.
+
+	* lib/common.inc: When a JSON request fails because the user isn't
+	logged in, send a 401 status code, so the client can complain
+	properly.
+
+	* htdocs/skins/fancy/js/CacheManager.js: Added purge_item(), to
+	delete article from cache. Added get_updates(), to get new
+	updates.
+
+	* htdocs/skins/fancy/js/types.js: Added Item._toDate() function,
+	to convert various things to Date. In Item constructor, convert
+	date-time fields to Date object.
+
+	* fix-schema-r929.sql (bug fix) Missing close paren.
+
+	* htdocs/skins/fancy/js/types.js: Item constructor converts
+	time/date strings to Date objects.
+
+	* htdocs/skins/fancy/view.php: Added "Sync" button for testing
+	updates.php.
+
+	* htdocs/skins/fancy/view.jsh: function sync(), for testing.
+	Removed ugly MySQL-to-ISO8601 date hack: no longer needed.
+
+	* lib/database.inc (bug fix) Forgot to include feed_id.
+
+	* TODO, htdocs/items.php, htdocs/skins/fancy/js/types.js,
+	lib/database.inc: db_get_some_feed_items() returns dates as Unix
+	'time_t' rather than MySQL strings.
+
+2012-04-20  Andrew Arensburger  <arensb@moist.ooblick.com>
+
+	* htdocs/updates.php, lib/database.inc, MANIFEST:
+	(added) htdocs/updates.php: Return items that have changed since a
+	given time.
+	Add db_get_item_updates(), to find items that have changed since a
+	given time.
+	Add htdocs/updates.php to MANIFEST.
+
+	* lib/json.inc: Wrapper code to avoid 'make test' errors.
+
+	* lib/xml-output.inc (bug fix) Didn't print integers correctly.
+
+2012-04-19  Andrew Arensburger  <arensb@moist.ooblick.com>
+
+	* Makefile: "make distclean" should do everything "make clean"
+	does, and then some.
+
+	* htdocs/skins/fancy/view.php, htdocs/skins/fancy/view.css,
+	htdocs/view.php: Get rid of the Earlier/Later links on feed page.
+
+	* fix-schema-r929.sql: Better initial value: don't set mtime in
+	the future.
+
+2012-04-18  Andrew Arensburger  <arensb@moist.ooblick.com>
+
+	* fix-schema-r929.sql (added). Added to MANIFEST.
+
+	* htdocs/.htaccess: Add some goodies to default .htaccess
+
+	* lib/database.inc: Update mtime when updating a row in items.
+
+	* htdocs/skins/fancy/editfeed.php, htdocs/skins/fancy/js/types.js,
+	schema.sql, lib/parse-feed.inc, lib/database.inc: Database: Get
+	rid of ttl, since it's not used.
+
+	* htdocs/skins/fancy/js/defer.js: Add sentinel marks. Try to
+	debug.
+
+	* htdocs/skins/fancy/view.php: Add Expires: header, so client can
+	cache this page for a while.
+
+	* htdocs/skins/fancy/view.jsh: Don't <function>.defer(), since I'm
+	not sure it works right. Added (commented out, stub) scroll
+	handler.
+
+2012-04-12  Andrew Arensburger  <arensb@moist.ooblick.com>
+
+	* htdocs/skins/fancy/js/CacheManager.js: Comment changes.
+
+	* htdocs/skins/fancy/view.jsh: In mark_item1(), defer storing
+	marked article, to speed up execution.
+
+2012-04-10  Andrew Arensburger  <arensb@moist.ooblick.com>
+
+	* htdocs/skins/fancy/android.css, htdocs/skins/fancy/view.jsh,
+	htdocs/skins/fancy/view.css, htdocs/skins/fancy/ipad.css: Detect
+	orientation change (for mobile devices). On Android, put the check
+	boxes on the side toward the bottom of the device, when in
+	landscape mode.
+
+	* htdocs/skins/fancy/view.jsh: Remove unused variable main_form.
+
+	* htdocs/skins/fancy/view.php: Include all checkboxes on all
+	devices; will use CSS to hide the ones we don't want. Mark
+	right-hand checkbox as class "button-box-right". Remove redundant,
+	commented-out stylesheet.
+
+	* Makefile: Add "distclean" to recursive targets.
+
+	* htdocs/skins/fancy/js/types.js (bug fix) Set item title to "[no
+	title]" if it's empty but not null.
+
+	* htdocs/skins/fancy/view.css: Use darker colors for "old1d"
+	elements (articles older than 24 hours).
+
+	* htdocs/skins/fancy/view.jsh: Add "old1d" class to articles older
+	than 24 hours, which allows us to use different colors.
+	refresh() now calls init_feeds_items().
+
+	* plugins/wapo-ads.php: Pre-mark sports articles as read (based on
+	their URL).
+
+2012-04-06  Andrew Arensburger  <arensb@moist.ooblick.com>
+
+	* htdocs/skins/fancy/view.jsh: Add move_up(), move_down(), to move
+	around the item list with j/k keys.
+
+2012-03-29  Andrew Arensburger  <arensb@moist.ooblick.com>
+
+	* htdocs/skins/fancy/view.jsh: In mark_item1(), when marking an
+	item as read, get the next one from cache and append it to the
+	list. Move window-scrolling code to the end of the function, so as
+	to take the newly-displayed item into account. Added item2node(),
+	to turn an item object into a displayable DOM node.
+
+	* htdocs/skins/fancy/js/CacheManager.js (bug fix) In getitems(),
+	find the requested item correctly.
+
+2012-03-28  Andrew Arensburger  <arensb@moist.ooblick.com>
+
+	* MANIFEST: Added plugins/wapo-ads.php.
+
+	* lib/parse-feed.inc (bug fix) Parse post author correctly. Trace
+	statements for link-is-Array bug.
+
+	* lib/database.inc: Remove "to do" comment.
+
+	* plugins/wapo-ads.php (added) Plugin to mark "Featured
+	Advertiser" posts at WaPo as read.
+
+2012-03-22  Andrew Arensburger  <arensb@moist.ooblick.com>
+
+	* lib/database.inc: last_update now defaults to pub_date (which in
+	turn defaults to now()). Can now pass in 'is_read' parameter when
+	adding an item, so that plugins can mark items as read as soon as
+	they're parsed.
+
+2012-03-19  Andrew Arensburger  <arensb@moist.ooblick.com>
+
+	* htdocs/skins/fancy/view.jsh: Use defer() to hopefully speed up
+	the display. Fix typos in expanding item template.
+
+2012-03-18  Andrew Arensburger  <arensb@moist.ooblick.com>
+
+	* htdocs/skins/fancy/js/PatEvent.js: Make Firefox complain a
+	little less loudly about dummy code.
+
+2012-03-17  Andrew Arensburger  <arensb@moist.ooblick.com>
+
+	* htdocs/skins/fancy/js/classes.js: Declare functions -> fewer
+	warnings.
+
+	* htdocs/skins/fancy/js/classes.js: Minor cleanup.
+
+	* htdocs/skins/fancy/feeds.php: Add Android mobile CSS.
+
+	* htdocs/skins/fancy/js/classes.js: Use classList on those
+	browsers that support it.
+
+	* htdocs/items.php (minor) Comment section.
+
+2012-03-09  Andrew Arensburger  <arensb@moist.ooblick.com>
+
+	* htdocs/skins/fancy/js/CacheManager.js: Revert last change. Sort
+	by last_update after all.
+
+2012-03-07  Andrew Arensburger  <arensb@moist.ooblick.com>
+
+	* lib/net.inc: Remove subtitle if there isn't one anymore.
+
+	* lib/database.inc: Allow NULL value for simple text fields in
+	'feeds'.
+
+	* htdocs/skins/fancy/view.jsh: Added a test case for empty lists.
+
+	* htdocs/skins/fancy/js/CacheManager.js: Sort posts by pub_date;
+	that seems to work better than last_update.
+
+	* Makefile: 'make syntax-check': don't print anything unless
+	there's an error.
+
+2012-03-06  Andrew Arensburger  <arensb@moist.ooblick.com>
+
+	* htdocs/skins/fancy/view.jsh: Instead of trying to extract the
+	item ID from the "id" attribute, read it directly from the
+	"item_id" field that was put there by CacheManager.getitems().
+
+	* htdocs/skins/fancy/js/CacheManager.js: Remove some debugging
+	messages.
+
+	* htdocs/skins/fancy/view.jsh: Record item ID in the <div>
+	representing the item. refresh() doesn't fetch new items from
+	server; just redraws list from cache.
+
+	* htdocs/skins/fancy/index.css: Don't wrap tools column, for
+	prettiness.
+
+	* htdocs/skins/fancy/feeds.jsh: Deal more gracefully with blank
+	lines.
+
+2012-03-04  Andrew Arensburger  <arensb@moist.ooblick.com>
+
+	* htdocs/skins/fancy/view.css: Adjust z-index of body, .item,
+	.msglist.
+
+2012-02-24  Andrew Arensburger  <arensb@moist.ooblick.com>
+
+	* htdocs/skins/fancy/js/CacheManager.js (bug fix) When storing an
+	item, add it to CacheManager.itemindex[].
+
+	* htdocs/skins/fancy/android.css: Make status messages full-width
+	on Android.
+
+2012-02-17  Andrew Arensburger  <arensb@moist.ooblick.com>
+
+	* plugins/slashdot.php: Update code for social network links below
+	articles.
+
+2012-02-04  Andrew Arensburger  <arensb@moist.ooblick.com>
+
+	* htdocs/view.php: Removed a bunch of stuff that's no longer
+	needed.
+
+2012-02-03  Andrew Arensburger  <arensb@moist.ooblick.com>
+
+	* TODO, lib/net.inc: Revert misfeature: no longer automatically
+	update feed URL when it gets redirected.
+
+2012-01-19  Andrew Arensburger  <arensb@moist.ooblick.com>
+
+	* lib/common.inc (bug fix) When aborting with a non-HTML output
+	type, send an error message in the appropriate output type (JSON
+	or XML).
+
+	* htdocs/skins/fancy/view.php: Possible way to cache page.
+
+	* htdocs/skins/fancy/view.jsh (bug fix): add a dummy
+	HTMLElement.toJSON() method, so that we can JSON.stringify() data
+	structures that include DOM nodes.
+
+2012-01-18  Andrew Arensburger  <arensb@moist.ooblick.com>
+
+	* htdocs/skins/fancy/view.jsh: Continue removing 'allitems'.
+
+2012-01-16  Andrew Arensburger  <arensb@moist.ooblick.com>
+
+	* htdocs/skins/fancy/view.jsh: Start replacing allitems with
+	onscreen.
+
+	* ChangeLog.2011 (added) ChangeLog 2011.
+
+	* htdocs/skins/fancy/feeds.jsh: (bug fix) Set "even-row" and
+	"odd-row" properties correctly when ignoring certain feeds.
+
+2012-01-14  Andrew Arensburger  <arensb@moist.ooblick.com>
+
+	* htdocs/skins/fancy/js/CacheManager.js: Initial loader knows
+	about "onscreen". When calling get_json_data(), display message in
+	case of error.
+
+	* Makefile: Remove apparently-obsolete "to do" comment.
+
+	* htdocs/skins/fancy/view.jsh: Start replacing allitems with
+	onscreen.
+
