@@ -4,9 +4,6 @@
 	init() gets 'feeds' from cache, then calls set_feed_fields().
 	set_feed_fields() tries to get its information from 'feeds',
   but that's a cached version that doesn't have the new feed yet.
-- Bug: sometimes, the same one or two items keep coming up at the
-  bottom of the 'view' page. An off-by-one error in the "get some
-  items" code?
 - Bug: When I changed the feed URL for The Atheist Experience, the
   posts appear out of order: last_update is when it was refreshed, but
   the pub_date is when the post was published:
