@@ -38,6 +38,9 @@ htdocs/skins/fancy/Checkbox-red.svg
 htdocs/skins/fancy/Checkbox.svg
 htdocs/skins/fancy/Loading.gif
 htdocs/skins/fancy/Makefile
+htdocs/skins/fancy/Roboto-Regular.ttf
+htdocs/skins/fancy/Roboto-Thin-webfont.ttf
+htdocs/skins/fancy/Roboto-Thin-webfont.woff
 htdocs/skins/fancy/abort.css
 htdocs/skins/fancy/abort.php
 htdocs/skins/fancy/addfeed.css
