@@ -62,6 +62,23 @@
 - Bug: keybindings.js doesn't handle non-letter bindings well: "?"
   gets turned into Spanish upside-down question mark by toUpperCase().
 	Need a notation to bind Esc.
+- Can include custom fonts in newer CSS.
+	Roboto Thin, used by Google Play store:
+  http://www.fontsquirrel.com/fonts/roboto
+	Define this as a font face:
+	<style type="text/css">
+	@font-face {
+	        font-family:    "Roboto";
+	        font-style:     normal;
+	        font-weight:    100;
+	        src:            local("Roboto Thin"),
+	                        local("Roboto-Thin"),
+	                        url("https://ssl.gstatic.com/fonts/roboto/v9/vzIUHo9z-oJ4WgkpPOtg1_esZW2xOQ-xsNqO47m55DA.woff")
+	                        format("woff");
+	}
+	</style>
+  And then use it:
+	<div style='font-family: "Roboto", Arial; ...'>
 - Is it worth making the back-end RESTful? See:
   http://www.infoq.com/articles/rest-introduction
   This might be more of a headache than it's worth: to do it elegantly
