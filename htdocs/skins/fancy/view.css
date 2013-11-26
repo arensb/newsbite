@@ -2,6 +2,26 @@
  * Feed view
  */
 
+@font-face {
+	font-family:	'Roboto Thin';
+/*	src:		url('Roboto-Thin-webfont.eot');*/
+/*	src:	url('Roboto-Thin-webfont.eot?#iefix') format('embedded-opentype'),
+		url('Roboto-Thin-webfont.woff') format('woff'),
+		url('Roboto-Thin-webfont.ttf') format('truetype'),
+		url('Roboto-Thin-webfont.svg#robotothin') format('svg');*/
+	src:	url('Roboto-Thin-webfont.woff') format('woff'),
+		url('Roboto-Thin-webfont.ttf') format('truetype');
+    font-weight: normal;
+    font-style: normal;
+}
+
+@font-face {
+	font-family:	'Roboto';
+	src:	url('Roboto-Regular.ttf') format('truetype');
+    font-weight: normal;
+    font-style: normal;
+}
+
 body {
 	margin-top:		0px;
 	margin-left:		0px;
@@ -14,6 +34,7 @@ body {
 
 h1 {
 	margin-left:		1em;
+	font-family:	"Roboto Thin", Arial, sans-serif;
 }
 
 h1 a {
@@ -276,7 +297,7 @@ input[type="submit"] {
 
 /* Title of item */
 .item-header .item-title {
-	font-family:		Arial, sans-serif;
+	font-family:		"Roboto", Arial, sans-serif;
 	font-size:		144%;
 	font-weight:		bold;
 	text-decoration:	none;	/* I know it's a link. Don't
@@ -288,7 +309,7 @@ input[type="submit"] {
 }
 
 .item-header .feed-title {
-	font-family:		Arial, sans-serif;
+	font-family:		"Roboto Thin", Arial, sans-serif;
 	font-size:		120%;
 	font-weight:		bold;
 	text-decoration:	none;	/* I know it's a link. Don't
