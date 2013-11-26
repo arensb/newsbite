@@ -1,6 +1,26 @@
 /*
  * Index of feeds
  */
+
+@font-face {
+	font-family:	'Roboto Thin';
+	src:	url('Roboto-Thin-webfont.woff') format('woff'),
+		url('Roboto-Thin-webfont.ttf') format('truetype');
+    font-weight: normal;
+    font-style: normal;
+}
+
+@font-face {
+	font-family:	'Roboto';
+	src:	url('Roboto-Regular.ttf') format('truetype');
+    font-weight: normal;
+    font-style: normal;
+}
+
+h1 {
+	font-family:	"Roboto Thin", Arial, sans-serif;
+}
+
 #feeds {
 	background-color:	white;
 	border-collapse:	collapse;
