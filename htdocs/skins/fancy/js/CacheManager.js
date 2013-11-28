@@ -307,6 +307,7 @@ CacheManager.prototype.update_feeds = function(cb)
 	/* Inner helper functions */
 	function update_feeds_callback(value)
 	{
+msg_add("get_json_data(feeds.php) returned.");
 		// XXX - Ought to update existing feed info, rather
 		// than just replace what's there. [[In particular, if
 		// 'value' doesn't contain the read/unread counts,
@@ -339,6 +340,7 @@ CacheManager.prototype.update_feeds = function(cb)
 	/* update_feeds() main */
 	var self = this;	// Remember 'this' to pass to callback
 				// function.
+msg_add("get_json_data(feeds.php)");
 	get_json_data("feeds.php",
 		      { },
 		      update_feeds_callback,
@@ -525,6 +527,7 @@ CacheManager.prototype.slow_sync = function(feed_id, user_cb, user_err_cb)
 	// get_json_data callback when things go well
 	function slow_sync_cb(value)
 	{
+msg_add("sync.php returned ok");
 		// XXX - Sanity checking for value: make sure it's an
 		// array, of length > 0.
 
@@ -595,6 +598,7 @@ console.log("What should I do with this?:\n%o", entry);
 	}
 
 	/* Send to server */
+msg_add("get_json_data(sync.php)");
 	get_json_data("sync.php",
 		      {id: feed_id,
 		       ihave: JSON.stringify(tosend),

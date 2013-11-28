@@ -854,7 +854,7 @@ msg_add("starting slow_sync 1");
 
 	function item_callback(value)
 	{
-		msg_add("slow_sync 1 done");
+msg_add("slow_sync 1 done");
 
 		// We're running for the first time, so get the top
 		// (latest) articles from the cache.
@@ -866,6 +866,7 @@ msg_add("starting slow_sync 1");
 	}
 
 	/* init_feeds_items() main */
+msg_add("calling update_feeds");
 	cache.update_feeds(feed_callback);
 }
 
