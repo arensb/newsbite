@@ -297,7 +297,8 @@ input[type="submit"] {
 
 /* Title of item */
 .item-header .item-title {
-	font-family:		"Roboto", Arial, sans-serif;
+/*	font-family:		"Roboto", Arial, sans-serif;*/
+	font-family:		Arial, sans-serif;
 	font-size:		144%;
 	font-weight:		bold;
 	text-decoration:	none;	/* I know it's a link. Don't
@@ -309,7 +310,8 @@ input[type="submit"] {
 }
 
 .item-header .feed-title {
-	font-family:		"Roboto Thin", Arial, sans-serif;
+/*	font-family:		"Roboto Thin", Arial, sans-serif;*/
+	font-family:		Arial, sans-serif;
 	font-size:		120%;
 	font-weight:		bold;
 	text-decoration:	none;	/* I know it's a link. Don't
