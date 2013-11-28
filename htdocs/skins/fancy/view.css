@@ -4,22 +4,17 @@
 
 @font-face {
 	font-family:	'Roboto Thin';
-/*	src:		url('Roboto-Thin-webfont.eot');*/
-/*	src:	url('Roboto-Thin-webfont.eot?#iefix') format('embedded-opentype'),
-		url('Roboto-Thin-webfont.woff') format('woff'),
-		url('Roboto-Thin-webfont.ttf') format('truetype'),
-		url('Roboto-Thin-webfont.svg#robotothin') format('svg');*/
-	src:	url('Roboto-Thin-webfont.woff') format('woff'),
-		url('Roboto-Thin-webfont.ttf') format('truetype');
-    font-weight: normal;
-    font-style: normal;
+	src:		url('Roboto-Thin-webfont.woff') format('woff'),
+			url('Roboto-Thin-webfont.ttf') format('truetype');
+	font-weight:	normal;
+    font-style:		normal;
 }
 
 @font-face {
 	font-family:	'Roboto';
-	src:	url('Roboto-Regular.ttf') format('truetype');
-    font-weight: normal;
-    font-style: normal;
+	src:		url('Roboto-Regular.ttf') format('truetype');
+	font-weight:	normal;
+	font-style:	normal;
 }
 
 body {
@@ -297,7 +292,6 @@ input[type="submit"] {
 
 /* Title of item */
 .item-header .item-title {
-/*	font-family:		"Roboto", Arial, sans-serif;*/
 	font-family:		Arial, sans-serif;
 	font-size:		144%;
 	font-weight:		bold;
@@ -310,7 +304,6 @@ input[type="submit"] {
 }
 
 .item-header .feed-title {
-/*	font-family:		"Roboto Thin", Arial, sans-serif;*/
 	font-family:		Arial, sans-serif;
 	font-size:		120%;
 	font-weight:		bold;
