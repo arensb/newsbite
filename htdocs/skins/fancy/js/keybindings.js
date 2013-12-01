@@ -3,7 +3,6 @@
  */
 #ifndef _keybindings_js_
 #define _keybindings_js_
-#define NEW_KEYTAB	1	/* Try the new one-dimensional keytab */
 
 /* keytab
  * This is the main table for mapping keystrokes to functions.
@@ -12,27 +11,7 @@
  * Meta, and Alt. The fifth dimension is the keycode found in key
  * events.
  */
-#if NEW_KEYTAB
 var keytab = {};
-#else	// NEW_KEYTAB
-var keytab = [];
-for (var ctrl = 0; ctrl <= 1; ctrl++)
-{
-	keytab[ctrl] = [];
-	for (var shift = 0; shift <= 1; shift++)
-	{
-		keytab[ctrl][shift] = [];
-		for (var meta = 0; meta <= 1; meta++)
-		{
-			keytab[ctrl][shift][meta] = [];
-			for (var alt = 0; alt <= 1; alt++)
-			{
-				keytab[ctrl][shift][meta][alt] = [];
-			}
-		}
-	}
-}
-#endif	// NEW_KEYTAB
 
 /* bind_key
  * Similar to define-key in Emacs. 'key' is a human-readable string
@@ -70,7 +49,6 @@ function bind_key(key, func)
 		shift = true;
 
 	/* Bind the key to the function */
-#if NEW_KEYTAB
 	var keystr =
 		String.fromCharCode((ctrl  + 0 << 3) |
 				    (shift + 0 << 2) |
@@ -80,9 +58,6 @@ function bind_key(key, func)
 		ltr.toUpperCase();
 //console.log("set keystr: ["+keystr+"]");
 	keytab[keystr] = func;
-#else	// NEW_KEYTAB
-	keytab[ctrl+0][shift+0][meta+0][alt+0][ltr.toUpperCase().charCodeAt()] = func;
-#endif	// NEW_KEYTAB
 }
 
 /* Handle keys */
@@ -139,7 +114,6 @@ function handle_key(evt)
 	 * in FireFox, Chrome, and Safari.
 	 */
 
-#if NEW_KEYTAB
 	var keynum = (evt.which < 32 ? evt.which + 96 : evt.which);
 		// evt.which is supposed to give either the key or
 		// character number. In Firefox, "Ctrl-R" sets
@@ -156,9 +130,6 @@ function handle_key(evt)
 		String.fromCharCode(keynum).toUpperCase();
 //console.log("get keystr: ["+keystr+"]");
 	var func = keytab[keystr];
-#else	// NEW_KEYTAB
-	var func = keytab[evt.ctrlKey+0][evt.shiftKey+0][evt.metaKey+0][evt.altKey+0][evt.keyCode];
-#endif	// NEW_KEYTAB
 
 	if (func != undefined)
 	{
