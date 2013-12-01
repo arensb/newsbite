@@ -320,14 +320,6 @@
   _enter and _exit evenst (which we do) to see which item is the
   current one, and have a window-level handler "keydown" handler to
   invoke the proper function on the current item.
-- Key bindings: fix bind_event() to take an "additional data" object.
-  This should be a an object: {key1: value1, key2: value2, ...}. When
-  an event handler is bound to a DOM node, also add key1, key2, ... to
-  the node.
-	Define a Keytab object, which (like in Emacs), binds keys to
-  functions. So binding a key to a function becomes a two-step
-  process: bind a key to a function in a Keytab, and bind a Keytab to
-  a DOM node.
 - Script to provide an RSS/Atom feed of the stuff in the database, for
   Calibre.
 	Presumably should return the last 24 hours' worth of articles.
