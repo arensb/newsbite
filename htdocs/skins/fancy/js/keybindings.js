@@ -140,13 +140,20 @@ function handle_key(evt)
 	 */
 
 #if NEW_KEYTAB
+	var keynum = (evt.which < 32 ? evt.which + 96 : evt.which);
+		// evt.which is supposed to give either the key or
+		// character number. In Firefox, "Ctrl-R" sets
+		// evt.ctrlKey to true, and evt.which to the key code
+		// for "r". In Chrome, though, "Ctrl-R" sets
+		// evt.ctrlKey to true and sets evt.which to 18, the
+		// code for "Ctrl-R". So here we hack around that.
 	var keystr =
 		String.fromCharCode((evt.ctrlKey  + 0 << 3) |
 				    (evt.shiftKey + 0 << 2) |
 				    (evt.metaKey  + 0 << 1) |
 				    (evt.altKey   + 0)) +
 		"-" +
-		String.fromCharCode(evt.which).toUpperCase();
+		String.fromCharCode(keynum).toUpperCase();
 //console.log("get keystr: ["+keystr+"]");
 	var func = keytab[keystr];
 #else	// NEW_KEYTAB
