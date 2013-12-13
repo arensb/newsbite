@@ -64,6 +64,11 @@
 	Need a notation to bind Esc.
 - Look for better fonts?
   http://www.fontsquirrel.com/
+- CSS text-overflow property:
+  http://www.w3schools.com/cssref/css3_pr_text-overflow.asp
+	text-overflow: "clip" | "ellipsis" | <string>;
+  When text doesn't fit into the alloted box, can use an ellipsis for
+  the text that doesn't fit.
 - Is it worth making the back-end RESTful? See:
   http://www.infoq.com/articles/rest-introduction
   This might be more of a headache than it's worth: to do it elegantly
