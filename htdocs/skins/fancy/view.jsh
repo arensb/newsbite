@@ -1041,6 +1041,8 @@ function set_feed_fields()
 	}
 
 	// Set the page title.
+	if (feed.title == null)
+		feed.title = "[no title]";
 	try {
 		var title_field = document.getElementsByTagName("title")[0];
 		title_field.innerHTML = "Newsbite: "+feed.title;
