@@ -21,8 +21,7 @@ IMAGE_FILES =	$(wildcard *.gif *.png *.jpg *.svg)
 # http://commons.wikimedia.org/wiki/File:Checkbox.svg
 # http://commons.wikimedia.org/wiki/File:Checkbox-red.svg
 OTHER_FILES =	htaccess.sample \
-		Roboto-Regular.ttf \
-		Roboto-Thin-webfont.ttf \
+		Roboto-Regular-webfont.woff \
 		Roboto-Thin-webfont.woff
 
 include ../../../Makefile.common
