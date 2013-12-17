@@ -1058,7 +1058,20 @@ function set_feed_fields()
 	// that have the feed ID as an argument.
 	var page_top = document.getElementById("page-top");
 	page_top.innerHTML = page_top_tmpl.expand(feed);
-	// XXX - If no url, <h1><a>title</a></h1> should be <h1>title</h1>
+
+	/* If the feed has no url, <h1><a>title</a></h1> should be
+	 * <h1>title</h1>
+	 */
+	if (feed.url == null)
+	{
+		var feed_links = page_top.getElementsByClassName("feed-link");
+
+		for (var i = 0; i < feed_links.length; i++)
+		{
+			var link = feed_links[i];
+			link.parentNode.innerHTML = link.innerHTML;
+		}
+	}
 
 	/* If there's no feed icon, remove the <img> element */
 	// XXX - Presumably this could be done more easily with JQuery
