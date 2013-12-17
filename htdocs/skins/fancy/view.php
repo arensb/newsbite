@@ -35,7 +35,7 @@ var skin_dir = "skins/<?=$skin_dir?>";	// Needed because we need to be able
 var page_top_tmpl_text = '<img class="feed-icon" src="@image@"/>\
 \
 <!-- Shouldn\'t be a link if there\'s no URL -->\
-<h1><a href="@url@">@title@</a></h1>\
+<h1><a class="feed-link" href="@url@">@title@</a></h1>\
 <div class="feed-subtitle">@subtitle@</div>\
 \
 <div class="feed-description">@description@</div>\
