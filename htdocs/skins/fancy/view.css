@@ -169,6 +169,10 @@ input[type="submit"] {
 }
 */
 
+.button-box button {
+	font-family:		"Roboto Thin", Arial, sans-serif;
+}
+
 #itemlist {
 }
 
