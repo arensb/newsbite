@@ -21,11 +21,42 @@
 
 	* htdocs/skins/fancy/index.css: Minor cleanup.
 
+2013-12-01  Andrew Arensburger  <arensb@moist.ooblick.com>
+
+	* htdocs/skins/fancy/js/keybindings.js: Remove the cpp
+	conditionals and just go to the NEW_KEYTAB code.
+
+	* htdocs/skins/fancy/js/keybindings.js (bug fix) Hack to make
+	Ctrl- bindings work in Chrome.
+
+2013-11-28  Andrew Arensburger  <arensb@moist.ooblick.com>
+
+	* htdocs/skins/fancy/view.css: Clean up a bit.
+
+2013-11-27  Andrew Arensburger  <arensb@moist.ooblick.com>
+
+	* TODO: Update "to do" items.
+
 2013-11-26  Andrew Arensburger  <arensb@downspout.ooblick.com>
 
 	* htdocs/skins/fancy/index.css: Tweak fonts in index view.
 
 	* .gitignore: Things to ignore on downspout.
+
+2013-11-25  Andrew Arensburger  <arensb@moist.ooblick.com>
+
+	* TODO: Added a to-do note about custom fonts.
+
+2013-10-28  Andrew Arensburger  <arensb@moist.ooblick.com>
+
+	* TODO: Haven't seen this bug lately. <shrug>.
+
+2013-10-25  Andrew Arensburger  <arensb@moist.ooblick.com>
+
+	* .gitignore: Add pattern; remove new submodule.
+
+2013-10-22  Andrew Arensburger  <arensb@moist.ooblick.com>
+	* TODO: Notes on RESTfulness.
 
 2013-08-13  Andrew Arensburger  <arensb@moist.ooblick.com>
 
