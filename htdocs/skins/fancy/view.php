@@ -103,7 +103,7 @@ var item_tmpl_text = '<article class="item" id="item-@id@">\
       <td class="bottom-link-box">\
         <ul class="bottom-links">\
           <li><a href="@url@">Read more</a></li>\
-          <li><a href="@comment_url@">Comments</a></li>\
+          <li><a class="comment-link" href="@comment_url@">Comments</a></li>\
           <li><a href="@comment_rss@">(feed)</a></li>\
         </ul>\
       </td>\
