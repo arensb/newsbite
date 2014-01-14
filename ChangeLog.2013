@@ -1,0 +1,181 @@
+2013-12-18  Andrew Arensburger  <arensb@downspout.ooblick.com>
+
+	* htdocs/skins/fancy/view.css: Buttons should have Roboto, not
+	Roboto Thin font. Missing semicolon.
+
+2013-12-17  Andrew Arensburger  <arensb@downspout.ooblick.com>
+
+	* htdocs/skins/fancy/view.php: Add class to link, so we can find
+	it later and remove it.
+
+	* htdocs/skins/fancy/view.jsh: If the feed has no URL, then don't
+	present a link.
+
+	* htdocs/skins/fancy/view.jsh: Handle pathological case where a
+	feed has no title.
+
+	* htdocs/skins/fancy/view.jsh: If there's no feed icon, remove the
+	<img> DOM node: it's ugly in some browsers (Safari).
+
+2013-12-13  Andrew Arensburger  <arensb@downspout.ooblick.com>
+
+	* htdocs/skins/fancy/index.css: Minor cleanup.
+
+2013-11-26  Andrew Arensburger  <arensb@downspout.ooblick.com>
+
+	* htdocs/skins/fancy/index.css: Tweak fonts in index view.
+
+	* .gitignore: Things to ignore on downspout.
+
+2013-08-13  Andrew Arensburger  <arensb@moist.ooblick.com>
+
+	* htdocs/skins/fancy/js/keybindings.js: Use "event.which" rather
+	than "event.keyCode" to figure out which key was pressed, since
+	keycodes are inconsistent across browsers and hard to work with.
+
+	* htdocs/skins/fancy/view.jsh, htdocs/skins/fancy/feeds.jsh:
+	Listen for "keypress" rather than "keydown".
+
+	* htdocs/skins/fancy/feeds.jsh: Don't explicitly specify "o: json"
+	when requesting JSON data: it's implied.
+
+	* MANIFEST: Add checkbox images.
+
+	* lib/parse-feed.inc: Apparently can't use call-by-reference for
+	built-in functions anymore in PHP 5.3.
+
+	* lib/net.inc: Take care of curl_multi being really picky in how
+	it's used.
+
+	* lib/database.inc: Abort better if we can't get a database
+	connection.
+
+	* htdocs/skins/fancy/view.jsh: Don't explicitly specify "o: json"
+	when requesting JSON data. enter_item() now handles unmarking the
+	previous current item, making exit_item() obsolete.
+
+	* htdocs/skins/fancy/Makefile: SVGs are pictures too!
+
+	* htdocs/skins/fancy/js/xhr.js: get_json_data() now automatically
+	sets "o=json" because hey, what other kind of output are we going
+	to request?
+
+	* htdocs/skins/fancy/js/guess-mobile.js: iPad-specific viewport.
+
+	* htdocs/skins/fancy/js/CacheManager.js: Don't specify "o: json"
+	when requesting JSON data: it's implied.
+
+	* htdocs/skins/fancy/ipad.css: Just use the default font size on
+	iPad.
+
+	* htdocs/skins/fancy/android.css: Moving toward having custom
+	checkbox images, rather than the browser-default ones, to make
+	them more clickable on small screens.
+
+	* htdocs/skins/fancy/Checkbox.svg,
+	htdocs/skins/fancy/Checkbox-red.svg (added) Images for checkboxes,
+	for later.
+
+	* htdocs/newsbite.manifest.php: Added (commented out) checkbox
+	images, for later.
+
+2013-08-06  Andrew Arensburger  <arensb@moist.ooblick.com>
+
+	* htdocs/skins/fancy/view.css: Added style for future floating
+	navbar. Integrated changes from downspout: trying to make
+	checkboxes more clickable on small screens.
+
+	* htdocs/skins/fancy/view.php: Added future floating navbar;
+	window orientation.
+
+2013-05-27  Andrew Arensburger  <arensb@moist.ooblick.com>
+
+	* lib/net.inc: Handle gzip-compressed RSS feeds (Jalopnik and
+	other Gawker feeds).
+
+2013-04-24  Andrew Arensburger  <arensb@moist.ooblick.com>
+
+	* htdocs/skins/fancy/js/CacheManager.js (minor) Removed some
+	unwanted trace statements.
+
+	* htdocs/skins/fancy/view.jsh: Instead of unmarking current item
+	when mouse exits it, unmark it only when it enters a new item.
+	This gives us sloppy focus-follows-mouse.
+
+2013-04-22  Andrew Arensburger  <arensb@moist.ooblick.com>
+
+	* htdocs/skins/fancy/feeds.jsh, htdocs/skins/fancy/view.jsh: Add
+	"." binding to refresh, to match Twitter.
+
+2013-04-20  Andrew Arensburger  <arensb@moist.ooblick.com>
+
+	* htdocs/skins/fancy/view.jsh: Experimental: try to detect when
+	we're on/off-line
+
+	* htdocs/skins/fancy/view.css: Fancier CSS for currently-selected
+	item.
+
+	* htdocs/skins/fancy/js/xhr.js: More verbosity on error.
+
+2013-03-16  Andrew Arensburger  <arensb@moist.ooblick.com>
+
+	* lib/database.inc (bug fix) Fix SQL query to correctly find most
+	recent unread articles.
+
+	* lib/database.inc, lib/parse-feed.inc: Remove unused functions.
+
+	* htdocs/feeds.php: "to do" comment.
+
+	* lib/database.inc: Optimize the SQL query in
+	db_get_some_feed_items() (or, alternately, make it less retarded):
+	Only sort the last_update times from the feed we're interested in,
+	and only keep the last 25 elements from that list.
+
+	* htdocs/skins/fancy/view.php: Don't make app run in standalone
+	mode on iOS.
+
+	* htdocs/newsbite.manifest.php: Add iOS icon and splash images.
+
+2013-03-08  Andrew Arensburger  <arensb@moist.ooblick.com>
+
+	* htdocs/skins/fancy/view.php: Add icon and splash images.
+
+	* MANIFEST: Added icon and splash images.
+
+	* htdocs/newsbite.manifest.php: Add explicit "fetch from net" line
+	to manifest.
+
+	* htdocs/login.php: Work even if no "from" specified.
+
+	* htdocs/newsbite.manifest.php: Added some missing entries (mobile
+	device CSS).
+
+	* MANIFEST: Add manifest file.
+
+	* htdocs/Makefile: More cleaning. Slight rearrangement.
+
+	* htdocs/skins/fancy/view.php, htdocs/skins/fancy/feeds.php: Use
+	manifest, for offline reading.
+
+	* htdocs/newsbite.manifest.php: Generate manifest, for web
+	applications.
+
+	* htdocs/skins/fancy/Makefile: Need to specify CPP, to override
+	built-in one.
+
+	* htdocs/Makefile: Generate manifest when installing.
+
+2013-01-05  Andrew Arensburger  <arensb@moist.ooblick.com>
+
+	* Makefile.common, htdocs/skins/fancy/Makefile: Moved CPP and
+	MAKEDEPEND commands to Makefile.common
+
+2013-01-02  Andrew Arensburger  <arensb@moist.ooblick.com>
+
+	* htdocs/skins/fancy/js/CacheManager.js: Make log message
+	Safari-friendly again.
+
+2013-03-04  Andrew Arensburger  <arensb@moist.ooblick.com>
+
+	* Makefile, Makefile.common: Move a few commands from Makefile to
+	Makefile.common
