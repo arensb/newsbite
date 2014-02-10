@@ -270,24 +270,12 @@ console.log("I don't have this feed: ["+feed_id+"]");
  */
 function toggle_pane(ev)
 {
-	var node = ev.currentTarget;
-			// Not the element that was clicked on, but
-			// the one that captured the event.
-	var my_pane;		// Pane containing the calling element
-	var sib_class;	 	// Class of sibling we're looking for
-
-	var container = node.parentNode;
-
-	/* Go up until we find the <div content-panes> that contains
-	 * both the <div item-summary> and the <div item-content>.
-	 */
-	while (container && (!is_in_class(container, "content-panes")))
-		container = container.parentNode;
-	if (container == null)
+	var container = $(ev.currentTarget).parent(".content-panes");
+	if (container.length == 0)
 		/* Something's wrong. Abort */
 		return;
 
-	set_pane(container);
+	set_pane(container[0]);
 
 	ev.preventDefault();	// Stop processing the event
 }
