@@ -62,7 +62,6 @@ htdocs/skins/fancy/js/CacheManager.js
 htdocs/skins/fancy/js/Makefile
 htdocs/skins/fancy/js/PatEvent.js
 htdocs/skins/fancy/js/Template.js
-htdocs/skins/fancy/js/classes.js
 htdocs/skins/fancy/js/defer.js
 htdocs/skins/fancy/js/guess-mobile.js
 htdocs/skins/fancy/js/keybindings.js
