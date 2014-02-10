@@ -24,6 +24,8 @@ htdocs/feeds.php
 htdocs/htaccess.sample
 htdocs/htaccess.sample.in
 htdocs/index.php
+htdocs/js/Manifest
+htdocs/js/jquery-2.1.0.min.js
 htdocs/js/profiler.js
 htdocs/loadopml.php
 htdocs/login.php
