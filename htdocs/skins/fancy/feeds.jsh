@@ -44,6 +44,10 @@ function init()
 	init_feed_list();
 }
 
+$(document).ready(function() {
+	console.log("Inside dollar.");
+});
+
 /* update_feed
  * Update a feed, or all feeds.
  * This is intended to be called from inside an onclick="...", so
@@ -318,26 +322,26 @@ try {
 		line.feed_id = feed.id;
 		line.setAttribute("id", "feed-"+feed.id);
 		if (row & 1)
-			add_class(line, "odd-row");
+			$(line).addClass("odd-row");
 		else
-			add_class(line, "even-row");
+			$(line).addClass("even-row");
 
 		if (feed.active != 1)
-			add_class(line, "inactive-feed");
+			$(line).addClass("inactive-feed");
 
 		if (feed.stale == 1)
-			add_class(line, "stale-feed");
+			$(line).addClass("stale-feed");
 
 		/* Status indicator */
 		cell = document.createElement("td");
-		add_class(cell, "icon-col");
+		$(cell).addClass("icon-col");
 		cell.innerHTML = "&nbsp;";
 		line.appendChild(cell);
 		line.status_cell = cell;
 
 		/* Number of unread articles */
 		cell = document.createElement("td");
-		add_class(cell, "count-col");
+		$(cell).addClass("count-col");
 		if (feed.num_unread == null)
 		{
 			// I think 'num_unread' doesn't get cached. So
@@ -352,7 +356,7 @@ console.log("wha? "+feed.num_unread);
 
 		/* Title */
 		var cell = document.createElement("td");
-		add_class(cell, "title-col");
+		$(cell).addClass("title-col");
 		feed.display_title = feed.displaytitle();
 		// XXX - This is arguably bogus: we're using the Feed
 		// object both in its capacity as an object, and also
@@ -365,7 +369,7 @@ console.log("wha? "+feed.num_unread);
 
 		/* Feed tools */
 		cell = document.createElement("td");
-		add_class(cell, "feed-tools");
+		$(cell).addClass("feed-tools");
 		cell.innerHTML = feed_tools_tmpl.expand(feed);
 		line.appendChild(cell);
 		line.tools_cell = cell;
