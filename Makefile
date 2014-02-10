@@ -25,6 +25,7 @@ include Makefile.common
 
 RECURSIVE_DIRS =	\
 	htdocs \
+	htdocs/js \
 	htdocs/skins/fancy \
 	htdocs/skins/fancy/js \
 	lib \
