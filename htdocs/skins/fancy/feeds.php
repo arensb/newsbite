@@ -17,6 +17,7 @@ $skin_dir = $skin_vars['skin'];
   var feed_title_tmpl_text = '<a href="view.php#id=@id@">@display_title@</a>&nbsp;<span class="feed-details">(<a href="@url@">site</a>, <a href="@feed_url@">RSS</a>)</span>';
   var feed_tools_tmpl_text = '<a href="update.php?id=@id@" onclick="return update_feed(@id@)">update</a>&nbsp;<a href="editfeed.php?id=@id@">edit</a>&nbsp;<a href="unsubscribe.php?id=@id@">unsub</a> <img src="skins/fancy/Attraction_transfer_icon.gif"/>';
 </script>
+<script type="text/javascript" src="js/jquery.js"></script>
 <script type="text/javascript" src="skins/<?=$skin_dir?>/feeds.js"></script>
 </head>
 <body>
