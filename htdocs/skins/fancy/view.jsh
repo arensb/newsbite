@@ -293,18 +293,22 @@ function set_pane(container, state)
 	if (state == undefined)
 	{
 		/* No new state given. Toggle the pane's state */
-		cont_state = container.getAttribute("which");
+		cont_state = $(container).attr("which");
 		new_state = (cont_state == "summary" ? "content" : "summary");
 	} else
 		new_state = state;
 
 	if (new_state == "summary")
 	{
-		replace_class(container, "show-content", "show-summary");
+		$(container)
+			.removeClass("show-content")
+			.addClass("show-summary");
 	} else {
-		replace_class(container, "show-summary", "show-content");
+		$(container)
+			.removeClass("show-summary")
+			.addClass("show-content");
 	}
-	container.setAttribute("which", new_state);
+	$(container).attr("which", new_state);
 
 	/* Find the "item" container: if we collapse from the bottom
 	 * bar, we might wind up looking at the middle of a completely
@@ -313,11 +317,11 @@ function set_pane(container, state)
 	 * we collapse, scroll so that the top of the item is at the
 	 * top of the browser window.
 	 */
-	var item_div = container.parentNode;
-	while (item_div && !is_in_class(item_div, "item"))
-		item_div = item_div.parentNode;
-	if (item_div == null)
+	var item_div = $(container).parent("item");
+	if (item_div.length == 0)
+		// No matching parent found. WTF? Abort.
 		return;
+	item_div = item_div[0];
 	if (item_div.offsetTop < window.pageYOffset)
 		window.scrollTo(0, item_div.offsetTop);
 
