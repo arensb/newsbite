@@ -179,12 +179,12 @@ function clear_status()
 
 function toggle_details()
 {
-	toggle_class(feed_table, "show-details", "hide-details");
+	$(feed_table).toggleClass("show-details hide-details");
 }
 
 function toggle_tools()
 {
-	toggle_class(feed_table, "show-tools", "hide-tools");
+	$(feed_table).toggleClass("show-tools hide-tools");
 }
 
 /* toggle_show_empty
