@@ -780,14 +780,17 @@ function move_down()
 function enter_item(ev)
 {
 	// Unmark the previous current item, if there is one.
-	if (current_item != null &&
-	    is_in_class(current_item, "item"))
-		remove_class(current_item, "current-item");
+	// XXX - There's probably a more JQuery-ish way of doing this.
+	// The obvious one is
+	//	$(current_item).filter(".current-item).removeClass("current-item")
+	// but I can't get .filter() to accept a class as a selector.
+	if ($(current_item).is(".item"))
+		$(current_item).removeClass("current-item");
 
 	var elt = ev.currentTarget;
-	if (!is_in_class(elt, "item"))
+	if (!$(elt).is(".item"))
 		return false;
-	add_class(elt, "current-item");
+	$(elt).addClass("current-item");
 	current_item = elt;
 	return true;
 }
