@@ -2,7 +2,6 @@
 #include "js/guess-mobile.js"
 /*#include "js/defer.js"*/
 #include "js/xhr.js"
-#include "js/classes.js"
 #include "js/keybindings.js"
 #include "js/PatEvent.js"
 #include "js/types.js"
