@@ -27,6 +27,7 @@ $skin_dir = $skin_vars['skin'];
 <h1>Feeds</h1>
 
 <ul class="tools">
+  <li><a href="login.php">Log in</a></li>
   <li><a href="update.php?id=all" onclick="return update_feed('all')">Update all feeds</a></li>
   <li><a href="view.php#id=all">View all feeds</a></li>
   <li class="submenu">
