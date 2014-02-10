@@ -117,6 +117,7 @@ var item_tmpl_text = '<article class="item" id="item-@id@">\
 </script>
 <title>NewsBite</title>
 <link rel="stylesheet" type="text/css" href="skins/<?=$skin_dir?>/view.css" media="all" />
+<script type="text/javascript" src="js/jquery.js"></script>
 <script type="text/javascript" src="skins/<?=$skin_dir?>/view.js"></script>
 </head>
 <body id="view-body" orientation="up">
