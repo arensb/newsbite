@@ -610,16 +610,6 @@ function button_mark_item(ev)
 	/* Do the common stuff */
 	mark_item1(ev);
 
-	/* Find the enclosing <div class="item"> by going up the parent
-	 * chain.
-	 */
-	var item_div = elt.parentNode;
-	while (item_div && !is_in_class(item_div, "item"))
-		item_div = item_div.parentNode;
-	if (item_div == null)
-		/* Something's wrong. Abort */
-		return;
-
 	/* Remove keyboard focus from the item. That way, can
 	 * immediately hit space to scroll down, and it won't mark the
 	 * item as read/unread again.
