@@ -478,10 +478,10 @@ function mark_item1(ev)
 	if (item_div.is_read)
 	{
 		item_div.is_read = false;
-		remove_class(item_div, "item-read");
+		$(item_div).removeClass("item-read");
 	} else {
 		item_div.is_read = true;
-		add_class(item_div, "item-read");
+		$(item_div).addClass("item-read");
 	}
 
 	var item_id = item_div.item_id;
@@ -635,17 +635,9 @@ function key_mark_item()
  */
 function toggle_collapse_item()
 {
-	if (current_item == null)
-		return;
-
-	var panes = current_item.getElementsByClassName("content-panes");
-	for (var i = 0, l = panes.length; i < l; i++)
-	{
-		var p = panes[i];
-		if (p.getAttribute("collapsible") != "yes")
-			continue;
-		toggle_class(p, "show-summary", "show-content");
-	}
+	$(current_item)
+		.children(".content-panes[collapsible='yes']")
+		.toggleClass("show-summary show-content");
 }
 
 /* collapse_all
@@ -694,9 +686,9 @@ function move_up()
 		// perhaps ought to find the bottommost one in the
 		// visible window.
 		current_item = onscreen.items[onscreen.items.length-1].node;
-		add_class(current_item, "current-item");
+		$(current_item).addClass("current-item");
 	} else {
-		remove_class(current_item, "current-item");
+		$(current_item).removeClass("current-item");
 
 		/* Find the current item in onscreen.items, so we can
 		 * get the next one.
@@ -720,7 +712,7 @@ function move_up()
 		}
 	}
 
-	add_class(current_item, "current-item");
+	$(current_item).addClass("current-item");
 
 	// Scroll so that the new current item is at the top
 	window.scrollTo(0, current_item.offsetTop);
@@ -741,9 +733,9 @@ function move_down()
 		// perhaps ought to find the topmost one in the
 		// visible window.
 		current_item = onscreen.items[0].node;
-		add_class(current_item, "current-item");
+		$(current_item).addClass("current-item");
 	} else {
-		remove_class(current_item, "current-item");
+		$(current_item).removeClass("current-item");
 
 		/* Find the current item in onscreen.items, so we can
 		 * get the next one.
@@ -767,7 +759,7 @@ function move_down()
 		}
 	}
 
-	add_class(current_item, "current-item");
+	$(current_item).addClass("current-item");
 
 	// Scroll so that the new current item is at the top
 	window.scrollTo(0, current_item.offsetTop);
@@ -921,7 +913,7 @@ function item2node(item)
 	var yesterday = new Date();
 	yesterday.setDate(yesterday.getDate()-1);
 	if (item.pub_date < yesterday)
-		add_class(item_node, "old1d");
+		$(item_node).addClass("old1d");
 
 	return item_node;
 }
