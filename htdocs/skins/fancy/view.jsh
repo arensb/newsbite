@@ -1074,19 +1074,8 @@ function set_feed_fields()
 	}
 
 	/* If there's no feed icon, remove the <img> element */
-	// XXX - Presumably this could be done more easily with JQuery
-	// by removing
 	if (feed.image == null)
-	{
-		var images = page_top.getElementsByClassName("feed-icon");
-		for (var i = 0; i < images.length; i++)
-		{
-			// There should only be one, but let's iterate
-			// anyway, because who knows?
-			var img_node = images[i];
-			img_node.parentNode.removeChild(img_node);
-		}
-	}
+		$(".feed-icon").remove();
 }
 
 function reorient(ev)
