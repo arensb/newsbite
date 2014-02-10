@@ -270,7 +270,7 @@ console.log("I don't have this feed: ["+feed_id+"]");
  */
 function toggle_pane(ev)
 {
-	var container = $(ev.currentTarget).parent(".content-panes");
+	var container = $(ev.currentTarget).closest(".content-panes");
 	if (container.length == 0)
 		/* Something's wrong. Abort */
 		return;
@@ -317,7 +317,7 @@ function set_pane(container, state)
 	 * we collapse, scroll so that the top of the item is at the
 	 * top of the browser window.
 	 */
-	var item_div = $(container).parent("item");
+	var item_div = $(container).closest("item");
 	if (item_div.length == 0)
 		// No matching parent found. WTF? Abort.
 		return;
@@ -462,17 +462,14 @@ function parse_flush_error(status, msg, mark_request)
  */
 function mark_item1(ev)
 {
-	var elt = ev.target;
-
 	/* Find the enclosing <div class="item"> by going up the parent
 	 * chain.
 	 */
-	var item_div = elt;
-	while (item_div && !is_in_class(item_div, "item"))
-		item_div = item_div.parentNode;
-	if (item_div == null)
+	var item_div = $(ev.target).closest(".item");
+	if (item_div.length == 0)
 		/* Something's wrong. Abort */
 		return;
+	item_div = item_div[0];
 
 	var is_read = item_div.is_read;
 		// If item_div.is_read isn't set, it defaults to false
