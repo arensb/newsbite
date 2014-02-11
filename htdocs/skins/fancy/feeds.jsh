@@ -45,6 +45,11 @@ function init()
 
 $(document).ready(function() {
 	console.log("Inside dollar.");
+	/* Bind an event listener (click) to the menu headings */
+	$(".tools .submenu").on("click", function(ev) {
+		console.log("Clicked on target:");
+		$(ev.target).closest(".submenu").toggleClass("open");
+	});
 });
 
 /* update_feed
