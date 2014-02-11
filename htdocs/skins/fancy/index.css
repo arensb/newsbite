@@ -136,7 +136,7 @@ h1 {
 	-webkit-box-shadow:	5px 5px 5px grey;
 }
 
-.submenu:hover .tools-menu {
+.submenu.open .tools-menu {
 	display:		block;
 }
 
