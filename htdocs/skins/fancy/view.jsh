@@ -92,6 +92,11 @@ var onscreen;		// List of displayed items
 	//	onscreen.prepend_items(list)
 	//	onscreen.append_items(list)
 
+	// XXX - Delete this? Especially with JQuery, having a
+	// separate variable for what's on screen is probably more
+	// trouble than it's worth. Just use $("#itemlist article") or
+	// some such.
+
 var itemlist;		// Div containing the items.
 var item_tmpl = new Template(item_tmpl_text);
 			// Defined in view.php
@@ -185,7 +190,7 @@ function init()
 
 	window.addEventListener("orientationchange", reorient, false);
 
-//	window.addEventListener("scroll", scroll_handler, false);
+	window.addEventListener("scroll", scroll_handler, false);
 			// Scroll handler to detect when window has
 			// moved.
 //window.addEventListener("storage",
@@ -1112,6 +1117,7 @@ msg_add("starting slow_sync 2");
  * short enough that the page feels responsive, but long enough that
  * we're likely to run the update once the user has stopped scrolling.
  */
+var in_scroll_handler = false;
 function scroll_handler(ev)
 {
 //	msg_add("scroll("+ev+")");
@@ -1119,6 +1125,21 @@ function scroll_handler(ev)
 //	alert("scroll event detected! "+window.pageXOffset+" "+window.pageYOffset);
 //	note: you can use window.innerWidth and window.innerHeight to
 //	access the width and height of the viewing area
+
+	if (in_scroll_handler)
+		// If this handler is already running, abort.
+		return;
+
+	in_scroll_handler = true;
+	try {
+//		msg_add("scroll("+ev+")");
+		// XXX - See where we are.
+		// XXX - Delete the topmost n-10 posts above what's visible
+		// XXX - Delete the bottommost n-10 posts below what's visible
+	} catch (e) {
+		/* Nohting goes here */
+	}
+	in_scroll_handler = false;
 }
 
 /* recenter
