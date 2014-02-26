@@ -52,10 +52,6 @@ CREATE TABLE feeds (
 					# the rest of the time, without
 					# deleting it entirely.
 		DEFAULT	1,		# Feeds are active by default
-#	skip_hours	SET('0','1', ..., '23'),	# Hours when not to refresh
-#	skip_days	SET('Sunday', 'Monday',	# Days when not to refresh
-#			'Tuesday', 'Wednesday', Thursday', 'Friday',
-#			'Saturday'),
 	username	char(32),	# Username, for authentication
 	passwd		char(32),	# Password, for authentication
 	PRIMARY KEY(id)
