@@ -58,6 +58,74 @@ CREATE TABLE feeds (
 )
 DEFAULT CHARSET=utf8;
 
+/* counts
+ * Holds the number of read and unread items in each feed. This is for
+ * caching, really, since counting the items takes a long time (seconds).
+ */
+CREATE TABLE counts (
+	feed_id		INT		NOT NULL,
+	total		INT,
+	num_read	INT,
+	PRIMARY KEY(feed_id)
+)
+DEFAULT CHARSET=utf8;
+
+# XXX - Trigger for when rows are removed: if the item is read,
+# decrement counts.num_read.
+
+/* trig_add_feed
+ * Trigger to add a row to `counts` when we add a new feed.
+ */
+CREATE TRIGGER trig_add_feed
+AFTER INSERT ON feeds
+FOR EACH ROW
+	INSERT INTO counts
+	SET	feed_id = NEW.id,
+		total = 0,
+		num_read = 0;
+
+/* trig_drop_feed
+ * Trigger: when we delete a feed, delete its row in `counts`.
+ */
+CREATE TRIGGER trig_drop_feed
+AFTER DELETE ON feeds
+FOR EACH ROW
+	DELETE FROM counts
+	WHERE	feed_id = OLD.id;
+
+# XXX - I want to create a trigger to update `counts` whenever `items`
+# gets updated, but can't seem to get the syntax right.
+#
+# The thing to to should be:
+# - When an item is added, it's unread, so increment counts.total and
+# counts.num_unread.
+# - When an item is deleted, decrement counts.total, and also
+# counts.num_read if it was read.
+# - When an item is updated, its is_read may have changed. If so, update
+# num_read either up or down.
+
+#CREATE TRIGGER trig_update_item
+#AFTER UPDATE ON items
+#FOR EACH ROW
+#	DO
+#		IF OLD.is_read
+#		THEN
+#			UPDATE counts
+#			SET	num_read = IFNULL(num_read, 1) - 1
+#		ELSE
+#			UPDATE counts
+#			SET	num_unread = IFNULL(num_unread, 1) - 1
+#		ENDIF,
+#		IF NEW.is_read
+#		THEN
+#			UPDATE counts
+#			SET	num_read = IFNULL(num_read, 0) + 1
+#		ELSE
+#			UPDATE counts
+#			SET	num_unread = IFNULL(num_unread, 0) + 1
+#		ENDIF
+#	;
+
 /* items
  * An item is a story or article in a feed.
  */
