@@ -53,7 +53,8 @@ FOR EACH ROW
     BEGIN
         UPDATE counts
         SET total = total - 1,
-	    num_read = num_read - IF(OLD.is_read, 1, 0);
+	    num_read = num_read - IF(OLD.is_read, 1, 0)
+	WHERE counts.feed_id = OLD.feed_id;
     END$$
 DELIMITER ;
 
