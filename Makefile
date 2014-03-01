@@ -1,8 +1,8 @@
 # Variables
 PROJECT =	newsbite
 
-# REV_CMD: command to figure out which svn revision we're using.
-REV_CMD =	svn status -uq | grep "Status against revision:"|awk '{print $$4}'
+# REV_CMD: command to figure out which revision we're using.
+REV_CMD =	git describe
 
 # Hack: BSD make uses "VAR != cmd" to assign $VAR the output of `cmd',
 # while GNU make uses "VAR = $(shell cmd)". Having things in this
@@ -11,7 +11,7 @@ REV_CMD =	svn status -uq | grep "Status against revision:"|awk '{print $$4}'
 # so it ignores the first assignment.
 REV =		$(shell ${REV_CMD})
 
-DISTNAME =	${PROJECT}-r${REV}
+DISTNAME =	${PROJECT}-${REV}
 
 # Include a site-local Makefile, if it exists.
 # The $(wildcard) statement is to see whether it exists. Then, if it
@@ -57,12 +57,13 @@ distclean::	clean
 
 test check:	missing extras syntax-check
 # XXX - Should have a check to make sure that everything in MANIFEST
-# is in svn.
+# is in git.
 
 # Look for files missing from the manifest
+#	@svn status -qv | 
 missing:
-	@svn status -qv | \
-		perl -lane '$$f=$$F[-1]; print "Missing: $$f" if -f $$f' | \
+	@git ls-files | \
+		perl -lanea '$$f=$$F[-1]; print "Missing: $$f" if -f $$f' | \
 		fgrep -vf MANIFEST || true
 
 # Look for files in the manifest that don't exist.
