@@ -148,10 +148,10 @@ function db_get_feed_counts($feed_id)
 
 	/* Get the number of read/unread items */
 	$query = sprintf(<<<EOT
-SELECT		IFNULL(SUM(is_read), 0) as `read`,
-		IFNULL(SUM(!is_read), 0) as `unread`
-FROM		items
-WHERE		feed_id = %d
+SELECT	num_read AS `read`,
+	total-num_read AS `unread`
+FROM	counts
+WHERE	feed_id = %d
 EOT
 			 ,
 			 $feed_id);
@@ -189,24 +189,14 @@ function db_get_all_feed_counts()
 {
 	$dbh = db_connect();
 
-	// XXX - This query takes way too long. I don't know that it
-	// can be optimized. It might be necessary to add a couple of
-	// columns to the 'feeds' table, giving the number of read and
-	// unread items, and update these counts every time an
-	// items.is_read field is added, deleted, or changed. :-(
-
-	/* Get the number of read/unread items in each feed.
-	 * The ISNULL() calls are there because the sum of an empty
-	 * set is NULL, not 0.
+	/* Get the number of read/unread items in each feed. This uses
+	 * the `counts` table, which is updated by MySQL triggers.
 	 */
 	$query = <<<EOT
-SELECT		feeds.id AS `feed_id`,
-		IFNULL(SUM(items.is_read), 0) AS `read`,
-		IFNULL(SUM(!items.is_read), 0) AS `unread`
-FROM		feeds
-LEFT JOIN	items
-  ON		feeds.id = items.feed_id
-GROUP BY	feeds.id
+SELECT		feed_id AS `feed_id`,
+		num_read AS `read`,
+		total-num_read AS `unread`
+FROM		counts
 EOT;
 	$result = $dbh->query($query);
 	if (!$result)
