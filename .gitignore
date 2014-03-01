@@ -1,5 +1,6 @@
 *.bak
 ChangeLog
+ChangeLog.git
 dist
 newsbite-*.tar.gz
 Makefile.local

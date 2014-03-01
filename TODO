@@ -511,7 +511,7 @@
 	There should really be two distros: one for hackers who want
   the source, and one for people who want to install it.
 	The hacker distro is pretty easy: it's just all of the source
-  files and such, a copy of ~/proj/newsbite without the .svn noise.
+  files and such, a copy of ~/proj/newsbite without the .git noise.
 	For the installer distro, ought to have a number of
   directories, for all the various directories where things can be
   installed:
@@ -522,7 +522,7 @@
   Ideally, should have an external config file that says where to
   install everything, one that users can carry forward when they
   upgrade. Also, the installer makefile shouldn't have any
-  dependendies on svn (neither should the hacker one, really).
+  dependendies on git (neither should the hacker one, really).
 	Also, in the installer distro, the CSS and JS files should be
   minified and compressed.
 	In PHP, can use 'if (extension_loaded("mysql"))' to find out
@@ -586,7 +586,7 @@
 	If I mark a long article as read, one second after marking the
   previous one, then presumably that means that I didn't read it. But
   how to tell whether I've read an article?
-- Perhaps put SVN rev in authentication cookie? That way, when the
+- Perhaps put git rev in authentication cookie? That way, when the
   back-end is updated, can run the update script or whatever needs to
   be done.
 	Or maybe just set another cookie with the version, and check
@@ -652,10 +652,6 @@
 - Add "$Rev$" or something to some file, so we can tell which revision
   we should be at. Compare this to the database, and see if we need to
   upgrade.
-	See
-  http://svnbook.red-bean.com/en/1.4/svn.advanced.props.special.keywords.html
-  which suggests using 'svnversion', because no in-file keyword gives
-  the head revision.
 - Add hook for links to mobile versions of URLs (view.php).
 	Probably should add a subdirectory underneath "plugins".
 - For error messages, and any other time when the app needs to talk to
@@ -712,9 +708,8 @@
 	checkpoint.doneWith("that");
 	checkpoint.doneWith("theother");
   and once they've all checked in, checkpoint runs cont_func().
-- Maybe just give up on maintaining ChangeLog. Just use 'svn log -r
-  head:1' in Makefile. Or 'svn log -r "head:{2010-01-01}"' to get this
-  year's changes.
+- Maybe just give up on maintaining ChangeLog. Just use ChangeLog.git
+  to get this year's changes.
 	Should also have a NEWS file with changes users might care
   about.
 - Feed maintenance: feeds go stale, get deleted, etc. all the time.
