@@ -60,7 +60,6 @@ test check:	missing extras syntax-check
 # is in git.
 
 # Look for files missing from the manifest
-#	@svn status -qv | 
 missing:
 	@git ls-files | \
 		perl -lanea '$$f=$$F[-1]; print "Missing: $$f" if -f $$f' | \
@@ -92,9 +91,9 @@ syntax-check:
 	done
 
 # Generate ChangeLog file from the beginning of this year until now
-.PHONY:	ChangeLog.svn	# Force it to be rebuilt
-ChangeLog.svn:
-	svn log -v -rhead:\{`date +%Y-01-01`\} > $@
+.PHONY:	ChangeLog.git	# Force it to be rebuilt
+ChangeLog.git:
+	git log 'HEAD@{Jan 1}'.. > $@
 
 # Recursive targets
 all install clean distclean depend::
