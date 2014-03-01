@@ -73,10 +73,12 @@ FOR EACH ROW
 	SET num_read = num_read + NEW.is_read - OLD.is_read;
 
 # Populate the `counts` table with initial data
+DELETE FROM counts;
 INSERT INTO counts (feed_id, total, num_read)
-SELECT
-	feed_id,
-	COUNT(*) AS total,
-	SUM(IF(is_read,1,0)) AS num_read
-FROM	items
-GROUP BY feed_id;
+SELECT feeds.id AS feed_id,
+    COUNT(items.id) AS total,
+    SUM(IF(is_read,1,0)) AS num_read
+FROM feeds
+LEFT JOIN items
+   ON items.feed_id = feeds.id
+GROUP BY feeds.id;
