@@ -1,3 +1,8 @@
+
+/* counts
+ * Holds the number of read and unread items in each feed. This is for
+ * caching, really, since counting the items takes a long time (seconds).
+ */
 CREATE TABLE counts (
 	feed_id		INT		NOT NULL,
 	total		INT,
@@ -6,10 +11,10 @@ CREATE TABLE counts (
 )
 DEFAULT CHARSET=utf8;
 
-/* trig_add_feed
+/* add_feed
  * Trigger to add a row to `counts` when we add a new feed.
  */
-CREATE TRIGGER trig_add_feed
+CREATE TRIGGER add_feed
 AFTER INSERT ON feeds
 FOR EACH ROW
 	INSERT INTO counts
@@ -17,14 +22,55 @@ FOR EACH ROW
 		total = 0,
 		num_read = 0;
 
-/* trig_drop_feed
+/* drop_feed
  * Trigger: when we delete a feed, delete its row in `counts`.
  */
-CREATE TRIGGER trig_drop_feed
+CREATE TRIGGER drop_feed
 AFTER DELETE ON feeds
 FOR EACH ROW
 	DELETE FROM counts
 	WHERE	feed_id = OLD.id;
+
+/* add_item
+ * When we add a new item, it's initially unread. Increment `counts.total`.
+ * '
+ */
+CREATE TRIGGER add_item
+AFTER INSERT ON items
+FOR EACH ROW
+	UPDATE	counts
+	SET	total = total + 1
+	WHERE	feed_id = NEW.feed_id;
+
+/* del_item
+ * When we delete an item, decrement `counts.total`, and also is_read,
+ * but only if the item being deleted was read.
+ */
+DELIMITER $$
+CREATE TRIGGER del_item
+AFTER DELETE ON items
+FOR EACH ROW
+    BEGIN
+        UPDATE counts
+        SET total = total - 1,
+	    num_read = num_read - IF(OLD.is_read, 1, 0);
+    END$$
+DELIMITER ;
+
+/* update_item
+ * Update `counts` when an item gets updated.
+ * The UPDATE here uses a trick: the fact that booleans are also integers:
+ * OLD.is_read	NEW.is_read	=> counts.num_read
+ * 0		0		+0
+ * 0		1		+1
+ * 1		0		-1
+ * 1		1		+0
+ */
+CREATE TRIGGER update_item
+AFTER UPDATE ON items
+FOR EACH ROW
+	UPDATE counts
+	SET num_read = num_read + NEW.is_read - OLD.is_read;
 
 # Populate the `counts` table with initial data
 INSERT INTO counts (feed_id, total, num_read)

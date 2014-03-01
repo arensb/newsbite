@@ -73,10 +73,10 @@ DEFAULT CHARSET=utf8;
 # XXX - Trigger for when rows are removed: if the item is read,
 # decrement counts.num_read.
 
-/* trig_add_feed
+/* add_feed
  * Trigger to add a row to `counts` when we add a new feed.
  */
-CREATE TRIGGER trig_add_feed
+CREATE TRIGGER add_feed
 AFTER INSERT ON feeds
 FOR EACH ROW
 	INSERT INTO counts
@@ -84,47 +84,55 @@ FOR EACH ROW
 		total = 0,
 		num_read = 0;
 
-/* trig_drop_feed
+/* drop_feed
  * Trigger: when we delete a feed, delete its row in `counts`.
  */
-CREATE TRIGGER trig_drop_feed
+CREATE TRIGGER drop_feed
 AFTER DELETE ON feeds
 FOR EACH ROW
 	DELETE FROM counts
 	WHERE	feed_id = OLD.id;
 
-# XXX - I want to create a trigger to update `counts` whenever `items`
-# gets updated, but can't seem to get the syntax right.
-#
-# The thing to to should be:
-# - When an item is added, it's unread, so increment counts.total and
-# counts.num_unread.
-# - When an item is deleted, decrement counts.total, and also
-# counts.num_read if it was read.
-# - When an item is updated, its is_read may have changed. If so, update
-# num_read either up or down.
+/* add_item
+ * When we add a new item, it's initially unread. Increment `counts.total`.
+ * '
+ */
+CREATE TRIGGER add_item
+AFTER INSERT ON items
+FOR EACH ROW
+	UPDATE	counts
+	SET	total = total + 1
+	WHERE	feed_id = NEW.feed_id;
 
-#CREATE TRIGGER trig_update_item
-#AFTER UPDATE ON items
-#FOR EACH ROW
-#	DO
-#		IF OLD.is_read
-#		THEN
-#			UPDATE counts
-#			SET	num_read = IFNULL(num_read, 1) - 1
-#		ELSE
-#			UPDATE counts
-#			SET	num_unread = IFNULL(num_unread, 1) - 1
-#		ENDIF,
-#		IF NEW.is_read
-#		THEN
-#			UPDATE counts
-#			SET	num_read = IFNULL(num_read, 0) + 1
-#		ELSE
-#			UPDATE counts
-#			SET	num_unread = IFNULL(num_unread, 0) + 1
-#		ENDIF
-#	;
+/* del_item
+ * When we delete an item, decrement `counts.total`, and also is_read,
+ * but only if the item being deleted was read.
+ */
+DELIMITER $$
+CREATE TRIGGER del_item
+AFTER DELETE ON items
+FOR EACH ROW
+    BEGIN
+        UPDATE counts
+        SET total = total - 1,
+	    num_read = num_read - IF(OLD.is_read, 1, 0);
+    END$$
+DELIMITER ;
+
+/* update_item
+ * Update `counts` when an item gets updated.
+ * The UPDATE here uses a trick: the fact that booleans are also integers:
+ * OLD.is_read	NEW.is_read	=> counts.num_read
+ * 0		0		+0
+ * 0		1		+1
+ * 1		0		-1
+ * 1		1		+0
+ */
+CREATE TRIGGER update_item
+AFTER UPDATE ON items
+FOR EACH ROW
+	UPDATE counts
+	SET num_read = num_read + NEW.is_read - OLD.is_read;
 
 /* items
  * An item is a story or article in a feed.
