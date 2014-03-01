@@ -461,7 +461,7 @@ EOT;
 
 	$query .= "LIMIT " . $args['max_items'] . "\n";
 
-	if (is_int($args['start_at']))
+	if (isset($args['start_at']) && is_int($args['start_at']))
 		$query .= "OFFSET " . $args['start_at'] . "\n";
 
 	/* Run the SQL query */
