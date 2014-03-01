@@ -18,7 +18,7 @@ var feeds;		// Master list of all feeds
 var feed_title_tmpl = new Template(feed_title_tmpl_text);
 var feed_tools_tmpl = new Template(feed_tools_tmpl_text);
 // XXX - Should the show_* variables be put in localStorage?
-var show_empty = true;
+var show_empty = false;
 var show_inactive = true;
 var show_stale = true;
 
@@ -44,11 +44,15 @@ function init()
 }
 
 $(document).ready(function() {
-	console.log("Inside dollar.");
 	/* Bind an event listener (click) to the menu headings */
 	$(".tools .submenu").on("click", function(ev) {
 		console.log("Clicked on target:");
 		$(ev.target).closest(".submenu").toggleClass("open");
+		// XXX - Currently, this allows having two menus open
+		// at once. When opening one, ought to close the
+		// others.
+		// Also, clicking outside an open menu ought to close
+		// it.
 	});
 });
 
