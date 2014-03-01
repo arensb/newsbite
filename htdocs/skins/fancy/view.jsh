@@ -1,6 +1,6 @@
 /*						-*- JavaScript -*- */
 #include "js/guess-mobile.js"
-/*#include "js/defer.js"*/
+#include "js/defer.js"
 #include "js/xhr.js"
 #include "js/keybindings.js"
 #include "js/PatEvent.js"
@@ -528,7 +528,7 @@ function mark_item1(ev)
 // updating the viewport so that there are always 10 items above and
 // below what's currently visible.
 
-//(function() {
+(function() {
 	/* XXX - If marking an item as read, bring up another item
 	 * from cache.
 	 * - If there are now > 25 items on screen, delete the topmost one.
@@ -566,7 +566,7 @@ function mark_item1(ev)
 			onscreen.items.push(new_item);
 		}
 	}
-//}).defer(1, null);
+}).defer(1, null);
 
 	/* Scroll so that the (collapsed) item is visible.
 	 * If the user has scrolled such that the top of the item is
