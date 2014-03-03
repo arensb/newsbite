@@ -133,7 +133,8 @@ CREATE TRIGGER update_item
 AFTER UPDATE ON items
 FOR EACH ROW
 	UPDATE counts
-	SET num_read = num_read + NEW.is_read - OLD.is_read;
+	SET num_read = num_read + NEW.is_read - OLD.is_read
+	WHERE counts.feed_id = OLD.feed_id;
 
 /* items
  * An item is a story or article in a feed.

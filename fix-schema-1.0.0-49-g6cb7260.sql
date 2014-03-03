@@ -71,7 +71,8 @@ CREATE TRIGGER update_item
 AFTER UPDATE ON items
 FOR EACH ROW
 	UPDATE counts
-	SET num_read = num_read + NEW.is_read - OLD.is_read;
+	SET num_read = num_read + NEW.is_read - OLD.is_read
+	WHERE counts.feed_id = OLD.feed_id;
 
 # Populate the `counts` table with initial data
 DELETE FROM counts;
