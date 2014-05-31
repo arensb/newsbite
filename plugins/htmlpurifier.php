@@ -116,8 +116,22 @@ function htmlpurify_init()
 	$purifier = new HTMLPurifier($purifier_config);
 }
 
-function htmlpurify(&$retval)
+function htmlpurify(&$retval, $maxlen = NULL)
 {
+	# XXX - $maxlen isn't used (yet). But it might be useful to
+	# say, "the purified string must fit in 255 characters".
+	# I don't think HTMLPurify has a setting for this, so it'd have to
+	# be done manually. Perhaps something like:
+	# $raw = "... <some string of dirty HTML> ..."
+	# $pure = purify($raw)
+	# while (length($pure) > $maxlen)
+	#	$lendiff = length($pure) - length($raw)
+	#	Chop off $lendiff characters from the end of $raw
+	#	$pure = purify($raw)
+	#	repeat as necessary.
+	#	What if $lendiff == 0 ?
+	#		Truncate $raw to $maxlen, presumably.
+	#	Perhaps try to truncate on a word boundary.
 	global $purifier;
 	if (!is_string($retval))
 		return;
@@ -125,6 +139,11 @@ function htmlpurify(&$retval)
 	if (!isset($purifier))
 		htmlpurify_init();
 
+	if (!preg_match('/[<>\&]/', $retval))
+		# Heuristic: if the string doesn't contain any special HTML
+		# characters, we don't need to go to all the trouble of
+		# purifying it.
+		return $retval;
 	$newretval = $purifier->purify($retval);
 #if ($newretval != $retval)
 #{
