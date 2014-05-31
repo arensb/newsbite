@@ -2,11 +2,8 @@
 /* feeds.php
  * Send list of feeds.
  */
-// XXX - There are two things that take this script take forever:
-// 1) db_get_all_feed_counts() takes about 1.5 sec, apparently because
-// it takes forever to count all the items in all feeds.
-//
-// 2) run_hooks("clean-html"...) add another 0.25 sec to execution
+// XXX - The main thing that makes this script take forever:
+// 1) run_hooks("clean-html"...) add another 0.25 sec to execution
 // time. This seems rather pointless, since the title, subtitle,
 // description of a feed don't change often. Perhaps this information
 // could be cached.
@@ -56,6 +53,9 @@ foreach ($feeds as $id => $data)
 	$desc['active']          = $data['active'];
 	$desc['stale']           = $data['stale'];
 
+	# XXX - This is expensive, and this code gets run all the
+	# time. Try to move these hooks someplace else, like when the
+	# data is put into the database.
 	run_hooks("clean-html", array(&$desc['title']));
 	run_hooks("clean-html", array(&$desc['subtitle']));
 	run_hooks("clean-html", array(&$desc['description']));
