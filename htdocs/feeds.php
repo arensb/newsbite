@@ -2,11 +2,6 @@
 /* feeds.php
  * Send list of feeds.
  */
-// XXX - The main thing that makes this script take forever:
-// 1) run_hooks("clean-html"...) add another 0.25 sec to execution
-// time. This seems rather pointless, since the title, subtitle,
-// description of a feed don't change often. Perhaps this information
-// could be cached.
 
 #if ($_SERVER['REQUEST_METHOD'] == "PUT")
 #{
@@ -16,9 +11,6 @@
 
 require_once("common.inc");
 require_once("database.inc");
-require_once("hooks.inc");
-
-load_hooks(PLUGIN_DIR);
 
 # Make sure the requested output format is sane
 if ($out_fmt != 'json' && $out_fmt != "xml")
@@ -52,14 +44,6 @@ foreach ($feeds as $id => $data)
 	$desc['image']           = $data['image'];
 	$desc['active']          = $data['active'];
 	$desc['stale']           = $data['stale'];
-
-	# XXX - This is expensive, and this code gets run all the
-	# time. Try to move these hooks someplace else, like when the
-	# data is put into the database.
-#	run_hooks("clean-html", array(&$desc['title']));
-#	run_hooks("clean-html", array(&$desc['subtitle']));
-#	run_hooks("clean-html", array(&$desc['description']));
-	# XXX - What else needs to be cleaned up?
 
 	$desc['num_read']        = $counts[$id]['read'];
 	$desc['num_unread']      = $counts[$id]['unread'];
