@@ -136,14 +136,15 @@ function htmlpurify(&$retval, $maxlen = NULL)
 	if (!is_string($retval))
 		return;
 
-	if (!isset($purifier))
-		htmlpurify_init();
-
 	if (!preg_match('/[<>\&]/', $retval))
 		# Heuristic: if the string doesn't contain any special HTML
 		# characters, we don't need to go to all the trouble of
 		# purifying it.
 		return $retval;
+
+	if (!isset($purifier))
+		htmlpurify_init();
+
 	$newretval = $purifier->purify($retval);
 #if ($newretval != $retval)
 #{
