@@ -56,9 +56,9 @@ foreach ($feeds as $id => $data)
 	# XXX - This is expensive, and this code gets run all the
 	# time. Try to move these hooks someplace else, like when the
 	# data is put into the database.
-	run_hooks("clean-html", array(&$desc['title']));
-	run_hooks("clean-html", array(&$desc['subtitle']));
-	run_hooks("clean-html", array(&$desc['description']));
+#	run_hooks("clean-html", array(&$desc['title']));
+#	run_hooks("clean-html", array(&$desc['subtitle']));
+#	run_hooks("clean-html", array(&$desc['description']));
 	# XXX - What else needs to be cleaned up?
 
 	$desc['num_read']        = $counts[$id]['read'];

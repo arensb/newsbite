@@ -4,6 +4,7 @@
  * directly.
  */
 require_once("config.inc");
+require_once("hooks.inc");
 
 define('DB_MAX_RESULTS', 50);	// Max # of results to return, if not
 				// otherwise specified.
@@ -17,6 +18,8 @@ $dbh = NULL;		// Database handle
  */
 $db_errno = NULL;	// Error number
 $db_errmsg = NULL;	// Error message
+
+load_hooks(PLUGIN_DIR);
 
 /* db_connect
  * Connect to the database if necessary. Return a handle to the
@@ -609,6 +612,21 @@ function db_update_feed_info($feed_id, $fields)
 	if ($old === NULL)
 		// No such feed
 		return FALSE;
+
+	// XXX - some fields are assumed to be HTML and should be
+	// cleaned up before storing:
+	//	- title (127)
+	//	- subtitle (127)
+	//	- nickname (127)
+	//	- description (127)
+	if (array_key_exists("title", $fields))
+		run_hooks("clean-html", array(&$fields['title'], 127));
+	if (array_key_exists("subtitle", $fields))
+		run_hooks("clean-html", array(&$fields['subtitle'], 127));
+	if (array_key_exists("nickname", $fields))
+		run_hooks("clean-html", array(&$fields['nickname'], 127));
+	if (array_key_exists("description", $fields))
+		run_hooks("clean-html", array(&$fields['description'], 127));
 
 	/* Go through the fields, and compare them to what's already
 	 * in the database.
