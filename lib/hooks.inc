@@ -16,6 +16,18 @@ require_once("config.inc");
  */
 $hooks = array();
 
+/* url2handler
+ * Maps the URL for a given namespace to its handler.
+ * Elements of this array are of the form
+ *	$URL => array(
+ *			"init" => namespace_initialization,
+ *			"element" => element_handler,
+ *			"attribute" => attribute_handler,
+ *			"text" => text_handler,
+ *		),
+ */
+$url2handler = array();
+
 /* load_hooks
  * Read all of the *.php files in a directory, and load them.
  */
