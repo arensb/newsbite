@@ -118,8 +118,9 @@ function htmlpurify_init()
 
 function htmlpurify(&$retval, $maxlen = NULL)
 {
-	# XXX - $maxlen isn't used (yet). But it might be useful to
-	# say, "the purified string must fit in 255 characters".
+
+	# $maxlen is used for saying, "the purified string must fit in
+	# 255 characters".
 	# I don't think HTMLPurify has a setting for this, so it'd have to
 	# be done manually. Perhaps something like:
 	# $raw = "... <some string of dirty HTML> ..."
@@ -145,7 +146,21 @@ function htmlpurify(&$retval, $maxlen = NULL)
 	if (!isset($purifier))
 		htmlpurify_init();
 
+	if (isset($maxlen) && strlen($retval) > $maxlen)
+	{
+		$retval = substr($retval, 0, $maxlen);
+	}
+
 	$newretval = $purifier->purify($retval);
+
+	while (isset($maxlen) && strlen($newretval) > $maxlen)
+	{
+		# XXX - Check this code to make sure it conforms to the
+		# comment above.
+		$lendiff = strlen($newretval) - strlen($retval);
+		$retval = substr($retval, 0, strlen($retval) - $lendiff);
+		$newretval = $purifier->purify($retval);
+	}
 #if ($newretval != $retval)
 #{
 #echo "Old HTML: [<pre>", htmlspecialchars($retval), "</pre>]<br/>\n";
