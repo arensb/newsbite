@@ -179,8 +179,8 @@ input[type="submit"] {
 /* Overall box containing an item */
 .item {
 	margin-top:		1em;
-	margin-left:		2px;
-	margin-right:		2px;
+/*	margin-left:		2px;*/
+/*	margin-right:		2px;*/
 	clear:			both;
 	z-index:		5;
 	position:		relative;
@@ -188,6 +188,7 @@ input[type="submit"] {
 
 .item .item-header {
 	/* This should only apply to Safari and other webkit browsers */
+/*
 	background-image:
 		-webkit-gradient(linear, left top, left bottom,
 			from(blue),
@@ -196,6 +197,7 @@ input[type="submit"] {
 		-moz-linear-gradient(to bottom,
 			blue,
 			navy);
+*/
 	border-top-color:	blue;
 	border-bottom-color:	navy;
 }
@@ -216,12 +218,16 @@ input[type="submit"] {
 
 .item.item-read .item-header {
 	/* Safari: */
+/*
 	-webkit-border-bottom-left-radius:	20px;
 	-webkit-border-bottom-right-radius:	20px;
+*/
 
 	/* Newer CSS */
+/*
 	border-bottom-left-radius:	20px;
 	border-bottom-right-radius:	20px;
+*/
 }
 
 .item.item-read .item-header .item-title {
@@ -262,22 +268,26 @@ input[type="submit"] {
 	border-collapse:	separate;
 	border-spacing:		0px 0.3em;
 
-	border-top-width:	2px;
-	border-left-width:	2px;
-	border-right-width:	2px;
+/*	border-top-width:	2px;*/
+/*	border-left-width:	2px;*/
+/*	border-right-width:	2px;*/
 	border-bottom-width:	0px;
-	border-left-style:	outset;
-	border-top-style:	outset;
-	border-right-style:	outset;
-	border-color:		navy;
+/*	border-left-style:	outset;*/
+/*	border-top-style:	outset;*/
+/*	border-right-style:	outset;*/
+/*	border-color:		navy;*/
 
 	/* Safari: */
+/*
 	-webkit-border-top-left-radius:		20px;
 	-webkit-border-top-right-radius:	20px;
+*/
 
 	/* Newer CSS */
+/*
 	border-top-left-radius:		20px;
 	border-top-right-radius:	20px
+*/
 }
 
 .item-header .info {
@@ -351,9 +361,9 @@ input[type="submit"] {
 	text-align:		right;
 	font-size:		66%;
 	width:			6em;
+	padding-right:		0.5em;
 }
 
-.button-box-left,
 .button-box-left {
 	display:		none;
 }
@@ -429,12 +439,12 @@ background-image: url("Checkbox-red.svg");
 
 .content-panes {
 	border-top-width:	0px;
-	border-left-width:	2px;
-	border-right-width:	2px;
+/*	border-left-width:	2px;*/
+/*	border-right-width:	2px;*/
 	border-bottom-width:	0px;
-	border-left-style:	outset;
-	border-right-style:	outset;
-	border-color:		navy;
+/*	border-left-style:	outset;*/
+/*	border-right-style:	outset;*/
+/*	border-color:		navy;*/
 }
 
 .content-panes.old1d {
@@ -590,24 +600,28 @@ box-shadow:	0px 0px 10px rgb(0, 0, 0) inset;
 	min-height:		20px;
 
 	border-top-width:	0px;
-	border-left-width:	2px;
-	border-right-width:	2px;
-	border-bottom-width:	2px;
-	border-left-style:	outset;
-	border-top-style:	outset;
-	border-right-style:	outset;
-	border-color:		navy;
+/*	border-left-width:	2px;*/
+/*	border-right-width:	2px;*/
+/*	border-bottom-width:	2px;*/
+/*	border-left-style:	outset;*/
+/*	border-top-style:	outset;*/
+/*	border-right-style:	outset;*/
+/*	border-color:		navy;*/
 
 	padding-left:		10px;
 	padding-right:		10px;
 
 	/* Safari: */
+/*
 	-webkit-border-bottom-left-radius:	20px;
 	-webkit-border-bottom-right-radius:	20px;
+*/
 
 	/* Newer CSS: */
+/*
 	border-bottom-left-radius:	20px;
 	border-bottom-right-radius:	20px;
+*/
 }
 
 .item.old1d .item-footer {
