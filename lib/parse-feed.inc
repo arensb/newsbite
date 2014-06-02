@@ -113,50 +113,44 @@ require_once("hooks.inc");
 // <source>		<source>		-
 //			<rights>		-
 
-/* url2handler
- * Maps the URL for a given namespace to its handler.
- * Elements of this array are of the form
- *	$URL => array(
- *			"init" => namespace_initialization,
- *			"element" => element_handler,
- *			"attribute" => attribute_handler,
- *			"text" => text_handler,
- *		),
- */
-$url2handler = array(		// Handlers for specific URLs
-	// Root element URLs
+// Root element URLs
 
-	// RSS 0.9x, 1.x, 2.0
-	"" => array(
+// RSS 0.9x, 1.x, 2.0
+add_xml_handler("",
+	array(
 		"init"		=> 'rss_init',
 		"element"	=> 'rss_element_handler',
 		"attribute"	=> 'rss_attribute_handler',
 //		"text"		=> 'rss_text_handler'
-		),
+	));
 
-	// Atom
-	"http://www.w3.org/2005/Atom"	=> array(
+// Atom
+add_xml_handler("http://www.w3.org/2005/Atom",
+	array(
 		"init"		=> 'atom_init',
 		"element"	=> 'atom_element_handler',
 		"attribute"	=> 'atom_attribute_handler',
-		),
+	));
 
-	// RDF
-	"http://purl.org/rss/1.0/" => array(
+// RDF
+add_xml_handler("http://purl.org/rss/1.0/",
+	array(
 		"element"	=> 'rdf_element_handler',
-		),
-	"http://www.w3.org/1999/02/22-rdf-syntax-ns#"	=> array(
+	));
+add_xml_handler("http://www.w3.org/1999/02/22-rdf-syntax-ns#",
+	array(
 		"element"	=> 'rdf_element_handler',
-		),
+	));
 
-	// XML
-	// I don't think this namespace is explicitly declared. It's
-	// assumed for XML documents. See
-	// http://www.w3.org/XML/1998/namespace
-	"http://www.w3.org/XML/1998/namespace"	=> array(
+// XML
+// I don't think this namespace is explicitly declared. It's
+// assumed for XML documents. See
+// http://www.w3.org/XML/1998/namespace
+add_xml_handler("http://www.w3.org/XML/1998/namespace",
+	array(
 		"element"	=> 'xml_element_handler',
 		"attribute"	=> 'xml_attribute_handler',
-		),
+	));
 
 // Other namespaces I've seen, for additional features inside a feed:
 // admin	http://webns.net/mvcb/
@@ -177,9 +171,6 @@ $url2handler = array(		// Handlers for specific URLs
 // sy		http://purl.org/rss/1.0/modules/syndication/
 // thr		http://purl.org/syndication/thread/1.0
 // wfw		http://wellformedweb.org/CommentAPI/
-	);
-
-// See lib/hooks.inc for definition of add_xml_handler()
 
 load_hooks(PLUGIN_DIR);
 
