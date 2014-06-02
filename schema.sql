@@ -70,9 +70,6 @@ CREATE TABLE counts (
 )
 DEFAULT CHARSET=utf8;
 
-# XXX - Trigger for when rows are removed: if the item is read,
-# decrement counts.num_read.
-
 /* add_feed
  * Trigger to add a row to `counts` when we add a new feed.
  */
@@ -105,7 +102,7 @@ FOR EACH ROW
 	WHERE	feed_id = NEW.feed_id;
 
 /* del_item
- * When we delete an item, decrement `counts.total`, and also is_read,
+ * When we delete an item, decrement `counts.total`, and also num_read,
  * but only if the item being deleted was read.
  */
 DELIMITER $$
