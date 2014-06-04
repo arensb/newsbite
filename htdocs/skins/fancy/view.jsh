@@ -101,6 +101,8 @@ var itemlist;		// Div containing the items.
 var item_tmpl = new Template(item_tmpl_text);
 			// Defined in view.php
 var page_top_tmpl = new Template(page_top_tmpl_text);
+var body_top_offset;	// The top of the <body> element isn't
+			// actually at the top of the window/viewport.
 
 var query_args = {};		// GET arguments passed in the URL
 // Parse the GET arguments.
@@ -233,6 +235,10 @@ console.log("I have this feed: ["+feed_id+"]");
 console.log("I don't have this feed: ["+feed_id+"]");
 	set_feed_fields();	// XXX - Set the page title,
 				// description, and so on.
+
+	body_top_offset = document.body.getBoundingClientRect().top;
+		// Get the top of the <body> element with respect to
+		// the window (why isn't this 0?)
 
 	// Fetch the list of what was on screen last time we started
 	// XXX - Initialize it if empty. Or initialize any missing
@@ -719,7 +725,7 @@ function move_up()
 	$(current_item).addClass("current-item");
 
 	// Scroll so that the new current item is at the top
-	window.scrollTo(0, current_item.offsetTop);
+	window.scrollTo(0, current_item.offsetTop + body_top_offset);
 }
 
 /* move_down
@@ -766,7 +772,7 @@ function move_down()
 	$(current_item).addClass("current-item");
 
 	// Scroll so that the new current item is at the top
-	window.scrollTo(0, current_item.offsetTop);
+	window.scrollTo(0, current_item.offsetTop + body_top_offset);
 }
 
 /* enter_item
