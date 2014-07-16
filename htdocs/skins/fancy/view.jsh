@@ -287,6 +287,20 @@ function toggle_pane(ev)
 
 	set_pane(container[0]);
 
+	/* If the user clicked on the bottom collapse bar, and
+	 * the top of the article is above the top of the browser
+	 * window, we want to scroll so that the article is visible.
+	 */
+	if ($(ev.currentTarget).hasClass("lower-bar"))
+	{
+		var article = container.closest("article");
+
+		if (article.offset().top < window.pageYOffset)
+			window.scrollTo(0,
+				article.offset().top/* +
+				body_top_offset*/);
+	}
+
 	ev.preventDefault();	// Stop processing the event
 }
 
