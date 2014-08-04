@@ -132,7 +132,6 @@ var item_tmpl_text = '<article class="item" id="item-@id@">\
 <div id="page-top">Feed information goes here</div>
 
 <div class="button-box">
-  <button onclick="localStorage.clear()">Clear localStorage</button>
   <button onclick="this.blur(); slow_sync()">Slow Sync</button>
 </div>
 
@@ -140,6 +139,7 @@ var item_tmpl_text = '<article class="item" id="item-@id@">\
 
 <div class="button-box">
   <button onclick="this.blur(); slow_sync()">Slow Sync</button>
+  <button onclick="localStorage.clear()">Clear localStorage</button>
 </div>
 
 <p>User <?=$skin_vars['auth_user']?>, session expires <?=$skin_vars['auth_expiration']?>.</p>
