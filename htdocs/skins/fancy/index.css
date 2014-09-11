@@ -25,6 +25,8 @@ h1 {
 }
 
 #feeds {
+	font-family:	"Roboto", Arial, sans-serif;
+	font-size:	medium;
 	background-color:	white;
 	border-collapse:	collapse;
 	width:			100%;
