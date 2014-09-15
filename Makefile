@@ -36,7 +36,7 @@ RECURSIVE_DIRS =	\
 
 .PHONY:	dist
 
-all::
+all::	htmlpurifier
 
 dist:	all
 	if [ ! -d dist ]; then mkdir dist; fi
@@ -106,3 +106,7 @@ install::
 	@echo "  ${INSTALL_LIB}/config.inc"
 	@echo "  ${INSTALL_BACKEND}/.htaccess"
 	@echo "  ${INSTALL_SKIN}/*/.htaccess"
+
+htmlpurifier:	HTMLPurifier/README
+HTMLPurifier/README:
+	git submodule update HTMLPurifier
