@@ -124,6 +124,7 @@ var item_tmpl_text = '<article class="item" id="item-@id@">\
 <div id="navbar" class="open">
   <ul class="content">
     <li><a onclick="window.scrollTo(0,0)">Top</a></li>
+    <li><a onclick="slow_sync()">Slow Sync</a></li>
   </ul>
   <span class="open-button">&gt;</span>
   <span class="close-button">&lt;</span>
