@@ -187,11 +187,8 @@ INSTALLATION:
 
 - (Optional) Add a cron job to update feeds
 
-	Or you can just do it manually.
+	For instance:
 
-	0 7,9,11,14,17,20 * * * CRON=true /usr/local/bin/php-cgi -d include_path=/path/to/lib /path/to/htdocs/update.php -- id=all >/dev/null
-
-The "CRON=true" environment variable allows the script to bypass
-authentication.
+	0 7,9,11,14,17,20 * * * /usr/local/bin/php -d include_path=/path/to/lib /path/to/htdocs/update.php -i all
 
 And you're finally done.
