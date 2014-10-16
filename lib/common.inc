@@ -23,15 +23,8 @@ if (!isset($out_fmt))
 		header("Content-type: text/xml; charset=utf-8");
 		break;
 	    default:
-		// XXX - The $CRON hack should go away. Just trust
-		// local users, as identified by php_sapi_name() == "cli".
-		if (isset($_ENV['CRON']))
-		{
-			$out_fmt = "console";
-		} else {
-			header("Content-type: text/html; charset=utf-8");
-			$out_fmt = "html";
-		}
+		header("Content-type: text/html; charset=utf-8");
+		$out_fmt = "html";
 		break;
 	}
 }
@@ -43,10 +36,7 @@ if (!isset($out_fmt))
  * the login form shouldn't be blocked because the user hasn't
  * properly logged in.
  */
-// XXX - The $CRON hack should go away. Just trust
-// local users, as identified by php_sapi_name() == "cli".
-if (!(isset($NO_AUTH_CHECK) && $NO_AUTH_CHECK) &&
-    !isset($_ENV['CRON']))	# Allow me to run update.php from cron
+if (!(isset($NO_AUTH_CHECK) && $NO_AUTH_CHECK))
 {
 	/* !!NB: A lot of the identifiers in this section are
 	 * replicated in login.php, which can lead to subtle problems.
