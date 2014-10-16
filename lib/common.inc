@@ -7,28 +7,33 @@
 require_once("config.inc");
 
 /* See what kind of output the user wants */
-switch (isset($_REQUEST['o']) ? $_REQUEST['o'] : "")
+if (!isset($out_fmt))
 {
-    case "json":
-	// XXX - If another browser comes along that can't deal with
-	// standard JSON, add a "hack" parameter or something to say
-	// how to work around it.
-	$out_fmt = "json";
-	header("Content-type: text/plain; charset=utf-8");
-	break;
-    case "xml":
-	$out_fmt = "xml";
-	header("Content-type: text/xml; charset=utf-8");
-	break;
-    default:
-	if (isset($_ENV['CRON']))
+	switch (isset($_REQUEST['o']) ? $_REQUEST['o'] : "")
 	{
-		$out_fmt = "console";
-	} else {
-		header("Content-type: text/html; charset=utf-8");
-		$out_fmt = "html";
+	    case "json":
+		// XXX - If another browser comes along that can't deal with
+		// standard JSON, add a "hack" parameter or something to say
+		// how to work around it.
+		$out_fmt = "json";
+		header("Content-type: text/plain; charset=utf-8");
+		break;
+	    case "xml":
+		$out_fmt = "xml";
+		header("Content-type: text/xml; charset=utf-8");
+		break;
+	    default:
+		// XXX - The $CRON hack should go away. Just trust
+		// local users, as identified by php_sapi_name() == "cli".
+		if (isset($_ENV['CRON']))
+		{
+			$out_fmt = "console";
+		} else {
+			header("Content-type: text/html; charset=utf-8");
+			$out_fmt = "html";
+		}
+		break;
 	}
-	break;
 }
 
 /* Check to make sure the user is properly logged in. We put this here
@@ -38,6 +43,8 @@ switch (isset($_REQUEST['o']) ? $_REQUEST['o'] : "")
  * the login form shouldn't be blocked because the user hasn't
  * properly logged in.
  */
+// XXX - The $CRON hack should go away. Just trust
+// local users, as identified by php_sapi_name() == "cli".
 if (!(isset($NO_AUTH_CHECK) && $NO_AUTH_CHECK) &&
     !isset($_ENV['CRON']))	# Allow me to run update.php from cron
 {
