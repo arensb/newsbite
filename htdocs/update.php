@@ -2,6 +2,25 @@
 /* update.php
  * Update one feed, or all feeds.
  */
+$verbose = FALSE;		// Enables verbose output
+
+if (php_sapi_name() == "cli")
+{
+	// We're running from the command line
+	$NO_AUTH_CHECK = TRUE;	// Disable login check in common.inc
+
+	// Get feed ID from command line
+	// -i NNN	NNN: feed number (integer) or "all" for all feeds.
+	// -v		Be verbose
+	$opts = getopt("i:v");
+	$feed_id = $opts["i"];
+	$verbose = isset($opts["v"]);
+	$out_fmt = "console";
+} else {
+	// We're running from CGI. Get feed ID from the HTTP request.
+	$feed_id = $_REQUEST["id"];
+}
+
 require_once("common.inc");
 require_once("net.inc");
 require_once("skin.inc");
@@ -89,25 +108,28 @@ class console_output_handler extends feed_update_handler
 {
 	function start_feed($feed_id, $feed_title)
 	{
-		echo "Starting feed ($feed_id): [$feed_title]\n";
+		global $verbose;
+		if ($verbose)
+			echo "Starting feed ($feed_id): [$feed_title]\n";
 	}
 
 	function end_feed(&$feed)
 	{
-		echo  "Finished (",
-			$feed['id'],
-			") [",
-			$feed['title'],
-			"]\n";
+		global $verbose;
+		if ($verbose)
+			echo  "Finished (",
+				$feed['id'],
+				") [",
+				$feed['title'],
+				"]\n";
 	}
 
 	function error($feed_id, $feed_title, $msg)
 	{
+		global $verbose;
 		error_log("Error in feed $feed_title ($feed_id): $msg");
 	}
 }
-
-$feed_id = $_REQUEST["id"];
 
 /* See which feeds we're updating */
 if (is_numeric($feed_id) && is_int($feed_id+0))
