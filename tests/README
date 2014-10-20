@@ -1,5 +1,5 @@
-bad-html-in-description.xml:
+close-unopened-tags.xml:
 
-	One of the articles contains a bunch of "&#2;", which is bad
-HTML and therefore crap XML. Firefox renders it as a gray box,
-probably out of desperation.
+The article "16 tips for thriving as an IT contractor" has </article>
+but no "<article>". HTMLPurify wasn't being called, so the trailing
+</article> wasn't being removed.
