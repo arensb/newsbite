@@ -801,19 +801,11 @@ error_log("After hooks, link is array\n");
 		break;
 
 	    case "description":
-		# Normally, we'd call
-		#	run_hooks("clean-html")
-		# here, but either the raw or clean description could wind
-		# up being longer than the database field, and we'd end up
-		# with unclosed tags.
-		#	So instead, we'll store the raw description, and
-		# clean the HTML in htdocs/feeds.php, just before sending
-		# it to the client.
-
 		switch ($parent)
 		{
 		    case "item":
 			# Run any other required hooks on the summary
+			run_hooks("clean-html", array(&$children));
 			run_hooks("summary",
 				  array($elt_name, &$children, &$context));
 			$retval[$elt_name] = &$children;
@@ -821,6 +813,7 @@ error_log("After hooks, link is array\n");
 		    case "channel":
 		    case "image":
 		    case "textInput":
+			run_hooks("clean-html", array(&$children));
 			$retval[$elt_name] = $children;
 			break;
 		    default:
