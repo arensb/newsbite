@@ -41,7 +41,7 @@ class HTMLPurifier_Filter_YouTubeIframe extends HTMLPurifier_Filter
 	 */
 	public function preFilter($html, $config, $context)
 	{
-		$pre_regex = '#<iframe ([^>]*src=["\']http://www.youtube.com/embed/[^>]*)></iframe>#s';
+		$pre_regex = '#<iframe ([^>]*src=["\']https?://www.youtube.com/embed/[^>]*)></iframe>#s';
 		$pre_replace = '<span class="youtube-iframe">\1</span>';
 		return preg_replace($pre_regex, $pre_replace, $html);
 	}
