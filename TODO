@@ -228,6 +228,8 @@
 	WebSQL is allegedly deprecated by w3. But mobile Safari and
   Android seem to run fine. So perhaps just use IndexedDB on Firefox,
   and retain localStorage on the others?
+	See also
+  https://developer.mozilla.org/en-US/docs/Web/API/IndexedDB_API
 - Problem with current sync (as of v988): say you have a browser
   viewing only a feed like Zero Punctuation, which is only updated
   once a week.
@@ -768,10 +770,6 @@
     there. However, they can't touch the DOM, and can only communicate
     with the main thread through callbacks. See
     https://developer.mozilla.org/en/Using_web_workers
-  - Suggests using cpp on JS. This allows using cpp macros and #ifdef
-    DEBUG. Downside is need to remember to 'make' before running.
-  - Compress files with gz, mod_deflate. Should work well on HTML, JS,
-    CPP. But not images, obviously.
   - Set the expiration time on pages, so that they get cached. By
     convention, caching for slightly less than a year means forever.
     But also want to pick up new versions. A week, maybe?
