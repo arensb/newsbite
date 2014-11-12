@@ -45,7 +45,7 @@ function google_news_origlink($nodename, &$retval, &$context)
 #echo "google news origlink after: [$retval]<br/>\n";
 }
 
-function google_news_link_hook($link)
+function google_news_link_hook(&$link)
 {
 	$link = ungooglify_link($link);
 }
