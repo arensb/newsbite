@@ -1136,16 +1136,9 @@ function db_get_groups()
 	return $retval;
 }
 
-// XXX - Function to get group members, perhaps as a tree?
-// This should probably be part of db_get_groups().
-
-/* XXX - db_add_group
- * Create a new group. Return its ID.
+/* db_add_group
+ * Create a new group. Return its database entry.
  * Default parent is -1, the root group.
- *
- * See also auto_increment_offset and auto_increment_increment in MySQL:
- * http://dev.mysql.com/doc/refman/5.5/en/replication-options-master.html#sysvar_auto_increment_offset
- * http://dev.mysql.com/doc/refman/5.5/en/replication-options-master.html#sysvar_auto_increment_increment
  */
 function db_add_group($name, $parent = -1)
 {
@@ -1195,6 +1188,7 @@ function db_add_group($name, $parent = -1)
 
 	return $row;
 }
+
 /* XXX - db_group_modify
  * - Can't modify gid.
  */
@@ -1205,9 +1199,37 @@ function db_add_group($name, $parent = -1)
  *   - Avoid duplicates.
  * - Delete the group from the database.
  */
-/* XXX - db_group_add_members
- * - Avoid duplicates
+/* db_group_add_member
+ * Add a new member to a group. $member can be positive (a feed ID) or
+ * negative (a group ID).
  */
+function db_group_add_members($group, $member)
+{
+	if ($group == -1)
+		// Silently succeed. Everything is part of -1.
+		return TRUE;
+
+	$dbh = db_connect();
+
+	$query = "INSERT INTO group_members (member, parent) VALUES (?,?)";
+	$stmt = $dbh->prepare($query);
+	$result = $stmt->bind_param("ii", $member, $group);
+	$result = $stmt->execute();
+	$stmt->close();
+	if (!$result)
+	{
+		global $db_errno;
+		$db_errno = $dbh->errno;
+		global $db_errmsg;
+		$db_errmsg = $dbh->error;
+
+		return NULL;
+	}
+
+	// Success
+	return TRUE;
+}
+
 /* XXX - db_group_remove_members */
 /* XXX - db_group_set_members */
 
