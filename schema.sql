@@ -30,9 +30,26 @@ CREATE TABLE groups (
 )
 DEFAULT CHARSET=utf8;
 
-/* XXX - Need another table to specify which feeds go in which groups
- * (plural) and the relative order within each group.
+/* Create one mandtory group: "All", with ID -1 */
+INSERT INTO groups VALUES (-1, -1, "All");
+
+/* Create and delete a dummy group. This is to make the auto-increment
+ * counter go above 1.
+ * XXX - This is a hack. Is there a better way to deal with negative
+ * auto-increments?
  */
+INSERT INTO groups (name) VALUES ("dummy");
+DELETE FROM groups WHERE name="dummy";
+
+/* group_members
+ * Lists members of groups, as a simple "X is a member of Y" relationship.
+ * If `member` is nonnegative, it's the ID of a feed. If it's negative,
+ * then it's the ID of a group in table `groups`.
+'*/
+CREATE TABLE group_members (
+	member		INT		NOT NULL,
+	parent		INT		NOT NULL DEFAULT -1
+)
 
 CREATE TABLE feeds (
 	id		INT		NOT NULL AUTO_INCREMENT,
