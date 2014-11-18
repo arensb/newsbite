@@ -1086,7 +1086,9 @@ EOT
  * Group-related functions
  *****************************************/
 
-// XXX - db_get_groups: return list of groups.
+/* db_get_groups
+ * Return a list of feed groups, indexed by group id.
+ */
 function db_get_groups()
 {
 	$dbh = db_connect();
@@ -1102,10 +1104,10 @@ function db_get_groups()
 
 		return NULL;
 	}
-	$result = array();
+	$retval = array();
 	while ($row = $result->fetch_assoc())
 	{
-		$retval[$row['feed_id']] = $row;
+		$retval[$row['id']] = $row;
 	}
 	return $retval;
 }
@@ -1169,9 +1171,19 @@ function db_add_group($name, $parent = -1)
 
 	return $row;
 }
-/* XXX - db_group_modify */
-/* XXX - db_group_delete */
-/* XXX - db_group_add_members */
+/* XXX - db_group_modify
+ * - Can't modify gid.
+ */
+/* XXX - db_group_delete($gid).
+ * - If gid == -1, refuse to delete it.
+ * - Look up the group; get its parent
+ * - Find any members of the group and move them to the parent.
+ *   - Avoid duplicates.
+ * - Delete the group from the database.
+ */
+/* XXX - db_group_add_members
+ * - Avoid duplicates
+ */
 /* XXX - db_group_remove_members */
 /* XXX - db_group_set_members */
 
