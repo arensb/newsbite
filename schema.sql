@@ -48,7 +48,8 @@ DELETE FROM groups WHERE name="dummy";
 '*/
 CREATE TABLE group_members (
 	member		INT		NOT NULL,
-	parent		INT		NOT NULL DEFAULT -1
+	parent		INT		NOT NULL DEFAULT -1,
+	UNIQUE KEY (member, parent)
 )
 
 CREATE TABLE feeds (
