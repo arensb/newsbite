@@ -1109,6 +1109,30 @@ function db_get_groups()
 	{
 		$retval[$row['id']] = $row;
 	}
+
+	// Get the members as well.
+	// In each group's entry, 'members' is an array listing the
+	// IDs of members of that group. Positive IDs corresond to
+	// feeds, and negative IDs correspond to groups.
+	$result = $dbh->query("SELECT * FROM group_members");
+	if (!$result)
+	{
+		global $db_errno;
+		$db_errno = $dbh->errno;
+		global $db_errmsg;
+		$db_errmsg = $dbh->error;
+
+		return NULL;
+	}
+
+	while ($row = $result->fetch_assoc())
+	{
+		// $row == (member, parent)
+		// We take $row[parent] to get the parent, and append to
+		// its 'members' array.
+		$retval[$row['parent']]['members'][] = $row['member'];
+	}
+
 	return $retval;
 }
 
