@@ -577,7 +577,7 @@ function db_delete_feed($feed_id)
 	$query = "DELETE FROM items WHERE feed_id = ?";
 	$stmt = $dbh->prepare($query);
 		// XXX - Error-checking
-	$err = $stmt->bind_param("d", $feed_id);
+	$err = $stmt->bind_param("i", $feed_id);
 		// XXX - Error-checking
 	$err = $stmt->execute();
 		// XXX - Error-checking
@@ -587,7 +587,7 @@ function db_delete_feed($feed_id)
 	$query = "DELETE FROM feeds WHERE id = ?";
 	$stmt = $dbh->prepare($query);
 		// XXX - Error-checking
-	$err = $stmt->bind_param("d", $feed_id);
+	$err = $stmt->bind_param("i", $feed_id);
 		// XXX - Error-checking
 	$err = $stmt->execute();
 		// XXX - Error-checking
@@ -963,7 +963,7 @@ UPDATE	feeds
 EOT;
 	$stmt = $dbh->prepare($query);
 			// XXX - Error-checking
-	$err = $stmt->bind_param("d",
+	$err = $stmt->bind_param("i",
 				 $feed_id);
 			// XXX - Error-checking
 	$err = $stmt->execute();
@@ -987,7 +987,7 @@ WHERE		feed_id = ?
 EOT;
 		$stmt = $dbh->prepare($query);
 			// XXX - Error-checking
-		$err = $stmt->bind_param("dd",
+		$err = $stmt->bind_param("ii",
 				  $feed_id,
 				  $AUTODELETE_DAYS);
 			// XXX - Error-checking
