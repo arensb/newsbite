@@ -1082,6 +1082,99 @@ EOT
 	}
 }
 
+/*****************************************
+ * Group-related functions
+ *****************************************/
+
+// XXX - db_get_groups: return list of groups.
+function db_get_groups()
+{
+	$dbh = db_connect();
+
+	$query = "SELECT * FROM groups";
+	$result = $dbh->query($query);
+	if (!$result)
+	{
+		global $db_errno;
+		$db_errno = $dbh->errno;
+		global $db_errmsg;
+		$db_errmsg = $dbh->error;
+
+		return NULL;
+	}
+	$result = array();
+	while ($row = $result->fetch_assoc())
+	{
+		$retval[$row['feed_id']] = $row;
+	}
+	return $retval;
+}
+
+// XXX - Function to get group members, perhaps as a tree?
+// This should probably be part of db_get_groups().
+
+/* XXX - db_add_group
+ * Create a new group. Return its ID.
+ * Default parent is -1, the root group.
+ *
+ * See also auto_increment_offset and auto_increment_increment in MySQL:
+ * http://dev.mysql.com/doc/refman/5.5/en/replication-options-master.html#sysvar_auto_increment_offset
+ * http://dev.mysql.com/doc/refman/5.5/en/replication-options-master.html#sysvar_auto_increment_increment
+ */
+function db_add_group($name, $parent = -1)
+{
+	$dbh = db_connect();
+
+	// Create the group
+	$query = "INSERT INTO groups (parent, name) VALUES (?,?)";
+	$stmt = $dbh->prepare($query);
+	$result = $stmt->bind_param("is", $parent, $name);
+	$result = $stmt->execute();
+	$stmt->close();
+	if (!$result)
+	{
+		global $db_errno;
+		$db_errno = $dbh->errno;
+		global $db_errmsg;
+		$db_errmsg = $dbh->error;
+
+		return NULL;
+	}
+
+	// Invert the group ID: auto_increment gives it a positive
+	// value, but we want a negative one.
+	$result = $dbh->query("UPDATE groups SET id = -id WHERE id = last_insert_id()");
+	if (!$result)
+	{
+		global $db_errno;
+		$db_errno = $dbh->errno;
+		global $db_errmsg;
+		$db_errmsg = $dbh->error;
+
+		return NULL;
+	}
+
+	// Fetch the group info so we can return it to the caller.
+	$result = $dbh->query("SELECT * FROM groups WHERE id = -last_insert_id()");
+	if (!$result)
+	{
+		global $db_errno;
+		$db_errno = $dbh->errno;
+		global $db_errmsg;
+		$db_errmsg = $dbh->error;
+
+		return NULL;
+	}
+	$row = $result->fetch_assoc();
+
+	return $row;
+}
+/* XXX - db_group_modify */
+/* XXX - db_group_delete */
+/* XXX - db_group_add_members */
+/* XXX - db_group_remove_members */
+/* XXX - db_group_set_members */
+
 /* db_mark_url
  * Mark an item as read or unread, given the item's URL.
  * $is_read is a boolean, either true (mark item as read) or false
