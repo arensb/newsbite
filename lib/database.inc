@@ -1235,8 +1235,10 @@ function db_add_group($name, $parent = -1)
 	return $row;
 }
 
-/* XXX - db_group_modify
- * - Can't modify gid.
+/* db_update_group_info
+ * Similar to db_update_feed_info():
+ * $gid is the ID of a group to modify.
+ * $fields is an array (hash) of field => new_value pairs.
  */
 function db_update_group_info($gid, $fields)
 {
@@ -1300,7 +1302,7 @@ function db_update_group_info($gid, $fields)
  * Add a new member to a group. $member can be positive (a feed ID) or
  * negative (a group ID).
  */
-function db_group_add_members($group, $member)
+function db_group_add_member($group, $member)
 {
 	if ($group == -1)
 		// Silently succeed. Everything is part of -1.
@@ -1327,7 +1329,7 @@ function db_group_add_members($group, $member)
 	return TRUE;
 }
 
-/* XXX - db_group_remove_members */
+/* XXX - db_group_remove_member */
 /* XXX - db_group_set_members */
 
 /* db_mark_url
