@@ -1136,6 +1136,52 @@ function db_get_groups()
 	return $retval;
 }
 
+/* db_get_group
+ * Return information about a single group. Like db_get_groups(), but
+ * for just one group.
+ */
+function db_get_group($gid)
+{
+	$dbh = db_connect();
+
+	$query = sprintf("SELECT * FROM groups WHERE id=%d",
+			 $gid);
+	$result = $dbh->query($query);
+	if (!$result)
+	{
+		global $db_errno;
+		$db_errno = $dbh->errno;
+		global $db_errmsg;
+		$db_errmsg = $dbh->error;
+
+		return NULL;
+	}
+	$retval = $result->fetch_assoc();
+
+	// Get the members as well.
+	// In each group's entry, 'members' is an array listing the
+	// IDs of members of that group. Positive IDs corresond to
+	// feeds, and negative IDs correspond to groups.
+	$query = sprintf("SELECT * FROM group_members WHERE parent=%d",
+			 $gid);
+	$result = $dbh->query($query);
+	if (!$result)
+	{
+		global $db_errno;
+		$db_errno = $dbh->errno;
+		global $db_errmsg;
+		$db_errmsg = $dbh->error;
+
+		return NULL;
+	}
+
+	while ($row = $result->fetch_assoc())
+	{
+		$retval['members'][] = $row['member'];
+	}
+	return $retval;
+}
+
 /* db_add_group
  * Create a new group. Return its database entry.
  * Default parent is -1, the root group.
@@ -1192,6 +1238,57 @@ function db_add_group($name, $parent = -1)
 /* XXX - db_group_modify
  * - Can't modify gid.
  */
+function db_update_group_info($gid, $fields)
+{
+	$dbh = db_connect();
+
+	/* Get info about existing feed */
+	$old = db_get_group($gid);
+	if ($old === NULL)
+		// No such feed
+		return FALSE;
+
+	$new = $old;
+	$updates = array();
+	$bind_fmt = "";
+	$bind_values = array();
+
+	foreach (array('parent', 'name') as $f)
+	{
+		if (array_key_exists($f, $fields))
+		{
+			$new[$f] = $fields[$f];
+		}
+	}
+
+	$query = "UPDATE groups SET parent=?, name=? WHERE id=?";
+	$stmt = $dbh->prepare($query);
+	$result = $stmt->bind_param("isi",
+		$new['parent'],
+		$new['name'],
+		$gid);
+	if (!$result)
+	{
+		global $db_errno;
+		$db_errno = $dbh->errno;
+		global $db_errmsg;
+		$db_errmsg = $dbh->error;
+
+		return NULL;
+	}
+	$result = $stmt->execute();
+	$stmt->close();
+	if (!$result)
+	{
+		global $db_errno;
+		$db_errno = $dbh->errno;
+		global $db_errmsg;
+		$db_errmsg = $dbh->error;
+
+		return NULL;
+	}
+}
+
 /* XXX - db_group_delete($gid).
  * - If gid == -1, refuse to delete it.
  * - Look up the group; get its parent
@@ -1261,6 +1358,7 @@ $err =
 			  $dbh->real_escape_string($url)
 		);
 echo "bind_param returned [$err]\n";
+# XXX - Is this right?
 	$result = $dbh->query($query);
 echo "result [$result]\n";
 	$err = $stmt->execute();
