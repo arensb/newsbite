@@ -31,26 +31,30 @@ CREATE TABLE groups (
 DEFAULT CHARSET=utf8;
 
 /* Create one mandtory group: "All", with ID -1 */
-INSERT INTO groups VALUES (-1, -1, "All");
+INSERT INTO groups (name, parent) VALUES ("All", -1);
+UPDATE groups SET id=-1 WHERE id=last_insert_id();
+/*INSERT INTO groups VALUES (-1, -1, "All");*/
 
 /* Create and delete a dummy group. This is to make the auto-increment
  * counter go above 1.
  * XXX - This is a hack. Is there a better way to deal with negative
  * auto-increments?
  */
-INSERT INTO groups (name) VALUES ("dummy");
-DELETE FROM groups WHERE name="dummy";
+/*INSERT INTO groups (name) VALUES ("dummy");*/
+/*DELETE FROM groups WHERE name="dummy";*/
 
 /* group_members
  * Lists members of groups, as a simple "X is a member of Y" relationship.
  * If `member` is nonnegative, it's the ID of a feed. If it's negative,
  * then it's the ID of a group in table `groups`.
+ * XXX - Actually, a feed can have multiple parents, but a group
+ * should probably only have one parent, at least for now.
 '*/
 CREATE TABLE group_members (
 	member		INT		NOT NULL,
 	parent		INT		NOT NULL DEFAULT -1,
 	UNIQUE KEY (member, parent)
-)
+);
 
 CREATE TABLE feeds (
 	id		INT		NOT NULL AUTO_INCREMENT,
