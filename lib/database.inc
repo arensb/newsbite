@@ -583,7 +583,17 @@ function db_delete_feed($feed_id)
 		// XXX - Error-checking
 	$stmt->close();
 
-	/* Next, delete the entry for the feed itself. */
+	/* Delete the feed from all groups that it's in. */
+	$query = "DELETE FROM group_members WHERE member = ?";
+	$stmt = $dbh->prepare($query);
+		// XXX - Error-checking
+	$err = $stmt->bind_param("i", $feed_id);
+		// XXX - Error-checking
+	$err = $stmt->execute();
+		// XXX - Error-checking
+	$stmt->close();
+
+	/* Delete the entry for the feed itself. */
 	$query = "DELETE FROM feeds WHERE id = ?";
 	$stmt = $dbh->prepare($query);
 		// XXX - Error-checking
@@ -1291,16 +1301,104 @@ function db_update_group_info($gid, $fields)
 	}
 }
 
-/* XXX - db_group_delete($gid).
- * - If gid == -1, refuse to delete it.
- * - Look up the group; get its parent
- * - Find any members of the group and move them to the parent.
- *   - Avoid duplicates.
- * - Delete the group from the database.
+/* db_delete_group
+ * Delete the group with id $gid.
+ * Returns TRUE if successful. Otherwise, returns NULL and sets $db_errno
+ * and $db_errmsg.
  */
+function db_delete_group($gid)
+{
+	if ($gid == -1)
+		// Can't delete "All".
+		return FALSE;
+
+	$dbh = db_connect();
+
+	/* Get info about existing feed */
+	$old = db_get_group($gid);
+	if ($old === NULL)
+		// No such feed. I guess we can go home early.
+		return TRUE;
+
+	// Move any members of this group to its parent.
+	// "IGNORE" says to ignore records where the operation would
+	// fail. Thus, if we have
+	//	"New York Times" in group "News"
+	//	"New York Times" in group "Politics"
+	// 	group "Politics" in group "News"
+	// we have a feed (New York Times) in both a group (Politics)
+	// and its parent (News).
+	//
+	// If we now delete "Politics", we want to move all members of
+	// Politics up one level. So normally we'd wind up with two
+	// instances of "New York Times in News". "IGNORE" says to
+	// skip those cases. We'll handle them separately, next.
+	$query = sprintf("UPDATE IGNORE group_members SET parent=%d WHERE parent=%d",
+			 $old['parent'],
+			 $gid);
+	$result = $dbh->query($query);
+	if (!$result)
+	{
+		global $db_errno;
+		$db_errno = $dbh->errno;
+		global $db_errmsg;
+		$db_errmsg = $dbh->error;
+
+		return NULL;
+	}
+	/* Delete any duplicates */
+	$query = sprintf("DELETE FROM group_members WHERE parent=%d",
+			 $gid);
+	$result = $dbh->query($query);
+	if (!$result)
+	{
+		global $db_errno;
+		$db_errno = $dbh->errno;
+		global $db_errmsg;
+		$db_errmsg = $dbh->error;
+
+		return NULL;
+	}
+
+	/* If this group has any child groups, move them up one level
+	 * as well, into the parent of $gid.
+	 */
+	$query = sprintf("UPDATE groups SET parent=%d WHERE parent=%d",
+			 $old['parent'],
+			 $gid);
+	$result = $dbh->query($query);
+	if (!$result)
+	{
+		global $db_errno;
+		$db_errno = $dbh->errno;
+		global $db_errmsg;
+		$db_errmsg = $dbh->error;
+
+		return NULL;
+	}
+
+	/* Delete this group from `groups` */
+	$query = sprintf("DELETE FROM groups WHERE id=%d",
+			 $gid);
+	$result = $dbh->query($query);
+	if (!$result)
+	{
+		global $db_errno;
+		$db_errno = $dbh->errno;
+		global $db_errmsg;
+		$db_errmsg = $dbh->error;
+
+		return NULL;
+	}
+
+	return TRUE;		// Success
+}
+
 /* db_group_add_member
  * Add a new member to a group. $member can be positive (a feed ID) or
  * negative (a group ID).
+ * XXX - Actually, for now, we want the new member to be positive (a
+ * feed).
  */
 function db_group_add_member($group, $member)
 {
