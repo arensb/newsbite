@@ -33,15 +33,6 @@ DEFAULT CHARSET=utf8;
 /* Create one mandtory group: "All", with ID -1 */
 INSERT INTO groups (name, parent) VALUES ("All", -1);
 UPDATE groups SET id=-1 WHERE id=last_insert_id();
-/*INSERT INTO groups VALUES (-1, -1, "All");*/
-
-/* Create and delete a dummy group. This is to make the auto-increment
- * counter go above 1.
- * XXX - This is a hack. Is there a better way to deal with negative
- * auto-increments?
- */
-/*INSERT INTO groups (name) VALUES ("dummy");*/
-/*DELETE FROM groups WHERE name="dummy";*/
 
 /* group_members
  * Lists members of groups, as a simple "X is a member of Y" relationship.
