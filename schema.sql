@@ -76,6 +76,47 @@ CREATE TABLE feeds (
 )
 DEFAULT CHARSET=utf8;
 
+/* items
+ * An item is a story or article in a feed.
+ */
+CREATE TABLE items (
+	id		INT		NOT NULL AUTO_INCREMENT,
+					# Unique identifier for this item
+					# XXX - Should we use GUID, in case
+					# the same article shows up in two
+					# different feeds?
+	feed_id		INT NOT NULL,	# ID of feed
+	url		VARCHAR(511),	# Link to the full item
+	title		TINYTEXT,	# Title of the item
+	summary		TEXT,		# Summary of the item
+	content		TEXT,		# Full content of the item
+	author		VARCHAR(127),	# Author of the item
+			# XXX - Should this be broken down into author name,
+			# URL, and email? Probably yes.
+	category	VARCHAR(255),	# Categories the story goes in
+	comment_url	VARCHAR(255),	# URL for page with comments
+	comment_rss	VARCHAR(255),	# URL for RSS feed for comments
+	guid		VARCHAR(127) NOT NULL,	# Globally-unique ID.
+	pub_date	DATETIME,	# Publication date
+	last_update	DATETIME,	# Time when item was last updated
+	is_read		BOOLEAN,	# Has the item been read?
+	mtime		TIMESTAMP,	# When the item was last altered
+	PRIMARY KEY(id),
+	UNIQUE KEY(feed_id, guid),	# Having (feed_id, guid)
+					# instead of (guid) may be
+					# overkill, but it's to ensure
+					# that if two feeds have the
+					# same item (e.g., one
+					# contains the other), then
+					# they'll be considered
+					# separate items.
+	# Indexes to speed up lookups
+	KEY `last_update` (`last_update`),
+	KEY `is_read` (`is_read`),
+	KEY `mtime` (`mtime`)
+)
+DEFAULT CHARSET=utf8;
+
 /* counts
  * Holds the number of read and unread items in each feed. This is for
  * caching, really, since counting the items takes a long time (seconds).
@@ -150,44 +191,3 @@ FOR EACH ROW
 	UPDATE counts
 	SET num_read = num_read + NEW.is_read - OLD.is_read
 	WHERE counts.feed_id = OLD.feed_id;
-
-/* items
- * An item is a story or article in a feed.
- */
-CREATE TABLE items (
-	id		INT		NOT NULL AUTO_INCREMENT,
-					# Unique identifier for this item
-					# XXX - Should we use GUID, in case
-					# the same article shows up in two
-					# different feeds?
-	feed_id		INT NOT NULL,	# ID of feed
-	url		VARCHAR(511),	# Link to the full item
-	title		TINYTEXT,	# Title of the item
-	summary		TEXT,		# Summary of the item
-	content		TEXT,		# Full content of the item
-	author		VARCHAR(127),	# Author of the item
-			# XXX - Should this be broken down into author name,
-			# URL, and email? Probably yes.
-	category	VARCHAR(255),	# Categories the story goes in
-	comment_url	VARCHAR(255),	# URL for page with comments
-	comment_rss	VARCHAR(255),	# URL for RSS feed for comments
-	guid		VARCHAR(127) NOT NULL,	# Globally-unique ID.
-	pub_date	DATETIME,	# Publication date
-	last_update	DATETIME,	# Time when item was last updated
-	is_read		BOOLEAN,	# Has the item been read?
-	mtime		TIMESTAMP,	# When the item was last altered
-	PRIMARY KEY(id),
-	UNIQUE KEY(feed_id, guid),	# Having (feed_id, guid)
-					# instead of (guid) may be
-					# overkill, but it's to ensure
-					# that if two feeds have the
-					# same item (e.g., one
-					# contains the other), then
-					# they'll be considered
-					# separate items.
-	# Indexes to speed up lookups
-	KEY `last_update` (`last_update`),
-	KEY `is_read` (`is_read`),
-	KEY `mtime` (`mtime`)
-)
-DEFAULT CHARSET=utf8;
