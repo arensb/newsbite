@@ -1427,8 +1427,30 @@ function db_group_add_member($group, $member)
 	return TRUE;
 }
 
-/* XXX - db_group_remove_member */
-/* XXX - db_group_set_members */
+/* db_group_remove_member
+ * Delete $member from group $gid.
+ * Returns TRUE if successful. Otherwise, returns NULL and sets $db_errno
+ * and $db_errmsg.
+ */
+function db_group_remove_member($gid, $member)
+{
+	$dbh = db_connect();
+
+	$query = sprintf("DELETE FROM group_members where member=%d and parent=%d",
+			 $member, $gid);
+	$result = $dbh->query($query);
+	if (!$result)
+	{
+		global $db_errno;
+		$db_errno = $dbh->errno;
+		global $db_errmsg;
+		$db_errmsg = $dbh->error;
+
+		return NULL;
+	}
+
+	return TRUE;
+}
 
 /* db_mark_url
  * Mark an item as read or unread, given the item's URL.
