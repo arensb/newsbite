@@ -36,7 +36,7 @@ if (!isset($out_fmt))
  * the login form shouldn't be blocked because the user hasn't
  * properly logged in.
  */
-if (!(isset($NO_AUTH_CHECK) && $NO_AUTH_CHECK))
+if (!(isset($NO_AUTH_CHECK) || !$NO_AUTH_CHECK))
 {
 	/* !!NB: A lot of the identifiers in this section are
 	 * replicated in login.php, which can lead to subtle problems.
