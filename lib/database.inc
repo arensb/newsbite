@@ -106,6 +106,9 @@ EOT
 			# Make sure 'active' is properly boolean
 		$retval[$row['id']] = $row;
 	}
+
+	// XXX - Also look up any entries in group_members: tell us
+	// which groups a feed is in.
 	return $retval;
 }
 
@@ -132,6 +135,9 @@ EOT
 		$id);
 	$result = $dbh->query($query);
 	$row = $result->fetch_assoc();
+
+	// XXX - Also look up any entries in group_members: tell us
+	// which groups the feed is in.
 	return $row;
 }
 
