@@ -62,6 +62,13 @@
 - Bug: keybindings.js doesn't handle non-letter bindings well: "?"
   gets turned into Spanish upside-down question mark by toUpperCase().
 	Need a notation to bind Esc.
+- De-embedly-fier plugin: FAILblog uses
+	<div id='video-65846273'>
+	<iframe class="embedly-embed"
+	  src="//cdn.embedly.com/widgets/media.html?src=http%3A%2F%2Fwww.youtube.com%2Fembed%2F1Gl0bZqs6tw%3Ffeature%3Doembed&url=http%3A%2F%2Fwww.youtube.com%2Fwatch%3Fv%3D1Gl0bZqs6tw&image=http%3A%2F%2Fi.ytimg.com%2Fvi%2F1Gl0bZqs6tw%2Fhqdefault.jpg&key=bf0f5443890c4e8887da35fba9b1523a&type=text%2Fhtml&schema=youtube"
+	  width="500" height="375" scrolling="no" frameborder="0"
+	  allowfullscreen></iframe>    </div>
+  Add a plugin to turn that into a proper YouTube video.
 - Look for better fonts?
   http://www.fontsquirrel.com/
 - CSS text-overflow property:
