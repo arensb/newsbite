@@ -132,6 +132,8 @@ function abort($msg)
 {
 	global $out_fmt;
 
+	header("HTTP/1.0 404 You probably sinned");
+
 	# Abort handling for non-HTML output types.
 	if ($out_fmt == "json")
 	{
