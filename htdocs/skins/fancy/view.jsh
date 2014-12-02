@@ -842,6 +842,9 @@ msg_add("starting slow_sync 1");
 				item_callback,
 				function(status, msg) {
 					msg_add("slow_sync 1 failed ("+status+"):"+msg);
+					// Redraw itemlist to at least
+					// get rid of the spinner.
+					redraw_itemlist();
 				});
 
 		feeds = value;
