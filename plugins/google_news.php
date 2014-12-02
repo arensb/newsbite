@@ -28,7 +28,10 @@ function ungooglify_link($link)
 	$retval = preg_replace('{http://news.google.com/.*url=(.*)}',
 			       '\1',
 			       $link);
-	$retval = urldecode($retval);
+# XXX - Was this urldecode() in here for a reason?
+# It's commented out because if a URL has a + in it, it gets turned
+# into a space. And Kinja uses "http://.../+authorname" in a lot of URLs.
+#	$retval = urldecode($retval);
 #echo "ungooglify after: [$retval]<br/>\n";
 	return $retval;
 }
