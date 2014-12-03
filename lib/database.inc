@@ -98,7 +98,6 @@ EOT
 		return NULL;
 	}
 
-	// XXX - Error-checking
 	$retval = array();
 	while ($row = $result->fetch_assoc())
 	{
@@ -107,8 +106,28 @@ EOT
 		$retval[$row['id']] = $row;
 	}
 
-	// XXX - Also look up any entries in group_members: tell us
-	// which groups a feed is in.
+	// Also look up any entries in group_members: tell us which
+	// groups a feed is in.
+	$query = "SELECT * FROM group_members";
+	$result = $dbh->query($query);
+	if (!$result)
+	{
+		global $db_errno;
+		$db_errno = $dbh->errno;
+		global $db_errmsg;
+		$db_errmsg = $dbh->error;
+
+		return NULL;
+	}
+
+	while (list($member, $parent) = $result->fetch_row())
+	{
+		$retval[$member]['groups'][] = $parent;
+		$row['active'] = $row['active'] ? TRUE : FALSE;
+			# Make sure 'active' is properly boolean
+		$retval[$row['id']] = $row;
+	}
+
 	return $retval;
 }
 
@@ -135,10 +154,25 @@ EOT
 		$id);
 	$result = $dbh->query($query);
 	$row = $result->fetch_assoc();
+	$retval = $row;
 
-	// XXX - Also look up any entries in group_members: tell us
-	// which groups the feed is in.
-	return $row;
+	// Also look up any entries in group_members: tell us which
+	// groups the feed is in.
+	$retval['groups'] = array();
+	$query = sprintf(<<<EOT
+SELECT	parent
+FROM	group_members
+WHERE	member=%d
+EOT
+		,
+		$id);
+	$result = $dbh->query($query);
+	while ($row = $result->fetch_row())
+	{
+		$retval['groups'][] = $row[0];
+	}
+
+	return $retval;
 }
 
 /* db_get_feed_counts
