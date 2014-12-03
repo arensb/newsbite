@@ -5,6 +5,37 @@ echo '<', '?xml version="1.0" encoding="UTF-8"?', ">\n";
 $skin_dir = $skin_vars['skin'];
 $feeds = &$skin_vars['feed'];
 $feed = &$skin_vars['feed'];
+$groups = &$skin_vars['groups'];
+
+/* group_list
+ * Print a tree of groups, each with a checkbox.
+ */
+function group_list($group)
+{
+	// Display an <li> for this group.
+	// The name is "group_<gid>" (e.g., "group_-19").
+	// If the current feed is a member of this group
+	// ($group['marked'] is set), then the checkbox is marked.
+	echo "<li>",
+		"<input type=\"checkbox\" name=\"group_",
+		$group['id'],
+		"\"",
+		($group['marked'] ? " checked" : ""),
+		"/>",
+		 htmlspecialchars($group['name']);
+
+	// If this group has children, recursively call group_list()
+	// to display their tree.
+	if (isset($group['members']) && count($group['members']) > 0)
+	{
+		echo "<ul>";
+		foreach ($group['members'] as $g)
+			if ($g['id'] < 0)
+				group_list($g);
+		echo "</ul>";
+	}
+	echo "</li>\n";
+}
 ?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
 	"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
@@ -107,6 +138,22 @@ $feed = &$skin_vars['feed'];
 <? else: ?>
         No image.
 <? endif ?>
+    </td>
+  </tr>
+
+  <tr>
+    <th>Groups</th>
+    <td>
+<?
+      if (isset($groups['members'])  && count($groups['members']) > 0)
+      {
+		echo "<ul>";
+		foreach ($groups['members'] as $g)
+			if ($g['id'] < 0)
+				group_list($g);
+		echo "</ul>";
+      }
+?>
     </td>
   </tr>
 
