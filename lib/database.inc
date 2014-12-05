@@ -123,9 +123,6 @@ EOT
 	while (list($member, $parent) = $result->fetch_row())
 	{
 		$retval[$member]['groups'][] = $parent;
-		$row['active'] = $row['active'] ? TRUE : FALSE;
-			# Make sure 'active' is properly boolean
-		$retval[$row['id']] = $row;
 	}
 
 	return $retval;
