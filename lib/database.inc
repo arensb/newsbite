@@ -106,6 +106,26 @@ EOT
 			# Make sure 'active' is properly boolean
 		$retval[$row['id']] = $row;
 	}
+
+	// Also look up any entries in group_members: tell us which
+	// groups a feed is in.
+	$query = "SELECT * FROM group_members";
+	$result = $dbh->query($query);
+	if (!$result)
+	{
+		global $db_errno;
+		$db_errno = $dbh->errno;
+		global $db_errmsg;
+		$db_errmsg = $dbh->error;
+
+		return NULL;
+	}
+
+	while (list($member, $parent) = $result->fetch_row())
+	{
+		$retval[$member]['groups'][] = $parent;
+	}
+
 	return $retval;
 }
 
