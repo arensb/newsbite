@@ -738,6 +738,7 @@ function rss_element_handler(
 	&$retval,	// Fill in the blanks here
 	&$context)	// Where we are at the moment
 {
+#error_log("rss_element_handler: $elt_name");
 	$parent = $context[count($context)-1]['name'];
 			// Get parent node's name
 	switch ($elt_name)
@@ -785,7 +786,9 @@ error_log("Before hooks, link is array\n");
 		    case "item":
 			# Give hooks a chance to clean up the link to the
 			# article.
+#error_log("before post_link: ".$children);
 			run_hooks("post_link", array(&$children));
+#error_log("after post_link: ".$children);
 if (is_array($children))
 error_log("After hooks, link is array\n");
 			$retval['url'] = $children;

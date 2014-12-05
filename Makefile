@@ -62,7 +62,7 @@ test check:	missing extras syntax-check
 # Look for files missing from the manifest
 missing:
 	@git ls-files | \
-		perl -lanea '$$f=$$F[-1]; print "Missing: $$f" if -f $$f' | \
+		perl -lane '$$f=$$F[-1]; print "Missing: $$f" if -f $$f' | \
 		fgrep -vf MANIFEST || true
 
 # Look for files in the manifest that don't exist.

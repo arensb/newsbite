@@ -71,9 +71,9 @@ msg_add("I caught a weird error: "+e);
 			/* If the HTTP status isn't 200, abort the request */
 			if (err != 200)
 			{
-console.log("JSON "+url+" failed, status "+request.status+", text ["+request.statusText+"]");
+console.log("JSON "+url+" failed, status "+request.status+": "+request.statusText);
 console.trace();
-msg_add("JSON "+url+" failed, status "+request.status);
+msg_add("JSON "+url+" failed, status "+request.status+": "+request.statusText);
 				request.abort();
 				request.aborted = true;
 
@@ -154,9 +154,9 @@ msg_add("get_json_data: Can't parse response");
 			/* If the HTTP status isn't 200, abort the request */
 			if (err != 200)
 			{
-console.log("JSON "+url+" failed, status "+request.status+", text ["+request.statusText+"]");
+console.log("JSON "+url+" failed, status "+request.status+": "+request.statusText);
 console.trace();
-msg_add("JSON "+url+" failed, status "+request.status);
+msg_add("JSON "+url+" failed, status "+request.status+": "+request.statusText);
 				request.abort();
 				request.aborted = true;
 
