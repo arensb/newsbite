@@ -1345,9 +1345,16 @@ function db_update_group_info($gid, $fields)
  */
 function db_delete_group($gid)
 {
+	global $db_errno;
+	global $db_errmsg;
+
 	if ($gid == -1)
+	{
 		// Can't delete "All".
+		$db_errno = 0;	# XXX - Is this kosher?
+		$db_errmsg = "Can't delete group \"All\".";
 		return FALSE;
+	}
 
 	$dbh = db_connect();
 
@@ -1376,9 +1383,7 @@ function db_delete_group($gid)
 	$result = $dbh->query($query);
 	if (!$result)
 	{
-		global $db_errno;
 		$db_errno = $dbh->errno;
-		global $db_errmsg;
 		$db_errmsg = $dbh->error;
 
 		return NULL;
@@ -1389,9 +1394,7 @@ function db_delete_group($gid)
 	$result = $dbh->query($query);
 	if (!$result)
 	{
-		global $db_errno;
 		$db_errno = $dbh->errno;
-		global $db_errmsg;
 		$db_errmsg = $dbh->error;
 
 		return NULL;
@@ -1406,9 +1409,7 @@ function db_delete_group($gid)
 	$result = $dbh->query($query);
 	if (!$result)
 	{
-		global $db_errno;
 		$db_errno = $dbh->errno;
-		global $db_errmsg;
 		$db_errmsg = $dbh->error;
 
 		return NULL;
@@ -1420,9 +1421,7 @@ function db_delete_group($gid)
 	$result = $dbh->query($query);
 	if (!$result)
 	{
-		global $db_errno;
 		$db_errno = $dbh->errno;
-		global $db_errmsg;
 		$db_errmsg = $dbh->error;
 
 		return NULL;
