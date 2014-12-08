@@ -26,7 +26,6 @@ switch ($cmd)
 {
     case "":
 	/* No command. Start a new page */
-	// XXX - Ought to do this only for HTML output. For JSON, abort.
 	if ($out_fmt == "json")
 	{
 		echo jsonify('state',	"error",
@@ -45,18 +44,10 @@ switch ($cmd)
 	break;
 
     case "add":
-	// XXX - Add a group
-	// XXX - Get its name.
-	// XXX - Optional parent (defaults to -1)
-	// XXX - Create the group.
 	add_group($group_name, $group_parent);
-	# XXX - Return a status of some kind.
 	break;
 
     case "delete":
-	// XXX - Delete a group
-	// XXX - Get its ID; make sure it's valid.
-	// XXX - Delete the group
 	delete_group($group_id);
 	break;
 
@@ -106,7 +97,7 @@ function update_group_info($group_id = NULL)
 echo "update_group_info: \$_REQUEST:<pre>", print_r($_REQUEST, TRUE), "</pre>\n";
 }
 
-function add_group($name, $parent_id)
+function add_group($name, $parent_id = -1)
 {
 	global $out_fmt;
 
@@ -126,8 +117,8 @@ function add_group($name, $parent_id)
 		    case "json":
 			echo jsonify('state',	"error",
 				     'errno',	$db_errno,
-				     'error',	$db_errmsg
-				), "\n";
+				     'error',	$db_errmsg),
+				"\n";
 			break;
 		    case "console":
 			echo "Error $db_errno: $db_errmsg\n";
@@ -140,8 +131,6 @@ function add_group($name, $parent_id)
 		return;
 	}
 
-	# XXX - Do something intelligent and out_fmt-dependent.
-	# XXX - Redirect back to self, I guess?
 	switch ($out_fmt)
 	{
 	    case "json":
@@ -153,6 +142,7 @@ function add_group($name, $parent_id)
 		break;
 	    case "html":
 	    default:
+		# XXX - Redirect back to self, maybe?
 		echo "Created group<br/>\n";
 		break;
 	}
@@ -160,9 +150,46 @@ function add_group($name, $parent_id)
 
 function delete_group($group_id)
 {
+	global $out_fmt;
+
 	// XXX - Sanity check? Make sure $group_id is an integer,
 	// and negative, and a group that exists?
-echo "Deleting group $group_id<br/>\n";
-	db_delete_group($group_id);
+
+	if (db_delete_group($group_id))
+	{
+		// Group was deleted successfully
+		switch ($out_fmt)
+		{
+		    case "json":
+			echo jsonify('state',	'ok');
+			break;
+		    case "console":
+			echo "Deleted\n";
+			break;
+		    case "html":
+		    default:
+			echo "Deleted<br/>\n";
+			break;
+		}
+		return;
+	} else {
+		// Something went wrong
+		switch ($out_fmt)
+		{
+		    case "json":
+			echo jsonify('state',	"error",
+				     'errno',	$db_errno,
+				     'error',	$db_errmsg),
+				"\n";
+			break;
+		    case "console":
+			echo "Error $db_errno: $db_errmsg\n";
+			break;
+		    case "html":
+		    default:
+			echo "<p>Error $db_errno: $db_errmsg<p>\n";
+			break;
+		}
+	}
 }
 ?>
