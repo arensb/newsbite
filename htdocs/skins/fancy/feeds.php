@@ -39,6 +39,7 @@ $skin_dir = $skin_vars['skin'];
       <li><a href="setskin.php">Change skin</a></li>
     </ul>
   </li>
+  <li><a href="groups.php">Groups</a></li>
   <li class="submenu">
     <span class="submenu-title">Display</span>
     <ul class="tools-menu">
