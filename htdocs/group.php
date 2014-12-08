@@ -2,14 +2,11 @@
 /* group.php
  * Edit groups and whatnot.
  */
+$NO_AUTH_CHECK = TRUE;		# XXX - Just for testing
 require_once("common.inc");
 #require_once("database.inc");
 require_once("group.inc");
 require_once("skin.inc");
-
-# XXX - Check whether $_REQUEST[id] is set: if so, we're just editing one
-# group.
-echo "_REQUEST: <pre>", print_r($_REQUEST, TRUE), "</pre>\n";
 
 /* Get parameters */
 $cmd = "";
@@ -29,6 +26,14 @@ switch ($cmd)
 {
     case "":
 	/* No command. Start a new page */
+	// XXX - Ought to do this only for HTML output. For JSON, abort.
+	if ($out_fmt == "json")
+	{
+		echo jsonify('state',	"error",
+			     'error',	"No command specified."
+			), "\n";
+		exit(0);
+	}
 	if (isset($group_id))
 	{
 		// XXX - Form for just one group
@@ -103,6 +108,8 @@ echo "update_group_info: \$_REQUEST:<pre>", print_r($_REQUEST, TRUE), "</pre>\n"
 
 function add_group($name, $parent_id)
 {
+	global $out_fmt;
+
 	$parent = db_get_group($parent_id);
 	if ($parent === NULL)
 		abort("Invalid parent group");
