@@ -43,6 +43,22 @@ switch ($cmd)
 	}
 	break;
 
+    case "tree":
+	$tree = group_tree(TRUE);
+	switch ($out_fmt)
+	{
+	    case "json":
+		echo jsonify($tree);
+		break;
+	    case "console":
+	    case "html":
+	    default:
+		// XXX - Do we even want to consider these?
+		echo "<pre>", print_r($tree, TRUE), "</pre>\n";
+	    break;
+	}
+	break;
+
     case "add":
 	add_group($group_name, $group_parent);
 	break;
