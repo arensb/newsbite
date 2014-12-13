@@ -22,61 +22,70 @@ function init()
 {
 	group_tmpl = new Template($("#groupentry").html());
 
-	get_json_data("group.php",
-		      { command:	'tree',
-		      },
-		      draw_group_tree,
-		      null,
-		      false);
+	refresh_group_tree();
 	$("#add-group-form").submit(add_group);
 }
 
-/* draw_group_tree
- * Find the #group-tree div, and populate it with a tree of groups.
+/* refresh_group_tree
+ * Fetch the current list of groups from the server, and redraw the tree.
  */
-function draw_group_tree(tree)
+// XXX - The list of groups should be in localStorage.
+function refresh_group_tree()
 {
-	/* Find #group-tree */
-	var group_list = $("#group-tree");
-
-	/* Remove any children it might have from a previous iteration */
-	$(group_list).empty();
-
-	/* Append the current list of children (recursively). */
-	$(group_list)
-		.append($.map(tree.members,
-			      draw_members));
-				// Defer to draw_members() to generate
-				// a <li> element for each group (and
-				// its children).
-}
-
-/* draw_members
- * Helper function for draw_group_tree(): given a group, create a <li>
- * element for it (possibly recursively, if it has children), and
- * return that.
- */
-function draw_members(val, key)
-{
-console.log("Inside draw_members", val, key);
-	var li = $(group_tmpl.expand({
-		GID:		val.id,
-		GROUPNAME:	val.name,
-	}));
-	if (val.members != undefined)
+	/* _draw_group_tree
+	 * Find the #group-tree div, and populate it with a tree of groups.
+	 */
+	function _draw_group_tree(tree)
 	{
-		var ul = $(".child-groups", li)
-			.append("<ul/>");
-		ul.children().append($.map(
-			$.grep(val.members,
-			       function(a) {
-				       var retval = a instanceof Object;
-				       return retval;
-			       }),
-			draw_members));
+		/* Find #group-tree */
+		var group_list = $("#group-tree");
+
+		// Remove any children it might have from a previous
+		// iteration.
+		$(group_list).empty();
+
+		// Append the current list of children (recursively).
+		$(group_list)
+			.append($.map(tree.members,
+				      _draw_members));
+		// Defer to draw_members() to generate a <li> element
+		// for each group (and its children).
 	}
-console.log("returning ", li);
-	return li;
+
+
+	/* _draw_members
+	 * Helper function for draw_group_tree(): given a group, create a <li>
+	 * element for it (possibly recursively, if it has children), and
+	 * return that.
+	 */
+	function _draw_members(val, key)
+	{
+		var li = $(group_tmpl.expand({
+			GID:		val.id,
+			GROUPNAME:	val.name,
+		}));
+		if (val.members != undefined)
+		{
+			var ul = $(".child-groups", li)
+				.append("<ul/>");
+			ul.children().append($.map(
+				$.grep(val.members,
+				       function(a) {
+					       var retval = a instanceof Object;
+					       return retval;
+				       }),
+				_draw_members));
+		}
+		return li;
+	}
+
+	// refresh_group_tree main:
+	get_json_data("group.php",
+		      { command:	'tree',
+		      },
+		      _draw_group_tree,
+		      null,
+		      false);
 }
 
 /* add_group
@@ -91,9 +100,8 @@ function add_group(ev)
 	var name  = this.elements["name"].value;
 	var parent = this.elements["parent"].value;
 		// XXX - Do we care that 'parent' is a string, not an int?
-console.log("name ["+name+"]");
-console.log("parent ["+parent+"]");
-	// XXX - Make AJAX call to create group
+
+	// Make AJAX call to create group
 	get_json_data("group.php",
 		      { command:	"add",
 			name:		name,
@@ -102,9 +110,8 @@ console.log("parent ["+parent+"]");
 		      // Handler
 		      function(value)
 		      {
-			      console.log("Created group:");
-			      console.log(value);
-			      // XXX - Update the group tree, above.
+			      // Update the group tree, above.
+			      refresh_group_tree();
 		      },
 		      // Error handler
 		      function(status, msg)
@@ -114,5 +121,4 @@ console.log("parent ["+parent+"]");
 					    ", error "+err);
 		      },
 		      true);
-	// XXX - Redraw the group tree above
 }
