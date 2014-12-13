@@ -32,7 +32,7 @@ $skin_dir = $skin_vars['skin'];
 
 <form name="edit-groups" method="post" action="groups.php">
 <input type="hidden" name="command" value="<?=$skin_vars['command']?>"/>
-<div id="group-tree"></div>
+<ul id="group-tree"></ul>
 <hr/>
 
 <input type="reset" value="Clear changes"/>
@@ -43,7 +43,7 @@ $skin_dir = $skin_vars['skin'];
 <!-- Yeah, maybe it's just easier to have a separate form for adding groups.
 ' -->
 <!-- <form name="add-group" method="post" action="groups.php"> -->
-<form name="add-group" onsubmit="add_group()">
+<form id="add-group-form" name="add-group">
   <input name="command" type="hidden" value="add"/>
   Group name: <input name="name" type="text" size="20"/><br/>
 <!-- XXX - parent -->
