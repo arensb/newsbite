@@ -1,3 +1,5 @@
+.gitignore
+.gitmodules
 AUTHORS
 ChangeLog
 ChangeLog.2008
@@ -7,17 +9,17 @@ MANIFEST
 Makefile
 Makefile.common
 Makefile.local
-README
 README.hacking
+README.md
 TODO
+fix-schema-1.0.0-49-g6cb7260.sql
 fix-schema-r110.sql
+fix-schema-r1105.sql
 fix-schema-r206.sql
 fix-schema-r213.sql
 fix-schema-r367.sql
 fix-schema-r929.sql
 fix-schema-r979.sql
-fix-schema-r1105.sql
-fix-schema-1.0.0-49-g6cb7260.sql
 htdocs/Makefile
 htdocs/addfeed.php
 htdocs/editfeed.php
@@ -88,6 +90,13 @@ htdocs/sync.php
 htdocs/unsubscribe.php
 htdocs/update.php
 htdocs/view.php
+image-src/Abstract_blue_background7.jpg
+image-src/Attraction_transfer_icon.gif
+image-src/Attraction_transfer_icon.svg
+image-src/README
+image-src/newsbite-icon.xcf
+image-src/newsbite-splash-ipad.xcf
+image-src/newsbite-splash.xcf
 lib/Makefile
 lib/common.inc
 lib/config.inc.sample
@@ -104,6 +113,8 @@ plugins/add-paragraphs.php
 plugins/addtoany.php
 plugins/ads.php
 plugins/bugs.php
+plugins/de-utm.php
+plugins/embedly.php
 plugins/enclosure.php
 plugins/feedburner.php
 plugins/google_news.php
@@ -120,3 +131,4 @@ plugins/xml-media.php
 plugins/zemanta.php
 schema.sql
 tests/README
+tests/close-unopened-tags.xml
