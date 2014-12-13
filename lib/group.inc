@@ -26,7 +26,7 @@ function group_tree($feeds = TRUE)
 	foreach ($raw_groups as $g)
 	{
 		if ($g['id'] == -1)
-			continue; 
+			continue;
 		$raw_groups[$g['parent']]['members'][] =
 			&$raw_groups[$g['id']];
 	}
