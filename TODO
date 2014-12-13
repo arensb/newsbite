@@ -64,6 +64,8 @@
 	Need a notation to bind Esc.
 - Use OAuth for authentication?
   http://oauth.net/2/
+  Except it's apparentlly a mess, hard to use, hard to know when it's
+  secure.
 - Look for better fonts?
   http://www.fontsquirrel.com/
 - CSS text-overflow property:
