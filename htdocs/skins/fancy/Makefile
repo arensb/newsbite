@@ -10,7 +10,7 @@ CPP =		cpp
 CPP_FLAGS =	-P $(INCLUDES)
 RM =		rm -f
 
-JS_SRC =	view.jsh feeds.jsh
+JS_SRC =	$(wildcard *.jsh)
 
 # Files to install
 PHP_FILES =	$(wildcard *.php)
