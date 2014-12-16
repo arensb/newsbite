@@ -1,9 +1,6 @@
 .gitignore
 .gitmodules
 AUTHORS
-ChangeLog
-ChangeLog.2008
-ChangeLog.2009
 INSTALL
 MANIFEST
 Makefile
@@ -13,6 +10,7 @@ README.hacking
 README.md
 TODO
 fix-schema-1.0.0-49-g6cb7260.sql
+fix-schema-1.0.0-87-g6d3303b.sql
 fix-schema-r110.sql
 fix-schema-r1105.sql
 fix-schema-r206.sql
@@ -24,6 +22,7 @@ htdocs/Makefile
 htdocs/addfeed.php
 htdocs/editfeed.php
 htdocs/feeds.php
+htdocs/group.php
 htdocs/htaccess.sample
 htdocs/htaccess.sample.in
 htdocs/index.php
@@ -52,10 +51,13 @@ htdocs/skins/fancy/addfeed.php
 htdocs/skins/fancy/android.css
 htdocs/skins/fancy/editfeed.css
 htdocs/skins/fancy/editfeed.php
+htdocs/skins/fancy/editgroups.css
+htdocs/skins/fancy/editgroups_all.php
 htdocs/skins/fancy/feeds.js
 htdocs/skins/fancy/feeds.jsh
 htdocs/skins/fancy/feeds.php
 htdocs/skins/fancy/gray-bg.jpg
+htdocs/skins/fancy/group.jsh
 htdocs/skins/fancy/htaccess.sample
 htdocs/skins/fancy/htaccess.sample.in
 htdocs/skins/fancy/index.css
@@ -101,6 +103,7 @@ lib/Makefile
 lib/common.inc
 lib/config.inc.sample
 lib/database.inc
+lib/group.inc
 lib/hooks.inc
 lib/json.inc
 lib/net.inc
