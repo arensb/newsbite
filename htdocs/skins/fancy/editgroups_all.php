@@ -18,7 +18,7 @@ $skin_dir = $skin_vars['skin'];
   <li name="group_@GID@">
     <label id="groupname_@GID@">@GROUPNAME@</label>
     <button onclick="edit_group()">Edit</button>
-    <button onclick="delete_group()">Delete</button>
+    <button class="delete-group-button">Delete</button>
     <div class="child-groups" id="children_@GID@"></div>
   </li>
 </template>
@@ -30,7 +30,7 @@ $skin_dir = $skin_vars['skin'];
 <? /* XXX - Links to get back to interesting places, like feed list */ ?>
 <h1>Groups</h1>
 
-<form name="edit-groups" method="post" action="groups.php">
+<form name="edit-groups" method="post" action="group.php">
 <input type="hidden" name="command" value="<?=$skin_vars['command']?>"/>
 <ul id="group-tree"></ul>
 <hr/>

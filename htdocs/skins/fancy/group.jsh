@@ -60,10 +60,13 @@ function refresh_group_tree()
 	 */
 	function _draw_members(val, key)
 	{
+console.log("_draw_members()");
 		var li = $(group_tmpl.expand({
 			GID:		val.id,
 			GROUPNAME:	val.name,
 		}));
+//var del_button = $(".delete-group-button", li);
+//console.log("Delete button: ", del_button);
 		if (val.members != undefined)
 		{
 			var ul = $(".child-groups", li)
@@ -121,4 +124,14 @@ function add_group(ev)
 					    ", error "+err);
 		      },
 		      true);
+}
+
+/* delete_group
+ * Handler for .delete-group-button buttons.
+ */
+function delete_group(ev)
+{
+	ev.preventDefault();		// Don't propagate the event and
+					// submit the form.
+	// XXX
 }
