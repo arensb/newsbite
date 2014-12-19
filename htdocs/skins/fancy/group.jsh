@@ -48,8 +48,12 @@ function refresh_group_tree()
 		$(group_list)
 			.append($.map(tree.members,
 				      _draw_members));
-		// Defer to draw_members() to generate a <li> element
-		// for each group (and its children).
+			// Defer to draw_members() to generate a <li> element
+			// for each group (and its children).
+
+		// Add a click handler to each of the "Delete" buttons
+		// in the tree.
+		$(".delete-group-button", group_list).on("click", delete_group);
 	}
 
 
@@ -60,13 +64,11 @@ function refresh_group_tree()
 	 */
 	function _draw_members(val, key)
 	{
-console.log("_draw_members()");
 		var li = $(group_tmpl.expand({
 			GID:		val.id,
 			GROUPNAME:	val.name,
 		}));
-//var del_button = $(".delete-group-button", li);
-//console.log("Delete button: ", del_button);
+		li.get().group_id = val.id;
 		if (val.members != undefined)
 		{
 			var ul = $(".child-groups", li)
@@ -134,4 +136,8 @@ function delete_group(ev)
 	ev.preventDefault();		// Don't propagate the event and
 					// submit the form.
 	// XXX
+console.log("Inside delete_group, ev: ",ev);
+var parent = $(ev.target).parent(".group-entry");
+console.log("Parent: ", parent);
+console.log(parent.get().group_id);
 }

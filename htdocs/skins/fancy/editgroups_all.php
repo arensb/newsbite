@@ -15,9 +15,9 @@ $skin_dir = $skin_vars['skin'];
 <link rel="stylesheet" type="text/css" href="skins/<?=$skin_dir?>/editgroups.css" media="all" />
 <!-- Template for tree of groups -->
 <template id="groupentry">
-  <li name="group_@GID@">
+  <li id="group_@GID@" class="group-entry">
     <label id="groupname_@GID@">@GROUPNAME@</label>
-    <button onclick="edit_group()">Edit</button>
+    <button class="edit-group-button" onclick="edit_group()">Edit</button>
     <button class="delete-group-button">Delete</button>
     <div class="child-groups" id="children_@GID@"></div>
   </li>
