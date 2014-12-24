@@ -50,10 +50,6 @@ function refresh_group_tree()
 				      _draw_members));
 			// Defer to draw_members() to generate a <li> element
 			// for each group (and its children).
-
-		// Add a click handler to each of the "Delete" buttons
-		// in the tree.
-		$(".delete-group-button", group_list).on("click", delete_group);
 	}
 
 
@@ -68,7 +64,7 @@ function refresh_group_tree()
 			GID:		val.id,
 			GROUPNAME:	val.name,
 		}));
-		li.get().group_id = val.id;
+
 		if (val.members != undefined)
 		{
 			var ul = $(".child-groups", li)
@@ -81,6 +77,32 @@ function refresh_group_tree()
 				       }),
 				_draw_members));
 		}
+
+		/* Add a handler to the "Delete" button.
+		 * The ">" in the selector matters: if 'li' is a group
+		 * with children, then we don't want to attach this
+		 * event handler to their buttons.
+		 */
+		$(li).on("click", ">.delete-group-button",
+			 {gid: val.id},
+			 function(ev) {
+console.log("Inside Delete event handler, gid == ", ev.data.gid);
+				 ev.preventDefault();
+});
+
+
+		/* Add a handler to the "Edit" button.
+		 * Again, the ">" in the selector prevents us from
+		 * adding this event handler to buttons in children of
+		 * 'li'.
+		 */
+		$(li).on("click", ">.edit-group-button",
+			 {gid: val.id},
+			 function(ev) {
+console.log("Inside Edit event handler, gid == ", ev.data.gid);
+				 ev.preventDefault();
+});
+
 		return li;
 	}
 

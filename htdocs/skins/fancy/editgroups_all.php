@@ -17,7 +17,7 @@ $skin_dir = $skin_vars['skin'];
 <template id="groupentry">
   <li id="group_@GID@" class="group-entry">
     <label id="groupname_@GID@">@GROUPNAME@</label>
-    <button class="edit-group-button" onclick="edit_group()">Edit</button>
+    <button class="edit-group-button">Edit</button>
     <button class="delete-group-button">Delete</button>
     <div class="child-groups" id="children_@GID@"></div>
   </li>
