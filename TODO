@@ -63,6 +63,12 @@
   gets turned into Spanish upside-down question mark by toUpperCase().
 	Need a notation to bind Esc.
 - Get rid of the skin stuff. It's a goddamn mess.
+- Authentication: perhaps allow clients to send either a cookie, or an
+  auth=<token> parameter. That might be easier for REST.
+- Detecting online/offline status: discussion at
+  http://stackoverflow.com/questions/3181080/how-to-detect-online-offline-event-cross-browser
+	There's a library for that:
+  https://github.com/HubSpot/offline
 - Look for better fonts?
   http://www.fontsquirrel.com/
 - CSS text-overflow property:
