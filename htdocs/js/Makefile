@@ -1,5 +1,5 @@
 TOP =		../..
-JQUERY =	jquery-2.1.0.min.js
+JQUERY =	jquery-2.1.3.min.js
 
 include $(TOP)/Makefile.common
 
