@@ -65,6 +65,10 @@
 - Get rid of the skin stuff. It's a goddamn mess.
 - Authentication: perhaps allow clients to send either a cookie, or an
   auth=<token> parameter. That might be easier for REST.
+- Use OAuth for authentication?
+  http://oauth.net/2/
+  Except it's apparentlly a mess, hard to use, hard to know when it's
+  secure.
 - Detecting online/offline status: discussion at
   http://stackoverflow.com/questions/3181080/how-to-detect-online-offline-event-cross-browser
 	There's a library for that:

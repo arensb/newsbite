@@ -36,7 +36,7 @@ if (!isset($out_fmt))
  * the login form shouldn't be blocked because the user hasn't
  * properly logged in.
  */
-if (!(isset($NO_AUTH_CHECK) || !$NO_AUTH_CHECK))
+if (!(isset($NO_AUTH_CHECK)) || !$NO_AUTH_CHECK)
 {
 	/* !!NB: A lot of the identifiers in this section are
 	 * replicated in login.php, which can lead to subtle problems.
@@ -52,7 +52,7 @@ if (!(isset($NO_AUTH_CHECK) || !$NO_AUTH_CHECK))
 		// If output type is JSON, return a JSON string saying
 		// the user isn't logged in. Also, send them a 401
 		// status code.
-		if ($_REQUEST['o'] == "json")
+		if ($out_fmt == "json")
 		{
 			header("HTTP/1.0 401 You are not logged in");
 			header("Content-type: text/plain; charset=utf-8");
@@ -131,8 +131,6 @@ function redirect_to($url)
 function abort($msg)
 {
 	global $out_fmt;
-
-	header("HTTP/1.0 404 You probably sinned");
 
 	# Abort handling for non-HTML output types.
 	if ($out_fmt == "json")
