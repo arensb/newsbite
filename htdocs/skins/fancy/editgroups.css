@@ -1,0 +1,18 @@
+/* editgroups.css
+ * Stylesheet for the "edit groups" pages.
+ */
+
+/* XXX - Is there a better way of ensuring that text input fields fill
+ * all available space without overflowing?
+ */
+input[type="text"] {
+/*	width:			90%;*/
+}
+
+.error-msg {
+	border:			2px solid red;
+	color:			red;
+	margin-left:		2em;
+	margin-right:		2em;
+	margin-bottom:		0.5em;
+}

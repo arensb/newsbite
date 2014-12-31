@@ -98,7 +98,6 @@ EOT
 		return NULL;
 	}
 
-	// XXX - Error-checking
 	$retval = array();
 	while ($row = $result->fetch_assoc())
 	{
@@ -152,7 +151,25 @@ EOT
 		$id);
 	$result = $dbh->query($query);
 	$row = $result->fetch_assoc();
-	return $row;
+	$retval = $row;
+
+	// Also look up any entries in group_members: tell us which
+	// groups the feed is in.
+	$retval['groups'] = array();
+	$query = sprintf(<<<EOT
+SELECT	parent
+FROM	group_members
+WHERE	member=%d
+EOT
+		,
+		$id);
+	$result = $dbh->query($query);
+	while ($row = $result->fetch_row())
+	{
+		$retval['groups'][] = $row[0];
+	}
+
+	return $retval;
 }
 
 /* db_get_feed_counts
@@ -597,17 +614,27 @@ function db_delete_feed($feed_id)
 	$query = "DELETE FROM items WHERE feed_id = ?";
 	$stmt = $dbh->prepare($query);
 		// XXX - Error-checking
-	$err = $stmt->bind_param("d", $feed_id);
+	$err = $stmt->bind_param("i", $feed_id);
 		// XXX - Error-checking
 	$err = $stmt->execute();
 		// XXX - Error-checking
 	$stmt->close();
 
-	/* Next, delete the entry for the feed itself. */
+	/* Delete the feed from all groups that it's in. */
+	$query = "DELETE FROM group_members WHERE member = ?";
+	$stmt = $dbh->prepare($query);
+		// XXX - Error-checking
+	$err = $stmt->bind_param("i", $feed_id);
+		// XXX - Error-checking
+	$err = $stmt->execute();
+		// XXX - Error-checking
+	$stmt->close();
+
+	/* Delete the entry for the feed itself. */
 	$query = "DELETE FROM feeds WHERE id = ?";
 	$stmt = $dbh->prepare($query);
 		// XXX - Error-checking
-	$err = $stmt->bind_param("d", $feed_id);
+	$err = $stmt->bind_param("i", $feed_id);
 		// XXX - Error-checking
 	$err = $stmt->execute();
 		// XXX - Error-checking
@@ -983,7 +1010,7 @@ UPDATE	feeds
 EOT;
 	$stmt = $dbh->prepare($query);
 			// XXX - Error-checking
-	$err = $stmt->bind_param("d",
+	$err = $stmt->bind_param("i",
 				 $feed_id);
 			// XXX - Error-checking
 	$err = $stmt->execute();
@@ -1007,7 +1034,7 @@ WHERE		feed_id = ?
 EOT;
 		$stmt = $dbh->prepare($query);
 			// XXX - Error-checking
-		$err = $stmt->bind_param("dd",
+		$err = $stmt->bind_param("ii",
 				  $feed_id,
 				  $AUTODELETE_DAYS);
 			// XXX - Error-checking
@@ -1102,6 +1129,365 @@ EOT
 	}
 }
 
+/*****************************************
+ * Group-related functions
+ *****************************************/
+
+/* db_get_groups
+ * Return a list of feed groups, indexed by group id.
+ */
+function db_get_groups()
+{
+	$dbh = db_connect();
+
+	$query = "SELECT * FROM groups";
+	$result = $dbh->query($query);
+	if (!$result)
+	{
+		global $db_errno;
+		$db_errno = $dbh->errno;
+		global $db_errmsg;
+		$db_errmsg = $dbh->error;
+
+		return NULL;
+	}
+	$retval = array();
+	while ($row = $result->fetch_assoc())
+	{
+		$retval[$row['id']] = $row;
+	}
+
+	// Get the members as well.
+	// In each group's entry, 'members' is an array listing the
+	// IDs of members of that group. Positive IDs corresond to
+	// feeds, and negative IDs correspond to groups.
+	$result = $dbh->query("SELECT * FROM group_members");
+	if (!$result)
+	{
+		global $db_errno;
+		$db_errno = $dbh->errno;
+		global $db_errmsg;
+		$db_errmsg = $dbh->error;
+
+		return NULL;
+	}
+
+	while ($row = $result->fetch_assoc())
+	{
+		// $row == (member, parent)
+		// We take $row[parent] to get the parent, and append to
+		// its 'members' array.
+		$retval[$row['parent']]['members'][] = $row['member'];
+	}
+
+	return $retval;
+}
+
+/* db_get_group
+ * Return information about a single group. Like db_get_groups(), but
+ * for just one group.
+ */
+function db_get_group($gid)
+{
+	$dbh = db_connect();
+
+	$query = sprintf("SELECT * FROM groups WHERE id=%d",
+			 $gid);
+	$result = $dbh->query($query);
+	if (!$result)
+	{
+		global $db_errno;
+		$db_errno = $dbh->errno;
+		global $db_errmsg;
+		$db_errmsg = $dbh->error;
+
+		return NULL;
+	}
+	$retval = $result->fetch_assoc();
+
+	// Get the members as well.
+	// In each group's entry, 'members' is an array listing the
+	// IDs of members of that group. Positive IDs corresond to
+	// feeds, and negative IDs correspond to groups.
+	$query = sprintf("SELECT * FROM group_members WHERE parent=%d",
+			 $gid);
+	$result = $dbh->query($query);
+	if (!$result)
+	{
+		global $db_errno;
+		$db_errno = $dbh->errno;
+		global $db_errmsg;
+		$db_errmsg = $dbh->error;
+
+		return NULL;
+	}
+
+	while ($row = $result->fetch_assoc())
+	{
+		$retval['members'][] = $row['member'];
+	}
+	return $retval;
+}
+
+/* db_add_group
+ * Create a new group. Return its database entry.
+ * Default parent is -1, the root group.
+ */
+function db_add_group($name, $parent = -1)
+{
+	$dbh = db_connect();
+
+	// Create the group
+	$query = "INSERT INTO groups (parent, name) VALUES (?,?)";
+	$stmt = $dbh->prepare($query);
+	$result = $stmt->bind_param("is", $parent, $name);
+	$result = $stmt->execute();
+	$stmt->close();
+	if (!$result)
+	{
+		global $db_errno;
+		$db_errno = $dbh->errno;
+		global $db_errmsg;
+		$db_errmsg = $dbh->error;
+
+		return NULL;
+	}
+
+	// Invert the group ID: auto_increment gives it a positive
+	// value, but we want a negative one.
+	$result = $dbh->query("UPDATE groups SET id = -id WHERE id = last_insert_id()");
+	if (!$result)
+	{
+		global $db_errno;
+		$db_errno = $dbh->errno;
+		global $db_errmsg;
+		$db_errmsg = $dbh->error;
+
+		return NULL;
+	}
+
+	// Fetch the group info so we can return it to the caller.
+	$result = $dbh->query("SELECT * FROM groups WHERE id = -last_insert_id()");
+	if (!$result)
+	{
+		global $db_errno;
+		$db_errno = $dbh->errno;
+		global $db_errmsg;
+		$db_errmsg = $dbh->error;
+
+		return NULL;
+	}
+	$row = $result->fetch_assoc();
+
+	return $row;
+}
+
+/* db_update_group_info
+ * Similar to db_update_feed_info():
+ * $gid is the ID of a group to modify.
+ * $fields is an array (hash) of field => new_value pairs.
+ */
+function db_update_group_info($gid, $fields)
+{
+	$dbh = db_connect();
+
+	/* Get info about existing feed */
+	$old = db_get_group($gid);
+	if ($old === NULL)
+		// No such feed
+		return FALSE;
+
+	$new = $old;
+	$updates = array();
+	$bind_fmt = "";
+	$bind_values = array();
+
+	foreach (array('parent', 'name') as $f)
+	{
+		if (array_key_exists($f, $fields))
+		{
+			$new[$f] = $fields[$f];
+		}
+	}
+
+	$query = "UPDATE groups SET parent=?, name=? WHERE id=?";
+	$stmt = $dbh->prepare($query);
+	$result = $stmt->bind_param("isi",
+		$new['parent'],
+		$new['name'],
+		$gid);
+	if (!$result)
+	{
+		global $db_errno;
+		$db_errno = $dbh->errno;
+		global $db_errmsg;
+		$db_errmsg = $dbh->error;
+
+		return NULL;
+	}
+	$result = $stmt->execute();
+	$stmt->close();
+	if (!$result)
+	{
+		global $db_errno;
+		$db_errno = $dbh->errno;
+		global $db_errmsg;
+		$db_errmsg = $dbh->error;
+
+		return NULL;
+	}
+}
+
+/* db_delete_group
+ * Delete the group with id $gid.
+ * Returns TRUE if successful. Otherwise, returns NULL and sets $db_errno
+ * and $db_errmsg.
+ */
+function db_delete_group($gid)
+{
+	global $db_errno;
+	global $db_errmsg;
+
+	if ($gid == -1)
+	{
+		// Can't delete "All".
+		$db_errno = 0;	# XXX - Is this kosher?
+		$db_errmsg = "Can't delete group \"All\".";
+		return FALSE;
+	}
+
+	$dbh = db_connect();
+
+	/* Get info about existing feed */
+	$old = db_get_group($gid);
+	if ($old === NULL)
+		// No such feed. I guess we can go home early.
+		return TRUE;
+
+	// Move any members of this group to its parent.
+	// "IGNORE" says to ignore records where the operation would
+	// fail. Thus, if we have
+	//	"New York Times" in group "News"
+	//	"New York Times" in group "Politics"
+	// 	group "Politics" in group "News"
+	// we have a feed (New York Times) in both a group (Politics)
+	// and its parent (News).
+	//
+	// If we now delete "Politics", we want to move all members of
+	// Politics up one level. So normally we'd wind up with two
+	// instances of "New York Times in News". "IGNORE" says to
+	// skip those cases. We'll handle them separately, next.
+	$query = sprintf("UPDATE IGNORE group_members SET parent=%d WHERE parent=%d",
+			 $old['parent'],
+			 $gid);
+	$result = $dbh->query($query);
+	if (!$result)
+	{
+		$db_errno = $dbh->errno;
+		$db_errmsg = $dbh->error;
+
+		return NULL;
+	}
+	/* Delete any duplicates */
+	$query = sprintf("DELETE FROM group_members WHERE parent=%d",
+			 $gid);
+	$result = $dbh->query($query);
+	if (!$result)
+	{
+		$db_errno = $dbh->errno;
+		$db_errmsg = $dbh->error;
+
+		return NULL;
+	}
+
+	/* If this group has any child groups, move them up one level
+	 * as well, into the parent of $gid.
+	 */
+	$query = sprintf("UPDATE groups SET parent=%d WHERE parent=%d",
+			 $old['parent'],
+			 $gid);
+	$result = $dbh->query($query);
+	if (!$result)
+	{
+		$db_errno = $dbh->errno;
+		$db_errmsg = $dbh->error;
+
+		return NULL;
+	}
+
+	/* Delete this group from `groups` */
+	$query = sprintf("DELETE FROM groups WHERE id=%d",
+			 $gid);
+	$result = $dbh->query($query);
+	if (!$result)
+	{
+		$db_errno = $dbh->errno;
+		$db_errmsg = $dbh->error;
+
+		return NULL;
+	}
+
+	return TRUE;		// Success
+}
+
+/* db_group_add_member
+ * Add a new member to a group. $member can be positive (a feed ID) or
+ * negative (a group ID).
+ * XXX - Actually, for now, we want the new member to be positive (a
+ * feed).
+ */
+function db_group_add_member($group, $member)
+{
+	if ($group == -1)
+		// Silently succeed. Everything is part of -1.
+		return TRUE;
+
+	$dbh = db_connect();
+
+	$query = "INSERT INTO group_members (member, parent) VALUES (?,?)";
+	$stmt = $dbh->prepare($query);
+	$result = $stmt->bind_param("ii", $member, $group);
+	$result = $stmt->execute();
+	$stmt->close();
+	if (!$result)
+	{
+		global $db_errno;
+		$db_errno = $dbh->errno;
+		global $db_errmsg;
+		$db_errmsg = $dbh->error;
+
+		return NULL;
+	}
+
+	// Success
+	return TRUE;
+}
+
+/* db_group_remove_member
+ * Delete $member from group $gid.
+ * Returns TRUE if successful. Otherwise, returns NULL and sets $db_errno
+ * and $db_errmsg.
+ */
+function db_group_remove_member($gid, $member)
+{
+	$dbh = db_connect();
+
+	$query = sprintf("DELETE FROM group_members where member=%d and parent=%d",
+			 $member, $gid);
+	$result = $dbh->query($query);
+	if (!$result)
+	{
+		global $db_errno;
+		$db_errno = $dbh->errno;
+		global $db_errmsg;
+		$db_errmsg = $dbh->error;
+
+		return NULL;
+	}
+
+	return TRUE;
+}
+
 /* db_mark_url
  * Mark an item as read or unread, given the item's URL.
  * $is_read is a boolean, either true (mark item as read) or false
@@ -1130,6 +1516,7 @@ $err =
 			  $dbh->real_escape_string($url)
 		);
 echo "bind_param returned [$err]\n";
+# XXX - Is this right?
 	$result = $dbh->query($query);
 echo "result [$result]\n";
 	$err = $stmt->execute();
