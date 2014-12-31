@@ -85,10 +85,7 @@ function refresh_group_tree()
 		 */
 		$(li).on("click", ">.delete-group-button",
 			 {gid: val.id},
-			 function(ev) {
-console.log("Inside Delete event handler, gid == ", ev.data.gid);
-				 ev.preventDefault();
-});
+			 delete_group);
 
 
 		/* Add a handler to the "Edit" button.
@@ -98,10 +95,9 @@ console.log("Inside Delete event handler, gid == ", ev.data.gid);
 		 */
 		$(li).on("click", ">.edit-group-button",
 			 {gid: val.id},
-			 function(ev) {
-console.log("Inside Edit event handler, gid == ", ev.data.gid);
-				 ev.preventDefault();
-});
+			 edit_group);
+
+		// XXX - Make groups draggable, so they can be reparented.
 
 		return li;
 	}
@@ -150,6 +146,32 @@ function add_group(ev)
 		      true);
 }
 
+/* edit_group
+ * Handler for .edit-group-button buttons.
+ */
+function edit_group(ev)
+{
+	ev.preventDefault();		// Don't propagate the event and
+					// submit the form.
+	// XXX
+console.log("Inside edit_group, gid: ", ev.data.gid);
+
+	var this_entry = $(ev.target).parent(".group-entry");
+console.log("this entry: ", this_entry);
+	var parent_entry = this_entry.parents(".group-entry:first");
+console.log("parent entry: ", parent_entry);
+parent_entry.css("outline", "1px solid red");
+	var child_entries = this_entry.children(".child-groups");
+console.log("child entries: ", child_entries);
+child_entries.css("outline", "1px solid blue");
+
+	// XXX - Update the tree to make name editable.
+	// XXX - Make an AJAX call to edit the group.
+	// XXX - If successful, update the group in DOM.
+	// XXX - Update the copy of the group tree in local storage.
+	// XXX - Update feeds in local storage?
+}
+
 /* delete_group
  * Handler for .delete-group-button buttons.
  */
@@ -158,8 +180,33 @@ function delete_group(ev)
 	ev.preventDefault();		// Don't propagate the event and
 					// submit the form.
 	// XXX
-console.log("Inside delete_group, ev: ",ev);
-var parent = $(ev.target).parent(".group-entry");
-console.log("Parent: ", parent);
-console.log(parent.get().group_id);
+	var gid = ev.data.gid;
+console.log("Inside delete_group, gid: ", gid);
+
+	var this_entry = $(ev.target).parent(".group-entry");
+	var parent_entry = this_entry.parents(".group-entry:first");
+	var child_entries = this_entry.children(".child-groups");
+
+	// XXX - Make an AJAX call to delete the group.
+	get_json_data("group.php",
+		      { command:	"delete",
+			id:		gid,
+		      },
+		      // Handler
+		      function(value)
+		      {
+			      // Update the group tree, above.
+			      refresh_group_tree();
+		      },
+		      // Error handler
+		      function(status, msg)
+		      {
+			      console.error("Failed to delete group: error "+
+					    status+
+					    ", error "+err);
+		      },
+		      true);
+
+	// XXX - Update the copy of the group tree in local storage.
+	// XXX - Update feeds in local storage?
 }
