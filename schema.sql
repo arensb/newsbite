@@ -30,9 +30,22 @@ CREATE TABLE groups (
 )
 DEFAULT CHARSET=utf8;
 
-/* XXX - Need another table to specify which feeds go in which groups
- * (plural) and the relative order within each group.
- */
+/* Create one mandtory group: "All", with ID -1 */
+INSERT INTO groups (name, parent) VALUES ("All", -1);
+UPDATE groups SET id=-1 WHERE id=last_insert_id();
+
+/* group_members
+ * Lists members of groups, as a simple "X is a member of Y" relationship.
+ * If `member` is nonnegative, it's the ID of a feed. If it's negative,
+ * then it's the ID of a group in table `groups`.
+ * XXX - Actually, a feed can have multiple parents, but a group
+ * should probably only have one parent, at least for now.
+'*/
+CREATE TABLE group_members (
+	member		INT		NOT NULL,
+	parent		INT		NOT NULL DEFAULT -1,
+	UNIQUE KEY (member, parent)
+);
 
 CREATE TABLE feeds (
 	id		INT		NOT NULL AUTO_INCREMENT,
@@ -55,6 +68,47 @@ CREATE TABLE feeds (
 	username	char(32),	# Username, for authentication
 	passwd		char(32),	# Password, for authentication
 	PRIMARY KEY(id)
+)
+DEFAULT CHARSET=utf8;
+
+/* items
+ * An item is a story or article in a feed.
+ */
+CREATE TABLE items (
+	id		INT		NOT NULL AUTO_INCREMENT,
+					# Unique identifier for this item
+					# XXX - Should we use GUID, in case
+					# the same article shows up in two
+					# different feeds?
+	feed_id		INT NOT NULL,	# ID of feed
+	url		VARCHAR(511),	# Link to the full item
+	title		TINYTEXT,	# Title of the item
+	summary		TEXT,		# Summary of the item
+	content		TEXT,		# Full content of the item
+	author		VARCHAR(127),	# Author of the item
+			# XXX - Should this be broken down into author name,
+			# URL, and email? Probably yes.
+	category	VARCHAR(255),	# Categories the story goes in
+	comment_url	VARCHAR(255),	# URL for page with comments
+	comment_rss	VARCHAR(255),	# URL for RSS feed for comments
+	guid		VARCHAR(127) NOT NULL,	# Globally-unique ID.
+	pub_date	DATETIME,	# Publication date
+	last_update	DATETIME,	# Time when item was last updated
+	is_read		BOOLEAN,	# Has the item been read?
+	mtime		TIMESTAMP,	# When the item was last altered
+	PRIMARY KEY(id),
+	UNIQUE KEY(feed_id, guid),	# Having (feed_id, guid)
+					# instead of (guid) may be
+					# overkill, but it's to ensure
+					# that if two feeds have the
+					# same item (e.g., one
+					# contains the other), then
+					# they'll be considered
+					# separate items.
+	# Indexes to speed up lookups
+	KEY `last_update` (`last_update`),
+	KEY `is_read` (`is_read`),
+	KEY `mtime` (`mtime`)
 )
 DEFAULT CHARSET=utf8;
 
@@ -132,44 +186,3 @@ FOR EACH ROW
 	UPDATE counts
 	SET num_read = num_read + NEW.is_read - OLD.is_read
 	WHERE counts.feed_id = OLD.feed_id;
-
-/* items
- * An item is a story or article in a feed.
- */
-CREATE TABLE items (
-	id		INT		NOT NULL AUTO_INCREMENT,
-					# Unique identifier for this item
-					# XXX - Should we use GUID, in case
-					# the same article shows up in two
-					# different feeds?
-	feed_id		INT NOT NULL,	# ID of feed
-	url		VARCHAR(511),	# Link to the full item
-	title		TINYTEXT,	# Title of the item
-	summary		TEXT,		# Summary of the item
-	content		TEXT,		# Full content of the item
-	author		VARCHAR(127),	# Author of the item
-			# XXX - Should this be broken down into author name,
-			# URL, and email? Probably yes.
-	category	VARCHAR(255),	# Categories the story goes in
-	comment_url	VARCHAR(255),	# URL for page with comments
-	comment_rss	VARCHAR(255),	# URL for RSS feed for comments
-	guid		VARCHAR(127) NOT NULL,	# Globally-unique ID.
-	pub_date	DATETIME,	# Publication date
-	last_update	DATETIME,	# Time when item was last updated
-	is_read		BOOLEAN,	# Has the item been read?
-	mtime		TIMESTAMP,	# When the item was last altered
-	PRIMARY KEY(id),
-	UNIQUE KEY(feed_id, guid),	# Having (feed_id, guid)
-					# instead of (guid) may be
-					# overkill, but it's to ensure
-					# that if two feeds have the
-					# same item (e.g., one
-					# contains the other), then
-					# they'll be considered
-					# separate items.
-	# Indexes to speed up lookups
-	KEY `last_update` (`last_update`),
-	KEY `is_read` (`is_read`),
-	KEY `mtime` (`mtime`)
-)
-DEFAULT CHARSET=utf8;
