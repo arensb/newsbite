@@ -30,8 +30,10 @@ function group_list($group)
 	{
 		echo "<ul>";
 		foreach ($group['members'] as $g)
-			if ($g['id'] < 0)
+		{
+			if (isset($g['id']) && $g['id'] < 0)
 				group_list($g);
+		}
 		echo "</ul>";
 	}
 	echo "</li>\n";
