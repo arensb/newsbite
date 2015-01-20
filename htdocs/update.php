@@ -2,6 +2,8 @@
 /* update.php
  * Update one feed, or all feeds.
  */
+// XXX - At some point, this script stopped outputting proper HTML
+// when HTML output was requested. Huh. Or maybe it never did.
 $verbose = FALSE;		// Enables verbose output
 
 if (php_sapi_name() == "cli")
@@ -131,6 +133,21 @@ class console_output_handler extends feed_update_handler
 	}
 }
 
+/* Initialize output handler */
+switch ($out_fmt)
+{
+    case "json":
+	$handler = new json_output_handler();
+	break;
+    case "console":
+	$handler = new console_output_handler();
+	break;
+    case "html":
+    default:
+	$handler = new html_output_handler();
+	break;
+}
+
 /* See which feeds we're updating */
 if (is_numeric($feed_id) && is_int($feed_id+0))
 {
@@ -140,6 +157,12 @@ if (is_numeric($feed_id) && is_int($feed_id+0))
 	 * feed.
 	 * Except that I normally only use HTML mode to see progress and
 	 * error messages.
+	 * Except not really: In single-feed mode, clicking "Update
+	 * feed" should launch an Ajax call, and update the display.
+	 * So Ajax; much pretty. If the user opens update.php in a
+	 * separate window or tab, asking for HTML mode, then
+	 * presumably they want to see the full HTML, with pretty
+	 * output and such.
 	 */
 	/* XXX - Would this be desirable in "update all feeds" mode?
 	 * Maybe not. Just try one-feed mode for now.
@@ -152,51 +175,17 @@ if (is_numeric($feed_id) && is_int($feed_id+0))
 	 */
 	$feed = db_get_feed($feed_id);
 
-	switch ($out_fmt)
-	{
-	    case "html":
-		echo "<h3>Updating feed [$feed[title]]</h3>\n";
-		break;
-	    case "console":
-		echo "Updating feed [$feed[title]]\n";
-		break;
-	    case "json":
-		$skin = new Skin();
-		echo jsonify('state',	"start",
-			     'feed_id',	$feed_id,
-			     'title',	$feed['title']),
-			"\n";
-		flush();
-		break;
-	}
+	$handler->start_feed($feed_id, $feed['title']);
 	$err = update_feed($feed_id, $feed);
 
 	if (!$err)
 	{
 		// XXX - This should never happen
-		switch ($out_fmt)
-		{
-		    case "json":
-			// XXX - What to do?
-			break;
-		    case "console":
-			// XXX - Better error-handling
-			$err_msg = "feed $feed_id: $feed[title] ($feed[feed_url]): parse_feed() returned ";
-			if ($err === false) $err_msg .= "FALSE";
-			if ($err === null)  $err_msg .= "NULL";
-			if ($err === "")    $err_msg .= "(empty string)";
-			error_log($err_msg);
-			exit(1);
-		    case "html":
-		    default:
-			// XXX - Better error-handling
-			$err_msg = "feed $feed_id: $feed[title] (<a href=\"$feed[feed_url]\">RSS</a>]): parse_feed() returned ";
-			if ($err === false) $err_msg .= "FALSE";
-			if ($err === null)  $err_msg .= "NULL";
-			if ($err === "")    $err_msg .= "(empty string)";
-			abort($err_msg);
-			break;
-		}
+		$handler->error($feed_id, $feed['title'],
+			"parse_feed() returned " .
+				($err == "" ?
+				 var_export($err) : $err)
+			);
 	}
 
 	/* Error-checking */
@@ -217,6 +206,8 @@ if (is_numeric($feed_id) && is_int($feed_id+0))
 		    default:
 			abort($err['errmsg']);
 		}
+		$handler->error($feed_id, $feed['title'], $err['errmsg']);
+		// XXX - Do we exit(1) here?
 	}
 
 	$feed = $err;
@@ -249,20 +240,6 @@ if (is_numeric($feed_id) && is_int($feed_id+0))
 } elseif ($feed_id == "all")
 {
 	/* Update all feeds */
-	switch ($out_fmt)
-	{
-	    case "json":
-		$handler = new json_output_handler();
-		break;
-	    case "console":
-		$handler = new console_output_handler();
-		break;
-	    case "html":
-	    default:
-		$handler = new html_output_handler();
-		break;
-	}
-
 	update_all_feeds($handler);
 
 	// XXX - Prettier output
