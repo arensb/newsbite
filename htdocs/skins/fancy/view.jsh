@@ -499,6 +499,9 @@ function mark_item1(ev)
 		// If item_div.is_read isn't set, it defaults to false
 
 	// Flip the is_read bit, and add/remove the "item-read" class.
+	// XXX - Would this better rewritten as
+	//	$(item_div).toggleClass("item-read", item_div.is_read)
+	// ?
 	if (item_div.is_read)
 	{
 		item_div.is_read = false;
@@ -649,8 +652,30 @@ function key_mark_item()
 	if (current_item == null)
 		return;
 
+	var current_top = $(current_item).offset().top;
+
 	mark_item1({target: current_item});
 	// XXX - Advance to next item, and make it current.
+	// Scroll so that the next item down is at the same height as
+	// the current one. Unless the top is hidden, in which case
+	// scroll so the top is visible.
+
+	// XXX - I think this needs to be done in the deferred part of
+	// mark_item1(), which already has window-scrolling code.
+
+	// Need to $(current_item).offset().top gives the position
+	// from the top of the page. Compare this to
+	// window.pageYOffset, which gives the distance from the top
+	// of the page to the top of the window.
+	// Need to arrange things so that the top of the new current
+	// item is at the same height a the old current item.
+
+//			window.scrollTo(0,
+//				article.offset().top/* +
+//				body_top_offset*/);
+//console.log("Scrolling to 0, "+current_top);
+//	window.scrollTo(0, current_top);
+//		// XXX - X coordinate shouldn't change.
 }
 
 /* toggle_collapse_item
