@@ -64,8 +64,10 @@ function mark_groups($feed_id, &$group)
 				next;
 			}
 
-			if ($member['id'] < 0)
+			if (isset($member['id']) && intval($member['id']) < 0)
+			{
 				$retval += mark_groups($feed_id, $member);
+			}
 		}
 	}
 
