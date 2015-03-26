@@ -144,6 +144,6 @@ var item_tmpl_text = '<article class="item" id="item-@id@">\
 </div>
 
 <p>User <?=$skin_vars['auth_user']?>, session expires <?=$skin_vars['auth_expiration']?>.</p>
-
+<div id="page_bottom" style="margin-top: 100%;"></div>
 </body>
 </html>
