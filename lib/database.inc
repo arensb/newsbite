@@ -405,6 +405,30 @@ EOT;
 			return NULL;
 		}
 	}
+	// XXX - "group" == <gid>.
+	// I don't think we want to accept a group name "e.g., group=News",
+	// since those need not be unique. Though if the argument isn't an
+	// integer, it might be worth looking to see whether it's a name.
+	if (isset($args['group']))
+	{
+		$gid = $args['group'];
+		error_log("Looking for feeds in group ".$gid);
+		// XXX - If gid is not an integer, try to find a unique
+		// gid that matches its name.
+		if (!is_int($gid))
+		{
+			error_log("Non-numeric gid ".$gid);
+			return NULL;
+		}
+
+		// XXX - Find all feeds in this group (i.e., find all
+		// descendant groups, and all feeds in those groups).
+		$feeds = db_feeds_in_group($gid);
+
+		// XXX - Append to $subconditions something like
+		// "feed_id in (1, 3, 7, 19, 28)"
+	}
+
 	if (count($subconditions) > 0)
 		$query .= "WHERE " . implode("\nAND ", $subconditions) . "\n";
 
@@ -1226,6 +1250,26 @@ function db_get_group($gid)
 	{
 		$retval['members'][] = $row['member'];
 	}
+	return $retval;
+}
+
+/* db_feeds_in_group
+ * Given a(n integer) gid, return a list of all the feeds that are in
+ * that group, including its descendents.
+ */
+function db_feeds_in_group($gid)
+{
+	$groups = db_get_groups();
+
+	// XXX - For now, we don't really support nested groups well
+	// (there's no interface for nesting groups), so just assume
+	// a flat structure, and return the members.
+	if (!isset($groups[$gid]))
+	{
+		return NULL;
+	}
+	$retval = $groups[$gid]['members'];
+
 	return $retval;
 }
 
