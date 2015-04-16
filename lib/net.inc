@@ -294,7 +294,7 @@ function update_all_feeds($handler)
 			} else {
 				$handler->error($handle['feed']['id'],
 						$handle['feed']['title'],
-						"\$err[result] == [$err[result]], curl error " .
+						"\$err[result] == [$err[result]], url [".$handle['feed']['feed_url']."], curl error " .
 						curl_errno($handle['ch']) .
 						": " .
 						curl_error($handle['ch']));
