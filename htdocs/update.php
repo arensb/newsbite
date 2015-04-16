@@ -66,6 +66,8 @@ class html_output_handler extends feed_update_handler
 		echo "<b>Error";
 		if (isset($feed_id))
 			echo " in $feed_title ($feed_id)";
+		else
+			echo " in \$feed_id == undef";
 		echo ": $msg</b><br/>\n";
 	}
 }
