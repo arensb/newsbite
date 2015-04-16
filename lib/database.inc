@@ -122,6 +122,8 @@ EOT
 
 	while (list($member, $parent) = $result->fetch_row())
 	{
+		if (!isset($retval[$member]))
+			continue;
 		$retval[$member]['groups'][] = $parent;
 	}
 
