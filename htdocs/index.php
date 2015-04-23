@@ -16,8 +16,13 @@ echo "<", '?xml version="1.0" encoding="UTF-8"?', ">\n";
 </script>
 <script type="text/javascript" src="js/jquery.js"></script>
 <script type="text/javascript" src="js/feeds.js"></script>
+<script type="text/javascript" src="js/jquery-ui/jquery-ui.min.js"></script>
+<link rel="stylesheet" type="text/css" href="js/jquery-ui/jquery-ui.min.css" media="all" />
 </head>
 <body>
+<div id="dialog" title="First dialog">
+  <p>So, did jQuery UI work?</p>
+</div>
 <ul class="msglist" id="feed-msglist">
 </ul>
 

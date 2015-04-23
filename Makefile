@@ -30,7 +30,8 @@ RECURSIVE_DIRS =	\
 	htdocs/images \
 	htdocs/js \
 	lib \
-	plugins
+	plugins \
+	jquery-ui
 
 # XXX - Create htdocs/.htaccess based on the directories above
 # XXX - Create lib/config.inc based on the directories above

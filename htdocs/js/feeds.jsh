@@ -54,6 +54,8 @@ $(document).ready(function() {
 		// Also, clicking outside an open menu ought to close
 		// it.
 	});
+
+	$("#dialog").dialog();
 });
 
 /* update_feed
