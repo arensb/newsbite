@@ -108,7 +108,7 @@ var item_tmpl_text = '<article class="item" id="item-@id@">\
         </ul>\
       </td>\
       <td class="mark-td button-box-right">\
-        <label>Mark as read:&nbsp;</label>\
+        <label class="mark-read">Mark as read:&nbsp;</label>\
         <input class="mark-check" type="checkbox" name="cbb-@id@" value="1"/>\
       </td>\
     </tr>\
