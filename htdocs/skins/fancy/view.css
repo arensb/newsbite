@@ -26,6 +26,41 @@ body {
 	position:		relative;
 }
 
+/* Rules for small screens */
+@media screen and (max-width: 5in) {
+	.button-box-left {
+		display:	none;
+	}
+
+	body[orientation="right"] .button-box-left,
+	body[orientation="down"]  .button-box-left {
+		display:		table-cell;
+	}
+
+	body[orientation="right"] .button-box-right,
+	body[orientation="down"]  .button-box-right {
+		display:		none;
+	}
+
+	body[orientation="up"]    .button-box-left,
+	body[orientation="left"]  .button-box-left {
+		display:		none;
+	}
+
+	body[orientation="up"]    .button-box-right,
+	body[orientation="left"]  .button-box-right {
+		display:		table-cell;
+	}
+}
+
+/* Rules for big screens */
+@media screen and (min-width: 5in) {
+	.button-box-left {
+		display:	table-cell;
+		/* XXX - I'd like this to be "none" on desktops. */
+	}
+}
+
 h1 {
 	margin-left:		1em;
 	font-family:	"Roboto Thin", Arial, sans-serif;
@@ -364,10 +399,6 @@ input[type="submit"] {
 	font-size:		66%;
 	width:			6em;
 	padding-right:		0.5em;
-}
-
-.button-box-left {
-	display:		none;
 }
 
 /* Checkboxes on the top left on the iPad */

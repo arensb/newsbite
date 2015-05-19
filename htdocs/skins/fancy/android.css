@@ -91,26 +91,6 @@ body[orientation="down"] {
 	color:			black;
 }
 
-body[orientation="right"] .button-box-left,
-body[orientation="down"]  .button-box-left {
-	display:		table-cell;
-}
-
-body[orientation="right"] .button-box-right,
-body[orientation="down"]  .button-box-right {
-	display:		none;
-}
-
-body[orientation="up"]    .button-box-left,
-body[orientation="left"]  .button-box-left {
-	display:		none;
-}
-
-body[orientation="up"]    .button-box-right,
-body[orientation="left"]  .button-box-right {
-	display:		table-cell;
-}
-
 .item .mark-read {
 	display:		none;
 }
