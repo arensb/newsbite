@@ -265,6 +265,8 @@ console.log("I don't have this feed: ["+feed_id+"]");
 	// Get fresh feed and item information. When that arrives,
 	// it'll update the feed list.
 	init_feeds_items();
+update_size();
+$(window).resize(update_size);
 }
 
 /* toggle-pane
@@ -1283,4 +1285,11 @@ console.log("Calling cache.getitems(%s, %s, ...)", feed_id, item_id);
 	// XXX - Make the parts above topmost_item match newitesm
 	// XXX - Remove all but 10 read items below topmost_item.
 	// XXX - Make the parts below topmost_item match newitesm
+}
+
+function update_size()
+{
+	$("#width").html(window.innerWidth);
+	$("#height").html(window.innerHeight);
+	$("#dpi").html($("#one-inch").width());
 }

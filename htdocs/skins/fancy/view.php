@@ -121,6 +121,8 @@ var item_tmpl_text = '<article class="item" id="item-@id@">\
 <script type="text/javascript" src="skins/<?=$skin_dir?>/view.js"></script>
 </head>
 <body id="view-body" orientation="up">
+<div id="test-info">Width: <label id="width">?</label>, Height: <label id="height">?</label>; dpi: <label id="dpi">?</label></div>
+<div id="one-inch" style="width: 1in;"><!--1in--></div>
 <div id="navbar" class="open">
   <ul class="content">
     <li><a onclick="window.scrollTo(0,0)">Top</a></li>
