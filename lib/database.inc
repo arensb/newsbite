@@ -212,6 +212,51 @@ EOT
 	return $retval;
 }
 
+/* db_get_feed_options
+ * Get the options pertaining to a feed.
+ * Returns an array of $optionN => $valueN.
+ */
+/* XXX - $recursive == TRUE ought to check the feed's parent groups
+ * for defaults for any option that isn't overridden elsewhere. That
+ * is, if the "Washington Post" feed is in group "News", which is in
+ * group "All", then options set in "All" can be overriden in "News",
+ * and those can in turn be overridden by "Washington Post".
+ */
+function db_get_feed_options($feed_id, $recursive = FALSE)
+{
+	$dbh = db_connect();
+
+	$query = sprintf(<<<EOT
+SELECT	`name` AS `option`,
+	`value`
+FROM	feed_options
+WHERE	feed_id = %d
+EOT
+	    ,
+	    $feed_id);
+	$result = $dbh->query($query);
+	if (!$result)
+	{
+		global $db_errno;
+		$db_errno = $dbh->errno;
+		global $db_errmsg;
+		$db_errmsg = $dbh->error;
+#echo "Got an error: $db_errno: [$db_errmsg]<br/>\n";
+		return NULL;
+	}
+
+	$retval = array();
+	while ($row = $result->fetch_assoc())
+	{
+		$retval[$row['option']] = $row['value'];
+	}
+
+#echo "db_get_feed_options($feed_id) returning [", print_r($retval), "]<br/>\n";
+	return $retval;
+}
+
+# XXX - db_set_feed_options($feed_id, $options (opt => value ...)
+
 /* db_get_all_feed_counts
  * Get the number of read/unread articles in all feeds, as well as
  * the last publication and update time for each feed.
