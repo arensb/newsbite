@@ -24,9 +24,11 @@ function more_ads_hook($nodename, &$retval, &$context)
 	if (!is_string($retval))
 		return;
 	# Visible ad
-	$retval = preg_replace('{(<br */>\r?\n?)*<a href="http://da.feedsportal.com/.*?</a>}',
+#echo "more_ads before: <tt>"; print_r($retval);
+	$retval = preg_replace('{(<br */>\r?\n?)*<a href="http://(\w+)\.feedsportal.com/.*?</a>}',
 			       '',
 			       $retval);
+#echo "more_ads after: <tt>"; print_r($retval);
 }
 
 add_hook("summary", "more_ads_hook");
