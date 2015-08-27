@@ -256,6 +256,27 @@ EOT
 }
 
 # XXX - db_set_feed_options($feed_id, $options (opt => value ...)
+function db_set_feed_option($feed_id, $opt, $val)
+{
+	$query = <<<EOT
+INSERT INTO	feed_options
+	(feed_id, name, value)
+VALUES	(?,       ?,     ?)
+ON DUPLICATE KEY UPDATE
+	name=?,
+	value=?
+EOT;
+	$stmt = $dbh->prepare($query);
+	$stmt->bind_param("dssss",
+	    $feed_id,
+	    $opt, $val,
+	    $opt, $val);
+	$err = $stmt->execute();
+	if ($err)
+		echo "OK (", print_r($err, true), ") errno ", $dbh->errno, ", error [", $dbh->error, "]<br/>\n";
+	else
+		echo "<b>Error: ", $dbh->errno, ": \"", $dbh->error;
+}
 
 /* db_get_all_feed_counts
  * Get the number of read/unread articles in all feeds, as well as
