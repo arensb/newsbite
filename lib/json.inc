@@ -12,6 +12,11 @@ if (!function_exists('json_encode')):
  * Helper function for jsonify: takes one argument, and returns its
  * representation as a JSON string.
  */
+# XXX - Perhaps this should take a flag saying whether $it is a key or
+# a value: Firefox wants
+#	{ "123": "somevalue" }
+# but it might be good with
+#	{ "somekey": 123 }
 function json_encode($it)
 {
 	/* At this point, $it is the thing we're converting. Decide
@@ -22,7 +27,9 @@ function json_encode($it)
 	if (!isset($it))
 		$retval = "null";
 	elseif (is_numeric($it))
-		$retval = &$it;
+		$retval = '"' . $it . '"';	# Firefox doesn't like
+						# numeric array keys.
+						# Escape numbers.
 	elseif (is_bool($it))
 		$retval = ($it ? "true" : "false");
 	elseif (is_string($it))
