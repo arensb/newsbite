@@ -8,9 +8,9 @@ Make sure you have the following sofware packages installed:
 	- Curl
 	- MySQLi (not MySQL)
 	- XML Parser (php5-xml package for FreeBSD).
+	- (optional) php5-json
 - MySQL 5.x
 - (optional) HTMLPurifier, from http://www.htmlpurifier.org/
-
 
 INSTALLATION:
 
