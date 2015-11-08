@@ -10,7 +10,8 @@ Make sure you have the following sofware packages installed:
 	- XML Parser (php5-xml package for FreeBSD).
 - MySQL 5.x
 - (optional) HTMLPurifier, from http://www.htmlpurifier.org/
-
+  which in turn requires
+	- ctype PHP module
 
 INSTALLATION:
 
