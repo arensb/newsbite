@@ -91,7 +91,7 @@ CREATE TABLE items (
 	category	VARCHAR(255),	# Categories the story goes in
 	comment_url	VARCHAR(255),	# URL for page with comments
 	comment_rss	VARCHAR(255),	# URL for RSS feed for comments
-	guid		VARCHAR(127) NOT NULL,	# Globally-unique ID.
+	guid		VARCHAR(64) NOT NULL,	# Globally-unique ID.
 	pub_date	DATETIME,	# Publication date
 	last_update	DATETIME,	# Time when item was last updated
 	is_read		BOOLEAN,	# Has the item been read?
