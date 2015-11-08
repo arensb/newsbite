@@ -1,0 +1,5 @@
+UPDATE items
+	SET guid=MD5(guid);
+ALTER TABLE	items
+CHANGE COLUMN	guid
+	guid		VARCHAR(127) NOT NULL;
