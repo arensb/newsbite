@@ -33,6 +33,8 @@ function update_feed($feed_id, $feed = NULL)
 	}
 
 	/* Fetch the feed */
+	error_log("Updating feed $feed_id, url " .
+		  $feed['feed_url']);
 	$feed_text = fetch_url($feed['feed_url'],
 			       $feed['username'],
 			       $feed['passwd']);
