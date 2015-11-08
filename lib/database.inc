@@ -1017,8 +1017,24 @@ EOT;
 			$item['guid'] = $item['url'];
 		}
 
+		/* Something is quite picky about the value of
+		 * is_read. Let's be very careful about setting it.
+		 */
 		if (!isset($item['is_read']))
 			$item['is_read'] = false;
+		$is_read = 0;
+		switch ($item['is_read'])
+		{
+			case false:
+				$is_read = 0;
+				break;
+			case 1:
+				$is_read = 1;
+				break;
+			default:
+error_log("Unknown value for is_read: [" . print_r($item['is_read'], true) . "]");
+				break;
+		}
 		$stmt->bind_param("dsssssssssd" .
 				  "ssssssssdi",
 				  // Values for new items
@@ -1033,7 +1049,7 @@ EOT;
 				  $item['comment_feed'],
 				  $item['guid'],
 				  $item['pub_time'],
-				  $item['is_read'],
+				  $is_read,
 
 				  // Values for updated items
 				  $item['url'],
@@ -1073,8 +1089,10 @@ EOT;
 		// XXX - Better error-checking
 		if ($err)
 			;// echo "OK (", print_r($err), ") errno ", $dbh->errno, ", error [", $dbh->error, "]<br/>\n";
-		else
-			;// echo "<b>Error: ", $dbh->errno, ": \"", $dbh->error, "\"</b><br/>\n";
+		else {
+			error_log("MySQL error: " . $dbh->errno . ': "' .
+				  $dbh->error . '"');
+		}
 //echo "Affected rows: [", $stmt->affected_rows, "]<br/>\n";
 	}
 
