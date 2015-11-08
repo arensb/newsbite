@@ -150,6 +150,7 @@ switch ($out_fmt)
 	break;
 }
 
+error_log("Updating feed [$feed_id]");
 /* See which feeds we're updating */
 if (is_numeric($feed_id) && is_int($feed_id+0))
 {
@@ -228,11 +229,14 @@ if (is_numeric($feed_id) && is_int($feed_id+0))
 		flush();
 		break;
 	    case "console":
-		echo "Finished [$feed[title]]\n";
+		$handler->end_feed($feed);
 		break;
 	    case "html":
 	    default:
 		echo "Finished [$feed[title]]<br/>\n";
+	    	# XXX - ought to use
+#		$handler->end_feed($feed);
+		# But test it first.
 		break;
 	}
 
@@ -249,6 +253,7 @@ if (is_numeric($feed_id) && is_int($feed_id+0))
 		echo "<p><a href=\"view.php#id=$feed_id\">Read feeds</a></p>\n";
 } else {
 	/* Invalid feed ID. Abort with an error message */
+	error_log("Error: Invalid feed $feed_id");
 	abort("Invalid feed ID: $feed_id");
 }
 ?>

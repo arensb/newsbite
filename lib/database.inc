@@ -1011,14 +1011,41 @@ EOT;
 
 //echo "<pre>\$author [$author]</pre>\n";
 
-		if (!isset($item['guid']))
+		if (isset($item['guid']))
 		{
+			$guid = $item['guid'];
+			if (strlen($guid) > 127)
+			{
+				# error_log("Hashing overly-long guid $guid");
+				$guid = md5($guid);
+			}
+		} else {
 			// This item doesn't have a GUID, so make one.
-			$item['guid'] = $item['url'];
+			// URLs can get arbitrarily long, and all we
+			// want is something unique, so just use a
+			// hash of the long URL.
+			$guid = md5($item['url']);
 		}
 
+		/* Something is quite picky about the value of
+		 * is_read. Let's be very careful about setting it.
+		 */
 		if (!isset($item['is_read']))
 			$item['is_read'] = false;
+		$is_read = 0;
+		switch ($item['is_read'])
+		{
+			case false:
+				$is_read = 0;
+				break;
+			case 1:
+				$is_read = 1;
+				break;
+			default:
+error_log("Unknown value for is_read: [" . print_r($item['is_read'], true) . "]");
+				break;
+		}
+
 		$stmt->bind_param("dsssssssssd" .
 				  "ssssssssdi",
 				  // Values for new items
@@ -1031,9 +1058,9 @@ EOT;
 				  $dummy_categories,	// XXX - Deal with categories
 				  $item['comment_url'],
 				  $item['comment_feed'],
-				  $item['guid'],
+				  $guid,
 				  $item['pub_time'],
-				  $item['is_read'],
+				  $is_read,
 
 				  // Values for updated items
 				  $item['url'],
@@ -1073,8 +1100,19 @@ EOT;
 		// XXX - Better error-checking
 		if ($err)
 			;// echo "OK (", print_r($err), ") errno ", $dbh->errno, ", error [", $dbh->error, "]<br/>\n";
-		else
-			;// echo "<b>Error: ", $dbh->errno, ": \"", $dbh->error, "\"</b><br/>\n";
+		else {
+			error_log("MySQL error: " . $dbh->errno . ': "' .
+				  $dbh->error . '"');
+			// What follows is very ad hoc.
+			switch ($dbh->errno)
+			{
+			    case 1406:
+				error_log("guid: " . $guid);
+				break;
+			    default:
+				break;
+			}
+		}
 //echo "Affected rows: [", $stmt->affected_rows, "]<br/>\n";
 	}
 
