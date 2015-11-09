@@ -1101,11 +1101,15 @@ error_log("Unknown value for is_read: [" . print_r($item['is_read'], true) . "]"
 		if ($err)
 			;// echo "OK (", print_r($err), ") errno ", $dbh->errno, ", error [", $dbh->error, "]<br/>\n";
 		else {
-			error_log("MySQL error: " . $dbh->errno . ': "' .
+			error_log("MySQL error in feed $feed_id: " .
+				  $dbh->errno . ': "' .
 				  $dbh->error . '"');
 			// What follows is very ad hoc.
 			switch ($dbh->errno)
 			{
+			    case 1366:
+				print_r($item);
+				break;
 			    case 1406:
 				error_log("guid: " . $guid);
 				break;

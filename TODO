@@ -1,3 +1,14 @@
+- Bug: emoji causing problems:
+  "[09-Nov-2015 08:39:32 America/New_York] MySQL error in feed 315:
+  1366: "Incorrect string value: '\xF0\x9F\x9A\xA8" ...' for column
+  'content' at row 1""
+
+  See:
+  http://stackoverflow.com/questions/10957238/incorrect-string-value-when-trying-to-insert-utf-8-into-mysql-via-jdbc
+	"If you have MySQL 5.5 or later you can change the column
+  encoding from utf8 to utf8mb4. This encoding allows storage of
+  characters that occupy 4 bytes in UTF-8."
+
 - Bug: When subscribing to a feed, the initial display doesn't work:
   subscribe to a new feed, which gets ID 999. This redirects you to
   .../view.php?id=999.
