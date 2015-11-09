@@ -44,7 +44,7 @@ function db_connect()
 
 	/* Explicitly set the character set */
 	// XXX - There's probably a better way to do this.
-	$dbh->set_charset('utf8');
+	$dbh->set_charset('utf8mb4');
 
 	return $dbh;
 }
