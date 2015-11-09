@@ -1893,6 +1893,10 @@ function atom_element_handler(
 		break;
 
 	    case "content":
+		# XXX - Glutton for Pun, and probably others, has
+		#	<content type="html">
+		# Can we use this to make intelligent decisions about
+		# what to treat as HTML?
 		switch ($parent)
 		{
 		    case "entry":
