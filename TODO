@@ -62,12 +62,38 @@
 - Bug: keybindings.js doesn't handle non-letter bindings well: "?"
   gets turned into Spanish upside-down question mark by toUpperCase().
 	Need a notation to bind Esc.
+- Slow sync vs. fast sync:
+	Have the server send a timestamp (down to the millisecond, I'd
+  say) of the last update. The client will use this when requesting
+  the next update.
+	Initial (slow sync):
+  - Client requests sync of feed $f, around item $i, last_update 0
+    (epoch),
+  - Server sorts feed $f by time, returns a list of the items around
+    $i, and the current timestamp.
+	Subsequent fast sync:
+  - Client requests sync of feed $f, around item $i, last_update
+    12345 (whatever the server returned in the previous sync).
+  - Server sorts feed $f, gets list of items around $i, but only sends
+    the ones that have been updated since 12345.
+	Problems:
+	We need a cap, e.g., 100 items per update. How to indicate
+  continuation? Set a flag in the response, or set the last-update
+  timestamp to the most-recently-sent item? Or perhaps include the
+  timestamp and ID of the last-sent item (need to consider the
+  possibility that 1000 items have been updated at once with the same
+  timestamp).
+	What about if I'm reading (and syncing) feed 1, then start
+  reading feed 2, then feed "all"? The sync stamps are different.
+  Perhaps the client can send a hash of timestamps, saying "I have
+  feed 1 up to time_0, feed 2 up to time_2, "all" up to time_3"?
 - Use OAuth for authentication?
   http://oauth.net/2/
   Except it's apparentlly a mess, hard to use, hard to know when it's
   secure.
 - Look for better fonts?
   http://www.fontsquirrel.com/
+  League of Movable Type
 - CSS text-overflow property:
   http://www.w3schools.com/cssref/css3_pr_text-overflow.asp
 	text-overflow: "clip" | "ellipsis" | <string>;
