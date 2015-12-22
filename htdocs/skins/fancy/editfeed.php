@@ -6,6 +6,7 @@ $skin_dir = $skin_vars['skin'];
 $feeds = &$skin_vars['feed'];
 $feed = &$skin_vars['feed'];
 $groups = &$skin_vars['groups'];
+$feed_opts = db_get_feed_options($feed['id']);
 
 /* group_list
  * Print a tree of groups, each with a checkbox.
@@ -30,8 +31,10 @@ function group_list($group)
 	{
 		echo "<ul>";
 		foreach ($group['members'] as $g)
-			if ($g['id'] < 0)
+		{
+			if (isset($g['id']) && $g['id'] < 0)
 				group_list($g);
+		}
 		echo "</ul>";
 	}
 	echo "</li>\n";
@@ -189,6 +192,24 @@ function group_list($group)
       <input type="password" name="password" value="<?=$feed['passwd']?>" autocomplete="off"/>
     </td>
   </tr>
+
+  <tr>
+    <th class="section-title" colspan="0">Options</th>
+  </tr>
+<?
+    if (count($feed_opts) > 0):
+	foreach ($feed_opts as $opt => $value):
+?>
+    <tr>
+      <th><?=$opt?></th>
+      <td><input type="number"
+		name="opt_<?=$opt?>"
+		value="<?=$feed_opts[$opt]?>" /></td>
+    </tr>
+<?
+	  endforeach;
+    endif;
+?>
 </table>
 
 <input type="reset" value="Clear changes"/>

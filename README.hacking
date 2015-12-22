@@ -28,3 +28,11 @@
   | iPod     | Yes            | Yes          | Yes      | Yes  |
   | Safari 5 | Yes            | Yes          | No?      | Yes  |
   | Chrome   | ?              | ?            | ?        | ?    |
+
+- Browser sizes
+  - droid mini:
+	w: 360 px, h: 559 px, 96 dpi
+	=> 3.75" x 5.82"
+  - iPad air:
+	w: 768, h: 937 px, 96 dpi
+	=> 8.0" x 9.76"

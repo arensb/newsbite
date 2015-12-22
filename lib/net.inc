@@ -33,6 +33,8 @@ function update_feed($feed_id, $feed = NULL)
 	}
 
 	/* Fetch the feed */
+	error_log("Updating feed $feed_id, url " .
+		  $feed['feed_url']);
 	$feed_text = fetch_url($feed['feed_url'],
 			       $feed['username'],
 			       $feed['passwd']);
@@ -294,7 +296,7 @@ function update_all_feeds($handler)
 			} else {
 				$handler->error($handle['feed']['id'],
 						$handle['feed']['title'],
-						"\$err[result] == [$err[result]], curl error " .
+						"\$err[result] == [$err[result]], url [".$handle['feed']['feed_url']."], curl error " .
 						curl_errno($handle['ch']) .
 						": " .
 						curl_error($handle['ch']));

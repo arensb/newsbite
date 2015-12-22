@@ -866,6 +866,12 @@ error_log("After hooks, link is array\n");
 			# Jul, 19 2010 11:25:00 EDT
 			$children = preg_replace('/,/', ' ', $children);
 
+			# Hack: bedeworks.com (calendar.umd.edu) uses
+			# "UT" in its <pubDate> elements to indicate
+			# Greenwich time, which strtotime() doesn't know
+			# how to handle.
+			$children = preg_replace('/ UT$/', ' UCT', $children);
+
 			$retval['pub_time'] = strtotime($children);
 				// See note on time at top of file
 			break;
@@ -1887,6 +1893,10 @@ function atom_element_handler(
 		break;
 
 	    case "content":
+		# XXX - Glutton for Pun, and probably others, has
+		#	<content type="html">
+		# Can we use this to make intelligent decisions about
+		# what to treat as HTML?
 		switch ($parent)
 		{
 		    case "entry":

@@ -20,10 +20,6 @@ body {
 	border-bottom-color:	navy;
 }
 
-.button-box-left {
-	display:		table-cell;
-}
-
 .button-box input {
 	font-size:	16pt;
 	padding-left:	2px;

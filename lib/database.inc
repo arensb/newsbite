@@ -44,7 +44,7 @@ function db_connect()
 
 	/* Explicitly set the character set */
 	// XXX - There's probably a better way to do this.
-	$dbh->set_charset('utf8');
+	$dbh->set_charset('utf8mb4');
 
 	return $dbh;
 }
@@ -122,6 +122,8 @@ EOT
 
 	while (list($member, $parent) = $result->fetch_row())
 	{
+		if (!isset($retval[$member]))
+			continue;
 		$retval[$member]['groups'][] = $parent;
 	}
 
@@ -208,6 +210,72 @@ EOT
 		// XXX - Error-checking
 
 	return $retval;
+}
+
+/* db_get_feed_options
+ * Get the options pertaining to a feed.
+ * Returns an array of $optionN => $valueN.
+ */
+/* XXX - $recursive == TRUE ought to check the feed's parent groups
+ * for defaults for any option that isn't overridden elsewhere. That
+ * is, if the "Washington Post" feed is in group "News", which is in
+ * group "All", then options set in "All" can be overriden in "News",
+ * and those can in turn be overridden by "Washington Post".
+ */
+function db_get_feed_options($feed_id, $recursive = FALSE)
+{
+	$dbh = db_connect();
+
+	$query = sprintf(<<<EOT
+SELECT	`name` AS `option`,
+	`value`
+FROM	feed_options
+WHERE	feed_id = %d
+EOT
+	    ,
+	    $feed_id);
+	$result = $dbh->query($query);
+	if (!$result)
+	{
+		global $db_errno;
+		$db_errno = $dbh->errno;
+		global $db_errmsg;
+		$db_errmsg = $dbh->error;
+#echo "Got an error: $db_errno: [$db_errmsg]<br/>\n";
+		return NULL;
+	}
+
+	$retval = array();
+	while ($row = $result->fetch_assoc())
+	{
+		$retval[$row['option']] = $row['value'];
+	}
+
+#echo "db_get_feed_options($feed_id) returning [", print_r($retval), "]<br/>\n";
+	return $retval;
+}
+
+# XXX - db_set_feed_options($feed_id, $options (opt => value ...)
+function db_set_feed_option($feed_id, $opt, $val)
+{
+	$query = <<<EOT
+INSERT INTO	feed_options
+	(feed_id, name, value)
+VALUES	(?,       ?,     ?)
+ON DUPLICATE KEY UPDATE
+	name=?,
+	value=?
+EOT;
+	$stmt = $dbh->prepare($query);
+	$stmt->bind_param("dssss",
+	    $feed_id,
+	    $opt, $val,
+	    $opt, $val);
+	$err = $stmt->execute();
+	if ($err)
+		echo "OK (", print_r($err, true), ") errno ", $dbh->errno, ", error [", $dbh->error, "]<br/>\n";
+	else
+		echo "<b>Error: ", $dbh->errno, ": \"", $dbh->error;
 }
 
 /* db_get_all_feed_counts
@@ -405,6 +473,30 @@ EOT;
 			return NULL;
 		}
 	}
+	// XXX - "group" == <gid>.
+	// I don't think we want to accept a group name "e.g., group=News",
+	// since those need not be unique. Though if the argument isn't an
+	// integer, it might be worth looking to see whether it's a name.
+	if (isset($args['group']))
+	{
+		$gid = $args['group'];
+		error_log("Looking for feeds in group ".$gid);
+		// XXX - If gid is not an integer, try to find a unique
+		// gid that matches its name.
+		if (!is_int($gid))
+		{
+			error_log("Non-numeric gid ".$gid);
+			return NULL;
+		}
+
+		// XXX - Find all feeds in this group (i.e., find all
+		// descendant groups, and all feeds in those groups).
+		$feeds = db_feeds_in_group($gid);
+
+		// XXX - Append to $subconditions something like
+		// "feed_id in (1, 3, 7, 19, 28)"
+	}
+
 	if (count($subconditions) > 0)
 		$query .= "WHERE " . implode("\nAND ", $subconditions) . "\n";
 
@@ -919,14 +1011,41 @@ EOT;
 
 //echo "<pre>\$author [$author]</pre>\n";
 
-		if (!isset($item['guid']))
+		if (isset($item['guid']))
 		{
+			$guid = $item['guid'];
+			if (strlen($guid) > 127)
+			{
+				# error_log("Hashing overly-long guid $guid");
+				$guid = md5($guid);
+			}
+		} else {
 			// This item doesn't have a GUID, so make one.
-			$item['guid'] = $item['url'];
+			// URLs can get arbitrarily long, and all we
+			// want is something unique, so just use a
+			// hash of the long URL.
+			$guid = md5($item['url']);
 		}
 
+		/* Something is quite picky about the value of
+		 * is_read. Let's be very careful about setting it.
+		 */
 		if (!isset($item['is_read']))
 			$item['is_read'] = false;
+		$is_read = 0;
+		switch ($item['is_read'])
+		{
+			case false:
+				$is_read = 0;
+				break;
+			case 1:
+				$is_read = 1;
+				break;
+			default:
+error_log("Unknown value for is_read: [" . print_r($item['is_read'], true) . "]");
+				break;
+		}
+
 		$stmt->bind_param("dsssssssssd" .
 				  "ssssssssdi",
 				  // Values for new items
@@ -939,9 +1058,9 @@ EOT;
 				  $dummy_categories,	// XXX - Deal with categories
 				  $item['comment_url'],
 				  $item['comment_feed'],
-				  $item['guid'],
+				  $guid,
 				  $item['pub_time'],
-				  $item['is_read'],
+				  $is_read,
 
 				  // Values for updated items
 				  $item['url'],
@@ -981,8 +1100,23 @@ EOT;
 		// XXX - Better error-checking
 		if ($err)
 			;// echo "OK (", print_r($err), ") errno ", $dbh->errno, ", error [", $dbh->error, "]<br/>\n";
-		else
-			;// echo "<b>Error: ", $dbh->errno, ": \"", $dbh->error, "\"</b><br/>\n";
+		else {
+			error_log("MySQL error in feed $feed_id: " .
+				  $dbh->errno . ': "' .
+				  $dbh->error . '"');
+			// What follows is very ad hoc.
+			switch ($dbh->errno)
+			{
+			    case 1366:
+				print_r($item);
+				break;
+			    case 1406:
+				error_log("guid: " . $guid);
+				break;
+			    default:
+				break;
+			}
+		}
 //echo "Affected rows: [", $stmt->affected_rows, "]<br/>\n";
 	}
 
@@ -1226,6 +1360,26 @@ function db_get_group($gid)
 	{
 		$retval['members'][] = $row['member'];
 	}
+	return $retval;
+}
+
+/* db_feeds_in_group
+ * Given a(n integer) gid, return a list of all the feeds that are in
+ * that group, including its descendents.
+ */
+function db_feeds_in_group($gid)
+{
+	$groups = db_get_groups();
+
+	// XXX - For now, we don't really support nested groups well
+	// (there's no interface for nesting groups), so just assume
+	// a flat structure, and return the members.
+	if (!isset($groups[$gid]))
+	{
+		return NULL;
+	}
+	$retval = $groups[$gid]['members'];
+
 	return $retval;
 }
 

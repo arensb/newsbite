@@ -7,7 +7,7 @@ CREATE TABLE options (
 	value		VARCHAR(255),
 	PRIMARY KEY(name)
 )
-DEFAULT CHARSET=utf8;
+DEFAULT CHARSET=utf8mb4;
 
 CREATE TABLE feed_options (
 	feed_id		INT		NOT NULL,
@@ -15,7 +15,7 @@ CREATE TABLE feed_options (
 	value		VARCHAR(255),
 	PRIMARY KEY(feed_id, name)
 )
-DEFAULT CHARSET=utf8;
+DEFAULT CHARSET=utf8mb4;
 
 /* groups
  * For grouping feeds into nested groups.
@@ -28,7 +28,7 @@ CREATE TABLE groups (
 	name		VARCHAR(127),
 	PRIMARY KEY(id)
 )
-DEFAULT CHARSET=utf8;
+DEFAULT CHARSET=utf8mb4;
 
 /* Create one mandtory group: "All", with ID -1 */
 INSERT INTO groups (name, parent) VALUES ("All", -1);
@@ -45,7 +45,8 @@ CREATE TABLE group_members (
 	member		INT		NOT NULL,
 	parent		INT		NOT NULL DEFAULT -1,
 	UNIQUE KEY (member, parent)
-);
+)
+DEFAULT CHARSET=utf8mb4;
 
 CREATE TABLE feeds (
 	id		INT		NOT NULL AUTO_INCREMENT,
@@ -55,7 +56,7 @@ CREATE TABLE feeds (
 	nickname	VARCHAR(127),	# User-specified nickname (when the title blows)
 	url		VARCHAR(255),	# Site URL
 	feed_url	VARCHAR(255),	# RSS feed URL
-	description	TINYTEXT,	# Brief description of the feed
+	description	TEXT,		# Brief description of the feed
 	last_update	DATETIME,	# When this feed was last updated
 	image		VARCHAR(255),	# URL to image to use
 	active		BOOLEAN		# Is this feed active? Inactive feeds
@@ -69,7 +70,7 @@ CREATE TABLE feeds (
 	passwd		char(32),	# Password, for authentication
 	PRIMARY KEY(id)
 )
-DEFAULT CHARSET=utf8;
+DEFAULT CHARSET=utf8mb4;
 
 /* items
  * An item is a story or article in a feed.
@@ -82,16 +83,16 @@ CREATE TABLE items (
 					# different feeds?
 	feed_id		INT NOT NULL,	# ID of feed
 	url		VARCHAR(511),	# Link to the full item
-	title		TINYTEXT,	# Title of the item
-	summary		TEXT,		# Summary of the item
-	content		TEXT,		# Full content of the item
+	title		TEXT,		# Title of the item
+	summary		MEDIUMTEXT,	# Summary of the item
+	content		MEDIUMTEXT,	# Full content of the item
 	author		VARCHAR(127),	# Author of the item
 			# XXX - Should this be broken down into author name,
 			# URL, and email? Probably yes.
 	category	VARCHAR(255),	# Categories the story goes in
 	comment_url	VARCHAR(255),	# URL for page with comments
 	comment_rss	VARCHAR(255),	# URL for RSS feed for comments
-	guid		VARCHAR(127) NOT NULL,	# Globally-unique ID.
+	guid		VARCHAR(64) NOT NULL,	# Globally-unique ID.
 	pub_date	DATETIME,	# Publication date
 	last_update	DATETIME,	# Time when item was last updated
 	is_read		BOOLEAN,	# Has the item been read?
@@ -110,7 +111,7 @@ CREATE TABLE items (
 	KEY `is_read` (`is_read`),
 	KEY `mtime` (`mtime`)
 )
-DEFAULT CHARSET=utf8;
+DEFAULT CHARSET=utf8mb4;
 
 /* counts
  * Holds the number of read and unread items in each feed. This is for
@@ -122,7 +123,7 @@ CREATE TABLE counts (
 	num_read	INT,
 	PRIMARY KEY(feed_id)
 )
-DEFAULT CHARSET=utf8;
+DEFAULT CHARSET=utf8mb4;
 
 /* add_feed
  * Trigger to add a row to `counts` when we add a new feed.

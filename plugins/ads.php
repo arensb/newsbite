@@ -24,16 +24,11 @@ function more_ads_hook($nodename, &$retval, &$context)
 	if (!is_string($retval))
 		return;
 	# Visible ad
-	$retval = preg_replace('{(<br */>\r?\n?)*<a href="http://da.feedsportal.com/.*?</a>}',
+#echo "more_ads before: <tt>"; print_r($retval);
+	$retval = preg_replace('{(<br */>\r?\n?)*<a href="http://(\w+)\.feedsportal.com/.*?</a>}',
 			       '',
 			       $retval);
-
-	# Ads at the bottom of Onion articles
-	# Apparently the "mf-viral" class is sometimes in single quotes,
-	# and sometimes in double quotes.
-	$retval = preg_replace('{<div class=.mf-viral.>(.*?)</div>}',
-			       '',
-			       $retval);
+#echo "more_ads after: <tt>"; print_r($retval);
 }
 
 add_hook("summary", "more_ads_hook");
