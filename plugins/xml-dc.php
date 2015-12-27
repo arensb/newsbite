@@ -1,4 +1,4 @@
-<?
+<?php
 /* Plugin for the RSS Dublin Core extension:
  * Handle the RSS Dublin Core extension:
  * http://purl.org/dc/elements/1.1/

@@ -1,4 +1,4 @@
-<?
+<?php
 /* database.inc
  * Database-related functions. Nothing else should access the database
  * directly.

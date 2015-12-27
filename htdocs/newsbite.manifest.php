@@ -3,9 +3,9 @@ CACHE MANIFEST
 index.php
 view.php
 js/jquery.js
-<?# The files after the "NETWORK:" line will be fetched each time.?>
+<?php# The files after the "NETWORK:" line will be fetched each time.?>
 #NETWORK:
-<?#
+<?php#
 # Skin files:
 ?>
 #CACHE:

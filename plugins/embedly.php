@@ -1,4 +1,4 @@
-<?
+<?php
 /* Plugin to remove the annoying embedly frames that Cheezburger uses. Or at
  * least the YouTube ones.
  */

@@ -27,7 +27,7 @@ $skin_dir = $skin_vars['skin'];
 </head>
 <body id="edit-group">
 
-<? /* XXX - Links to get back to interesting places, like feed list */ ?>
+<?php /* XXX - Links to get back to interesting places, like feed list */ ?>
 <h1>Groups</h1>
 
 <form name="edit-groups" method="post" action="group.php">

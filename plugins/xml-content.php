@@ -1,4 +1,4 @@
-<?
+<?php
 /* Plugin for handling the RSS Content:
  * http://purl.org/rss/1.0/modules/content/
  *

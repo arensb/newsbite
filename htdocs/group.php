@@ -1,4 +1,4 @@
-<?
+<?php
 /* group.php
  * Edit groups and whatnot.
  */
