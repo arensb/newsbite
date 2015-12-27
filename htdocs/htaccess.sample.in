@@ -2,7 +2,7 @@
 AuthType Digest
 AuthName "Newsbite"
 AuthDigestDomain /newsbite/
-AuthDigestProvider
+AuthDigestProvider file
 AuthUserFile @INSTALL_ROOT@/.digest_pw
 
 <Files "login.php">
