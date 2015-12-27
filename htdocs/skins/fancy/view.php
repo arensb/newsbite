@@ -1,4 +1,4 @@
-<?
+<?php
 // Give some of the skin variables shorter names
 $skin_dir = $skin_vars['skin'];
 
@@ -19,7 +19,7 @@ echo '<', '?xml version="1.0" encoding="UTF-8"?', ">\n";
       href="skins/<?=$skin_dir?>/newsbite-splash-ipad.png"
       media="screen
       and (min-device-width: 481) and (orientation: portrait)"/>
-<?
+<?php
 // Actually, don't use this: it make iOS consider this app a
 // standalone app, which means that all links open a separate instance
 // of Mobile Safari (rather than just a new tab), which is inelegant.

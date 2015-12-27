@@ -1,4 +1,4 @@
-<?
+<?php
 /* view.php
  * Display a feed.
  */

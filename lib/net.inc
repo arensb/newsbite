@@ -1,4 +1,4 @@
-<?
+<?php
 /* net.inc
  * Network-related functions.
  */

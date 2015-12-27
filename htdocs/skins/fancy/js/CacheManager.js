@@ -576,7 +576,8 @@ console.log("What should I do with this?:\n%o", entry);
 	// get_json_data callback when there's an error
 	function slow_sync_error(status, msg)
 	{
-		alert("slow_sync_error "+status+"\n"+msg);
+		console.log("slow_sync_error ", status, ": ", msg);
+		msg_add("slow_sync_error "+status+": "+msg);
 		if (typeof(user_err_cb) == "function")
 			user_err_cb(status, msg);
 	}

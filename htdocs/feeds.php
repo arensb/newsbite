@@ -1,4 +1,4 @@
-<?
+<?php
 /* feeds.php
  * Send list of feeds.
  */

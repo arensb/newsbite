@@ -233,6 +233,7 @@ msg_add("get_json_data: can't createXMLHttpRequest: "+request);
 	request.open('POST', url);
 	request.setRequestHeader('Content-Type',
 		'application/x-www-form-urlencoded');
+	request.timeout = 10000;	// Timeout, in ms.
 
 	var param_string = "o=json";
 	for (var p in params)
@@ -242,6 +243,15 @@ msg_add("get_json_data: can't createXMLHttpRequest: "+request);
 		param_string += p + "=" +
 			encodeURIComponent(params[p]);
 	}
+
+	request.ontimeout = function(e) {
+		console.debug("Request timed out.");
+		console.debug(request);
+
+		// Give the caller a chance to deal with this.
+		if (err_handler != null)
+			err_handler(null, "Request timed out.");
+	};
 
 	if (handler)
 	{
