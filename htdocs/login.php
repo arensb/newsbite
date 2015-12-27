@@ -1,4 +1,4 @@
-<?
+<?php
 /* login.php
  * Authenticate the user.
  *
@@ -104,7 +104,7 @@ if (isset($_SERVER['REMOTE_USER']))
 <p><a href="<?=$from?>">Back to where you came from</a></p>
 </body>
 </html>
-<?
+<?php
 	exit(0);
 }
 
@@ -129,18 +129,18 @@ if (isset($user) &&
 <p><a href="<?=$from?>">Back to where you came from</a></p>
 </body>
 </html>
-<?
+<?php
 	else:	// Login unsuccessful
 ?>
 <html>
 <body>
 <h1>Login unsuccessful</h1>
-<p>Sorry, <?=$user?> (from=<pre>[<?$from?>]</pre>)</p>
+<p>Sorry, <?=$user?> (from=<pre>[<?=$from?>]</pre>)</p>
 
 <p><a href="<?=$from?>">Back to where you came from</a></p>
 </body>
 </html>
-<?	endif;
+<?php	endif;
 else:
 /* User hasn't authenticated correctly */
 ?>
@@ -160,4 +160,4 @@ Password: <input name="pass" type="password"/><br/>
 <!-- <?phpinfo()?> -->
 </body>
 </html>
-<? endif; ?>
+<?php endif; ?>

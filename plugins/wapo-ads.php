@@ -1,4 +1,4 @@
-<?
+<?php
 /* Hook to remove "Featured Advertiser" entries in WaPo.
  */
 function wapo_ads($nodename, &$retval, &$context)

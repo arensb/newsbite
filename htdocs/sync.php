@@ -1,4 +1,4 @@
-<?
+<?php
 /* sync.php
  */
 require_once("common.inc");

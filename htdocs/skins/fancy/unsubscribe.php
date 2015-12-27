@@ -1,4 +1,4 @@
-<?
+<?php
 // Give some of the skin variables shorter names
 $skin_dir = $skin_vars['skin'];
 $feed = &$skin_vars['feed'];
@@ -26,16 +26,16 @@ echo '<', '?xml version="1.0" encoding="UTF-8"?', ">\n";
     <td><?=$feed['title']?></td>
   </tr>
 
-<? if ($feed['nickname'] != ""):
+<?php if ($feed['nickname'] != ""):
 ?>
   <tr>
     <th>Nickname</th>
     <td><?=$feed['nickname']?>
   </tr>
-<? endif
+<?php endif
 ?>
 
-<? if ($feed['description'] != ""):
+<?php if ($feed['description'] != ""):
 	$description = $feed['description'];
 	run_hooks("clean-html", array(&$description));
 ?>
@@ -43,7 +43,7 @@ echo '<', '?xml version="1.0" encoding="UTF-8"?', ">\n";
     <th>Description</th>
     <td><?=$description?></td>
   </tr>
-<? endif
+<?php endif
 ?>
 
   <tr>

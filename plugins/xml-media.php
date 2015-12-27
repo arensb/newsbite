@@ -1,4 +1,4 @@
-<?
+<?php
 /* Hook for parsing the media XML namespace:
  * http://search.yahoo.com/mrss/
  *

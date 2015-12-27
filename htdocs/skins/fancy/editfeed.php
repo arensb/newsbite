@@ -50,16 +50,16 @@ function group_list($group)
 </head>
 <body id="edit-feed">
 
-<? /* XXX - Links to get back to interesting places, like feed list */ ?>
+<?php /* XXX - Links to get back to interesting places, like feed list */ ?>
 <h1>Editing feed <?=htmlspecialchars($feed['title'])?></h1>
 
 <form name="edit-feed" method="post" action="editfeed.php">
-<?/* Feed ID */?>
+<?php/* Feed ID */?>
 <input type="hidden" name="id" value="<?=$feed['id']?>"/>
 <input type="hidden" name="command" value="<?=$skin_vars['command']?>"/>
 
 <table id="show-feed">
-<?/* XXX - Is it worth displaying the feed ID? */ ?>
+<?php/* XXX - Is it worth displaying the feed ID? */ ?>
   <tr>
     <th>ID</th>
     <td><?=$feed['id']?></td>
@@ -75,18 +75,18 @@ function group_list($group)
     <td><?=$feed['subtitle'] ? htmlspecialchars($feed['subtitle']) : "&nbsp;"?></td>
   </tr>
 
-<?/* User-settable nickname */ ?>
+<?php/* User-settable nickname */ ?>
   <tr>
     <th>Nickname</th>
     <td>
-<? if (isset($skin_vars['errors']['nickname'])): ?>
+<?php if (isset($skin_vars['errors']['nickname'])): ?>
         <div class="error-msg"><?=$skin_vars['errors']['nickname']?></div>
-<? endif ?>
+<?php endif ?>
       <input type="text" name="nickname" value="<?=$feed['nickname']?>"/>
     </td>
   </tr>
 
-<?/* XXX - There should be a button or something to try to
+<?php/* XXX - There should be a button or something to try to
    * auto-discover the feed URL from the site URL. Presumably the way
    * to do this is to fetch the site URL and check for "link
    * rel=alternate", where the MIME type is RSS or Atom.
@@ -98,9 +98,9 @@ function group_list($group)
   <tr>
     <th>Site URL</th>
     <td>
-<? if (isset($skin_vars['errors']['url'])): ?>
+<?php if (isset($skin_vars['errors']['url'])): ?>
         <div class="error-msg"><?=$skin_vars['errors']['url']?></div>
-<? endif ?>
+<?php endif ?>
       <input type="text" name="url" value="<?=$feed['url']?>"/>
     </td>
   </tr>
@@ -108,9 +108,9 @@ function group_list($group)
   <tr>
     <th>Feed URL</th>
     <td>
-<?    if (isset($skin_vars['errors']['feed_url'])): ?>
+<?php    if (isset($skin_vars['errors']['feed_url'])): ?>
         <div class="error-msg"><?=$skin_vars['errors']['feed_url']?></div>
-<? endif ?>
+<?php endif ?>
       <input type="text" name="feed_url" value="<?=$feed['feed_url']?>"/>
     </td>
   </tr>
@@ -118,7 +118,7 @@ function group_list($group)
   <tr>
     <th>Description</th>
     <td>
-      <div><?
+      <div><?php
 	# Sanitize description before displaying it.
 	$description = $feed['description'];
 	run_hooks("clean-html", array(&$description));
@@ -127,7 +127,7 @@ function group_list($group)
     </td>
   </tr>
 
-<?/* XXX - Probably not worth displaying this */ ?>
+<?php/* XXX - Probably not worth displaying this */ ?>
   <tr>
     <th>Last update</th>
     <td><?=$feed['last_update']?></td>
@@ -136,18 +136,18 @@ function group_list($group)
   <tr>
     <th>Image</th>
     <td>
-<?    if (isset($feed['image'])): ?>
+<?php    if (isset($feed['image'])): ?>
         <img src="<?=$feed['image']?>"/>
-<? else: ?>
+<?php else: ?>
         No image.
-<? endif ?>
+<?php endif ?>
     </td>
   </tr>
 
   <tr>
     <th>Groups</th>
     <td>
-<?
+<?php
       if (isset($groups['members'])  && count($groups['members']) > 0)
       {
 		echo "<ul>";
@@ -164,8 +164,8 @@ function group_list($group)
     <th>Active</th>
     <td>
       <input type="checkbox" name="active"
-	<? if ($feed['active']) echo ' checked="checked"' ?>
-<?/*        {if $feed.active}
+	<?php if ($feed['active']) echo ' checked="checked"' ?>
+<?php/*        {if $feed.active}
           checked
         {/if}
 */?>
@@ -176,9 +176,9 @@ function group_list($group)
   <tr>
     <th>Username</th>
     <td>
-<?    if (isset($skin_vars['errors']['username'])): ?>
+<?php    if (isset($skin_vars['errors']['username'])): ?>
         <div class="error-msg"><?=$skin_vars['errors']['username']?></div>
-<? endif ?>
+<?php endif ?>
       <input type="text" name="username" value="<?=$feed['username']?>" autocomplete="off"/>
     </td>
   </tr>
@@ -186,9 +186,9 @@ function group_list($group)
   <tr>
     <th>Password</th>
     <td>
-<?    if (isset($skin_vars['errors']['passwd'])): ?>
+<?php    if (isset($skin_vars['errors']['passwd'])): ?>
         <div class="error-msg"><?=$skin_vars['errors']['passwd']?></div>
-<? endif ?>
+<?php endif ?>
       <input type="password" name="password" value="<?=$feed['passwd']?>" autocomplete="off"/>
     </td>
   </tr>
@@ -196,7 +196,7 @@ function group_list($group)
   <tr>
     <th class="section-title" colspan="0">Options</th>
   </tr>
-<?
+<?php
     if (count($feed_opts) > 0):
 	foreach ($feed_opts as $opt => $value):
 ?>
@@ -206,7 +206,7 @@ function group_list($group)
 		name="opt_<?=$opt?>"
 		value="<?=$feed_opts[$opt]?>" /></td>
     </tr>
-<?
+<?php
 	  endforeach;
     endif;
 ?>
