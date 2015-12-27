@@ -43,7 +43,9 @@ if (!(isset($NO_AUTH_CHECK)) || !$NO_AUTH_CHECK)
 	 * (E.g., name of the cookie, names of the config variables,
 	 * etc.)
 	 */
-	$login_cookie = $_COOKIE['newsbite_user'];
+	$login_cookie = NULL;
+	if (array_key_exists('newsbite_user', $_COOKIE))
+		$login_cookie = $_COOKIE['newsbite_user'];
 
 	# XXX - This code probably belongs in login.php. Except, want
 	# to avoid infinite recursion of #includes.
