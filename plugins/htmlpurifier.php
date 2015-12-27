@@ -1,4 +1,4 @@
-<?
+<?php
 /* Plugin to use HTMLpurifier to clean up HTML.
  * See http://www.htmlpurifier.org/
  */

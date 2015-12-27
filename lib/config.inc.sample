@@ -1,4 +1,4 @@
-<?
+<?php
 /* Database access settings */
 $DB_HOST = "localhost";		// Host on which database resides
 $DB_NAME = "newsbite";		// Database name

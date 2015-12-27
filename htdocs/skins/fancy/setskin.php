@@ -1,4 +1,4 @@
-<?
+<?php
 /* XXX - Should probably have separate template for page top (and
  * possibly page bottom). Should include all the CSS magic.
  */
@@ -26,7 +26,7 @@ Cookies must be turned on for skins to work.
 <form method="post" action="setskin.php">
   Choose a skin:
   <select name="newskin">
-<?
+<?php
 foreach ($skin_vars['skins'] as $s)
 {
 	echo "<option";
@@ -41,7 +41,7 @@ foreach ($skin_vars['skins'] as $s)
   <br/>
   <input type="submit" name="set-skin" value="Set Skin"/>
 </form>
-<?
+<?php
 /* XXX - Might be nice to have an iframe with a sample document,
  * so can preview the skin.
  */

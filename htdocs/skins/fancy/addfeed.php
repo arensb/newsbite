@@ -48,7 +48,7 @@ if (navigator.registerContentHandler)
 <form name="add-feed-form" method="post" action="addfeed.php">
 
 <table id="add-feed">
-<?
+<?php
 /* If we've been given a list of URLs (presumably extracted from a
  * page by addfeed.php), display that list.
  */
@@ -58,7 +58,7 @@ if (isset($skin_vars['feed_list'])):
     <th id="th-feed-list">Pick a URL</th>
     <td>
       <ul class="feed-list">
-<?
+<?php
 	$is_default = true;
 	foreach ($skin_vars['feed_list'] as $f)
 	{
@@ -75,23 +75,23 @@ if (isset($skin_vars['feed_list'])):
       </ul>
     </td>
   </tr>
-<? else:	/* No list of URLs given. Display a text entry field */ ?>
+<?php else:	/* No list of URLs given. Display a text entry field */ ?>
   <tr>
     <th>Feed URL</th>
     <td>
-<? if (isset($skin_vars['errors']['feed_url'])): ?>
+<?php if (isset($skin_vars['errors']['feed_url'])): ?>
         <div class="error-msg"><?=$skin_vars['errors']['feed_url']?></div>
-<? endif ?>
+<?php endif ?>
       <input type="text" name="feed_url" value="<?=$skin_vars['feed']['feed_url']?>"/>
     </td>
   </tr>
-<? endif ?>
+<?php endif ?>
   <tr>
     <th>Username</th>
     <td>
-<? if (isset($skin_vars['errors']['username'])): ?>
+<?php if (isset($skin_vars['errors']['username'])): ?>
         <div class="error-msg"><?=$skin_vars['errors']['username']?></div>
-<? endif ?>
+<?php endif ?>
       <input type="text" name="username" value="<?=$skin_vars['feed']['username']?>"/>
     </td>
   </tr>
@@ -99,9 +99,9 @@ if (isset($skin_vars['feed_list'])):
   <tr>
     <th>Password</th>
     <td>
-<? if (isset($skin_vars['errors']['passwd'])): ?>
+<?php if (isset($skin_vars['errors']['passwd'])): ?>
         <div class="error-msg"><?=$skin_vars['errors']['passwd']?></div>
-<? endif ?>
+<?php endif ?>
       <input type="password" name="password" value="<?=$skin_vars['feed']['passwd']?>"/>
     </td>
   </tr>

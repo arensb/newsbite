@@ -43,7 +43,9 @@ if (!(isset($NO_AUTH_CHECK)) || !$NO_AUTH_CHECK)
 	 * (E.g., name of the cookie, names of the config variables,
 	 * etc.)
 	 */
-	$login_cookie = $_COOKIE['newsbite_user'];
+	$login_cookie = NULL;
+	if (array_key_exists('newsbite_user', $_COOKIE))
+		$login_cookie = $_COOKIE['newsbite_user'];
 
 	# XXX - This code probably belongs in login.php. Except, want
 	# to avoid infinite recursion of #includes.
@@ -73,7 +75,7 @@ if (!(isset($NO_AUTH_CHECK)) || !$NO_AUTH_CHECK)
 <p><a href="login.php?from=<?=urlencode($_SERVER['REQUEST_URI'])?>">Go log in</a></p>
 </body>
 </html>
-<?
+<?php
 		exit(0);
 	}
 
@@ -98,7 +100,7 @@ if (!(isset($NO_AUTH_CHECK)) || !$NO_AUTH_CHECK)
 <p><a href="login.php?from=<?=urlencode($_SERVER['REQUEST_URI'])?>">Go log in</a></p>
 </body>
 </html>
-<?
+<?php
 		exit(0);
 	}
 
@@ -184,7 +186,7 @@ function bare_abort($msg)
 
 </body>
 </html>
-<?
+<?php
 	 exit(0);
 }
 
