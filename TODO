@@ -87,6 +87,24 @@
   reading feed 2, then feed "all"? The sync stamps are different.
   Perhaps the client can send a hash of timestamps, saying "I have
   feed 1 up to time_0, feed 2 up to time_2, "all" up to time_3"?
+- Groups: we can precompute group membership: just add an "implied"
+  boolean field to the group table. "implied == false" means that the
+  user set group membership explicitly; "implied == true" means that
+  it's implied by the explicit relationships.
+	Thus, if we have
+	group All, gid -1
+	group News, gid -2
+	group Politics, gid -3
+	feed Electoral Vote, id 123
+  and we add Electoral Vote to group Politics, Politics to News, and
+  News to All, we'll have explicit relationships:
+	Electoral Vote (123) in Politics (-3)
+	Politics (-3) in News (-2)
+	News (-2) in All (-1)
+  from which we can derive implicit memberships:
+	Electoral Vote (123) in News (-2)
+	Electoral Vote (123) in All (-1)
+	Politics (-3) in All (-1)
 - Use OAuth for authentication?
   http://oauth.net/2/
   Except it's apparentlly a mess, hard to use, hard to know when it's
