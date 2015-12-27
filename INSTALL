@@ -13,6 +13,7 @@ Make sure you have the following sofware packages installed:
 - (optional) HTMLPurifier, from http://www.htmlpurifier.org/
   which in turn requires
 	- ctype PHP module
+- apache2-utils Debian package (for htdigest)
 
 INSTALLATION:
 
@@ -88,7 +89,7 @@ INSTALLATION:
 
 	- Create .digest_pw
 
-	> htdigst -c /path/to/.digest_pw "Newsbite on MySite" myusername
+	> htdigest -c /path/to/.digest_pw "Newsbite on MySite" myusername
 	Adding password for myusername in realm Newsbite on MySite.
 	New password: 
 	Re-type new password: 
