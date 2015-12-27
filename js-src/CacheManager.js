@@ -520,6 +520,49 @@ CacheManager.prototype.purge_item = function(item_id)
 	delete this.itemindex[item_id];
 }
 
+/* slow_sync
+ * Send:
+ *	{
+ *	id: feed ID
+ *	ihave: hash of items
+ *	}
+ * ihave[id] -> {is_read, mtime}
+ * where is_read is a boolean saying whether the item has been marked
+ * read, and mtime is a timestamp of when the item was updated.
+ *
+ * The server takes this list of items and decides what to do for each
+ * one: normally, it just sets the "is_read" status to what's in the
+ * call above. If the item was updated after 'mtime', then 'is_read'
+ * is ignored, and the item stays as-is.
+ *
+ * Receive:
+ *	[
+ *	  {
+ *		id: 12345,
+ *		action: delete
+ *	  },
+ *	  {
+ *		id: 23456,
+ *		is_read: <bool>,
+ *		mtime: <timestamp>,
+ *	  },
+ *	  {
+ *		id: 34567,
+ *		title: "...",
+ *		summary: "...",
+ *		...
+ *	  },
+ *	... ]
+ *
+ * The server returns a list of items that the client needs to update:
+ * If "action" is set to "delete", the article no longer exists in the
+ * database and should be deleted.
+ *	If just "is_read" is set (and is true), then the article
+ * has been marked read. It can be removed from cache.
+ *	If it's a whole new item, then it's an item that has arrived
+ * on the server, that the client doesn't have yet. It should be added
+ * to local storage.
+ */
 CacheManager.prototype.slow_sync = function(feed_id, user_cb, user_err_cb)
 {
 	/* Inner helper functions */
