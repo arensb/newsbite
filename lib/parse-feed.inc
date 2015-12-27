@@ -1,4 +1,4 @@
-<?
+<?php
 /* parse-feed.inc
  * Functions for parsing RSS (and similar) XML feed files.
  */

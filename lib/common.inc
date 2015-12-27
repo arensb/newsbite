@@ -73,7 +73,7 @@ if (!(isset($NO_AUTH_CHECK)) || !$NO_AUTH_CHECK)
 <p><a href="login.php?from=<?=urlencode($_SERVER['REQUEST_URI'])?>">Go log in</a></p>
 </body>
 </html>
-<?
+<?php
 		exit(0);
 	}
 
@@ -98,7 +98,7 @@ if (!(isset($NO_AUTH_CHECK)) || !$NO_AUTH_CHECK)
 <p><a href="login.php?from=<?=urlencode($_SERVER['REQUEST_URI'])?>">Go log in</a></p>
 </body>
 </html>
-<?
+<?php
 		exit(0);
 	}
 
@@ -184,7 +184,7 @@ function bare_abort($msg)
 
 </body>
 </html>
-<?
+<?php
 	 exit(0);
 }
 

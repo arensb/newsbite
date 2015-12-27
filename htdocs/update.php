@@ -1,4 +1,4 @@
-<?
+<?php
 /* update.php
  * Update one feed, or all feeds.
  */

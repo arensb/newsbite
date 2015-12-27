@@ -1,4 +1,4 @@
-<?
+<?php
 /* json.inc
  * Compatibility functions for hosts that don't have the JSON module.
  */

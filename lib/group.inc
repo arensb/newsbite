@@ -1,4 +1,4 @@
-<?
+<?php
 /* group.inc
  * Group-related functions.
  */
