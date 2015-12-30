@@ -94,6 +94,21 @@
   reading feed 2, then feed "all"? The sync stamps are different.
   Perhaps the client can send a hash of timestamps, saying "I have
   feed 1 up to time_0, feed 2 up to time_2, "all" up to time_3"?
+
+	I think there are several functions at play, that shouldn't be
+  confused:
+	1) "Give me what has changed since time t". Put this in
+  updates.php. This behaves as described above.
+	2) "Give me the articles around article 12345". This is a
+  problem of caching content locally. I guess call this "window" or
+  something. There ought to be a way of specifying which items the
+  client already has.
+
+	Break up marking items so markitems.php just marks items; it
+  doesn't try to return a cache or anything. Such things can be added
+  later. Add window.php (or something) to supply the client with
+  copies of older articles. IOW move a lot of the logic to JavaScript
+  instead of the server.
 - Groups: we can precompute group membership: just add an "implied"
   boolean field to the group table. "implied == false" means that the
   user set group membership explicitly; "implied == true" means that
