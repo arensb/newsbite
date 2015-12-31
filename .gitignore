@@ -16,3 +16,4 @@ install-private/
 # Perhaps move that elsewhere.
 htdocs/js/feeds.js
 htdocs/js/group.js
+htdocs/js/view.js
