@@ -1,0 +1,748 @@
+/*
+ * Feed view
+ */
+
+@font-face {
+	font-family:	'Roboto Thin';
+	src:		url('Roboto-Thin-webfont.woff') format('woff');
+	font-weight:	normal;
+	font-style:	normal;
+}
+
+@font-face {
+	font-family:	'Roboto';
+	src:		url('Roboto-Regular-webfont.woff') format('woff');
+	font-weight:	normal;
+	font-style:	normal;
+}
+
+body {
+	margin-top:		0px;
+	margin-left:		0px;
+	margin-right:		0px;
+	margin-bottom:		0px;
+	background-image:	url(gray-bg.jpg);
+	z-index:		0;
+	position:		relative;
+}
+
+/* Rules for small screens */
+@media screen and (max-width: 5in) {
+	.button-box-left {
+		display:	none;
+	}
+
+	body[orientation="right"] .button-box-left,
+	body[orientation="down"]  .button-box-left {
+		display:		table-cell;
+	}
+
+	body[orientation="right"] .button-box-right,
+	body[orientation="down"]  .button-box-right {
+		display:		none;
+	}
+
+	body[orientation="up"]    .button-box-left,
+	body[orientation="left"]  .button-box-left {
+		display:		none;
+	}
+
+	body[orientation="up"]    .button-box-right,
+	body[orientation="left"]  .button-box-right {
+		display:		table-cell;
+	}
+}
+
+/* Rules for big screens */
+@media screen and (min-width: 5in) {
+	.button-box-left {
+		display:	table-cell;
+		/* XXX - I'd like this to be "none" on desktops. */
+	}
+}
+
+h1 {
+	margin-left:		1em;
+	font-family:	"Roboto Thin", Arial, sans-serif;
+}
+
+h1 a {
+	text-decoration:	none;	/* I know it's a link. Don't
+					 * underline it. */
+}
+
+p {
+	margin:			1em;
+}
+
+/* Icon or image for the feed */
+.feed-icon {
+	float:			right;
+	margin:			1em;
+	max-width:		128px;
+	max-height:		128px;
+}
+
+/* Feed subtitle */
+.feed-subtitle {
+	background-color:	yellow;
+}
+
+/* Descriptive blurb about the feed */
+.feed-description {
+	margin:			1em;
+	padding:		0.5em;
+	border:			1px solid orange;
+	background-color:	yellow;
+}
+
+/***** view ************************************/
+
+.feed-tools {
+	margin-top:		1em;
+	margin-bottom:		1em;
+	padding-left:		1em;
+	padding-top:		0px;
+	padding-bottom:		0.2em;
+	font-family:		"Roboto", arial, sans-serif;
+}
+
+.feed-tools li {
+	display:		inline;
+}
+
+.feed-tools a {
+	text-decoration:	none;
+}
+
+.feed-tools li:before {
+	content:		" | ";
+}
+
+.feed-tools li:first-child {
+	padding-left:		0.3em;
+}
+
+.feed-tools li:first-child:before {
+	content:		"";
+}
+
+.feed-tools li:last-child {
+	padding-right:		0.3em;
+}
+
+/* navbar */
+#navbar {
+/*	background-color:	rgba(0, 0, 0, 0.5);*/
+	background-image:
+		linear-gradient(
+			0deg,
+			rgba(0, 0, 0, 0.5),
+			rgba(0, 0, 0, 0.2));
+	/* For Android browser */
+	background-image:
+		-webkit-gradient(linear, left top, left bottom,
+			from(rgba(0, 0, 0, 0.2)),
+			to(rgba(0, 0, 0, 0.5)));
+	color:		white;
+/*	border-top-left-radius:		1em;*/
+	border-top-right-radius:	1em;
+
+	position:	fixed;
+/*	top:		0px;*/
+	bottom:		0px;
+	left:		0px;
+/*	right:		0px;*/
+	width:		100%;
+	z-index:	10;
+}
+
+#navbar a {
+	box-shadow:	2px 2px 6px black;
+}
+
+#navbar ul {
+	display:	inline;
+}
+
+#navbar li {
+	display:	inline;
+}
+
+#navbar .content a {
+	text-decoration:	none;
+}
+
+#navbar.closed .close-button,
+#navbar.closed .content {
+	display:		none;
+}
+
+#navbar.open .open-button {
+	display:		none;
+}
+
+/* End navbar */
+
+.button-box {
+	margin-left:		1em;
+	margin-right:		1em;
+	margin-top:		0.5em;
+	margin-bottom:		0.5em;
+}
+
+/* XXX - Attempt at prettier form buttons
+ * Perhaps ought to use <button> rather than <input>
+input[type="reset"],
+input[type="submit"] {
+	-moz-border-radius-topleft:	10px;
+	-moz-border-radius-topright:	10px;
+	-moz-border-radius-bottomleft:	10px;
+	-moz-border-radius-bottomright:	10px;
+	color:	white;
+	background-image:	url(purple-gradient.png);
+}
+*/
+
+.button-box button {
+	font-family:		"Roboto", Arial, sans-serif;
+}
+
+#itemlist {
+}
+
+/* Overall box containing an item */
+.item {
+	margin-top:		1em;
+/*	margin-left:		2px;*/
+/*	margin-right:		2px;*/
+	clear:			both;
+	z-index:		5;
+	position:		relative;
+}
+
+.item .item-header {
+	/* This should only apply to Safari and other webkit browsers */
+/*
+	background-image:
+		-webkit-gradient(linear, left top, left bottom,
+			from(blue),
+			to(navy));
+	background-image:
+		-moz-linear-gradient(to bottom,
+			blue,
+			navy);
+*/
+	border-top-color:	blue;
+	border-bottom-color:	navy;
+}
+
+.item.old1d .item-header {
+	/* This should only apply to Safari and other webkit browsers */
+/*
+	background-image:
+		-webkit-gradient(linear, left top, left bottom,
+			from(#0000cc),
+			to(#000000));
+	background-image:
+		-moz-linear-gradient(top,
+			#0000cc,
+			#000066);
+*/
+	border-top-color:	#0000cc;
+	border-bottom-color:	#000066;
+}
+
+.item.item-read .item-header {
+	/* Safari: */
+/*
+	-webkit-border-bottom-left-radius:	20px;
+	-webkit-border-bottom-right-radius:	20px;
+*/
+
+	/* Newer CSS */
+/*
+	border-bottom-left-radius:	20px;
+	border-bottom-right-radius:	20px;
+*/
+}
+
+.item.item-read .item-header .item-title {
+	font-size:		100%;
+	display:		inline;
+}
+
+.item.item-read .item-header .item-title:after {
+	content:		" — ";		/* Em-dash, u2014 */
+}
+
+.item.item-read .item-header .feed-title {
+	font-size:		100%;
+	display:		inline;
+}
+
+.item.item-read .item-header .feed-title:after {
+	content:		" ";
+}
+
+/* If an item has been marked as read, collapse it to just a header */
+.item.item-read .content-panes,
+.item.item-read .item-footer {
+	display:		none;
+}
+
+.item[deleted="yes"] {
+	opacity:	.40;
+}
+
+/* Header box at top of item */
+.item-header {
+	width:			100%;
+	max-width:		100%;
+	background-color:	navy;
+	color:			cyan;
+	padding:		0px;
+	border-collapse:	separate;
+	border-spacing:		0px 0.3em;
+
+/*	border-top-width:	2px;*/
+/*	border-left-width:	2px;*/
+/*	border-right-width:	2px;*/
+	border-bottom-width:	0px;
+/*	border-left-style:	outset;*/
+/*	border-top-style:	outset;*/
+/*	border-right-style:	outset;*/
+/*	border-color:		navy;*/
+
+	/* Safari: */
+/*
+	-webkit-border-top-left-radius:		20px;
+	-webkit-border-top-right-radius:	20px;
+*/
+
+	/* Newer CSS */
+/*
+	border-top-left-radius:		20px;
+	border-top-right-radius:	20px
+*/
+}
+
+.item-header .info {
+	/* XXX - this hack is to prevent long unbreakable titles from
+	 * resizing the iPhone display. But there's got to be a better
+	 * way of doing this.
+	 */
+	max-width:	900px;
+	overflow:	hidden;
+}
+
+.item-header td {
+	vertical-align:		top;
+	margin:			1em;
+}
+
+/* Title of item */
+.item-header .item-title {
+	font-family:		Arial, sans-serif;
+	font-size:		144%;
+	font-weight:		bold;
+	text-decoration:	none;	/* I know it's a link. Don't
+					 * underline it. */
+	color:			LightBlue;
+	display:		block;
+	margin-top:		0px;
+	margin-bottom:		0.2em;
+}
+
+.item-header .feed-title {
+	font-family:		Arial, sans-serif;
+	font-size:		120%;
+	font-weight:		bold;
+	text-decoration:	none;	/* I know it's a link. Don't
+					 * underline it. */
+	color:			LightBlue;
+	display:		block;
+	margin-top:		0.2em;
+	margin-bottom:		0px;
+}
+
+.item-header .feed-title a {
+	text-decoration:	none;	/* I know it's a link. Don't
+					 * underline it. */
+	color:			LightBlue;
+}
+
+/* .info: the box in the middle of the article header, with useful info
+ * like the title.
+ */
+.item-header .info {
+	padding-left:		0.5em;
+	padding-right:		0.5em;
+	border-right:		2px solid LightBlue;
+}
+
+.item-header .info .item-title a {
+	color:			LightBlue;
+	text-decoration:	none;
+}
+
+.item-header .info .item-author {
+	margin-top:		0.1em;
+	margin-bottom:		0.1em;
+}
+
+/* .icon-box: box for control/status icons on the right of the article
+ * header.
+ */
+.item-header .icon-box {
+	text-align:		right;
+	font-size:		66%;
+	width:			6em;
+	padding-right:		0.5em;
+}
+
+/* Checkboxes on the top left on the iPad */
+.item-header .icon-box.button-box-left {
+	text-align:		left;
+	width:			3em;
+	padding-top:		1em;
+	padding-left:		0.5em;
+	border-right:		2px solid LightBlue;
+			/* Line between this and item title */
+}
+
+.mark-check {
+/*	display:	none;*/
+}
+
+.mark-check label {
+	width:			1.2em;
+	height:			1.2em;
+/*margin:	1em;
+background-color:	red;
+background-image: url("Checkbox.svg");
+*/
+}
+
+input[type="checkbox"].mark-check:checked label {
+/*margin:	1em;
+background-color:	pink;
+background-image: url("Checkbox-red.svg");
+*/
+}
+
+/* The next few rules are for toggling between expanded and collapsed
+ * articles: the "item.php" and "item.js" add the class "show-content"
+ * or "show-summary" to the content-panes element. This CSS determines
+ * what to display in each case.
+ */
+.content-panes[collapsible="no"] .expand-bar,
+.content-panes[collapsible="no"] .collapse-bar {
+	display:		none ! important;
+}
+
+/* Which items should be displayed and hidden... */
+/* ...when we're showing the summary */
+.content-panes[collapsible="yes"].show-summary .item-summary,
+.content-panes[collapsible="yes"].show-summary .expand-bar {
+	display:		block;
+}
+
+.content-panes[collapsible="yes"].show-summary .collapse-bar,
+.content-panes[collapsible="yes"].show-summary .item-content {
+	display:		none;
+}
+
+/* ...when we're showing the content */
+.content-panes[collapsible="yes"].show-content .item-summary,
+.content-panes[collapsible="yes"].show-content .expand-bar {
+	display:		none;
+}
+
+.content-panes[collapsible="yes"].show-content .collapse-bar,
+.content-panes[collapsible="yes"].show-content .item-content {
+	display:		block;
+}
+
+/* ...when there's only one pane to show */
+.content-panes[collapsible="no"].show-content .item-summary,
+.content-panes[collapsible="no"].show-summary .item-content {
+	display:		none;
+}
+
+.content-panes {
+	border-top-width:	0px;
+/*	border-left-width:	2px;*/
+/*	border-right-width:	2px;*/
+	border-bottom-width:	0px;
+/*	border-left-style:	outset;*/
+/*	border-right-style:	outset;*/
+/*	border-color:		navy;*/
+}
+
+.content-panes.old1d {
+	border-color:		#000066;
+}
+
+/* Summary of item */
+.item-summary,
+.item-content {
+/*	width:			100%;*/
+	max-width:		100%;
+
+/*	font-family:		Times, serif;*/
+	font-family:		serif;
+	padding:		0.5em;
+	background-color:	white;
+	overflow:		auto;
+
+/*
+	border-left-width:	1px;
+	border-left-style:	solid;
+	border-left-color:	white;
+*/
+}
+
+/* Mark the currently-selected item with a blue left border */
+.current-item .item-summary,
+.current-item .item-content {
+/*	border-left-color:	#6060ff;*/
+/* Attempt at making a more interesting gradient background for the current item.
+	background-image:
+		-webkit-gradient(linear, left top, right top,
+				 from(#6060ff),
+				 color-stop(1%, #b0b0b0),
+				 color-stop(3%, white),
+				 to(white));
+*/
+box-shadow:	0px 0px 10px rgb(0, 0, 0) inset;
+}
+
+.content-panes[collapsible="yes"] .item-summary {
+	/* Summary should be short. Make sure it doesn't take up too much
+	 * screen real estate.
+	 */
+	max-height:		10em;
+	overflow:		auto;
+}
+
+/* If an article begins with an image, that image should float left,
+ * with the text wrapped around it.
+ */
+.item-summary p > img:first-child,
+.item-content p > img:first-child,
+.item-summary > img:first-child,
+.item-content > img:first-child {
+	float:			left;
+	margin-right:		1em;
+	margin-bottom:		0.5em;
+}
+
+.content-panes a img {
+	border:			none;	/* No border around image links */
+}
+
+/* expand-bar, collapse-bar
+ * Bars at top and bottom of article, for expanding summary, or collapsing
+ * content.
+ */
+.expand-bar,
+.collapse-bar {
+	padding:		0px;
+	line-height:		1.1em;
+	background-color:	#6060ff;
+	color:			white;
+	text-align:		center;
+	cursor:			pointer;
+	margin-top:		0px;
+	margin-bottom:		0px;
+}
+
+/* Pretty gradient on the expand/collaspe bars. */
+.upper-bar {
+	background-image:
+		-webkit-gradient(linear, left top, left bottom,
+				 from(navy),
+				 to(#6060ff));
+	background-image:
+		-moz-linear-gradient(top,
+				 navy,
+				 #6060ff);
+}
+
+.upper-bar.old1d {
+	background-image:
+		-webkit-gradient(linear, left top, left bottom,
+				 from(#000066),
+				 to(#4040cc));
+	background-image:
+		-moz-linear-gradient(top,
+				 #000066,
+				 #4040cc);
+}
+
+.lower-bar {
+	background-image:
+		-webkit-gradient(linear, left top, left bottom,
+				 from(#6060ff),
+				 to(navy));
+	background-image:
+		-moz-linear-gradient(top,
+				 #6060ff,
+				 navy);
+}
+
+.lower-bar.old1d {
+	background-image:
+		-webkit-gradient(linear, left top, left bottom,
+				 from(#4040cc),
+				 to(#000066));
+	background-image:
+		-moz-linear-gradient(top,
+				 #4040cc,
+				 #000066);
+}
+
+.expand-bar {
+	background-image:
+		-webkit-gradient(linear, left top, left bottom,
+				 from(#6060ff),
+				 to(navy));
+	background-image:
+		-moz-linear-gradient(top,
+				 #6060ff,
+				 navy);
+}
+
+.expand-bar.old1d {
+	background-image:
+		-webkit-gradient(linear, left top, left bottom,
+				 from(#4040cc),
+				 to(#000066));
+	background-image:
+		-moz-linear-gradient(top,
+				 #4040cc,
+				 #000066);
+}
+
+/* Control box at bottom of item */
+.item-footer {
+	width:			100%;
+	background-color:	navy;
+	color:			cyan;
+	min-height:		20px;
+
+	border-top-width:	0px;
+/*	border-left-width:	2px;*/
+/*	border-right-width:	2px;*/
+/*	border-bottom-width:	2px;*/
+/*	border-left-style:	outset;*/
+/*	border-top-style:	outset;*/
+/*	border-right-style:	outset;*/
+/*	border-color:		navy;*/
+
+	padding-left:		10px;
+	padding-right:		10px;
+
+	/* Safari: */
+/*
+	-webkit-border-bottom-left-radius:	20px;
+	-webkit-border-bottom-right-radius:	20px;
+*/
+
+	/* Newer CSS: */
+/*
+	border-bottom-left-radius:	20px;
+	border-bottom-right-radius:	20px;
+*/
+}
+
+.item.old1d .item-footer {
+	background-color:	#000066;
+}
+
+#text {
+	background-color:	cyan;
+}
+
+.item-footer a {
+	/* Want links to show up against navy background */
+	color:			cyan;
+}
+
+/* Checkboxes on the bottom left on iPad */
+.item-footer .icon-box.button-box-left {
+	border-right:		2px solid LightBlue;
+			/* Line between this and item title */
+	width:			2em;
+}
+
+/* .bottom-link box: <td> that contains .bottom-links (see below) */
+.item-footer .bottom-link-box {
+	text-align:		left;
+}
+
+/* .bottom-links: the <li> containing the links at the bottom of each
+ * item.
+ */
+.item-footer .bottom-links {
+	padding:		0px;
+	list-style-position:	inside;
+	list-style-type:	none;
+	margin-top:		0px;
+	margin-bottom:		0px;
+}
+
+.item-footer .bottom-links li {
+	display:		inline;
+}
+
+.item-footer .bottom-links li:first-child:before {
+	content:		"";
+}
+
+.item-footer .bottom-links li:before {
+	content:		" | ";
+}
+
+.item-footer .mark-td {
+	text-align:		right;
+}
+
+/***** items ************************************/
+blockquote {
+	border:			1px solid #c0c0c0;
+	margin-left:		1em;
+	padding-left:		0.5em;
+}
+
+img.thumbnail {
+	float:			left;
+	margin-right:		1em;
+	margin-bottom:		1em;
+}
+
+/* Error messages and such */
+/* XXX - This is the same as in index.css, so should probably be shared */
+.msglist {
+	background-color:	orange;
+	width:			50%;
+	margin-top:		0px;
+	margin-left:		25%;
+	position:		fixed;
+	top:			0px;
+	padding:		0px;
+	z-index:		10;
+}
+
+.msglist li {
+	background-color:	DarkSlateGray;
+	color:			white;
+	list-style-position:	inside;
+	list-style-type:	none;
+	border-left:		2px solid SlateGray;
+	border-bottom:		2px solid black;
+	border-right:		2px solid black;
+	padding-left:		0.5em;
+	padding-right:		0.5em;
+}

@@ -1,0 +1,40 @@
+/* editfeed.css
+ * Stylesheet for the "edit feed" page.
+ */
+
+#show-feed {
+	width:			100%;
+	background-color:	yellow;
+}
+
+#show-feed th {
+	text-align:		right;
+	vertical-align:		top;
+	border:			1px solid blue;
+	background-color:	orange;
+}
+
+#show-feed th.section-title {
+	text-align:		left;
+	font-size:		120%;
+}
+
+#show-feed td {
+	border:			1px solid red;
+	background-color:	cyan;
+}
+
+/* XXX - Is there a better way of ensuring that text input fields fill
+ * all available space without overflowing?
+ */
+input[type="text"] {
+	width:			90%;
+}
+
+.error-msg {
+	border:			2px solid red;
+	color:			red;
+	margin-left:		2em;
+	margin-right:		2em;
+	margin-bottom:		0.5em;
+}

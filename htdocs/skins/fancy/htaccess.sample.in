@@ -1,0 +1,72 @@
+# Restrict access
+AuthType Digest
+AuthName "Newsbite"
+AuthDigestDomain /newsbite/
+AuthDigestProvider
+AuthUserFile @INSTALL_ROOT@/.digest_pw
+
+<Files "login.php">
+	Require valid-user
+</Files>
+
+# Make sure PHP can find all of its libraries
+<IfModule mod_php5.c>
+	# Say where the lib files are to be found.
+	# XXX - Is "." necessary?
+	php_value include_path ".:@INSTALL_LIB@"
+
+	# If update.php times out, uncomment this and adjust as needed.
+	# php_value max_execution_time	90
+
+	# Turn on output compression
+	php_value zlib.output_compression On
+
+	# Turn off escaping quotes in $_GET/$_POST/$_COOKIE. It breaks
+	# things.
+	php_value magic_quotes_gpc Off
+</IfModule>
+
+# Safari app manifest files
+AddType text/cache-manifest .manifest
+
+# Allow static files to be gzip-compressed.
+<IfModule mime_module>
+	# Some Apache installations define .gz to be application/x-gzip.
+	# Undo this
+	RemoveType .gz
+
+	# Define the encodings "gzip" for *.gz files, and "identity"
+	# (no encoding) for .plain files.
+	# This way, for each static file foo.type (in particular, .css
+	# and .js files), we can have a foo.type.gz that will be
+	# served to clients that understand gzip, and a foo.type.plain
+	# that will be served to clients that don't (not that I've
+	# found any).
+	AddEncoding x-gzip .gz
+
+#	AddLanguage en .en
+</IfModule>
+
+# If the Apache MIME module isn't defined, we can at least try to save
+# bandwidth by letting PHP gzip its output. (Don't turn both on at the
+# same time, or else PHP script output will be doubly-compressed.)
+<IfModule !mime_module>
+	# XXX - It'd be nice to test that this actually works, but my
+	# setup, in which files ending in .php are executed as PHP
+	# scripts, relies on mime_module.
+	php_value zlib.output_compression On
+</IfModule>
+
+# Force *.js files to have MIME type text/javascript, even if Apache
+# mime.types wants application/javascript
+AddType text/javascript .js
+
+# Turn on caching, if mod_expires is loaded
+<IfModule expires_module>
+	ExpiresActive On
+	ExpiresByType text/css "access plus 1 week"
+	ExpiresByType image/jpeg "access plus 1 week"
+	ExpiresByType image/png "access plus 1 week"
+	ExpiresByType image/gif "access plus 1 week"
+#	ExpiresByType text/javascript "access plus 1 day"
+</IfModule>

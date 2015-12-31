@@ -1,0 +1,202 @@
+/*
+ * Index of feeds
+ */
+
+@font-face {
+	font-family:	'Roboto Thin';
+	src:		url('Roboto-Thin-webfont.woff') format('woff');
+	font-weight:	normal;
+	font-style:	normal;
+}
+
+@font-face {
+	font-family:	'Roboto';
+	src:		url('Roboto-Regular-webfont.woff') format('woff');
+	font-weight:	normal;
+	font-style:	normal;
+}
+
+h1 {
+	font-family:		"Roboto Thin", Arial, sans-serif;
+}
+
+.tools {
+	font-family:		"Roboto", Arial, sans-serif;
+}
+
+#feeds {
+	font-family:	"Roboto", Arial, sans-serif;
+	font-size:	medium;
+	background-color:	white;
+	border-collapse:	collapse;
+	width:			100%;
+}
+
+#feeds th {
+	text-align:		left;
+	font-family:		"Roboto", Arial, sans-serif;
+	font-weight:		bold;
+}
+
+#feeds tr {
+	padding-top:		1em;
+	padding-bottom:		1em;
+}
+
+#feeds tr.odd-row {
+	background-color:	#dddddd;
+}
+
+#feeds tr.even-row {
+	background-color:	white;
+}
+
+#feeds tr.stale-feed {
+	background-color:	#a0a0a0 !important;
+}
+
+#feeds tr.inactive-feed .title-col {
+	text-decoration:	line-through !important;
+}
+
+#feeds .icon-col {
+	width:			32px;
+	height:			22px;
+	padding:		0px;
+	text-align:		center;
+}
+
+#feeds .count-col {
+	width:			1em;
+	max-width:		2em;
+	text-align:		right;
+	padding-right:		0.5em;
+}
+
+#feeds .title-col {
+	padding-left:		0.5em;
+}
+
+/* Hidden elements, or shown only selectively */
+/* Feed details */
+#feeds .feed-details {
+	display:		none;
+}
+
+#feeds.show-details .feed-details {
+    	display:		inline;
+}
+
+/* Links to tools for managing feeds */
+#feeds .feed-tools {
+	display:		none;
+	white-space:		nowrap;	/* Prevent ugly wrapping of image */
+}
+
+#feeds.show-tools .feed-tools {
+	display:		inline;
+}
+/* End of #feeds */
+
+.tools {
+	margin-top:		1em;
+	margin-bottom:		1em;
+	margin-left:		1em;
+	padding-left:		0em;
+	padding-top:		0px;
+	padding-bottom:		0.2em;
+}
+
+.tools > li {
+	display:		inline;
+}
+
+.tools .submenu {
+	position:		relative;
+	top:			0px;
+	left:			0px;
+}
+
+.submenu-title {
+	display:		inline;
+	font-weight:		bold;
+	cursor:			context-menu;
+}
+
+.submenu .tools-menu {
+	display:		none;
+	position:		absolute;
+	left:			0.5em;
+	top:			0em;
+	min-width:		10em;
+	background-color:	white;
+	list-style-type:	none;
+	padding:		0.2em;
+	margin-top:		1.2em;	/* Should align with the bottom of the line */
+	border:			1px solid black;
+	box-shadow:	5px 5px 5px grey;
+	-webkit-box-shadow:	5px 5px 5px grey;
+}
+
+.submenu.open .tools-menu {
+	display:		block;
+}
+
+.tools-menu li {
+/*outline:		1px dotted blue;*/
+}
+
+body {
+	background-image:	url(gray-bg.jpg);
+	margin-top:		0px;
+	margin-left:		0px;
+}
+
+.tools a {
+	text-decoration:	none;
+}
+
+.tools > li:before {
+	content:		" | ";
+}
+
+.tools > li:first-child {
+	padding-left:		0.3em;
+}
+
+.tools li:first-child:before {
+	content:		"";
+}
+
+.tools li:last-child {
+	padding-right:		0.3em;
+}
+
+/* Error messages and such */
+.msglist {
+	background-color:	orange;
+	width:			50%;
+	margin-top:		0px;
+	margin-left:		25%;
+	position:		absolute;
+	top:			0px;
+/*	outline:		5px solid red;*/
+	padding:		0px;
+/*	border-bottom-width:	5px;*/
+/*	border-bottom-color:	DarkSlateGray;*/
+/*	border-bottom-style:	outset;*/
+/*	-moz-border-radius-bottomleft:	5px;*/
+/*	-moz-border-radius-bottomright:	5px;*/
+}
+
+.msglist li {
+	background-color:	DarkSlateGray;
+	color:			white;
+	list-style-position:	inside;
+	list-style-type:	none;
+	border-left:		2px solid SlateGray;
+	border-bottom:		2px solid black;
+	border-right:		2px solid black;
+	padding-left:		0.5em;
+	padding-right:		0.5em;
+}

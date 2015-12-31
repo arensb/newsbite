@@ -1,0 +1,18 @@
+/* Main stylesheet
+ */
+body {
+	color:			black;
+	background-color:	white;
+	font-family:		serif;
+}
+
+/* Attempt to make JavaScript-only links look more like ordinary ones */
+a {
+	cursor:			pointer;
+	text-decoration:	underline;
+	color:			rgb(0, 0, 238);
+}
+
+a:visited {
+	color:			rgb(85, 26, 139);
+}

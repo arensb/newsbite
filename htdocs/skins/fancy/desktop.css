@@ -1,0 +1,6 @@
+/* desktop.css
+ * Stylesheet specific to desktop (not mobile) browsers.
+ */
+.button-box-left {
+	display:	none;
+}
