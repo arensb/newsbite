@@ -83,7 +83,7 @@ if (mobile)
 
 	link_node.rel = "stylesheet";
 	link_node.type = "text/css";
-	link_node.href = skin_dir + "/" + mobile.toLowerCase() + ".css";
+	link_node.href = "css/" + mobile.toLowerCase() + ".css";
 	link_node.media = "screen";
 	document.head.appendChild(link_node);
 } else {	// !mobile -> desktop
@@ -97,7 +97,7 @@ if (mobile)
 	// XXX - Could also have a browser-specific stylesheet.
 	link_node.rel = "stylesheet";
 	link_node.type = "text/css";
-	link_node.href = skin_dir + "/desktop.css";
+	link_node.href = "css/desktop.css";
 	link_node.media = "screen";
 	document.head.appendChild(link_node);
 }
