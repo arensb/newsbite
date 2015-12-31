@@ -2,7 +2,7 @@ TOP =		../..
 JQUERY =	jquery-2.1.3.min.js
 
 # *.jsh: files that will be run through cpp
-JSH_FILES =	$(wildcard *.jsh)
+JS_SRC =	$(wildcard *.jsh)
 JS_FILES = 	$(patsubst %.jsh,%.js,${JS_SRC})
 
 INCLUDES =	-I$(TOP)/js-src
@@ -40,7 +40,7 @@ depend:	Make.depend
 Make.depend:	${JS_SRC}
 	$(RM) $@
 	for i in $(JS_SRC); do \
-		$(MAKEDEPEND) -MT `echo "$$i" | sed 's/\.jsh$$/.js/'` $$i >> $@; \
+		$(MAKEDEPEND) -I$(TOP)/js-src -MT `echo "$$i" | sed 's/\.jsh$$/.js/'` $$i >> $@; \
 	done
 
 install::	install-js install-other

@@ -1,17 +1,17 @@
 /* feeds.jsh					-*- JavaScript -*-
  * JavaScript functions for the feed view.
  */
-#include "js/guess-mobile.js"
-// #include "js/defer.js"
-#include "js/xhr.js"
-#include "js/keybindings.js"
-#include "js/PatEvent.js"
-#include "js/types.js"
-#include "js/Template.js"
-#include "js/CacheManager.js"
-//#include "js/load_module.js"
+#include "guess-mobile.js"
+// #include "defer.js"
+#include "xhr.js"
+#include "keybindings.js"
+#include "PatEvent.js"
+#include "types.js"
+#include "Template.js"
+#include "CacheManager.js"
+//#include "load_module.js"
 // XXX - Should block multiple updates from occurring in parallel.
-#include "js/status-msg.js"
+#include "status-msg.js"
 
 var cache = new CacheManager();		// Cache manager for locally-stored data
 var feeds;		// Master list of all feeds
