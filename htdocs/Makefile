@@ -19,9 +19,9 @@ clean::
 	rm -f newsbite.manifest
 
 install::	all
-	mkdir -p ${INSTALL_BACKEND}
+	mkdir -p ${INSTALL_HTDOCS}
 	for i in ${PHP_FILES} ${OTHER_FILES}; do \
-		install -c -m 444 "$$i" ${INSTALL_BACKEND}; \
+		install -c -m 444 "$$i" ${INSTALL_HTDOCS}; \
 	done
 
 clean::

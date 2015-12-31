@@ -11,3 +11,9 @@ htdocs/newsbite.manifest
 # Localisms on downspout
 Makefile.local.dist
 install-private/
+**/Make.depend
+# XXX - This could be "htdocs/js/*.js", if not for jquery-$version.min.js.
+# Perhaps move that elsewhere.
+htdocs/js/feeds.js
+htdocs/js/group.js
+htdocs/js/view.js

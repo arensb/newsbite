@@ -7,7 +7,6 @@
 require_once("common.inc");
 require_once("database.inc");
 require_once("net.inc");
-require_once("skin.inc");
 
 $feed_url = $_REQUEST['feed_url'];
 	// XXX - Probably needs to be escaped. Can there be quotes in URLs?
@@ -126,8 +125,113 @@ if ($_SERVER['SERVER_PORT'] != "" && $_SERVER['SERVER_PORT'] != 80)
 $subscribe_url .= $_SERVER['SCRIPT_NAME'];
 
 /* Display a form for adding a URL */
-$skin = new Skin();
-$skin->assign("subscribe_url", $subscribe_url);
-$skin->assign("feed_list", $feeds);
-$skin->display("addfeed");
+echo '<', '?xml version="1.0" encoding="UTF-8"?', ">\n";
 ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+	"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html>
+<head>
+<title>NewsBite: Adding feed</title>
+<link rel="stylesheet" type="text/css" href="css/style.css" media="all" />
+<link rel="stylesheet" type="text/css" href="css/addfeed.css" media="all" />
+<script type="text/javascript">
+// Function to add NewsBite as an RSS subscriber in Firefox
+var ff_subscribe_url = "<?=$subscribe_url?>?feed_url=%s";	// Subscription URL
+
+// register_feed_reader
+// Function to add 'ff_subscribe_url' as a subscription URL in Firefox
+function register_feed_reader()
+{
+	navigator.registerContentHandler(
+		"application/vnd.mozilla.maybe.feed",
+		ff_subscribe_url,
+		"NewsBite");
+}
+</script>
+</head>
+<body id="add-feed">
+
+<h1>Adding feed</h1>
+
+<script type="text/javascript">
+// If this is Firefox, put in a link to add NewsBite as an RSS subscriber.
+if (navigator.registerContentHandler)
+{
+	var sub_button = document.createElement("button");
+
+	sub_button.type = "button";
+	sub_button.onclick = register_feed_reader;
+	sub_button.innerHTML = "Add one-click subscription";
+	document.body.appendChild(sub_button);
+}
+</script>
+
+<p>Bookmarklet: <a href="javascript:void(location.href='<?=$subscribe_url?>?page_url='+escape(location))">Subscribe in NewsBite</a>.</p>
+
+<form name="add-feed-form" method="post" action="addfeed.php">
+
+<table id="add-feed">
+<?php
+/* If we've been given a list of URLs (presumably extracted from a
+ * page by addfeed.php), display that list.
+ */
+if (isset($feeds)):
+?>
+  <tr>
+    <th id="th-feed-list">Pick a URL</th>
+    <td>
+      <ul class="feed-list">
+<?php
+	$is_default = true;
+	foreach ($feeds as $f)
+	{
+		echo "<li><input type=\"radio\" name=\"feed_url\" value=\"$f[url]\"";
+		// Check the first item by default
+		if ($is_default)
+			echo ' checked="checked" ';
+		$is_default = false;	// Subsequent items are not checked
+		echo "/>";
+		echo "<a href=\"$f[url]\">$f[title]</a> ($f[type])";
+		echo "</li>";
+	}
+?>
+      </ul>
+    </td>
+  </tr>
+<?php else:	/* No list of URLs given. Display a text entry field */ ?>
+  <tr>
+    <th>Feed URL</th>
+    <td>
+<?php if (isset($errors['feed_url'])): ?>
+        <div class="error-msg"><?=$errors['feed_url']?></div>
+<?php endif ?>
+      <input type="text" name="feed_url" value="<?=$params['feed_url']?>"/>
+    </td>
+  </tr>
+<?php endif ?>
+  <tr>
+    <th>Username</th>
+    <td>
+<?php if (isset($errors['username'])): ?>
+        <div class="error-msg"><?=$errors['username']?></div>
+<?php endif ?>
+      <input type="text" name="username" value="<?=$params['username']?>"/>
+    </td>
+  </tr>
+
+  <tr>
+    <th>Password</th>
+    <td>
+<?php if (isset($errors['passwd'])): ?>
+        <div class="error-msg"><?=$errors['passwd']?></div>
+<?php endif ?>
+      <input type="password" name="password" value="<?=$params['passwd']?>"/>
+    </td>
+  </tr>
+</table>
+
+<input type="reset" value="Clear changes"/>
+<input type="submit" name="change" value="Apply changes"/>
+</form>
+</body>
+</html>

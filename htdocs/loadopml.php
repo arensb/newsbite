@@ -9,15 +9,36 @@
 
 require_once("common.inc");
 require_once("database.inc");
-require_once("skin.inc");
 
-if ($_FILES['opml'] == "")
-{
-	/* No file given. Show the form requesting an OPML file. */
-	$skin = new Skin;
-	$skin->display("opml");
-	exit(0);
-}
+if ($_FILES['opml'] == ""):
+	// Prompt for an OPML file
+########################################
+	echo '<', '?xml version="1.0" encoding="UTF-8"?', ">\n";
+?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+	"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html>
+<head>
+<title>NewsBite: Load OPML</title>
+<link rel="stylesheet" type="text/css" href="css/style.css" media="all" />
+<link rel="stylesheet" type="text/css" href="css/opml.css" media="all" />
+</head>
+<body>
+
+<form enctype="multipart/form-data" action="loadopml.php" method="post">
+  <!-- 100,000 chars should be enough for ~500 feeds -->
+  <input type="hidden" name="max_file_size" value="100000" />
+  OPML file:
+  <input type="file" name="opml"/>
+  <br/>
+  <input type="submit" name="doit" value="Upload file"/>
+</form>
+
+</body>
+</html>
+<?php
+########################################
+endif;
 
 $load = $_FILES['opml'];	// Name of OPML file to load
 

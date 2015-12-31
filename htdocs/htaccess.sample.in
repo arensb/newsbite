@@ -1,3 +1,4 @@
+# -*- Conf -*-
 # Restrict access
 AuthType Digest
 AuthName "Newsbite"
@@ -23,6 +24,9 @@ AuthUserFile @INSTALL_ROOT@/.digest_pw
 	# Turn off escaping quotes in $_GET/$_POST/$_COOKIE. It breaks
 	# things.
 	php_value magic_quotes_gpc Off
+
+	# Have error and debugging messages go to a file.
+	# php_value error_log /path/to/newsbite.log
 </IfModule>
 
 # Safari app manifest files

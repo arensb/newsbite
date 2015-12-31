@@ -176,12 +176,6 @@ INSTALLATION:
 	You should be prompted for a password. Once you do, you'll see
 	a page with a toolbar and not much else.
 
-- Change to a prettier skin
-
-	You'll need to have cookies turned on for this to work.
-
-	"fancy" is the best supported skin.
-
 - Add some feeds.
 
 	Click on "Add a feed". Or, if you have an OPML file from
