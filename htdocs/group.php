@@ -86,25 +86,6 @@ switch ($cmd)
 }
 exit(0);
 
-function show_form_one($group_id)
-{
-	$groups = group_tree(FALSE);
-	# XXX - Construct form for editing one feed.
-}
-
-function show_form_all()
-{
-	# XXX - Construct form for editing all feeds.
-	$groups = group_tree();
-
-	$skin = new Skin();
-
-	$skin->assign('groups', $groups);
-	$skin->assign('command', "update");
-	$skin->display("editgroups_all");
-	return;
-}
-
 function update_group_info($group_id = NULL)
 {
 	# XXX
@@ -207,5 +188,24 @@ function delete_group($group_id)
 			break;
 		}
 	}
+}
+
+function show_form_one($group_id)
+{
+	$groups = group_tree(FALSE);
+	# XXX - Construct form for editing one feed.
+}
+
+function show_form_all()
+{
+	# XXX - Construct form for editing all feeds.
+	$groups = group_tree();
+
+	$skin = new Skin();
+
+	$skin->assign('groups', $groups);
+	$skin->assign('command', "update");
+	$skin->display("editgroups_all");
+	return;
 }
 ?>
