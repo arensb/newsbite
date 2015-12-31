@@ -15,3 +15,4 @@ install-private/
 # XXX - This could be "htdocs/js/*.js", if not for jquery-$version.min.js.
 # Perhaps move that elsewhere.
 htdocs/js/feeds.js
+htdocs/js/group.js
