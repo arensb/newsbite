@@ -129,25 +129,29 @@ function update_feed_info($feed_id)
 
 	if (!$ok)
 	{
-		/* Insert the supplied values into $feed_info, so
-		 * they'll show up in the form.
-		 */
-		$feed_info['nickname'] = $new['nickname'];
-		$feed_info['url']      = $new['url'];
-		$feed_info['feed_url'] = $new['feed_url'];
-		$feed_info['username'] = $new['username'];
-		$feed_info['passwd']   = $new['passwd'];
+		// XXX - This is rather theoretical. We don't actually
+		// check anything.
+		abort("You supplied a bad value of some kind. Go back and fix it.");
 
-		/* There were errors. Redisplay the form, with
-		 * error messages.
-		 */
-		$skin = new Skin();
-
-		$skin->assign('feed', $feed_info);
-		$skin->assign('errors', $errors);
-		$skin->assign('command', "update");
-		$skin->display("editfeed");
-		return;
+#		/* Insert the supplied values into $feed_info, so
+#		 * they'll show up in the form.
+#		 */
+#		$feed_info['nickname'] = $new['nickname'];
+#		$feed_info['url']      = $new['url'];
+#		$feed_info['feed_url'] = $new['feed_url'];
+#		$feed_info['username'] = $new['username'];
+#		$feed_info['passwd']   = $new['passwd'];
+#
+#		/* There were errors. Redisplay the form, with
+#		 * error messages.
+#		 */
+#		$skin = new Skin();
+#
+#		$skin->assign('feed', $feed_info);
+#		$skin->assign('errors', $errors);
+#		$skin->assign('command', "update");
+#		$skin->display("editfeed");
+#		return;
 	}
 
 	/* Update the list of groups that the feed is in:
