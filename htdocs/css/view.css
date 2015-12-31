@@ -133,7 +133,6 @@ p {
 
 /* navbar */
 #navbar {
-/*	background-color:	rgba(0, 0, 0, 0.5);*/
 	background-image:
 		linear-gradient(
 			0deg,
@@ -145,14 +144,11 @@ p {
 			from(rgba(0, 0, 0, 0.2)),
 			to(rgba(0, 0, 0, 0.5)));
 	color:		white;
-/*	border-top-left-radius:		1em;*/
 	border-top-right-radius:	1em;
 
 	position:	fixed;
-/*	top:		0px;*/
 	bottom:		0px;
 	left:		0px;
-/*	right:		0px;*/
 	width:		100%;
 	z-index:	10;
 }
@@ -191,19 +187,6 @@ p {
 	margin-bottom:		0.5em;
 }
 
-/* XXX - Attempt at prettier form buttons
- * Perhaps ought to use <button> rather than <input>
-input[type="reset"],
-input[type="submit"] {
-	-moz-border-radius-topleft:	10px;
-	-moz-border-radius-topright:	10px;
-	-moz-border-radius-bottomleft:	10px;
-	-moz-border-radius-bottomright:	10px;
-	color:	white;
-	background-image:	url(purple-gradient.png);
-}
-*/
-
 .button-box button {
 	font-family:		"Roboto", Arial, sans-serif;
 }
@@ -214,8 +197,6 @@ input[type="submit"] {
 /* Overall box containing an item */
 .item {
 	margin-top:		1em;
-/*	margin-left:		2px;*/
-/*	margin-right:		2px;*/
 	clear:			both;
 	z-index:		5;
 	position:		relative;
@@ -418,17 +399,9 @@ input[type="submit"] {
 .mark-check label {
 	width:			1.2em;
 	height:			1.2em;
-/*margin:	1em;
-background-color:	red;
-background-image: url("Checkbox.svg");
-*/
 }
 
 input[type="checkbox"].mark-check:checked label {
-/*margin:	1em;
-background-color:	pink;
-background-image: url("Checkbox-red.svg");
-*/
 }
 
 /* The next few rules are for toggling between expanded and collapsed
@@ -472,12 +445,7 @@ background-image: url("Checkbox-red.svg");
 
 .content-panes {
 	border-top-width:	0px;
-/*	border-left-width:	2px;*/
-/*	border-right-width:	2px;*/
 	border-bottom-width:	0px;
-/*	border-left-style:	outset;*/
-/*	border-right-style:	outset;*/
-/*	border-color:		navy;*/
 }
 
 .content-panes.old1d {
@@ -487,35 +455,18 @@ background-image: url("Checkbox-red.svg");
 /* Summary of item */
 .item-summary,
 .item-content {
-/*	width:			100%;*/
 	max-width:		100%;
 
-/*	font-family:		Times, serif;*/
 	font-family:		serif;
 	padding:		0.5em;
 	background-color:	white;
 	overflow:		auto;
-
-/*
-	border-left-width:	1px;
-	border-left-style:	solid;
-	border-left-color:	white;
-*/
 }
 
 /* Mark the currently-selected item with a blue left border */
 .current-item .item-summary,
 .current-item .item-content {
-/*	border-left-color:	#6060ff;*/
-/* Attempt at making a more interesting gradient background for the current item.
-	background-image:
-		-webkit-gradient(linear, left top, right top,
-				 from(#6060ff),
-				 color-stop(1%, #b0b0b0),
-				 color-stop(3%, white),
-				 to(white));
-*/
-box-shadow:	0px 0px 10px rgb(0, 0, 0) inset;
+	box-shadow:	0px 0px 10px rgb(0, 0, 0) inset;
 }
 
 .content-panes[collapsible="yes"] .item-summary {
@@ -633,13 +584,6 @@ box-shadow:	0px 0px 10px rgb(0, 0, 0) inset;
 	min-height:		20px;
 
 	border-top-width:	0px;
-/*	border-left-width:	2px;*/
-/*	border-right-width:	2px;*/
-/*	border-bottom-width:	2px;*/
-/*	border-left-style:	outset;*/
-/*	border-top-style:	outset;*/
-/*	border-right-style:	outset;*/
-/*	border-color:		navy;*/
 
 	padding-left:		10px;
 	padding-right:		10px;
