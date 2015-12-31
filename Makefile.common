@@ -60,3 +60,5 @@ all::
 
 clean::
 	rm -f *~ *.bak
+
+depend::
