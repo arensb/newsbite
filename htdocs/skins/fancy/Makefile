@@ -20,9 +20,7 @@ IMAGE_FILES =	$(wildcard *.gif *.png *.jpg *.svg)
 # Credits:
 # http://commons.wikimedia.org/wiki/File:Checkbox.svg
 # http://commons.wikimedia.org/wiki/File:Checkbox-red.svg
-OTHER_FILES =	htaccess.sample \
-		Roboto-Regular-webfont.woff \
-		Roboto-Thin-webfont.woff
+OTHER_FILES =	htaccess.sample
 
 include ../../../Makefile.common
 
@@ -31,11 +29,11 @@ INSTALL_FANCY ?=	${INSTALL_SKIN}/${SKIN_NAME}
 
 .SUFFIXES:	.jsh .js
 
-all::	Make.depend ${JS_FILES} ${OTHER_FILES}
+all::	${JS_FILES} ${OTHER_FILES}
 	@:
 
 # Include dependencies: which .js files depend on what
-include Make.depend
+#include Make.depend
 
 # How to build .js files from .jsh files: run them through cpp.
 .jsh.js:
@@ -48,16 +46,16 @@ clean::
 	$(RM) $(JS_FILES)
 
 distclean::	clean
-	$(RM) Make.depend
+#	$(RM) Make.depend
 
 # Make.depend
 # Generate a list of which .js files depend on which source files.
-depend::	Make.depend
-Make.depend:	${JS_SRC}
-	$(RM) $@
-	for i in $(JS_SRC); do \
-		$(MAKEDEPEND) -MT `echo "$$i" | sed 's/\.jsh$$/.js/'` $$i >> $@; \
-	done
+#depend::	Make.depend
+#Make.depend:	${JS_SRC}
+#	$(RM) $@
+#	for i in $(JS_SRC); do \
+#		$(MAKEDEPEND) -MT `echo "$$i" | sed 's/\.jsh$$/.js/'` $$i >> $@; \
+#	done
 
 install::	install-php install-css install-js install-images install-other
 
