@@ -1,9 +1,6 @@
 <?php
 require_once("common.inc");
 echo "<", '?xml version="1.0" encoding="UTF-8"?', ">\n";
-
-// Give some of the skin variables shorter names
-$skin_dir = $skin_vars['skin'];
 ?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
 	"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
@@ -14,7 +11,6 @@ $skin_dir = $skin_vars['skin'];
 <link rel="stylesheet" type="text/css" href="css/index.css" media="all" />
 <script type="text/javascript">
   /* XXX - Which of these variables are actually needed? */
-  var skin_dir = "skins/<?=$skin_dir?>";	// XXX - Used to display "Loading.gif"
   var feed_title_tmpl_text = '<a href="view.php#id=@id@">@display_title@</a>&nbsp;<span class="feed-details">(<a href="@url@">site</a>, <a href="@feed_url@">RSS</a>)</span>';
   var feed_tools_tmpl_text = '<a href="update.php?id=@id@" onclick="return update_feed(@id@)">update</a>&nbsp;<a href="editfeed.php?id=@id@">edit</a>&nbsp;<a href="unsubscribe.php?id=@id@">unsub</a> <img src="skins/fancy/Attraction_transfer_icon.gif"/>';
 </script>

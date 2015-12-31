@@ -113,9 +113,7 @@ function update_feed(id)
 		switch (line.state)
 		{
 		    case 'start':
-			status_cell.innerHTML = '<img src="' +
-				skin_dir +
-				'/Loading.gif"/>';
+			status_cell.innerHTML = '<img src="images/Loading.gif"/>';
 			break;
 		    case "end":
 			status_cell.innerHTML = '&nbsp;';
