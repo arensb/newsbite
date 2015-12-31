@@ -33,7 +33,6 @@ echo "<", '?xml version="1.0" encoding="UTF-8"?', ">\n";
       <li><a href="addfeed.php">Add a feed</a></li>
       <li><a href="opml.php">Subscription list as OPML</a></li>
       <li><a href="loadopml.php">Add OPML file</a></li>
-      <li><a href="setskin.php">Change skin</a></li>
     </ul>
   </li>
   <li><a href="group.php">Groups</a></li>

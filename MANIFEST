@@ -54,7 +54,6 @@ htdocs/login.php
 htdocs/markitems.php
 htdocs/newsbite.manifest.php
 htdocs/opml.php
-htdocs/setskin.php
 htdocs/skins/fancy/Attraction_transfer_icon.gif
 htdocs/skins/fancy/Checkbox-red.svg
 htdocs/skins/fancy/Checkbox.svg
@@ -72,8 +71,6 @@ htdocs/skins/fancy/htaccess.sample.in
 htdocs/skins/fancy/ipad.css
 htdocs/skins/fancy/iphone.css
 htdocs/skins/fancy/newsbite-splash.png
-htdocs/skins/fancy/setskin.css
-htdocs/skins/fancy/setskin.php
 htdocs/sync.php
 htdocs/unsubscribe.php
 htdocs/update.php
