@@ -165,10 +165,6 @@ function group_list($group)
     <td>
       <input type="checkbox" name="active"
 	<?php if ($feed['active']) echo ' checked="checked"' ?>
-<?php/*        {if $feed.active}
-          checked
-        {/if}
-*/?>
       />
     </td>
   </tr>
