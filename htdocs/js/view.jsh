@@ -1,14 +1,14 @@
 /*						-*- JavaScript -*- */
-#include "js/guess-mobile.js"
-#include "js/defer.js"
-#include "js/xhr.js"
-#include "js/keybindings.js"
-#include "js/PatEvent.js"
-#include "js/types.js"
-#include "js/CacheManager.js"
-#include "js/Template.js"
-/*#include "js/load_module.js"*/
-#include "js/status-msg.js"
+#include "guess-mobile.js"
+#include "defer.js"
+#include "xhr.js"
+#include "keybindings.js"
+#include "PatEvent.js"
+#include "types.js"
+#include "CacheManager.js"
+#include "Template.js"
+/*#include "load_module.js"*/
+#include "status-msg.js"
 
 document.addEventListener("DOMContentLoaded", init, false);
 document.addEventListener("online",

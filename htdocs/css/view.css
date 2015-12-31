@@ -4,14 +4,14 @@
 
 @font-face {
 	font-family:	'Roboto Thin';
-	src:		url('Roboto-Thin-webfont.woff') format('woff');
+	src:		url('../fonts/Roboto-Thin-webfont.woff') format('woff');
 	font-weight:	normal;
 	font-style:	normal;
 }
 
 @font-face {
 	font-family:	'Roboto';
-	src:		url('Roboto-Regular-webfont.woff') format('woff');
+	src:		url('../fonts/Roboto-Regular-webfont.woff') format('woff');
 	font-weight:	normal;
 	font-style:	normal;
 }
@@ -21,7 +21,7 @@ body {
 	margin-left:		0px;
 	margin-right:		0px;
 	margin-bottom:		0px;
-	background-image:	url(gray-bg.jpg);
+	background-image:	url(../images/gray-bg.jpg);
 	z-index:		0;
 	position:		relative;
 }
