@@ -68,7 +68,7 @@ $skin_dir = $skin_vars['skin'];
   <th class="feed-tools">Tools</th>
 </thead>
 <tbody id="feeds-tbody">
-  <td colspan="3"><img src="skins/<?=$skin_dir?>/Ajax-loader.gif"/></td>
+  <td colspan="3"><img src="images/Ajax-loader.gif"/></td>
 </tbody>
 </table>
 </body>
