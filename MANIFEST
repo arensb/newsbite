@@ -25,6 +25,7 @@ htdocs/addfeed.php
 htdocs/css/abort.css
 htdocs/css/addfeed.css
 htdocs/css/desktop.css
+htdocs/css/editgroups.css
 htdocs/css/index.css
 htdocs/css/opml.css
 htdocs/css/style.css
@@ -46,6 +47,7 @@ htdocs/images/newsbite-splash-ipad.png
 htdocs/index.php
 htdocs/js/Makefile
 htdocs/js/feeds.jsh
+htdocs/js/group.jsh
 htdocs/js/jquery-2.1.3.min.js
 htdocs/js/profiler.js
 htdocs/js/view.js
@@ -62,9 +64,6 @@ htdocs/skins/fancy/Makefile
 htdocs/skins/fancy/android.css
 htdocs/skins/fancy/editfeed.css
 htdocs/skins/fancy/editfeed.php
-htdocs/skins/fancy/editgroups.css
-htdocs/skins/fancy/editgroups_all.php
-htdocs/skins/fancy/group.jsh
 htdocs/skins/fancy/htaccess.sample
 htdocs/skins/fancy/htaccess.sample.in
 htdocs/skins/fancy/ipad.css
