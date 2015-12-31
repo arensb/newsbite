@@ -25,6 +25,7 @@ htdocs/addfeed.php
 htdocs/css/abort.css
 htdocs/css/addfeed.css
 htdocs/css/desktop.css
+htdocs/css/editfeed.css
 htdocs/css/editgroups.css
 htdocs/css/index.css
 htdocs/css/opml.css
@@ -62,8 +63,6 @@ htdocs/skins/fancy/Checkbox-red.svg
 htdocs/skins/fancy/Checkbox.svg
 htdocs/skins/fancy/Makefile
 htdocs/skins/fancy/android.css
-htdocs/skins/fancy/editfeed.css
-htdocs/skins/fancy/editfeed.php
 htdocs/skins/fancy/htaccess.sample
 htdocs/skins/fancy/htaccess.sample.in
 htdocs/skins/fancy/ipad.css

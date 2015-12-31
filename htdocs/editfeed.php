@@ -5,7 +5,6 @@
 require_once("common.inc");
 require_once("database.inc");
 require_once("group.inc");
-#require_once("skin.inc");
 
 $feed_id = $_REQUEST['id'];		// ID of feed to show
 /* Make sure $feed_id is an integer */
@@ -15,7 +14,9 @@ else
 	abort("Invalid feed ID: $feed_id.");
 
 /* Get command. What are we supposed to do? */
-$cmd = $_REQUEST['command'];
+$cmd = "";
+if (isset($_REQUEST['command']))
+	$cmd = $_REQUEST['command'];
 
 switch ($cmd)
 {
@@ -61,7 +62,7 @@ function mark_groups($feed_id, &$group)
 			{
 				$group['marked'] = TRUE;
 				$retval++;
-				next;
+				continue;
 			}
 
 			if (isset($member['id']) && intval($member['id']) < 0)
@@ -86,20 +87,13 @@ function mark_groups($feed_id, &$group)
 function show_form($feed_id)
 {
 	// We've already established above that $feed_id is numeric
-	$feed_info = db_get_feed($feed_id);
-	if ($feed_info === NULL)
+	$feed = db_get_feed($feed_id);
+	if ($feed === NULL)
 		abort("No such feed: $feed_id");
 
 	// Figure out which groups this feed is in.
 	$groups = group_tree(TRUE);
 	mark_groups($feed_id, $groups);
-
-#	$skin = new Skin();
-#
-#	$skin->assign('feed', $feed_info);
-#	$skin->assign('groups', $groups);
-#	$skin->assign('command', "update");
-#	$skin->display("editfeed");
 
 	$feed_opts = db_get_feed_options($feed['id']);
 ########################################
@@ -144,9 +138,6 @@ echo '<', '?xml version="1.0" encoding="UTF-8"?', ">\n";
   <tr>
     <th>Nickname</th>
     <td>
-<?php if (isset($skin_vars['errors']['nickname'])): ?>
-        <div class="error-msg"><?=$skin_vars['errors']['nickname']?></div>
-<?php endif ?>
       <input type="text" name="nickname" value="<?=$feed['nickname']?>"/>
     </td>
   </tr>
@@ -163,9 +154,6 @@ echo '<', '?xml version="1.0" encoding="UTF-8"?', ">\n";
   <tr>
     <th>Site URL</th>
     <td>
-<?php if (isset($skin_vars['errors']['url'])): ?>
-        <div class="error-msg"><?=$skin_vars['errors']['url']?></div>
-<?php endif ?>
       <input type="text" name="url" value="<?=$feed['url']?>"/>
     </td>
   </tr>
@@ -173,9 +161,6 @@ echo '<', '?xml version="1.0" encoding="UTF-8"?', ">\n";
   <tr>
     <th>Feed URL</th>
     <td>
-<?php    if (isset($skin_vars['errors']['feed_url'])): ?>
-        <div class="error-msg"><?=$skin_vars['errors']['feed_url']?></div>
-<?php endif ?>
       <input type="text" name="feed_url" value="<?=$feed['feed_url']?>"/>
     </td>
   </tr>
@@ -237,9 +222,6 @@ echo '<', '?xml version="1.0" encoding="UTF-8"?', ">\n";
   <tr>
     <th>Username</th>
     <td>
-<?php    if (isset($skin_vars['errors']['username'])): ?>
-        <div class="error-msg"><?=$skin_vars['errors']['username']?></div>
-<?php endif ?>
       <input type="text" name="username" value="<?=$feed['username']?>" autocomplete="off"/>
     </td>
   </tr>
@@ -247,9 +229,6 @@ echo '<', '?xml version="1.0" encoding="UTF-8"?', ">\n";
   <tr>
     <th>Password</th>
     <td>
-<?php    if (isset($skin_vars['errors']['passwd'])): ?>
-        <div class="error-msg"><?=$skin_vars['errors']['passwd']?></div>
-<?php endif ?>
       <input type="password" name="password" value="<?=$feed['passwd']?>" autocomplete="off"/>
     </td>
   </tr>
@@ -313,26 +292,6 @@ function update_feed_info($feed_id)
 		// XXX - This is rather theoretical. We don't actually
 		// check anything.
 		abort("You supplied a bad value of some kind. Go back and fix it.");
-
-#		/* Insert the supplied values into $feed_info, so
-#		 * they'll show up in the form.
-#		 */
-#		$feed_info['nickname'] = $new['nickname'];
-#		$feed_info['url']      = $new['url'];
-#		$feed_info['feed_url'] = $new['feed_url'];
-#		$feed_info['username'] = $new['username'];
-#		$feed_info['passwd']   = $new['passwd'];
-#
-#		/* There were errors. Redisplay the form, with
-#		 * error messages.
-#		 */
-#		$skin = new Skin();
-#
-#		$skin->assign('feed', $feed_info);
-#		$skin->assign('errors', $errors);
-#		$skin->assign('command', "update");
-#		$skin->display("editfeed");
-#		return;
 	}
 
 	/* Update the list of groups that the feed is in:
@@ -392,11 +351,13 @@ function html_group_list($group)
 	// The name is "group_<gid>" (e.g., "group_-19").
 	// If the current feed is a member of this group
 	// ($group['marked'] is set), then the checkbox is marked.
+		$marked = array_key_exists("marked", $group) &&
+			$group['marked'];
 	echo "<li>",
 		"<input type=\"checkbox\" name=\"group_",
 		$group['id'],
 		"\"",
-		($group['marked'] ? " checked" : ""),
+		($marked ? " checked" : ""),
 		"/>",
 		 htmlspecialchars($group['name']);
 
