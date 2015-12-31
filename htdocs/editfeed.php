@@ -5,7 +5,6 @@
 require_once("common.inc");
 require_once("database.inc");
 require_once("group.inc");
-require_once("skin.inc");
 
 $feed_id = $_REQUEST['id'];		// ID of feed to show
 /* Make sure $feed_id is an integer */
@@ -15,7 +14,9 @@ else
 	abort("Invalid feed ID: $feed_id.");
 
 /* Get command. What are we supposed to do? */
-$cmd = $_REQUEST['command'];
+$cmd = "";
+if (isset($_REQUEST['command']))
+	$cmd = $_REQUEST['command'];
 
 switch ($cmd)
 {
@@ -61,7 +62,7 @@ function mark_groups($feed_id, &$group)
 			{
 				$group['marked'] = TRUE;
 				$retval++;
-				next;
+				continue;
 			}
 
 			if (isset($member['id']) && intval($member['id']) < 0)
@@ -86,20 +87,179 @@ function mark_groups($feed_id, &$group)
 function show_form($feed_id)
 {
 	// We've already established above that $feed_id is numeric
-	$feed_info = db_get_feed($feed_id);
-	if ($feed_info === NULL)
+	$feed = db_get_feed($feed_id);
+	if ($feed === NULL)
 		abort("No such feed: $feed_id");
 
 	// Figure out which groups this feed is in.
 	$groups = group_tree(TRUE);
 	mark_groups($feed_id, $groups);
 
-	$skin = new Skin();
+	$feed_opts = db_get_feed_options($feed['id']);
+########################################
+echo '<', '?xml version="1.0" encoding="UTF-8"?', ">\n";
+?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+	"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html>
+<head>
+<title>NewsBite: Editing <?=htmlspecialchars($feed['title'])?></title>
+<link rel="stylesheet" type="text/css" href="css/style.css" media="all" />
+<link rel="stylesheet" type="text/css" href="css/editfeed.css" media="all" />
+</head>
+<body id="edit-feed">
 
-	$skin->assign('feed', $feed_info);
-	$skin->assign('groups', $groups);
-	$skin->assign('command', "update");
-	$skin->display("editfeed");
+<?php /* XXX - Links to get back to interesting places, like feed list */ ?>
+<h1>Editing feed <?=htmlspecialchars($feed['title'])?></h1>
+
+<form name="edit-feed" method="post" action="editfeed.php">
+<?php/* Feed ID */?>
+<input type="hidden" name="id" value="<?=$feed['id']?>"/>
+<input type="hidden" name="command" value="update"/>
+
+<table id="show-feed">
+<?php/* XXX - Is it worth displaying the feed ID? */ ?>
+  <tr>
+    <th>ID</th>
+    <td><?=$feed['id']?></td>
+  </tr>
+
+  <tr>
+    <th>Title</th>
+    <td><?=htmlspecialchars($feed['title'])?></td>
+  </tr>
+
+  <tr>
+    <th>Subtitle</th>
+    <td><?=$feed['subtitle'] ? htmlspecialchars($feed['subtitle']) : "&nbsp;"?></td>
+  </tr>
+
+<?php/* User-settable nickname */ ?>
+  <tr>
+    <th>Nickname</th>
+    <td>
+      <input type="text" name="nickname" value="<?=$feed['nickname']?>"/>
+    </td>
+  </tr>
+
+<?php/* XXX - There should be a button or something to try to
+   * auto-discover the feed URL from the site URL. Presumably the way
+   * to do this is to fetch the site URL and check for "link
+   * rel=alternate", where the MIME type is RSS or Atom.
+   *
+   * However, I'm not sure this can be done in JavaScript: we can't
+   * just fetch an arbitrary URL.
+   */
+?>
+  <tr>
+    <th>Site URL</th>
+    <td>
+      <input type="text" name="url" value="<?=$feed['url']?>"/>
+    </td>
+  </tr>
+
+  <tr>
+    <th>Feed URL</th>
+    <td>
+      <input type="text" name="feed_url" value="<?=$feed['feed_url']?>"/>
+    </td>
+  </tr>
+
+  <tr>
+    <th>Description</th>
+    <td>
+      <div><?php
+	# Sanitize description before displaying it.
+	$description = $feed['description'];
+	run_hooks("clean-html", array(&$description));
+	echo $description;
+?></div>
+    </td>
+  </tr>
+
+<?php/* XXX - Probably not worth displaying this */ ?>
+  <tr>
+    <th>Last update</th>
+    <td><?=$feed['last_update']?></td>
+  </tr>
+
+  <tr>
+    <th>Image</th>
+    <td>
+<?php    if (isset($feed['image'])): ?>
+        <img src="<?=$feed['image']?>"/>
+<?php else: ?>
+        No image.
+<?php endif ?>
+    </td>
+  </tr>
+
+  <tr>
+    <th>Groups</th>
+    <td>
+<?php
+      if (isset($groups['members'])  && count($groups['members']) > 0)
+      {
+		echo "<ul>";
+		foreach ($groups['members'] as $g)
+			if ($g['id'] < 0)
+				html_group_list($g);
+		echo "</ul>";
+      }
+?>
+    </td>
+  </tr>
+
+  <tr>
+    <th>Active</th>
+    <td>
+      <input type="checkbox" name="active"
+	<?php if ($feed['active']) echo ' checked="checked"' ?>
+      />
+    </td>
+  </tr>
+
+  <tr>
+    <th>Username</th>
+    <td>
+      <input type="text" name="username" value="<?=$feed['username']?>" autocomplete="off"/>
+    </td>
+  </tr>
+
+  <tr>
+    <th>Password</th>
+    <td>
+      <input type="password" name="password" value="<?=$feed['passwd']?>" autocomplete="off"/>
+    </td>
+  </tr>
+
+  <tr>
+    <th class="section-title" colspan="0">Options</th>
+  </tr>
+<?php
+    if (count($feed_opts) > 0):
+	foreach ($feed_opts as $opt => $value):
+?>
+    <tr>
+      <th><?=$opt?></th>
+      <td><input type="number"
+		name="opt_<?=$opt?>"
+		value="<?=$feed_opts[$opt]?>" /></td>
+    </tr>
+<?php
+	  endforeach;
+    endif;
+?>
+</table>
+
+<input type="reset" value="Clear changes"/>
+<input type="submit" name="change" value="Apply changes"/>
+</form>
+
+</body>
+</html>
+<?php
+########################################
 }
 
 function update_feed_info($feed_id)
@@ -129,25 +289,9 @@ function update_feed_info($feed_id)
 
 	if (!$ok)
 	{
-		/* Insert the supplied values into $feed_info, so
-		 * they'll show up in the form.
-		 */
-		$feed_info['nickname'] = $new['nickname'];
-		$feed_info['url']      = $new['url'];
-		$feed_info['feed_url'] = $new['feed_url'];
-		$feed_info['username'] = $new['username'];
-		$feed_info['passwd']   = $new['passwd'];
-
-		/* There were errors. Redisplay the form, with
-		 * error messages.
-		 */
-		$skin = new Skin();
-
-		$skin->assign('feed', $feed_info);
-		$skin->assign('errors', $errors);
-		$skin->assign('command', "update");
-		$skin->display("editfeed");
-		return;
+		// XXX - This is rather theoretical. We don't actually
+		// check anything.
+		abort("You supplied a bad value of some kind. Go back and fix it.");
 	}
 
 	/* Update the list of groups that the feed is in:
@@ -196,5 +340,39 @@ function update_feed_info($feed_id)
 		redirect_to("view.php#id=$feed_id");
 	else
 		redirect_to("index.php");
+}
+
+/* html_group_list
+ * Print a tree of groups, each with a checkbox.
+ */
+function html_group_list($group)
+{
+	// Display an <li> for this group.
+	// The name is "group_<gid>" (e.g., "group_-19").
+	// If the current feed is a member of this group
+	// ($group['marked'] is set), then the checkbox is marked.
+		$marked = array_key_exists("marked", $group) &&
+			$group['marked'];
+	echo "<li>",
+		"<input type=\"checkbox\" name=\"group_",
+		$group['id'],
+		"\"",
+		($marked ? " checked" : ""),
+		"/>",
+		 htmlspecialchars($group['name']);
+
+	// If this group has children, recursively call html_group_list()
+	// to display their tree.
+	if (isset($group['members']) && count($group['members']) > 0)
+	{
+		echo "<ul>";
+		foreach ($group['members'] as $g)
+		{
+			if (isset($g['id']) && $g['id'] < 0)
+				html_group_list($g);
+		}
+		echo "</ul>";
+	}
+	echo "</li>\n";
 }
 ?>

@@ -1,14 +1,14 @@
 /*						-*- JavaScript -*- */
-#include "js/guess-mobile.js"
-#include "js/defer.js"
-#include "js/xhr.js"
-#include "js/keybindings.js"
-#include "js/PatEvent.js"
-#include "js/types.js"
-#include "js/CacheManager.js"
-#include "js/Template.js"
-/*#include "js/load_module.js"*/
-#include "js/status-msg.js"
+#include "guess-mobile.js"
+#include "defer.js"
+#include "xhr.js"
+#include "keybindings.js"
+#include "PatEvent.js"
+#include "types.js"
+#include "CacheManager.js"
+#include "Template.js"
+/*#include "load_module.js"*/
+#include "status-msg.js"
 
 document.addEventListener("DOMContentLoaded", init, false);
 document.addEventListener("online",
@@ -902,8 +902,6 @@ msg_add("calling update_feeds");
  * Create a DOM node from 'item' by substituting variables in the item
  * template, and creating a DOM node from that.
  */
-// XXX - Should go in Item.prototype. Then again, this is very
-// skin-specific, so maybe not.
 function item2node(item)
 {
 	var item_feed = feeds[item.feed_id];

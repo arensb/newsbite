@@ -30,11 +30,3 @@
 input[type="text"] {
 	width:			90%;
 }
-
-.error-msg {
-	border:			2px solid red;
-	color:			red;
-	margin-left:		2em;
-	margin-right:		2em;
-	margin-bottom:		0.5em;
-}

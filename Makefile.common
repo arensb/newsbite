@@ -21,7 +21,7 @@ endif
 # pieces.
 INSTALL_ROOT ?=		/usr/local/newsbite
 INSTALL_BACKEND ?=	${INSTALL_ROOT}
-INSTALL_SKIN ?=		${INSTALL_ROOT}/skins
+INSTALL_HTDOCS ?=	${INSTALL_ROOT}
 INSTALL_LIB ?=		${INSTALL_ROOT}/lib
 INSTALL_PLUGINS ?=	${INSTALL_ROOT}/plugins
 INSTALL_HTMLPURIFY ?=	${INSTALL_ROOT}/HTMLpurify
@@ -59,3 +59,5 @@ all::
 
 clean::
 	rm -f *~ *.bak
+
+depend::

@@ -8,7 +8,6 @@
 // during playoffs, that sort of thing.
 require_once("common.inc");
 require_once("database.inc");
-require_once("skin.inc");
 require_once("hooks.inc");
 
 load_hooks(PLUGIN_DIR);
@@ -43,8 +42,72 @@ if ($feed_info === NULL)
 	/* No such feed. Abort */
 	abort("No such feed: $feed_id.");
 
-$skin = new Skin();
-
-$skin->assign('feed', $feed_info);
-$skin->display("unsubscribe");
+	// What follows is basically a template.
+########################################
+echo '<', '?xml version="1.0" encoding="UTF-8"?', ">\n";
 ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+	"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html>
+<head>
+<title>NewsBite: Unsubscribe</title>
+<link rel="stylesheet" type="text/css" href="css/style.css" media="all" />
+<link rel="stylesheet" type="text/css" href="css/unsubscribe.css" media="all" />
+</head>
+<body id="unsubscribe-body">
+
+<h1>Unsubscribe</h1>
+
+<form name="unsubscribe-form" method="post" action="unsubscribe.php">
+<input type="hidden" name="id" value="<?=$feed_info['id']?>"/>
+
+<table id="show-feed">
+  <tr>
+    <th>Title</th>
+    <td><?=$feed_info['title']?></td>
+  </tr>
+
+<?php if ($feed_info['nickname'] != ""):
+?>
+  <tr>
+    <th>Nickname</th>
+    <td><?=$feed_info['nickname']?>
+  </tr>
+<?php endif
+?>
+
+<?php if ($feed_info['description'] != ""):
+	$description = $feed_info['description'];
+	run_hooks("clean-html", array(&$description));
+?>
+  <tr>
+    <th>Description</th>
+    <td><?=$description?></td>
+  </tr>
+<?php endif
+?>
+
+  <tr>
+    <th>Site URL</th>
+    <td><span class="url"><a href="<?=$feed_info['url']?>"><?=$feed_info['url']?></a></span></td>
+  </tr>
+
+  <tr>
+    <th>Feed URL</th>
+    <td><span class="url"><a href="<?=$feed_info['feed_url']?>"><?=$feed_info['feed_url']?></a></span></td>
+  </tr>
+
+  <tr>
+    <td colspan="2">
+      Check here if you really want to unsubscribe:&nbsp;
+      <input type="checkbox" name="confirm" value="yes"/>
+    </td>
+  </tr>
+</table>
+
+<input type="reset" value="Clear changes"/>
+<input type="submit" name="unsub" value="Unsubscribe"/>
+</form>
+
+</body>
+</html>

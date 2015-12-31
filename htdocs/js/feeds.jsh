@@ -1,17 +1,17 @@
 /* feeds.jsh					-*- JavaScript -*-
  * JavaScript functions for the feed view.
  */
-#include "js/guess-mobile.js"
-// #include "js/defer.js"
-#include "js/xhr.js"
-#include "js/keybindings.js"
-#include "js/PatEvent.js"
-#include "js/types.js"
-#include "js/Template.js"
-#include "js/CacheManager.js"
-//#include "js/load_module.js"
+#include "guess-mobile.js"
+// #include "defer.js"
+#include "xhr.js"
+#include "keybindings.js"
+#include "PatEvent.js"
+#include "types.js"
+#include "Template.js"
+#include "CacheManager.js"
+//#include "load_module.js"
 // XXX - Should block multiple updates from occurring in parallel.
-#include "js/status-msg.js"
+#include "status-msg.js"
 
 var cache = new CacheManager();		// Cache manager for locally-stored data
 var feeds;		// Master list of all feeds
@@ -108,14 +108,10 @@ function update_feed(id)
 		var count_cell = status_cell.nextSibling;
 		var title_cell = count_cell.nextSibling;
 
-		// XXX - Paths to images / skin name shouldn't be
-		// hardcoded. Perhaps add a class to the cell.
 		switch (line.state)
 		{
 		    case 'start':
-			status_cell.innerHTML = '<img src="' +
-				skin_dir +
-				'/Loading.gif"/>';
+			status_cell.innerHTML = '<img src="images/Loading.gif"/>';
 			break;
 		    case "end":
 			status_cell.innerHTML = '&nbsp;';
@@ -134,9 +130,7 @@ function update_feed(id)
 			// over the error icon, but it'd probably be
 			// better to use a CSS-based tooltip.
 			status_cell.innerHTML =
-				'<img src="' +
-				skin_dir +
-				'/Attention_niels_epting.png" title="' +
+				'<img src="images/Attention_niels_epting.png" title="' +
 				line.error +
 				'" alt="' +
 				line.error +

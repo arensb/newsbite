@@ -126,9 +126,6 @@ function redirect_to($url)
 
 /* abort
  * Print the supplied error message, and abort.
- * First, tries to load the skin module and use a template to report
- * the error. If that fails, calls bare_abort() to print an ugly error
- * message.
  */
 function abort($msg)
 {
@@ -145,49 +142,35 @@ function abort($msg)
 		exit(0);
 	}
 
-	/* Try to load the skin module. */
-	$err = @include_once("skin.inc");
-	if ($err === FALSE)
-		bare_abort($msg);
-
-	$skin = new Skin();
-		// XXX - Error-checking. Actually, is any
-		// error-checking possible?
-	$skin->assign('message', $msg);
-
-	/* Try to fetch the template, then print it: $skin->display()
-	 * doesn't return a useful error code that I've found. So
-	 * instead, fetch the text of the error page, then print it.
-	 */
-	$page = @$skin->fetch("abort");
-	if ($page == "")
-		bare_abort($msg);
-	echo $page;
-	exit(0);
-}
-
-/* bare_abort
- * A raw-PHP abort function. Doesn't use templates, but works
- * anywhere.
- */
-function bare_abort($msg)
-{
-	echo '<', '?xml version="1.0" encoding="UTF-8"?', '>';
+	// What follows is basically a template for the abort error page.
+########################################
+echo '<', '?xml version="1.0" encoding="UTF-8"?', ">\n";
 ?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
 	"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html>
 <head>
 <title>NewsBite: Error</title>
+<link rel="stylesheet" type="text/css" href="css/style.css" media="all" />
+<link rel="stylesheet" type="text/css" href="css/abort.css" media="all" />
 </head>
-<body id="view-body">
+<body id="abort-body">
+
+<h1>Error</h1>
 
 <p><?=htmlspecialchars($msg)?></p>
+
+<hr/>
+
+<ul>
+  <li><a href="index.php">Feed index</a></li>
+</ul>
 
 </body>
 </html>
 <?php
-	 exit(0);
+########################################
+	exit(0);
 }
 
 /* jsonify

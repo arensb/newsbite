@@ -11,3 +11,11 @@ th#th-feed-list {
 	padding-bottom:		0px;
 	padding-left:		0px;
 }
+
+.error-msg {
+	border:			2px solid red;
+	color:			red;
+	margin-left:		2em;
+	margin-right:		2em;
+	margin-bottom:		0.5em;
+}

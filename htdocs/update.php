@@ -25,7 +25,6 @@ if (php_sapi_name() == "cli")
 
 require_once("common.inc");
 require_once("net.inc");
-require_once("skin.inc");
 
 // XXX - Use the {html,json}_output_handler classes throughout, so we
 // can eliminate a bunch of "switch ($out_fmt)" statements.
@@ -218,9 +217,6 @@ if (is_numeric($feed_id) && is_int($feed_id+0))
 	{
 	    case "json":
 		// XXX - This should go in calling function.
-		$skin->assign('feed', $feed);
-		$skin->assign('feed_id', $feed_id);
-		$skin->assign('counts', $feed['counts']);
 		echo jsonify('state',	"end",
 			     'feed_id',	$feed_id,
 			     'counts',	$feed['counts']
