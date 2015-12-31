@@ -24,10 +24,13 @@ htdocs/Makefile
 htdocs/addfeed.php
 htdocs/css/abort.css
 htdocs/css/addfeed.css
+htdocs/css/android.css
 htdocs/css/desktop.css
 htdocs/css/editfeed.css
 htdocs/css/editgroups.css
 htdocs/css/index.css
+htdocs/css/ipad.css
+htdocs/css/iphone.css
 htdocs/css/opml.css
 htdocs/css/style.css
 htdocs/css/unsubscribe.css
@@ -41,6 +44,7 @@ htdocs/htaccess.sample
 htdocs/htaccess.sample.in
 htdocs/images/Ajax-loader.gif
 htdocs/images/Attention_niels_epting.png
+htdocs/images/Attraction_transfer_icon.gif
 htdocs/images/Loading.gif
 htdocs/images/gray-bg.jpg
 htdocs/images/newsbite-icon.png
@@ -58,15 +62,9 @@ htdocs/login.php
 htdocs/markitems.php
 htdocs/newsbite.manifest.php
 htdocs/opml.php
-htdocs/skins/fancy/Attraction_transfer_icon.gif
-htdocs/skins/fancy/Checkbox-red.svg
-htdocs/skins/fancy/Checkbox.svg
 htdocs/skins/fancy/Makefile
-htdocs/skins/fancy/android.css
 htdocs/skins/fancy/htaccess.sample
 htdocs/skins/fancy/htaccess.sample.in
-htdocs/skins/fancy/ipad.css
-htdocs/skins/fancy/iphone.css
 htdocs/skins/fancy/newsbite-splash.png
 htdocs/sync.php
 htdocs/unsubscribe.php
