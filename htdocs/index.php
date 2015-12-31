@@ -1,12 +1,5 @@
 <?php
 require_once("common.inc");
-#require_once("skin.inc");
-#
-#$skin = new Skin();
-#
-#$skin->display("feeds");
-?>
-<?php
 echo "<", '?xml version="1.0" encoding="UTF-8"?', ">\n";
 
 // Give some of the skin variables shorter names
