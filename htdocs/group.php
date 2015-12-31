@@ -197,6 +197,8 @@ function show_form_one($group_id)
 
 function show_form_all()
 {
+	global $cmd;
+
 	# XXX - Construct form for editing all feeds.
 	$groups = group_tree();
 
@@ -227,7 +229,7 @@ echo '<', '?xml version="1.0" encoding="UTF-8"?', ">\n";
 <h1>Groups</h1>
 
 <form name="edit-groups" method="post" action="group.php">
-<input type="hidden" name="command" value="<?=$command?>"/>
+<input type="hidden" name="command" value="<?=$cmd?>"/>
 <ul id="group-tree"></ul>
 <hr/>
 
