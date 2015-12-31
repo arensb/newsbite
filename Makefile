@@ -29,7 +29,6 @@ RECURSIVE_DIRS =	\
 	htdocs/fonts \
 	htdocs/images \
 	htdocs/js \
-	htdocs/skins/fancy \
 	lib \
 	plugins
 
@@ -107,7 +106,6 @@ install::
 	@echo "Done. Please check your local customization file for updates:"
 	@echo "  ${INSTALL_LIB}/config.inc"
 	@echo "  ${INSTALL_BACKEND}/.htaccess"
-	@echo "  ${INSTALL_SKIN}/*/.htaccess"
 
 htmlpurifier:	HTMLPurifier/README
 HTMLPurifier/README:

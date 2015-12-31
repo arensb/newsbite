@@ -62,10 +62,6 @@ htdocs/login.php
 htdocs/markitems.php
 htdocs/newsbite.manifest.php
 htdocs/opml.php
-htdocs/skins/fancy/Makefile
-htdocs/skins/fancy/htaccess.sample
-htdocs/skins/fancy/htaccess.sample.in
-htdocs/skins/fancy/newsbite-splash.png
 htdocs/sync.php
 htdocs/unsubscribe.php
 htdocs/update.php
@@ -96,7 +92,6 @@ lib/hooks.inc
 lib/json.inc
 lib/net.inc
 lib/parse-feed.inc
-lib/skin.inc
 lib/xml-output.inc
 php.ini
 plugins/Makefile

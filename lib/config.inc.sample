@@ -30,9 +30,6 @@ $PARALLEL_UPDATES = 20;
  */
 //define('FEED_CACHE', "/tmp/feed-cache");
 
-/* Default skin. This is the name of a directory in htdocs/skins */
-define('DEFAULT_SKIN', "fancy");
-
 /* Plugin directory. All *.php files in this directory will be loaded
  * by modules that take plugins or hooks.
  *

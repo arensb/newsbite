@@ -902,8 +902,6 @@ msg_add("calling update_feeds");
  * Create a DOM node from 'item' by substituting variables in the item
  * template, and creating a DOM node from that.
  */
-// XXX - Should go in Item.prototype. Then again, this is very
-// skin-specific, so maybe not.
 function item2node(item)
 {
 	var item_feed = feeds[item.feed_id];

@@ -126,9 +126,6 @@ function redirect_to($url)
 
 /* abort
  * Print the supplied error message, and abort.
- * First, tries to load the skin module and use a template to report
- * the error. If that fails, calls bare_abort() to print an ugly error
- * message.
  */
 function abort($msg)
 {

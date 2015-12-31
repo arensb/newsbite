@@ -108,8 +108,6 @@ function update_feed(id)
 		var count_cell = status_cell.nextSibling;
 		var title_cell = count_cell.nextSibling;
 
-		// XXX - Paths to images / skin name shouldn't be
-		// hardcoded. Perhaps add a class to the cell.
 		switch (line.state)
 		{
 		    case 'start':
