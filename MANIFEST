@@ -23,6 +23,7 @@ fix-schema-r979.sql
 htdocs/Makefile
 htdocs/addfeed.php
 htdocs/css/abort.css
+htdocs/css/addfeed.css
 htdocs/css/desktop.css
 htdocs/css/index.css
 htdocs/css/opml.css
@@ -58,8 +59,6 @@ htdocs/skins/fancy/Attraction_transfer_icon.gif
 htdocs/skins/fancy/Checkbox-red.svg
 htdocs/skins/fancy/Checkbox.svg
 htdocs/skins/fancy/Makefile
-htdocs/skins/fancy/addfeed.css
-htdocs/skins/fancy/addfeed.php
 htdocs/skins/fancy/android.css
 htdocs/skins/fancy/editfeed.css
 htdocs/skins/fancy/editfeed.php
