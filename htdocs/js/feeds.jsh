@@ -132,9 +132,7 @@ function update_feed(id)
 			// over the error icon, but it'd probably be
 			// better to use a CSS-based tooltip.
 			status_cell.innerHTML =
-				'<img src="' +
-				skin_dir +
-				'/Attention_niels_epting.png" title="' +
+				'<img src="images/Attention_niels_epting.png" title="' +
 				line.error +
 				'" alt="' +
 				line.error +
