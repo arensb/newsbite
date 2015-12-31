@@ -2,7 +2,6 @@
 /* group.php
  * Edit groups and whatnot.
  */
-$NO_AUTH_CHECK = TRUE;		# XXX - Just for testing
 require_once("common.inc");
 #require_once("database.inc");
 require_once("group.inc");
