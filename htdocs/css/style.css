@@ -1,5 +1,21 @@
 /* Main stylesheet
  */
+/* Fonts */
+@font-face {
+	font-family:	'Roboto Thin';
+	src:		url('../fonts/Roboto-Thin-webfont.woff') format('woff');
+	font-weight:	normal;
+	font-style:	normal;
+}
+
+@font-face {
+	font-family:	'Roboto';
+	src:		url('../fonts/Roboto-Regular-webfont.woff') format('woff');
+	font-weight:	normal;
+	font-style:	normal;
+}
+
+/* Style */
 body {
 	color:			black;
 	background-color:	white;
