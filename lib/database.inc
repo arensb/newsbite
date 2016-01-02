@@ -1,4 +1,4 @@
-<?
+<?php
 /* database.inc
  * Database-related functions. Nothing else should access the database
  * directly.
@@ -385,39 +385,22 @@ function db_get_some_feed_items(/* varargs */)
 
 	/* About the query:
 	 * The most common query is going to be asking for the last 25
-	 * unread items in active feeds. This will wind up being:
+	 * unread items in active feeds. This will wind up being
+	 * something like:
 	 *	SELECT items.*
-	 *	FROM items,
-	 *	(SELECT DISTINCT	last_update
-	 *	 FROM	items
-	 *	 WHERE	!is_read
-	 *	 ORDER BY	last_update DESC
-	 *	 LIMIT 25)
-	 *	AS tmp,
-	 *	feeds
-	 *	WHERE items.last_update = tmp.last_update
-	 *	  AND items.feed_id = feeds.id
-	 *	  AND feeds.active
+	 *	FROM items
+	 *	WHERE feed_id IN
+	 *		(SELECT id
+	 *		  FROM	feeds
+	 *		 WHERE	active)
 	 *	  AND !items.is_read
 	 *	ORDER BY items.last_update DESC,
 	 *		items.id DESC
 	 *	LIMIT 25
 	 *
-	 * Note the
-	 * "SELECT FROM items, (SELECT last_update), feeds"
-	 * structure: the reason for this is that ordering by two
-	 * columns takes a long time (0.32 sec (wall time) with 35,000
-	 * items and 111 active feeds). I think this is because MySQL
-	 * can't optimize by picking the 25 latest last_update and
-	 * just sorting a small number of records, but has to sort all
-	 * 35,000 records before picking the last 25.
-	 *
-	 * Here, the inner (SELECT...), along with "WHERE
-	 * items.last_update = tmp.last_update" picks the 25 greatest
-	 * last_update values. We join this with `items`, to pick only
-	 * items with one of those 25 last_update values. This cuts
-	 * down tremendously on the number of records we need to sort
-	 * later.
+	 * The inner "(SELECT FROM feeds" allows us to select the
+	 * feeds that match certain conditions, like being active,
+	 * being in a group, or having id==123.
 	 */
 
 	if (!isset($args['order']))
@@ -435,106 +418,55 @@ SELECT	items.id, items.feed_id, items.url, items.title,
 	UNIX_TIMESTAMP(items.last_update) as `last_update`,
 	IF(is_read, 1, 0) as `is_read`,
 	UNIX_TIMESTAMP(mtime) as `mtime`
-FROM	items,
-	(SELECT DISTINCT	last_update
-	 FROM			items
-
-EOT;
-	// Collect the various conditions for the inner "(SELECT"
-	// subquery. Put them in the $conditions array. Once we know
-	// what they all are, join them together with "AND", and add a
-	// "WHERE" in front.
-	$subconditions = array();
-	if (is_int($args['feed_id']))
-		array_push($subconditions,
-			   sprintf("feed_id=%d", $args['feed_id']));
-	if (isset($args['read']))
-	{
-		// We need to specify "is_read" or "!is_read" as a
-		// subcondition: otherwise, what might happen is this:
-		// the 100 most recent articles are read, but lots of
-		// others are unread. So this subquery returns a list
-		// of 100 times that don't correspond to any unread
-		// articles.
-		// Yes, specifying "is_read" or "!is_read" is
-		// redundant, but it's necessary.
-		switch ($args['read'])
-		{
-		    case "read":	# Return only read items
-			array_push($subconditions, "is_read");
-			break;
-		    case "unread":	# Return only unread items
-			array_push($subconditions, "!is_read");
-			break;
-		    case "both":
-			break;
-		    default:		# Invalid 'read' value
-			error_log("db_get_some_feed_items: Invalid 'read' value: ".$args['read']);
-			return NULL;
-		}
-	}
-	// XXX - "group" == <gid>.
-	// I don't think we want to accept a group name "e.g., group=News",
-	// since those need not be unique. Though if the argument isn't an
-	// integer, it might be worth looking to see whether it's a name.
-	if (isset($args['group']))
-	{
-		$gid = $args['group'];
-		error_log("Looking for feeds in group ".$gid);
-		// XXX - If gid is not an integer, try to find a unique
-		// gid that matches its name.
-		if (!is_int($gid))
-		{
-			error_log("Non-numeric gid ".$gid);
-			return NULL;
-		}
-
-		// XXX - Find all feeds in this group (i.e., find all
-		// descendant groups, and all feeds in those groups).
-		$feeds = db_feeds_in_group($gid);
-
-		// XXX - Append to $subconditions something like
-		// "feed_id in (1, 3, 7, 19, 28)"
-	}
-
-	if (count($subconditions) > 0)
-		$query .= "WHERE " . implode("\nAND ", $subconditions) . "\n";
-
-	switch ($args['order'])
-	{
-	    case "date_asc":
-		$query .= "ORDER BY last_update ASC\n";
-		break;
-	    case "date_desc":
-	    default:
-		// XXX - This fall-through means we don't notice bogus
-		// values. Then again, we can probably trust the
-		// caller.
-		$query .= "ORDER BY last_update DESC\n";
-		break;
-	}
-
-	$query .= "\tLIMIT " . $args['max_items'] . "\n";
-
-	$query .= <<<EOT
-	) AS tmp,
-	feeds
+FROM	items
 
 EOT;
 
-	$conditions = array(	// All of the "WHERE x AND y AND z" conditions
-		"items.last_update = tmp.last_update",
-		"items.feed_id = feeds.id",
+	// $feed_conditions: list of conditions that the feeds must match.
+	$feed_conditions = array(
 		);
 
 	/* Were we asked for just one feed ID? */
 	if (isset($args['feed_id']) && is_numeric($args['feed_id']))
 	{
 		$c = sprintf("items.feed_id=%d\n", $args['feed_id']);
-		array_push($conditions, $c);
+		array_push($feed_conditions, $c);
 	} else {
-		array_push($conditions, "feeds.active");
+		array_push($feed_conditions, "feeds.active");
 	}
+
+	// XXX - Ought to be able to select feed by group.
+#	// XXX - "group" == <gid>.
+#	// I don't think we want to accept a group name "e.g., group=News",
+#	// since those need not be unique. Though if the argument isn't an
+#	// integer, it might be worth looking to see whether it's a name.
+#	if (isset($args['group']))
+#	{
+#		$gid = $args['group'];
+#		error_log("Looking for feeds in group ".$gid);
+#		// XXX - If gid is not an integer, try to find a unique
+#		// gid that matches its name.
+#		if (!is_int($gid))
+#		{
+#			error_log("Non-numeric gid ".$gid);
+#			return NULL;
+#		}
+#
+#		// XXX - Find all feeds in this group (i.e., find all
+#		// descendant groups, and all feeds in those groups).
+#		$feeds = db_feeds_in_group($gid);
+#
+#		// XXX - Append to $subconditions something like
+#		// "feed_id in (1, 3, 7, 19, 28)"
+#	}
+	$feed_selector = "feed_id in (SELECT id FROM feeds WHERE\n" .
+		implode("\nAND ", $feed_conditions) . "\n)";
+
+	// Collect all the other conditions on the articles we're
+	// interested in.
+	$conditions = array(	// All of the "WHERE x AND y AND z" conditions
+		$feed_selector,
+		);
 
 	/* Do we want just read items, or just unread ones, or both? */
 	if (isset($args['read']))
