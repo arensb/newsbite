@@ -130,6 +130,12 @@
   later. Add window.php (or something) to supply the client with
   copies of older articles. IOW move a lot of the logic to JavaScript
   instead of the server.
+	This can probably use an SQL statement like
+	(SELECT [lines above the row])
+	UNION
+	(SELECT [lines below the row])
+	ORDER BY ...
+	[and make them unique];
 - Groups: we can precompute group membership: just add an "implied"
   boolean field to the group table. "implied == false" means that the
   user set group membership explicitly; "implied == true" means that
