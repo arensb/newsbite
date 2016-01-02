@@ -116,6 +116,7 @@ var item_tmpl_text = '<article class="item" id="item-@id@">\
 </article>';
 </script>
 <title>NewsBite</title>
+<link rel="stylesheet" type="text/css" href="css/style.css" media="all" />
 <link rel="stylesheet" type="text/css" href="css/view.css" media="all" />
 <script type="text/javascript" src="js/jquery.js"></script>
 <script type="text/javascript" src="js/view.js"></script>
