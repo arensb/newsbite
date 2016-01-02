@@ -445,7 +445,8 @@ EOT;
 	// what they all are, join them together with "AND", and add a
 	// "WHERE" in front.
 	$subconditions = array();
-	if (is_int($args['feed_id']))
+	if (array_key_exists("feed_id", $args) &&
+	    is_int($args['feed_id']))
 		array_push($subconditions,
 			   sprintf("feed_id=%d", $args['feed_id']));
 	if (isset($args['read']))
