@@ -277,6 +277,10 @@ PatEvent._add_binding = function(node, evtype, selector, handler, capture)
 
 	// Add a DOMNodeInserted listener to this node, so we can find
 	// out if it gets any new children.
+	// XXX - Firefox complains of
+	// "Use of Mutation Events is deprecated. Use MutationObserver instead."
+	// Replace this with a MutationObserver:
+	// https://developer.mozilla.org/en-US/docs/Web/API/MutationObserver
 	node.addEventListener("DOMNodeInserted",
 			      PatEvent._event_node_added,
 			      false);
