@@ -6,10 +6,10 @@ require_once("database.inc");
 
 $retval = array();
 
-#$fh = fopen("/tmp/sync.out", "w");
+//$fh = fopen("/tmp/sync.out", "w");
 
 $feed_id = $_REQUEST['id'];		// ID of feed to show
-#fwrite($fh, "feed_id: $feed_id\n");
+//fwrite($fh, "feed_id: $feed_id\n");
 /* Make sure $feed_id is an integer */
 if (is_numeric($feed_id) && is_integer($feed_id+0))
 	$feed_id = (int) $feed_id;
@@ -20,13 +20,13 @@ else
 
 $ihave = json_decode($_REQUEST['ihave'], TRUE);
 $json_err = json_last_error();
-#fwrite($fh, "ihave:\n");
-#fwrite($fh, print_r($ihave, TRUE));
+//fwrite($fh, "ihave:\n");
+//fwrite($fh, print_r($ihave, TRUE));
 
-# XXX - Parse $ihave to make sure it's sane. In particular, 'id' must be an
-# integer.
+// XXX - Parse $ihave to make sure it's sane. In particular, 'id' must be an
+// integer.
 $ids = array();
-# Make sure $ihave is an array.
+// Make sure $ihave is an array.
 if (!is_array($ihave))
 	$ihave = array();
 
@@ -36,7 +36,7 @@ foreach ($ihave as $id => &$value)
 	if (is_integer($id))
 		$ids[] = $id;
 	else {
-#		fwrite($fh, "[$id] is not an integer\n");
+//		fwrite($fh, "[$id] is not an integer\n");
 		continue;
 	}
 
@@ -49,7 +49,7 @@ foreach ($ihave as $id => &$value)
 	$value['mtime'] = $mtime;
 }
 
-# Look up the items from $ihave in the database
+// Look up the items from $ihave in the database
 $db_items = db_get_items($ids);
 $db_items_new = array();
 foreach ($db_items as $item)
@@ -59,18 +59,18 @@ foreach ($db_items as $item)
 $db_items = $db_items_new;
 unset($db_items_new);
 
-# XXX - Go through $ids and figure out what to do.
-# is_read: keep the newest value. If $ihave is wrong, add a record
-#	to $retval.
-#	If $db_items is wrong, mark the item in the database.
+// XXX - Go through $ids and figure out what to do.
+// is_read: keep the newest value. If $ihave is wrong, add a record
+//	to $retval.
+//	If $db_items is wrong, mark the item in the database.
 
-#fwrite($fh, "ids:\n");
-#fwrite($fh, print_r($ids, TRUE));
+//fwrite($fh, "ids:\n");
+//fwrite($fh, print_r($ids, TRUE));
 foreach ($ids as $id)
 {
 	# We've done data sanitizing earlier, so we know that $id is an
 	# integer.
-#fwrite($fh, "Checking id [$id]\n");
+//fwrite($fh, "Checking id [$id]\n");
 
 	if (!isset($db_items[$id]))
 	{
@@ -80,7 +80,7 @@ foreach ($ids as $id)
 			"id"		=> $id,
 			"action"	=> "delete",
 			);
-#fwrite($fh, "This id isn't in \$db_items\n");
+//fwrite($fh, "This id isn't in \$db_items\n");
 		continue;
 	}
 
@@ -93,11 +93,11 @@ foreach ($ids as $id)
 	{
 		# See whether $ihave or $db_items has the newer version of
 		# the item.
-#fwrite($fh, "ihave: [".$ihave_item['mtime']."], db_items: [".$db_item['mtime']."]\n");
+//fwrite($fh, "ihave: [".$ihave_item['mtime']."], db_items: [".$db_item['mtime']."]\n");
 		if ($ihave_item['mtime'] > $db_item['mtime'])
 		{
 			# $ihave has the more recent version
-#fwrite($fh, "\$ihave is more recent\n");
+//fwrite($fh, "\$ihave is more recent\n");
 			db_mark_items($ihave_item['is_read'], array($id));
 				# XXX - Would it be more efficient to
 				# collect the IDs and 'is_read's of all
@@ -111,7 +111,7 @@ foreach ($ids as $id)
 		} else {
 			# $db_items has the more recent version
 			# In case of a tie, I guess the database wins.
-#fwrite($fh, "\$db_items is more recent\n");
+//fwrite($fh, "\$db_items is more recent\n");
 			# Tell the client that its idea of the is_read
 			# state is wrong.
 			$retval[] = array("id"		=> $id,
@@ -120,21 +120,21 @@ foreach ($ids as $id)
 				);
 		}
 	}
-#else {fwrite($fh, "ihave and db agree on is_read: ".$ihave_item['is_read']." == ".$db_item['is_read']."\n");}
+//else {fwrite($fh, "ihave and db agree on is_read: ".$ihave_item['is_read']." == ".$db_item['is_read']."\n");}
 }
 
-# Get items with db_get_some_feed_items(), like items.php.
-# If there are any that don't appear in $ihave, add them to $retval.
+// Get items with db_get_some_feed_items(), like items.php.
+// If there are any that don't appear in $ihave, add them to $retval.
 $get_feed_args = array(
 	"read"		=> "unread",
-	"max_items"	=> 100,	# XXX - What's the best value?
+	"max_items"	=> 100,	// XXX - What's the best value?
 	);
 if (is_integer($feed_id))
 	$get_feed_args['feed_id'] = $feed_id;
 $all_items = db_get_some_feed_items($get_feed_args);
 foreach ($all_items as $item)
 {
-#fwrite($fh, "all_items: $item[id]\n");
+//fwrite($fh, "all_items: $item[id]\n");
 	# XXX - items.php converts URLs to mobile versions for some sites.
 	# Need to do the same here.
 
@@ -144,17 +144,17 @@ foreach ($all_items as $item)
 		continue;
 }
 
-#fwrite($fh, "Adding to retval\n");
+//fwrite($fh, "Adding to retval\n");
 	array_push($retval, $item);
-#if ($item['is_read'])
-#fwrite($fh, "Hey! This item is already read!\n");
+//if ($item['is_read'])
+//fwrite($fh, "Hey! This item is already read!\n");
 	# XXX - Do we need to run clean-html on anything?
 	# Fixed-length fields in 'items'.
 }
 
-#fwrite($fh, "Returning:\n");
-#fwrite($fh, print_r($retval, TRUE));
-#fclose($fh);
+//fwrite($fh, "Returning:\n");
+//fwrite($fh, print_r($retval, TRUE));
+//fclose($fh);
 
 echo jsonify($retval);
 ?>
