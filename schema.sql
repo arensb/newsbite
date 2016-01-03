@@ -19,8 +19,8 @@ DEFAULT CHARSET=utf8mb4;
 
 /* groups
  * For grouping feeds into nested groups.
- * 'parent' says which group this group belongs to. The root group has
- * id 0.
+ * 'parent' says which group this group belongs to. The root group "All"
+ * has id -1.
  */
 CREATE TABLE groups (
 	id		INT		NOT NULL AUTO_INCREMENT,
