@@ -136,6 +136,9 @@
 	(SELECT [lines below the row])
 	ORDER BY ...
 	[and make them unique];
+  Ought to be able to specify some criteria, like "my version of this
+  window contains items 123, 124, 234, 235", so that the server
+  doesn't have to send everything in that window each time..
 - Groups: we can precompute group membership: just add an "implied"
   boolean field to the group table. "implied == false" means that the
   user set group membership explicitly; "implied == true" means that
