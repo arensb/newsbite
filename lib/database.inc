@@ -1618,4 +1618,84 @@ echo "affected rows: [$nrows]\n";
 	// - Compare the two
 	// (We don't want "foo.html#a" to match "foo.htmlXYZ").
 }
+
+/* db_get_updates
+ * Return a list of the things that got updated since 'last_sync'.
+ * XXX - Conceptually, 'last_sync' is a timestamp: milliseconds since
+ * the epoch or some such. In practice, it's more like a bookmark, one
+ * that marks a position in the order of articles.
+ *	That is, we'd like to say "give me the changes since
+ * midnight". But a) a large update might get broken up into smaller
+ * chunks, and b) multiple articles might have the same update time,
+ * so we wind up sorting (in db_get_some_feed_items()) by
+ * last_updated, with id as a tiebreaker.
+ *	So perhaps last_sync should be a tuple consisting of update
+ * time and item id.
+ */
+/* Returns a two-element list: ($bookmark, $items);
+ * $bookmark is an opaque element that serves as a bookmark: call
+ * db_get_updates() with it, and you'll get the next set of results.
+ */
+/* XXX - Ought to be able to call db_get_updates with just a
+ * timestamp, to get all updates after a given time. Or without any
+ * arguments, to get all updates since the dawn of time.
+ */
+function db_get_updates($last_sync)
+{
+	$dbh = db_connect();
+
+	$sync_time = $last_sync['mtime'];
+	$sync_id =   $last_sync['id'];
+
+	$query = <<<EOT
+SELECT	items.id, items.feed_id, items.url, items.title,
+	items.summary, items.content,
+	items.author, items.category,
+	items.comment_url, items.comment_rss, items.guid,
+	UNIX_TIMESTAMP(items.pub_date) as `pub_date`,
+	UNIX_TIMESTAMP(items.last_update) as `last_update`,
+	IF(is_read, 1, 0) as `is_read`,
+	UNIX_TIMESTAMP(mtime) as `mtime`
+FROM	items
+WHERE	(mtime > FROM_UNIXTIME(?)) or
+	(mtime = FROM_UNIXTIME(?) and id > ?)
+ORDER BY	mtime ASC,
+		id ASC
+LIMIT	100
+EOT;
+
+	$stmt = $dbh->prepare($query);
+	$stmt->bind_param("iii",
+			  $sync_time,
+			  $sync_time,
+			  $sync_id);
+	$result = $stmt->execute();
+
+	if ($result)
+	{
+		// Something went wrong. Let the caller know.
+		global $db_errno;
+		$db_errno = $dbh->errno;
+		global $db_errmsg;
+		$db_errmsg = $dbh->error;
+
+		return NULL;
+	}
+
+	// Get the list of results
+	// XXX - What if there aren't any? Want to return a proper
+	// empty array.
+	$rows = array();
+	while ($row = $result->fetch_assoc())
+	{
+		$rows[] = $row;
+	}
+
+	// Save the last row's mtime and ID as a bookmark
+	$bookmark = array(
+		"mtime"	=> $row['mtime'],
+		"id"	=> $row['id'],
+		);
+	return array($bookmark, $rows);
+}
 ?>
