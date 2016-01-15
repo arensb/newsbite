@@ -21,6 +21,7 @@ if (!isset($out_fmt))
 	    case "xml":
 		$out_fmt = "xml";
 		header("Content-type: text/xml; charset=utf-8");
+		require_once("xml-output.inc");
 		break;
 	    default:
 		header("Content-type: text/html; charset=utf-8");
@@ -219,6 +220,36 @@ function jsonify($arg)
 	 * pass it to json_encode().
 	 */
 	return json_encode($it);
+}
+
+/* print_struct
+ * Print a data structure, according to $out_fmt.
+
+ * This is intended to be used at the bottom of REST-like scripts:
+ * they take "o=fmt" as a standard request option (see above), then
+ * typically collect some data and return it as a data structure. This
+ * function sends that to the caller.
+ */
+function print_struct(&$val)
+{
+	global $out_fmt;
+
+	switch ($out_fmt)
+	{
+	    case "json":
+		echo jsonify($val);
+		break;
+
+	    case "xml":
+		echo xmlify($val);
+		break;
+
+	    default:
+		error_log("Unknown output format in print_struct: $out_fmt");
+		// Default to JSON.
+		echo jsonify($val);
+		break;
+	}
 }
 
 if (!function_exists("json_encode"))
