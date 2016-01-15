@@ -41,5 +41,6 @@ if (is_numeric($mark_unread[0]))
 // XXX - Ought to return status to caller. Ideally, should tell caller
 // the status of each item marked: it's possible that something
 // changed behind the scenes.
-echo jsonify('state',	"ok");
+$status = array('state' => 'ok');
+print_struct($status);
 ?>

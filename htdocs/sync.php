@@ -156,5 +156,5 @@ foreach ($all_items as $item)
 //fwrite($fh, print_r($retval, TRUE));
 //fclose($fh);
 
-echo jsonify($retval);
+	print_struct($retval);		// Send result to the caller
 ?>

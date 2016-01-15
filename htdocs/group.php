@@ -26,6 +26,7 @@ switch ($cmd)
 	/* No command. Start a new page */
 	if ($out_fmt == "json")
 	{
+		// XXX - Convert to print_struct()?
 		echo jsonify('state',	"error",
 			     'error',	"No command specified."
 			), "\n";
@@ -46,6 +47,7 @@ switch ($cmd)
 	switch ($out_fmt)
 	{
 	    case "json":
+		// XXX - Convert to print_struct()
 		echo jsonify($tree);
 		break;
 	    case "console":
@@ -110,6 +112,7 @@ function add_group($name, $parent_id = -1)
 		switch ($out_fmt)
 		{
 		    case "json":
+			// XXX - Convert to print_struct()?
 			echo jsonify('state',	"error",
 				     'errno',	$db_errno,
 				     'error',	$db_errmsg),
@@ -130,6 +133,7 @@ function add_group($name, $parent_id = -1)
 	{
 	    case "json":
 		$err['state'] = 'ok';
+		// XXX - Convert to print_struct()
 		echo jsonify($err);
 		break;
 	    case "console":
@@ -156,6 +160,7 @@ function delete_group($group_id)
 		switch ($out_fmt)
 		{
 		    case "json":
+			// XXX - Convert to print_struct()?
 			echo jsonify('state',	'ok');
 			break;
 		    case "console":
@@ -172,6 +177,7 @@ function delete_group($group_id)
 		switch ($out_fmt)
 		{
 		    case "json":
+			// XXX - Convert to print_struct()
 			echo jsonify('state',	"error",
 				     'errno',	$db_errno,
 				     'error',	$db_errmsg),

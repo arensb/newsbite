@@ -79,6 +79,7 @@ class json_output_handler extends feed_update_handler
 {
 	function start_feed($feed_id, $feed_title)
 	{
+		// XXX - Convert to print_struct()?
 		echo jsonify('state',	"start",
 			     'feed_id',	$feed_id,
 			     'title',	$feed_title),
@@ -88,6 +89,7 @@ class json_output_handler extends feed_update_handler
 
 	function end_feed(&$feed)
 	{
+		// XXX - Convert to print_struct()?
 		echo jsonify('state',	"end",
 			     'feed_id',	$feed['id'],
 			     'title', $feed['title'],
@@ -99,6 +101,7 @@ class json_output_handler extends feed_update_handler
 
 	function error($feed_id, $feed_title, $msg)
 	{
+		// XXX - Convert to print_struct()?
 		echo jsonify('state',	"error",
 			     'feed_id',	$feed_id,
 			     'title',	$feed_title,
@@ -196,6 +199,7 @@ if (is_numeric($feed_id) && is_int($feed_id+0))
 		switch ($out_fmt)
 		{
 		    case "json":
+			// XXX - Convert to print_struct()?
 			echo jsonify('state',	"error",
 				     'feed_id',	$feed_id,
 				     'error',	$err['errmsg']
@@ -217,6 +221,7 @@ if (is_numeric($feed_id) && is_int($feed_id+0))
 	{
 	    case "json":
 		// XXX - This should go in calling function.
+		// XXX - Convert to print_struct()?
 		echo jsonify('state',	"end",
 			     'feed_id',	$feed_id,
 			     'counts',	$feed['counts']
