@@ -87,6 +87,7 @@ if (isset($_SERVER['REMOTE_USER']))
 	// user is authenticated.
 	if ($out_fmt == "json")
 	{
+		// XXX - Convert to print_struct()?
 		echo jsonify(
 			'status',	"logged in"
 			);
