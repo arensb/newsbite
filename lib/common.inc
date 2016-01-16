@@ -6,6 +6,13 @@
 
 require_once("config.inc");
 
+if (php_sapi_name() == "cli")
+{
+	ini_set("error_log", "");	// Log to stderr
+	// We're running from the command line
+	$NO_AUTH_CHECK = TRUE;	// Disable login check
+}
+
 /* See what kind of output the user wants */
 if (!isset($out_fmt))
 {

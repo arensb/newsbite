@@ -2,15 +2,10 @@
 /* feeds.php
  * Send list of feeds.
  */
-
-#if ($_SERVER['REQUEST_METHOD'] == "PUT")
-#{
-#  echo "Hey, you tried to PUT something.\n";
-#  exit(0);
-#}
-
 require_once("common.inc");
 require_once("database.inc");
+
+# XXX - Add option parser for when running from the command line.
 
 # Make sure the requested output format is sane
 if ($out_fmt != 'json' && $out_fmt != "xml")
