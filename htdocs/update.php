@@ -8,9 +8,6 @@ $verbose = FALSE;		// Enables verbose output
 
 if (php_sapi_name() == "cli")
 {
-	// We're running from the command line
-	$NO_AUTH_CHECK = TRUE;	// Disable login check in common.inc
-
 	// Get feed ID from command line
 	// -i NNN	NNN: feed number (integer) or "all" for all feeds.
 	// -v		Be verbose

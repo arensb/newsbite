@@ -2,8 +2,6 @@
 /* group.inc
  * Group-related functions.
  */
-# XXX - For debugging
-	$NO_AUTH_CHECK = TRUE;	// Disable login check in common.inc
 require_once("common.inc");
 require_once("database.inc");
 
