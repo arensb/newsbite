@@ -51,17 +51,5 @@ foreach ($feeds as $id => $data)
 	$output[$id] = $desc;
 }
 
-if ($out_fmt == "json")
-{
-	header("Content-type: text/plain; charset=utf-8");
-
-	echo jsonify($output);
-} elseif ($out_fmt == "xml")
-{
-	require_once("xml-output.inc");
-				// Get print_xml() only when necessary
-
-	header("Content-type: text/xml; charset=utf-8");
-	print_xml($output);
-}
+print_struct($output);		// Send result to the caller
 ?>
