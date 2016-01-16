@@ -319,6 +319,11 @@ p {
 	display:		block;
 	margin-top:		0px;
 	margin-bottom:		0.2em;
+
+	/* Turn on some fancy font features: common ligatures,
+	 * kerning.
+	 */
+	font-feature-settings:	"liga" 1, "kern" 1;
 }
 
 .item-header .feed-title {
@@ -447,6 +452,10 @@ input[type="checkbox"].mark-check:checked label {
 	padding:		0.5em;
 	background-color:	white;
 	overflow:		auto;
+	/* Turn on some fancy font features: common ligatures,
+	 * kerning.
+	 */
+	font-feature-settings:	"liga" 1, "kern" 1;
 }
 
 /* Mark the currently-selected item with a blue left border */
