@@ -13,28 +13,64 @@ if (php_sapi_name() == "cli")
 	$NO_AUTH_CHECK = TRUE;	// Disable login check
 }
 
-/* See what kind of output the user wants */
+/* See what kind of output the user wants
+ * If the script uses
+ *	$out_fmt = "foo"
+ *	require_once("common.inc");
+ * then it will only use "foo" (this is typically used for HTML pages).
+ *
+ * If the script uses
+ * If the script uses
+ *	$default_fmt = "foo"
+ *	require_once("common.inc");
+ * then the code below will try the "-o lang" option if called from
+ * the command line, or the "o=lang" parameter if called as a CGI
+ * script, and default to "$out_fmt = foo" if it's not set, or if
+ * there's a problem.
+ */
+if (!isset($default_fmt))
+	$default_fmt = "json";
 if (!isset($out_fmt))
 {
-	switch (isset($_REQUEST['o']) ? $_REQUEST['o'] : "")
+	if (isset($_REQUEST['o']))
 	{
-	    case "json":
-		// XXX - If another browser comes along that can't deal with
-		// standard JSON, add a "hack" parameter or something to say
-		// how to work around it.
-		$out_fmt = "json";
-		header("Content-type: text/plain; charset=utf-8");
-		break;
-	    case "xml":
-		$out_fmt = "xml";
-		header("Content-type: text/xml; charset=utf-8");
-		require_once("xml-output.inc");
-		break;
-	    default:
-		header("Content-type: text/html; charset=utf-8");
-		$out_fmt = "html";
-		break;
+		// $out_fmt isn't set, but $_REQUEST[o] is.
+		switch ($_REQUEST['o'])
+		{
+		    case "json":
+		    case "xml":
+			$out_fmt = $_REQUEST['o'];
+			break;
+		    case "":		// Empty string. Use default
+			$out_fmt = $default_fmt;
+			break;
+		    default:
+			error_log("Invalid output format \"" . $_REQUEST['o'] . "\". Using default.");
+			$out_fmt = $default_fmt;
+			break;
+		}
+	} else {
+		// Neither $out_fmt nor $_REQUEST[o] is set.
+		$out_fmt = $default_fmt;
 	}
+}
+
+/* Initialize for the given output format */
+switch ($out_fmt)
+{
+    case "json":
+	$out_fmt = "json";
+	header("Content-type: text/plain; charset=utf-8");
+	break;
+    case "xml":
+	$out_fmt = "xml";
+	header("Content-type: text/xml; charset=utf-8");
+	require_once("xml-output.inc");
+	break;
+    default:
+	header("Content-type: text/html; charset=utf-8");
+	$out_fmt = "html";
+	break;
 }
 
 /* Check to make sure the user is properly logged in. We put this here
