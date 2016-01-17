@@ -176,6 +176,12 @@ if (is_numeric($feed_id) && is_int($feed_id+0))
 	 * if ve middle-clicks, it should use traditional HTML.
 	 */
 	$feed = db_get_feed($feed_id);
+	if ($feed === NULL)
+	{
+		// Invalid feed ID, presumably..
+		error_log("Invalid feed ID: $feed_id");
+		abort("Invalid feed ID: $feed_id");
+	}
 
 	$handler->start_feed($feed_id, $feed['title']);
 	$err = update_feed($feed_id, $feed);
