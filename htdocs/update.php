@@ -6,6 +6,7 @@
 // when HTML output was requested. Huh. Or maybe it never did.
 $verbose = FALSE;		// Enables verbose output
 
+$default_fmt = "html";
 if (php_sapi_name() == "cli")
 {
 	// Get feed ID from command line
@@ -13,7 +14,10 @@ if (php_sapi_name() == "cli")
 	// -i NNN	NNN: feed number (integer) or "all" for all feeds.
 	// -v		Be verbose
 	$opts = getopt("o:i:v");
-	$out_fmt = $opts["o"];
+	if (isset($opts['o']))
+		$out_fmt = $opts["o"];
+	else
+		$out_fmt = $default_fmt;
 	$feed_id = $opts["i"];
 	$verbose = isset($opts["v"]);
 } else {

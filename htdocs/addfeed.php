@@ -3,7 +3,9 @@
  * Add a feed.
  */
 // XXX - Should accept OPML file.
+// XXX - Split this up into HTML form vs. REST
 
+$out_fmt = "html";		// Mandatory output format
 require_once("common.inc");
 require_once("database.inc");
 require_once("net.inc");

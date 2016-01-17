@@ -51,6 +51,7 @@
 $NO_AUTH_CHECK = true;		// Don't authenticate the user in
 				// common.inc. That's what the code
 				// below is for.
+$default_fmt = "html";
 require_once("common.inc");
 
 $from = urldecode($_REQUEST['from']);	// Where did user come from?
@@ -93,6 +94,8 @@ if (isset($_SERVER['REMOTE_USER']))
 			);
 		exit(0);
 	}
+	// XXX - Do we want to support XML output? I guess we can just
+	// print_result() the 'status' thing above.
 
 	// Otherwise (HTML output, presumably) redirect to where they
 	// came from.
