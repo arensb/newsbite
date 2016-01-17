@@ -152,6 +152,9 @@ EOT
 		$STALE_DAYS,
 		$id);
 	$result = $dbh->query($query);
+	if ($result->num_rows <= 0)
+		// No matching feeds
+		return NULL;
 	$row = $result->fetch_assoc();
 	$retval = $row;
 
@@ -166,9 +169,6 @@ EOT
 		,
 		$id);
 	$result = $dbh->query($query);
-	if ($result->num_rows <= 0)
-		// No matching feeds
-		return NULL;
 	while ($row = $result->fetch_row())
 	{
 		$retval['groups'][] = $row[0];
