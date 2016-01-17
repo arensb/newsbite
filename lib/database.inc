@@ -166,6 +166,9 @@ EOT
 		,
 		$id);
 	$result = $dbh->query($query);
+	if ($result->num_rows <= 0)
+		// No matching feeds
+		return NULL;
 	while ($row = $result->fetch_row())
 	{
 		$retval['groups'][] = $row[0];
