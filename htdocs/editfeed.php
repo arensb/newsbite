@@ -2,6 +2,8 @@
 /* editfeed.php
  * Edit the user-settable parameters on a feed.
  */
+// XXX - Split this up into HTML vs. REST.
+$default_fmt = "html";
 require_once("common.inc");
 require_once("database.inc");
 require_once("group.inc");
@@ -113,12 +115,12 @@ echo '<', '?xml version="1.0" encoding="UTF-8"?', ">\n";
 <h1>Editing feed <?=htmlspecialchars($feed['title'])?></h1>
 
 <form name="edit-feed" method="post" action="editfeed.php">
-<?php/* Feed ID */?>
+<?php /* Feed ID */ ?>
 <input type="hidden" name="id" value="<?=$feed['id']?>"/>
 <input type="hidden" name="command" value="update"/>
 
 <table id="show-feed">
-<?php/* XXX - Is it worth displaying the feed ID? */ ?>
+<?php /* XXX - Is it worth displaying the feed ID? */ ?>
   <tr>
     <th>ID</th>
     <td><?=$feed['id']?></td>
@@ -134,7 +136,7 @@ echo '<', '?xml version="1.0" encoding="UTF-8"?', ">\n";
     <td><?=$feed['subtitle'] ? htmlspecialchars($feed['subtitle']) : "&nbsp;"?></td>
   </tr>
 
-<?php/* User-settable nickname */ ?>
+<?php /* User-settable nickname */ ?>
   <tr>
     <th>Nickname</th>
     <td>
@@ -142,7 +144,7 @@ echo '<', '?xml version="1.0" encoding="UTF-8"?', ">\n";
     </td>
   </tr>
 
-<?php/* XXX - There should be a button or something to try to
+<?php /* XXX - There should be a button or something to try to
    * auto-discover the feed URL from the site URL. Presumably the way
    * to do this is to fetch the site URL and check for "link
    * rel=alternate", where the MIME type is RSS or Atom.
@@ -177,7 +179,7 @@ echo '<', '?xml version="1.0" encoding="UTF-8"?', ">\n";
     </td>
   </tr>
 
-<?php/* XXX - Probably not worth displaying this */ ?>
+<?php /* XXX - Probably not worth displaying this */ ?>
   <tr>
     <th>Last update</th>
     <td><?=$feed['last_update']?></td>
