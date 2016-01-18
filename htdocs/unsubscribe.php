@@ -2,10 +2,7 @@
 /* unsubscribe.php
  * Remove a feed.
  */
-// XXX - Should be possible to unsubscribe from a feed, but keep it in
-// the database for later. This can be good for subscribing to
-// political feeds only during election season, or sports feeds only
-// during playoffs, that sort of thing.
+$out_fmt = "html";
 require_once("common.inc");
 require_once("database.inc");
 require_once("hooks.inc");

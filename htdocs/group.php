@@ -2,8 +2,10 @@
 /* group.php
  * Edit groups and whatnot.
  */
+// XXX - Ought to be split up into HTML and REST.
+$default_fmt = "html";		// Default
 require_once("common.inc");
-#require_once("database.inc");
+//require_once("database.inc");
 require_once("group.inc");
 
 /* Get parameters */
@@ -44,31 +46,22 @@ switch ($cmd)
 
     case "tree":
 	$tree = group_tree(TRUE);
-	switch ($out_fmt)
-	{
-	    case "json":
-		// XXX - Convert to print_struct()
-		echo jsonify($tree);
-		break;
-	    case "console":
-	    case "html":
-	    default:
-		// XXX - Do we even want to consider these?
-		echo "<pre>", print_r($tree, TRUE), "</pre>\n";
-	    break;
-	}
+	print_struct($tree);
 	break;
 
     case "add":
 	add_group($group_name, $group_parent);
+	// XXX - Return JSON(?) status
 	break;
 
     case "delete":
 	delete_group($group_id);
+	// XXX - Return JSON(?) status
 	break;
 
     case "reparent":
 	echo "<p>Ought to reparent something.</p>";
+	// XXX - Return JSON(?) status
 	break;
 
     case "update":
@@ -79,6 +72,7 @@ switch ($cmd)
 	} else {
 		update_group_info();
 	}
+	// XXX - Return JSON(?) status
 	break;
 
     default:

@@ -7,6 +7,9 @@
 
 // XXX - Perhaps add a OPML_MAX_SIZE option to config.inc?
 
+// XXX - Should this be split into HTML and REST, or something?
+
+$out_fmt = "html";
 require_once("common.inc");
 require_once("database.inc");
 

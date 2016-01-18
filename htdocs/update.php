@@ -6,15 +6,20 @@
 // when HTML output was requested. Huh. Or maybe it never did.
 $verbose = FALSE;		// Enables verbose output
 
+$default_fmt = "html";
 if (php_sapi_name() == "cli")
 {
 	// Get feed ID from command line
+	// -o fmt	Output format
 	// -i NNN	NNN: feed number (integer) or "all" for all feeds.
 	// -v		Be verbose
-	$opts = getopt("i:v");
+	$opts = getopt("o:i:v");
+	if (isset($opts['o']))
+		$out_fmt = $opts["o"];
+	else
+		$out_fmt = $default_fmt;
 	$feed_id = $opts["i"];
 	$verbose = isset($opts["v"]);
-	$out_fmt = "console";
 } else {
 	// We're running from CGI. Get feed ID from the HTTP request.
 	$feed_id = $_REQUEST["id"];
@@ -107,41 +112,11 @@ class json_output_handler extends feed_update_handler
 	}
 }
 
-class console_output_handler extends feed_update_handler
-{
-	function start_feed($feed_id, $feed_title)
-	{
-		global $verbose;
-		if ($verbose)
-			echo "Starting feed ($feed_id): [$feed_title]\n";
-	}
-
-	function end_feed(&$feed)
-	{
-		global $verbose;
-		if ($verbose)
-			echo  "Finished (",
-				$feed['id'],
-				") [",
-				$feed['title'],
-				"]\n";
-	}
-
-	function error($feed_id, $feed_title, $msg)
-	{
-		global $verbose;
-		error_log("Error in feed $feed_title ($feed_id): $msg");
-	}
-}
-
 /* Initialize output handler */
 switch ($out_fmt)
 {
     case "json":
 	$handler = new json_output_handler();
-	break;
-    case "console":
-	$handler = new console_output_handler();
 	break;
     case "html":
     default:
@@ -175,7 +150,14 @@ if (is_numeric($feed_id) && is_int($feed_id+0))
 	 * link, it should use JS and update in the background, while
 	 * if ve middle-clicks, it should use traditional HTML.
 	 */
+error_log("feed_id $feed_id");
 	$feed = db_get_feed($feed_id);
+	if ($feed === NULL)
+	{
+		// Invalid feed ID, presumably..
+		error_log("Invalid feed ID: $feed_id");
+		abort("Invalid feed ID: $feed_id");
+	}
 
 	$handler->start_feed($feed_id, $feed['title']);
 	$err = update_feed($feed_id, $feed);
@@ -202,9 +184,6 @@ if (is_numeric($feed_id) && is_int($feed_id+0))
 				     'error',	$err['errmsg']
 				);
 			exit(1);
-		    case "console":
-			error_log($err['errmsg']);
-			exit(1);
 		    case "html":
 		    default:
 			abort($err['errmsg']);
@@ -225,9 +204,6 @@ if (is_numeric($feed_id) && is_int($feed_id+0))
 			     ),
 			"\n";
 		flush();
-		break;
-	    case "console":
-		$handler->end_feed($feed);
 		break;
 	    case "html":
 	    default:

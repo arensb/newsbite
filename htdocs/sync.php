@@ -1,6 +1,7 @@
 <?php
 /* sync.php
  */
+$default_fmt = "json";
 require_once("common.inc");
 require_once("database.inc");
 
@@ -17,6 +18,9 @@ elseif ($feed_id == "all")
 	;
 else
 	abort("Invalid feed ID: \"$feed_id\".");
+
+// XXX - Error-checking: make sure the feed ID is valid. Perhaps call
+// db_get_feed() to check.
 
 $ihave = json_decode($_REQUEST['ihave'], TRUE);
 $json_err = json_last_error();
