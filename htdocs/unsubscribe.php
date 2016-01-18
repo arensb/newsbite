@@ -2,6 +2,7 @@
 /* unsubscribe.php
  * Remove a feed.
  */
+$out_fmt = "html";
 require_once("common.inc");
 require_once("database.inc");
 require_once("hooks.inc");

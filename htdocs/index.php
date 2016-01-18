@@ -1,4 +1,5 @@
 <?php
+$out_fmt = "html";		// Default.
 require_once("common.inc");
 echo "<", '?xml version="1.0" encoding="UTF-8"?', ">\n";
 ?>

@@ -3,7 +3,7 @@
  * Edit the user-settable parameters on a feed.
  */
 // XXX - Split this up into HTML vs. REST.
-$default_fmt = "html";
+$out_fmt = "html";		// Mandatory output format
 require_once("common.inc");
 require_once("database.inc");
 require_once("group.inc");

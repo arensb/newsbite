@@ -3,6 +3,7 @@
  * Dump subsriptions in OPML format.
  */
 // OPML validator: http://validator.opml.org/
+$out_fmt = "xml";
 require_once("common.inc");
 require_once("database.inc");
 

@@ -1,4 +1,5 @@
 <?php
+$default_fmt = "json";
 require_once("common.inc");
 require_once("database.inc");
 
