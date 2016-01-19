@@ -124,7 +124,6 @@ switch ($out_fmt)
 	break;
 }
 
-error_log("Updating feed [$feed_id]");
 /* See which feeds we're updating */
 if (is_numeric($feed_id) && is_int($feed_id+0))
 {

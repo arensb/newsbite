@@ -723,7 +723,8 @@ function rss_init($url, $prefix, &$attrs)
 	// XXX - Look at $attrs['version'] to see which version of RSS
 	// we're dealing with.
 if (isset($attrs['version']))
-error_log("RSS version [$attrs[version]]: $url");
+//error_log("RSS version [$attrs[version]]: $url");
+;
 else
 error_log("RSS without version: $url");
 	return true;
@@ -2171,7 +2172,7 @@ function xml_element_handler(
 	&$retval,	// Fill in the blanks here
 	&$context)	// Where we are at the moment
 {
-	error_log("Inside xml_element_handler($elt_name)");
+//	error_log("Inside xml_element_handler($elt_name)");
 	return true;
 }
 
@@ -2184,7 +2185,7 @@ function xml_attribute_handler(
 	&$context	// Where we are at the moment
 	)
 {
-	error_log("Inside xml_attribute_handler($name)");
+//	error_log("Inside xml_attribute_handler($name)");
 	return true;
 }
 ?>
