@@ -1598,7 +1598,8 @@ function atom_element_handler(
 				// XXX - Check for
 				// 'type="application/rss+xml" or
 				// equivalent?
-#echo "Found a self-link: parent [$parent]; [<pre>"; print_r($attrs); echo "</pre>]<br/>\n";
+//error_log("Found a self-link: parent [$parent]; [" .
+	print_r($attrs, TRUE) . "]");
 				$retval['feed_url'] = $attrs['href'];
 				break;
 			}
@@ -1607,7 +1608,9 @@ function atom_element_handler(
 			switch ($attrs['rel'])
 			{
 			    case "self":
-#echo "Found a self-link: parent [$parent]; [<pre>"; print_r($attrs); echo "</pre>]<br/>\n";
+//error_log("Found a self-link: parent [$parent]; [" .
+	  print_r($attrs, TRUE) .
+	  "]\n");
 			    case "alternate":
 				// Real page for this feed
 				// XXX - "self" should take precedence
