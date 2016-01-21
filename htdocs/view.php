@@ -48,7 +48,7 @@ var page_top_tmpl_text = '<img class="feed-icon" src="@image@"/>\
   <li><a href="update.php?id=@id@">Update feed</a></li>\
   <li><a href="editfeed.php?id=@id@">Edit feed</a></li>\
   <li><a href="unsubscribe.php?id=@id@">Unsubscribe from feed</a></li>\
-  <li><a href="login.php">Log in</a></li>\
+  <li><a href="login.php?from=view.php%3fid=@id@">Log in</a></li>\
 </ul>';
 
 // XXX - This template needs an awful lot of work.
