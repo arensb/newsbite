@@ -59,13 +59,13 @@ if (!isset($out_fmt))
 switch ($out_fmt)
 {
     case "json":
-	$out_fmt = "json";
 	header("Content-type: text/plain; charset=utf-8");
 	break;
     case "xml":
-	$out_fmt = "xml";
 	header("Content-type: text/xml; charset=utf-8");
 	require_once("xml-output.inc");
+	break;
+    case "console":
 	break;
     default:
 	header("Content-type: text/html; charset=utf-8");
