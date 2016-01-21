@@ -1595,11 +1595,23 @@ function atom_element_handler(
 			switch ($attrs['rel'])
 			{
 			    case "self":
+				// This overwrites the RSS feed URL.
+				// If the user has set the URL by
+				// hand, this may cause consternation.
+				// The standard at
+				// https://tools.ietf.org/html/rfc4287
+				// says that "This is the preferred
+				// URI for retrieving Atom Feed
+				// Documents representing this Atom
+				// feed." which suggests that we
+				// should overwrite the user's URL
+				// with this preferred one.
+
 				// XXX - Check for
 				// 'type="application/rss+xml" or
 				// equivalent?
 //error_log("Found a self-link: parent [$parent]; [" .
-	print_r($attrs, TRUE) . "]");
+//	print_r($attrs, TRUE) . "]");
 				$retval['feed_url'] = $attrs['href'];
 				break;
 			}
@@ -1609,8 +1621,8 @@ function atom_element_handler(
 			{
 			    case "self":
 //error_log("Found a self-link: parent [$parent]; [" .
-	  print_r($attrs, TRUE) .
-	  "]\n");
+//	  print_r($attrs, TRUE) .
+//	  "]\n");
 			    case "alternate":
 				// Real page for this feed
 				// XXX - "self" should take precedence
