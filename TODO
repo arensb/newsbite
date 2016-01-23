@@ -12,6 +12,9 @@
   they're doing.
 	Or perhaps the admin updated the feed URL and forgot to update
   the <atom:link>. So I'm not sure what to do about this.
+- Bug: update.php will apparently happily take id=999 without
+  complaining, even if no feed with that ID exists. It throws a curl
+  error because NULL isn't a valid URL. Ought to catch this before.
 - Bug: if there aren't any feeds (e.g., can't connect to MySQL
   server), the feed list shows one entry, "? [no title]".
 	Presumably it ought to display an error message and an empty
