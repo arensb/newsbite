@@ -2,8 +2,9 @@ TOP =		../..
 
 GIF_FILES =	$(wildcard *.gif)
 JPG_FILES =	$(wildcard *.jpg *.jpeg)
+PNG_FILES =	$(wildcard *.png)
 
-IMAGES =	$(GIF_FILES) $(JPG_FILES)
+IMAGES =	$(GIF_FILES) $(JPG_FILES) $(PNG_FILES)
 
 include $(TOP)/Makefile.common
 

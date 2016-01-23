@@ -9,17 +9,21 @@ $verbose = FALSE;		// Enables verbose output
 $default_fmt = "html";
 if (php_sapi_name() == "cli")
 {
+	$default_fmt = "console";	// If we're on the command line, default to text output.
+
 	// Get feed ID from command line
 	// -o fmt	Output format
 	// -i NNN	NNN: feed number (integer) or "all" for all feeds.
 	// -v		Be verbose
-	$opts = getopt("o:i:v");
+	// -q		Be quiet
+	$opts = getopt("o:i:vq");
 	if (isset($opts['o']))
 		$out_fmt = $opts["o"];
 	else
 		$out_fmt = $default_fmt;
 	$feed_id = $opts["i"];
 	$verbose = isset($opts["v"]);
+	$quiet   = isset($opts["q"]);
 } else {
 	// We're running from CGI. Get feed ID from the HTTP request.
 	$feed_id = $_REQUEST["id"];
@@ -54,7 +58,7 @@ class html_output_handler extends feed_update_handler
 
 	function end_feed(&$feed)
 	{
-		echo  "Finished (",
+		echo "Finished (",
 			$feed['id'],
 			") [",
 			$feed['title'],
@@ -73,8 +77,47 @@ class html_output_handler extends feed_update_handler
 	}
 }
 
+/* console_output_handler
+ * Used by update_all_feeds() to handle console output. Subclass of
+ * feed_update_handler, defined in lib/net.inc.
+ */
+class console_output_handler extends feed_update_handler
+{
+	function start_feed($feed_id, $feed_title)
+	{
+		global $quiet;
+
+		if (!$quiet)
+			echo "Starting ($feed_id) [$feed_title]\n";
+	}
+
+	function end_feed(&$feed)
+	{
+		global $quiet;
+
+		if (!$quiet)
+			echo "Finished (",
+				$feed['id'],
+				") [",
+				$feed['title'],
+				"]\n";
+	}
+
+	function error($feed_id, $feed_title, $msg)
+	{
+		global $quiet;
+
+		echo "Error";
+		if (isset($feed_id))
+			echo " in $feed_title ($feed_id)";
+		else
+			echo " in \$feed_id == undef";
+		echo ": $msg\n";
+	}
+}
+
 /* json_output_handler
- * Used by update_all_feeds() to handle HTML output. Subclass of
+ * Used by update_all_feeds() to handle JSON output. Subclass of
  * feed_update_handler, defined in lib/net.inc.
  */
 class json_output_handler extends feed_update_handler
@@ -119,12 +162,16 @@ switch ($out_fmt)
 	$handler = new json_output_handler();
 	break;
     case "html":
+	$handler = new html_output_handler();
+	break;
+    case "console":
+	$handler = new console_output_handler();
+	break;
     default:
 	$handler = new html_output_handler();
 	break;
 }
 
-error_log("Updating feed [$feed_id]");
 /* See which feeds we're updating */
 if (is_numeric($feed_id) && is_int($feed_id+0))
 {
@@ -150,7 +197,8 @@ if (is_numeric($feed_id) && is_int($feed_id+0))
 	 * link, it should use JS and update in the background, while
 	 * if ve middle-clicks, it should use traditional HTML.
 	 */
-error_log("feed_id $feed_id");
+	if ($verbose)
+		error_log("Updating feed_id $feed_id");
 	$feed = db_get_feed($feed_id);
 	if ($feed === NULL)
 	{
@@ -193,26 +241,7 @@ error_log("feed_id $feed_id");
 	}
 
 	$feed = $err;
-	switch ($out_fmt)
-	{
-	    case "json":
-		// XXX - This should go in calling function.
-		// XXX - Convert to print_struct()?
-		echo jsonify('state',	"end",
-			     'feed_id',	$feed_id,
-			     'counts',	$feed['counts']
-			     ),
-			"\n";
-		flush();
-		break;
-	    case "html":
-	    default:
-		echo "Finished [$feed[title]]<br/>\n";
-	    	# XXX - ought to use
-#		$handler->end_feed($feed);
-		# But test it first.
-		break;
-	}
+	$handler->end_feed($feed);
 
 	// XXX - Prettier output
 	if ($out_fmt == "html")

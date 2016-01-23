@@ -59,13 +59,13 @@ if (!isset($out_fmt))
 switch ($out_fmt)
 {
     case "json":
-	$out_fmt = "json";
 	header("Content-type: text/plain; charset=utf-8");
 	break;
     case "xml":
-	$out_fmt = "xml";
 	header("Content-type: text/xml; charset=utf-8");
 	require_once("xml-output.inc");
+	break;
+    case "console":
 	break;
     default:
 	header("Content-type: text/html; charset=utf-8");
@@ -267,12 +267,15 @@ function jsonify($arg)
 
 /* print_struct
  * Print a data structure, according to $out_fmt.
-
+ *
  * This is intended to be used at the bottom of REST-like scripts:
  * they take "o=fmt" as a standard request option (see above), then
  * typically collect some data and return it as a data structure. This
  * function sends that to the caller.
  */
+// XXX - Perhaps this should return a value saying whether the conversion
+// was successful. That way, other scripts can try print_struct(), and if
+// that fails, resort to echo or whatever.
 function print_struct(&$val)
 {
 	global $out_fmt;

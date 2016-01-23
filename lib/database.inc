@@ -3,6 +3,13 @@
  * Database-related functions. Nothing else should access the database
  * directly.
  */
+/* Some numbers, as of Jan 20 2016: 54% of the data in the 'items' table is
+ * the 'summary' field, 26% is the 'content' field, and everything
+ * else is that last quarter.
+ * 'items' itself is 47Mb.
+ * Currently about 98% of all items are marked read: there's 1.5Mb of data
+ * for unread articles.
+ */
 require_once("config.inc");
 require_once("hooks.inc");
 

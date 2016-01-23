@@ -723,7 +723,8 @@ function rss_init($url, $prefix, &$attrs)
 	// XXX - Look at $attrs['version'] to see which version of RSS
 	// we're dealing with.
 if (isset($attrs['version']))
-error_log("RSS version [$attrs[version]]: $url");
+//error_log("RSS version [$attrs[version]]: $url");
+;
 else
 error_log("RSS without version: $url");
 	return true;
@@ -1594,10 +1595,23 @@ function atom_element_handler(
 			switch ($attrs['rel'])
 			{
 			    case "self":
+				// This overwrites the RSS feed URL.
+				// If the user has set the URL by
+				// hand, this may cause consternation.
+				// The standard at
+				// https://tools.ietf.org/html/rfc4287
+				// says that "This is the preferred
+				// URI for retrieving Atom Feed
+				// Documents representing this Atom
+				// feed." which suggests that we
+				// should overwrite the user's URL
+				// with this preferred one.
+
 				// XXX - Check for
 				// 'type="application/rss+xml" or
 				// equivalent?
-#echo "Found a self-link: parent [$parent]; [<pre>"; print_r($attrs); echo "</pre>]<br/>\n";
+//error_log("Found a self-link: parent [$parent]; [" .
+//	print_r($attrs, TRUE) . "]");
 				$retval['feed_url'] = $attrs['href'];
 				break;
 			}
@@ -1606,7 +1620,9 @@ function atom_element_handler(
 			switch ($attrs['rel'])
 			{
 			    case "self":
-#echo "Found a self-link: parent [$parent]; [<pre>"; print_r($attrs); echo "</pre>]<br/>\n";
+//error_log("Found a self-link: parent [$parent]; [" .
+//	  print_r($attrs, TRUE) .
+//	  "]\n");
 			    case "alternate":
 				// Real page for this feed
 				// XXX - "self" should take precedence
@@ -2171,7 +2187,7 @@ function xml_element_handler(
 	&$retval,	// Fill in the blanks here
 	&$context)	// Where we are at the moment
 {
-	error_log("Inside xml_element_handler($elt_name)");
+//	error_log("Inside xml_element_handler($elt_name)");
 	return true;
 }
 
@@ -2184,7 +2200,7 @@ function xml_attribute_handler(
 	&$context	// Where we are at the moment
 	)
 {
-	error_log("Inside xml_attribute_handler($name)");
+//	error_log("Inside xml_attribute_handler($name)");
 	return true;
 }
 ?>

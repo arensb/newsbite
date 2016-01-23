@@ -55,6 +55,14 @@ $default_fmt = "html";
 require_once("common.inc");
 
 $from = urldecode($_REQUEST['from']);	// Where did user come from?
+if (!isset($from) || $from == "")
+{
+	// XXX - This doesn't preserve the "#" anchor, so we'd have
+	// to say we came from "view.php?id=123" rather than
+	// "view.php#id=123".
+
+	$from = $_SERVER['HTTP_REFERER'];
+}
 
 if ($from == "")
 	# If no "from=" specified, dump them back to the main page.
@@ -160,8 +168,6 @@ Password: <input name="pass" type="password"/><br/>
 <input type="hidden" name="from" value="<?=urlencode($from)?>"/>
 <input type="submit" value="Log in"/>
 </form>
-
-<!-- <?phpinfo()?> -->
 </body>
 </html>
 <?php endif; ?>
