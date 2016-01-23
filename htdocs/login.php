@@ -168,8 +168,6 @@ Password: <input name="pass" type="password"/><br/>
 <input type="hidden" name="from" value="<?=urlencode($from)?>"/>
 <input type="submit" value="Log in"/>
 </form>
-
-<!-- <?phpinfo()?> -->
 </body>
 </html>
 <?php endif; ?>
