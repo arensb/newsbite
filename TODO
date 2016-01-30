@@ -76,6 +76,9 @@
 - Bug: keybindings.js doesn't handle non-letter bindings well: "?"
   gets turned into Spanish upside-down question mark by toUpperCase().
 	Need a notation to bind Esc.
+- IMAP interface: would it be possible to write a Dovecot plugin to
+  present an IMAP interface to the database? That way, you could use
+  any mail reader, and the database would be kept in sync.
 - Split up PHP scripts into HTML (presentation) vs. REST (do things,
   return results in JSON).
 	Now that the skins are gone, it should be possible to just use
