@@ -873,7 +873,22 @@ error_log("After hooks, link is array\n");
 			# how to handle.
 			$children = preg_replace('/ UT$/', ' UCT', $children);
 
-			$retval['pub_time'] = strtotime($children);
+			$pubdate = strtotime($children);
+
+			// If the pubDate is in the future, set it to now.
+
+			// This could be because the pubDate is in
+			// another time zone, one that strtotime()
+			// can't parse properly. Or it could be that
+			// the feed publisher is a dumbass who sets
+			// the publication time of an announcement
+			// about an event to be the time of the event
+			// itself.
+			$now = gettimeofday()['sec'];
+			if ($pubdate > $now)
+				$pubdate = $now;
+
+			$retval['pub_time'] = $pubdate;
 				// See note on time at top of file
 			break;
 		    default:
