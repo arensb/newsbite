@@ -10,6 +10,11 @@ echo "<", '?xml version="1.0" encoding="UTF-8"?', ">\n";
 <title>NewsBite: Feeds</title>
 <link rel="stylesheet" type="text/css" href="css/style.css" media="all" />
 <link rel="stylesheet" type="text/css" href="css/index.css" media="all" />
+<!-- Icon for standalone app -->
+<link rel="apple-touch-icon" href="images/newsbite-icon.png"/>
+<link rel="icon" sizes="114x114" href="images/newsbite-icon.png"/>
+<!-- Header color for Chrome -->
+<meta name="theme-color" content="#8080c0" />
 <script type="text/javascript">
   /* XXX - Which of these variables are actually needed? */
   var feed_title_tmpl_text = '<a href="view.php#id=@id@">@display_title@</a>&nbsp;<span class="feed-details">(<a href="@url@">site</a>, <a href="@feed_url@">RSS</a>)</span>';

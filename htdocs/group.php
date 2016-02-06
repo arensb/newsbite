@@ -210,6 +210,7 @@ echo '<', '?xml version="1.0" encoding="UTF-8"?', ">\n";
 <title>NewsBite: Editing groups</title>
 <link rel="stylesheet" type="text/css" href="css/style.css" media="all" />
 <link rel="stylesheet" type="text/css" href="css/editgroups.css" media="all" />
+<meta name="theme-color" content="#8080c0" />
 <!-- Template for tree of groups -->
 <template id="groupentry">
   <li id="group_@GID@" class="group-entry">
