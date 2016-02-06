@@ -25,6 +25,7 @@ if ($_FILES['opml'] == ""):
 <title>NewsBite: Load OPML</title>
 <link rel="stylesheet" type="text/css" href="css/style.css" media="all" />
 <link rel="stylesheet" type="text/css" href="css/opml.css" media="all" />
+<meta name="theme-color" content="#8080c0" />
 </head>
 <body>
 

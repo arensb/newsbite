@@ -108,6 +108,7 @@ echo '<', '?xml version="1.0" encoding="UTF-8"?', ">\n";
 <title>NewsBite: Editing <?=htmlspecialchars($feed['title'])?></title>
 <link rel="stylesheet" type="text/css" href="css/style.css" media="all" />
 <link rel="stylesheet" type="text/css" href="css/editfeed.css" media="all" />
+<meta name="theme-color" content="#8080c0" />
 </head>
 <body id="edit-feed">
 

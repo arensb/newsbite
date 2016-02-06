@@ -19,6 +19,9 @@ echo '<', '?xml version="1.0" encoding="UTF-8"?', ">\n";
 <head>
 <!-- Icon for standalone app -->
 <link rel="apple-touch-icon" href="images/newsbite-icon.png"/>
+<link rel="icon" sizes="114x114" href="images/newsbite-icon.png"/>
+<!-- Header color for Chrome -->
+<meta name="theme-color" content="#8080c0" />
 <!-- Splash screen for standalone app, iPad, portrait: -->
 <link rel="apple-touch-startup-image"
       href="images/newsbite-splash-ipad.png"

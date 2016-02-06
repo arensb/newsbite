@@ -50,6 +50,7 @@ echo '<', '?xml version="1.0" encoding="UTF-8"?', ">\n";
 <title>NewsBite: Unsubscribe</title>
 <link rel="stylesheet" type="text/css" href="css/style.css" media="all" />
 <link rel="stylesheet" type="text/css" href="css/unsubscribe.css" media="all" />
+<meta name="theme-color" content="#8080c0" />
 </head>
 <body id="unsubscribe-body">
 
