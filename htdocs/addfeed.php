@@ -136,6 +136,7 @@ echo '<', '?xml version="1.0" encoding="UTF-8"?', ">\n";
 <title>NewsBite: Adding feed</title>
 <link rel="stylesheet" type="text/css" href="css/style.css" media="all" />
 <link rel="stylesheet" type="text/css" href="css/addfeed.css" media="all" />
+<meta name="theme-color" content="#8080c0" />
 <script type="text/javascript">
 // Function to add NewsBite as an RSS subscriber in Firefox
 var ff_subscribe_url = "<?=$subscribe_url?>?feed_url=%s";	// Subscription URL
