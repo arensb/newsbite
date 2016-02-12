@@ -73,3 +73,24 @@ AddType text/javascript .js
 	ExpiresByType image/gif "access plus 1 week"
 #	ExpiresByType text/javascript "access plus 1 day"
 </IfModule>
+
+# Turn on REST by finding RESTful URLs and rewriting them
+<IfModule rewrite_module>
+	RewriteEngine On
+
+	# There are ways to let mod_rewrite figure out the current
+	# directory and use that as RewriteBase, but they're
+	# complicated. It's easier to just hardcode the prefix at
+	# install time.
+	RewriteBase @HT_PREFIX@
+
+	# Here, we basically just look for a "w1/" prefix, denoting
+	# web RESTful interface version 1, and pass everything off to
+	# rest.php.
+	# XXX - We may want to create class-specific REST handlers,
+	# e.g., separate scripts for w1/feed, w1/article,
+	# w1/article/mark, and so on. At which point, it might be
+	# desirable to add more rules to look for specific cases and
+	# hand things off to specialized handlers.
+	RewriteRule ^w1/(.*)		rest.php/$1	[L]
+</IfModule>
