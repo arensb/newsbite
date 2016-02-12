@@ -1,0 +1,136 @@
+						-*- Org -*-
+
+* Methods
+From [[https://en.wikipedia.org/wiki/Hypertext_Transfer_Protocol#Request_methods][Wikipedia]]:
+** GET
+Fetch a resource. Don't change anythign.
+** HEAD
+Metainformation about a resource.
+Maybe this can be used to get metainformation about an item, without
+the summary or body.
+
+Though if HEAD can't return an HTTP body, then this can be useful to
+see whether something exists.
+** POST
+Update an existing resource.
+** PUT
+Add a resource, replacing an existing one if necessary.
+** DELETE
+Delete a resource.
+** TRACE
+Echo the request.
+
+Not sure this is useful in a RESTful world.
+** OPTIONS
+Returns the HTTP methods that the server accepts for a URL.
+
+Can request "*" instead of a specific URL.
+** CONNECT
+Set up a TCP tunnel.
+
+I don't think this is useful.
+** PATCH
+Apply partial modifications to a resource.
+
+Sounds like this means changing an existing resource, e.g., change the
+nickname of a feed without touching (or knowing) its URL, groups, etc.
+* What's the current interface?
+What services/knobs/etc. are currently there?
+
+** addfeed.php
+   - Subscribe to a feed. Takes RSS URL.
+   - (Register feed reader in Firefox.)
+
+: PUT /feed?url=$URL
+
+: PUT /feed
+: 	OPML in body
+
+** editfeed.php
+   - Update information about a feed:
+     - nickname
+     - site URL
+     - feed URL
+     - groups
+     - active or not
+     - Username/password
+
+: POST /feed/123?
+: 	nickname=...
+: 	url=...
+: 	...
+
+** feeds.php
+   - Get list of feeds
+
+: GET /feed
+
+: GET /feed/123
+
+** group.php
+   - create a group
+   - delete a group
+   - rename a group
+   - reparent a group
+
+: PUT /group
+
+: DELETE /group/-123
+
+: POST /group/-123
+: 	?name=$newname
+
+: POST /group/-123
+: 	?parent=$newparent
+
+** index.php
+Nothing. This is a template.
+
+** loadopml.php
+   - Subscribe to feeds from an OPML feed
+I guess this is a batch version of subscribing.
+PUT /feed
+could take either a URL, or an OPML file.
+
+See [[* addfeed.php]], above.
+
+** login.php
+   - login
+Issue an authorization token.
+
+: GET /login
+
+** markitems.php
+   - mark items as read/unread
+
+: PUT /article/123
+: 	?read={1|0}&t=$updateTime
+	or
+: PUT /article/123
+and in body, have a JSON structure listing these for a bunch of articles.
+
+** opml.php
+   - Return an OPML document
+
+: GET /opml
+
+** sync.php
+   - sync: update $ihave[] items, return the top 100 for a feed
+This really needs to be broken up into components.
+
+XXX
+: GET /feed/all
+: GET /feed/123
+: 	?read=unread		# default
+: 	&max_items=100		# default
+
+** unsubscribe.php
+   - remove a feed
+
+: DELETE /feed/123
+
+** update.php
+   - fetch/update a feed
+   - fetch/update all feeds
+** view.php
+Nothing. This is a template.
