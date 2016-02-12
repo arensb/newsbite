@@ -26,6 +26,21 @@ INSTALL_LIB ?=		${INSTALL_ROOT}/lib
 INSTALL_PLUGINS ?=	${INSTALL_ROOT}/plugins
 INSTALL_HTMLPURIFY ?=	${INSTALL_ROOT}/HTMLpurify
 
+# HT_PREFIX is like INSTALL_HTDOCS, but has to do with URLs rather
+# than directories.
+
+# If your DocumentRoot is /www/htdocs, and you install Newsbite in
+# /www/htdocs/newsbite/, then usually index.php will be visible at the
+# URL http://www.your.site/newsbite/index.php
+# and the default value below reflects this.
+#
+# If you're doing something funky with your httpd config such that
+# /www/htdocs/a/b/c/index.php shows up as
+# http://www.your.site/d/e/f/index.php, then set
+#	INSTALL_ROOT =	/www/htdocs/a/b/c
+#	HT_PREFIX =	/d/e/f
+HT_PREFIX ?=		/$(notdir $(patsubst %/,%,${INSTALL_HTDOCS}))
+
 # Installation options: whether to gzip various files: "yes" to
 # compress, anything else to not compress.
 COMPRESS_HTDOCS ?=	yes
@@ -40,7 +55,8 @@ REPLACE_VARS =	\
 	INSTALL_SKIN \
 	INSTALL_LIB \
 	INSTALL_PLUGINS \
-	INSTALL_HTMLPURIFY
+	INSTALL_HTMLPURIFY \
+	HT_PREFIX
 
 # SED_REPLACEMENTS: Generates a sed script to replace "@VAR@" with the
 # value of ${VAR}. Used by various Makefiles to generate "somefile" from
