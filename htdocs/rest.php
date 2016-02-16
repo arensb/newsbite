@@ -3,6 +3,11 @@
 // http://www.lornajane.net/posts/2012/building-a-restful-php-server-understanding-the-request
 // for ideas
 
+// RESTNoMethodException
+// Exception thrown when one tries to create a REST request with no
+// method (GET, POST, etc.)
+class RESTNoMethodException extends Exception {};
+
 class RESTReq
 {
 	protected $method = NULL;
@@ -11,9 +16,30 @@ class RESTReq
 	protected $url_params = array();
 	protected $content_type = NULL;
 
-	function __construct(&$server, &$body)
+	function __construct(&$server = NULL, &$body = NULL)
 	{
+		global $_SERVER;
+
+		// If the server variables weren't specified, use
+		// $_SERVER;
+		if (!isset($server))
+			$server = &$_SERVER;
+
+		// If the body wasn't specified, use stdin.
+		// We use this rather than $_POST because if the
+		// method wasn't POST, PHP won't parse it for us.
+		if (!isset($body))
+			$body = file_get_contents("php://input");
+
+		// XXX - Parse the body: get the content type, and
+		// parse it as JSON, XML, YAML, or whatever.
+
 		// Query method: GET, PUT, POST, etc.
+		if (!isset($server['REQUEST_METHOD']))
+		{
+			// XXX - Abort: we need a method.
+			throw new RESTNoMethodException();
+		}
 		$this->method = $server['REQUEST_METHOD'];
 
 		// Get the path. The first part is the class, and the
@@ -32,8 +58,37 @@ class RESTReq
 		if (isset($server['CONTENT_TYPE']))
 			$this->content_type = $server['CONTENT_TYPE'];
 
+		// XXX - Authenticate/authorize the client.
+
+		// XXX - Find out what kind of output the client wants:
+		// JSON, XML, YAML, ...
+
 		// XXX
 	}
+
+	// XXX - dispatch(), to decide where the request should go:
+	// which function should handle this request? Notionally, I
+	// guess it should just look up a table with
+	// { method, class+subclass, ID } -> function
+
+	// XXX - error(): Send an error code and status to the caller.
+	// Should this be further divided into HTTP_error and
+	// REST_error? If the user is unauthorized, that should give
+	// an HTTP status of 401 or whatever. But if it's something
+	// like "no such feed", then the HTTP status should be 200.
+	// Consensus seems to be leaning slightly toward the idea of
+	// using HTTP codes for the success or failure of the
+	// operation, rather than merely the HTTP part of it (that is,
+	// if there are no network problems, no Apache problems, no
+	// database problems, but the authorization cookie has
+	// expired, it should still return a 401 HTTP status).
+
+	// I guess in any case there should be "status" and "errmsg"
+	// fields in the response.
+
+	// XXX - return(): send the output back to the caller in the
+	// desired format (JSON, XML, YAML).
+	// Include "status" and "errmsg", I guess.
 
 	// Accessors
 	function method() {
@@ -59,15 +114,13 @@ class RESTReq
 	function content_type() {
 		return $this->content_type;
 	}
+
+	function body() {
+		return $this->body;
+	}
 }
 
-// Read the contents of the file we were passed in the body. If it's a
-// form submitted with POST, then PHP will parse the fields nicely and
-// put them in $_POST, but it doesn't parse things like JSON bodies.
-$body = file_get_contents("php://input");
-
-$rreq = new RESTReq($_SERVER, $body);
-#echo "object's method is ", $rreq->method(), "<br/>\n";
+$rreq = new RESTReq();
 echo "Method: [", $rreq->method(), "]<br>\n";
 echo "class [", $rreq->classname(), "]<br/>\n";
 echo "resource [", $rreq->resource(), "]<br/>\n";
@@ -75,7 +128,7 @@ echo "output type: [", $rreq->url_param("o"), "]<br/>\n";
 // XXX - Should there be a method for getting all the URL parameters?
 
 echo "content-type: [", $rreq->content_type(), "]<br/>\n";
-echo "body:<pre>[$body]<br/>\n";
+echo "body:<pre>[", $rreq->body(), "]<br/>\n";
 
 // XXX - Check authentication
 
