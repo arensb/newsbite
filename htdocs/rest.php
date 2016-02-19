@@ -170,14 +170,19 @@ class RESTReq
 		}
 	}
 
-	// exit
-	// Set the HTTP status and error message, and exit.
-	function exit($status = 200, $msg = "OK")
+	// finish
+	// Set the HTTP status and error message; return a data
+	// structure to the caller; and exit.
+	//
+	// By default, this
+	function finish($status = 200, $msg = NULL, $retval = NULL)
 	{
 		http_response_code($status);
-		$retval = array("errmsg" => $msg);
-		// XXX - Print it in the desired output form
-		print_r($retval);
+		if (isset($msg) && $msg != "")
+			header("X-Newsbite-Error: " . $msg);
+
+		if (isset($retval))
+			$this->print_struct($retval);
 		exit(0);
 	}
 }
