@@ -61,22 +61,29 @@ class RESTReq
 
 		// XXX - Authenticate/authorize the client.
 
-		// XXX - Find out what kind of output the client wants:
-		// JSON, XML, YAML, ...
+		// Find out what kind of output the client wants:
 		$outfmt = $this->url_param("o");
 		if (isset($outfmt))
 		{
 			switch ($outfmt)
 			{
 			    case "json":
-			    case "xml":
-			    // case "yaml":	// XXX - Maybe add this later
+			    //case "yaml":	// XXX - Maybe add this later
 				$this->outfmt = $outfmt;
 				break;
+
+			    case "xml":
+				require_once("lib/xml-output.inc");
+				$this->outfmt = $outfmt;
+				break;
+
 			    default:
-				$this->exit(406, "Unknown output format.");
+				$this->finish(406, "Unknown output format.");
 			}
 		}
+
+		$this->finish(200, "Looks like things went okay.",
+			      array("foo" => "bar"));
 
 		// XXX
 	}
@@ -141,12 +148,19 @@ class RESTReq
 		switch ($this->outfmt)
 		{
 		    case "json":
-			echo jsonify($val);
+			header("Content-type: text/json; charset=utf-8");
+			echo json_encode($val);
 			break;
 
 		    case "xml":
+			header("Content-type: text/xml; charset=utf-8");
 			echo xmlify($val);
 			break;
+
+	    	//    case "yaml":
+		//	header("Content-type: text/yaml; charset=utf-8");
+		//	echo yaml_emit($val);
+		//	break;
 
 		    default:
 			error_log("Unknown output format in print_struct: $out_fmt");
