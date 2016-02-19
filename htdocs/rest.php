@@ -15,6 +15,7 @@ class RESTReq
 	protected $resource = NULL;
 	protected $url_params = array();
 	protected $content_type = NULL;
+	protected $outfmt = "json";	// Desired output format
 
 	function __construct(&$server = NULL, &$body = NULL)
 	{
@@ -62,6 +63,20 @@ class RESTReq
 
 		// XXX - Find out what kind of output the client wants:
 		// JSON, XML, YAML, ...
+		$outfmt = $this->url_param("o");
+		if (isset($outfmt))
+		{
+			switch ($outfmt)
+			{
+			    case "json":
+			    case "xml":
+			    // case "yaml":	// XXX - Maybe add this later
+				$this->outfmt = $outfmt;
+				break;
+			    default:
+				$this->exit(406, "Unknown output format.");
+			}
+		}
 
 		// XXX
 	}
@@ -117,6 +132,39 @@ class RESTReq
 
 	function body() {
 		return $this->body;
+	}
+
+	// print_struct
+	// Print a data structure in the desired output format.
+	function print_struct(&$val)
+	{
+		switch ($this->outfmt)
+		{
+		    case "json":
+			echo jsonify($val);
+			break;
+
+		    case "xml":
+			echo xmlify($val);
+			break;
+
+		    default:
+			error_log("Unknown output format in print_struct: $out_fmt");
+			// Default to JSON.
+			echo jsonify($val);
+			break;
+		}
+	}
+
+	// exit
+	// Set the HTTP status and error message, and exit.
+	function exit($status = 200, $msg = "OK")
+	{
+		http_response_code($status);
+		$retval = array("errmsg" => $msg);
+		// XXX - Print it in the desired output form
+		print_r($retval);
+		exit(0);
 	}
 }
 
