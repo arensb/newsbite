@@ -95,9 +95,6 @@ class RESTReq
 			}
 		}
 
-		$this->finish(200, "Looks like things went okay.",
-			      array("foo" => "bar"));
-
 		// XXX
 	}
 
@@ -138,6 +135,7 @@ class RESTReq
 		return $this->content_type;
 	}
 
+	// XXX - Should this return the parsed version of the body?
 	function body() {
 		return $this->body;
 	}
@@ -155,7 +153,9 @@ class RESTReq
 
 		    case "xml":
 			header("Content-type: text/xml; charset=utf-8");
-			echo xmlify($val);
+			// XXX - Ought to give a name to the XML container.
+			// Perhaps this can be the class name.
+			echo xmlify($val, $this->classname());
 			break;
 
 	    	//    case "yaml":
@@ -171,7 +171,7 @@ class RESTReq
 		}
 	}
 
-	// finish
+	// finish - Finish the REST request
 	// Set the HTTP status and error message; return a data
 	// structure to the caller; and exit.
 	//
