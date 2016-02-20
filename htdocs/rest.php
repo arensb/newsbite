@@ -1,13 +1,24 @@
 <?php
-// XXX - See
+// REST-related classes and such. Inspired by
 // http://www.lornajane.net/posts/2012/building-a-restful-php-server-understanding-the-request
-// for ideas
 
 // RESTNoMethodException
 // Exception thrown when one tries to create a REST request with no
 // method (GET, POST, etc.)
 class RESTNoMethodException extends Exception {};
 
+/* RESTReq
+ * Main class for a REST request.
+ * Typically, you would
+ *
+ *	$rreq = new RESTReq();
+ *	[do things]
+ *	$retval = array();
+ *	$retval["var1"] = $value1;
+ *	$retval["var2"] = $value2;
+ *	...
+ *	$rreq->finish(200, NULL, $retval);
+ */
 class RESTReq
 {
 	protected $method = NULL;
@@ -72,7 +83,10 @@ class RESTReq
 		if (isset($server['CONTENT_TYPE']))
 			$this->content_type = $server['CONTENT_TYPE'];
 
-		// XXX - Authenticate/authorize the client.
+		// XXX - Authenticate the client.
+		// Authorization should probably happen at the class
+		// level.
+		// Parse the "newsbite_user" cookie, if there is one.
 
 		// Find out what kind of output the client wants:
 		$outfmt = $this->url_param("o");
@@ -197,18 +211,12 @@ $retval["subpath"] = $rreq->subpath();
 $retval["outfmt"] = $rreq->url_param("o");
 $retval["content_type"] = $rreq->content_type();
 $retval["body"] = $rreq->body();
-
-//echo "Method: [", $rreq->method(), "]<br>\n";
-//echo "class [", $rreq->classname(), "]<br/>\n";
-//echo "resource [", $rreq->resource(), "]<br/>\n";
-//echo "path [", $rreq->path(), "]<br/>\n";
-//echo "output type: [", $rreq->url_param("o"), "]<br/>\n";
 // XXX - Should there be a method for getting all the URL parameters?
 
-//echo "content-type: [", $rreq->content_type(), "]<br/>\n";
-//echo "body:<pre>[", $rreq->body(), "]<br/>\n";
+// XXX - If the class is "login", we don't require authentication. But
+// the client needs to present credentials.
 
-// XXX - Check authentication
+// XXX - Check authentication.
 
 // XXX - Figure out where to send the request
 switch ($class)
