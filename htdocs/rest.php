@@ -11,8 +11,19 @@ class RESTNoMethodException extends Exception {};
 class RESTReq
 {
 	protected $method = NULL;
+	// $path is the path underneath the root.
+	// $classname is the first element of $path, and
+	// $subpath is the rest of it.
+	// Sometimes $subpath is an identifier, but it could be method
+	// and identifier.
+	// If the REST root is http://foo.com/w1/ , then
+	// http://foo.com/w1/feeds/stats/123 ->
+	//	$path == "feeds/stats/123"
+	//	$classname == "feeds"
+	//	$subpath == "stats/123"
+	protected $path = NULL;
 	protected $classname = NULL;
-	protected $resource = NULL;
+	protected $subpath = NULL;
 	protected $url_params = array();
 	protected $content_type = NULL;
 	protected $outfmt = "json";	// Desired output format
@@ -34,6 +45,7 @@ class RESTReq
 
 		// XXX - Parse the body: get the content type, and
 		// parse it as JSON, XML, YAML, or whatever.
+		// json_decode(): http://php.net/manual/en/function.json-decode.php
 
 		// Query method: GET, PUT, POST, etc.
 		if (!isset($server['REQUEST_METHOD']))
@@ -46,11 +58,12 @@ class RESTReq
 		// Get the path. The first part is the class, and the
 		// rest is either a subclass, an identifier, or
 		// something.
-		$path = $server['PATH_INFO'];
-		$path = preg_replace(',^/,', '', $path);	// Remove leading slash
-		list ($this->classname, $this->resource) =
-			// Split up into class and resource ID.
-			explode("/", $path, 2);
+		$this->path = $server['PATH_INFO'];
+		$this->path = preg_replace(',^/,', '', $this->path);
+					// Remove leading slash
+		list ($this->classname, $this->subpath) =
+			// Split up into class and sub-path.
+			explode("/", $this->path, 2);
 
 		// Parameters passed in through the URL
 		if (isset($server['QUERY_STRING']))
@@ -92,37 +105,25 @@ class RESTReq
 	// which function should handle this request? Notionally, I
 	// guess it should just look up a table with
 	// { method, class+subclass, ID } -> function
-
-	// XXX - error(): Send an error code and status to the caller.
-	// Should this be further divided into HTTP_error and
-	// REST_error? If the user is unauthorized, that should give
-	// an HTTP status of 401 or whatever. But if it's something
-	// like "no such feed", then the HTTP status should be 200.
-	// Consensus seems to be leaning slightly toward the idea of
-	// using HTTP codes for the success or failure of the
-	// operation, rather than merely the HTTP part of it (that is,
-	// if there are no network problems, no Apache problems, no
-	// database problems, but the authorization cookie has
-	// expired, it should still return a 401 HTTP status).
-
-	// I guess in any case there should be "status" and "errmsg"
-	// fields in the response.
-
-	// XXX - return(): send the output back to the caller in the
-	// desired format (JSON, XML, YAML).
-	// Include "status" and "errmsg", I guess.
+	//
+	// Let's leave this until a bit later, when we have a better
+	// idea of what makes sense.
 
 	// Accessors
 	function method() {
 		return $this->method;
 	}
 
+	function path() {
+		return $this->path;
+	}
+
 	function classname() {
 		return $this->classname;
 	}
 
-	function resource() {
-		return $this->resource;
+	function subpath() {
+		return $this->subpath;
 	}
 
 	function url_param($name)
@@ -188,14 +189,24 @@ class RESTReq
 }
 
 $rreq = new RESTReq();
-echo "Method: [", $rreq->method(), "]<br>\n";
-echo "class [", $rreq->classname(), "]<br/>\n";
-echo "resource [", $rreq->resource(), "]<br/>\n";
-echo "output type: [", $rreq->url_param("o"), "]<br/>\n";
+$retval = array();
+$retval["method"] = $rreq->method();
+$retval["path"] = $rreq->path();
+$retval["class"] = $rreq->classname();
+$retval["subpath"] = $rreq->subpath();
+$retval["outfmt"] = $rreq->url_param("o");
+$retval["content_type"] = $rreq->content_type();
+$retval["body"] = $rreq->body();
+
+//echo "Method: [", $rreq->method(), "]<br>\n";
+//echo "class [", $rreq->classname(), "]<br/>\n";
+//echo "resource [", $rreq->resource(), "]<br/>\n";
+//echo "path [", $rreq->path(), "]<br/>\n";
+//echo "output type: [", $rreq->url_param("o"), "]<br/>\n";
 // XXX - Should there be a method for getting all the URL parameters?
 
-echo "content-type: [", $rreq->content_type(), "]<br/>\n";
-echo "body:<pre>[", $rreq->body(), "]<br/>\n";
+//echo "content-type: [", $rreq->content_type(), "]<br/>\n";
+//echo "body:<pre>[", $rreq->body(), "]<br/>\n";
 
 // XXX - Check authentication
 
@@ -221,6 +232,5 @@ switch ($class)
 
 // XXX - Send the return value, in the format the user wants.
 
-exit(0);
-phpinfo();
+$rreq->finish(200, NULL, $retval);
 ?>
