@@ -7,6 +7,8 @@
 // method (GET, POST, etc.)
 class RESTNoMethodException extends Exception {};
 
+class RESTInvalidCommand extends Exception {};
+
 /* RESTReq
  * Main class for a REST request.
  * Typically, you would
@@ -37,6 +39,7 @@ class RESTReq
 	protected $subpath = NULL;
 	protected $url_params = array();
 	protected $content_type = NULL;
+	protected $body= NULL;
 	protected $outfmt = "json";	// Desired output format
 
 	function __construct(&$server = NULL, &$body = NULL)
@@ -52,7 +55,7 @@ class RESTReq
 		// We use this rather than $_POST because if the
 		// method wasn't POST, PHP won't parse it for us.
 		if (!isset($body))
-			$body = file_get_contents("php://input");
+			$this->body = file_get_contents("php://input");
 
 		// XXX - Parse the body: get the content type, and
 		// parse it as JSON, XML, YAML, or whatever.
@@ -219,8 +222,18 @@ $retval["body"] = $rreq->body();
 // XXX - Check authentication.
 
 // XXX - Figure out where to send the request
-switch ($class)
+switch ($rreq->classname())
 {
+    case "test":
+	try {
+		$err = require_once("rest_test.inc");
+		$retval = test_stuff($rreq);
+	} catch (Exception $e) {
+		// echo "Caught exception ", print_r($e, true);
+		$rreq->finish(400, "Caught an exception");
+	}
+	// XXX
+	break;
     case "feed":
 	// XXX
 	break;
