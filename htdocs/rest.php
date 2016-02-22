@@ -51,16 +51,6 @@ class RESTReq
 		if (!isset($server))
 			$server = &$_SERVER;
 
-		// If the body wasn't specified, use stdin.
-		// We use this rather than $_POST because if the
-		// method wasn't POST, PHP won't parse it for us.
-		if (!isset($body))
-			$this->body = file_get_contents("php://input");
-
-		// XXX - Parse the body: get the content type, and
-		// parse it as JSON, XML, YAML, or whatever.
-		// json_decode(): http://php.net/manual/en/function.json-decode.php
-
 		// Query method: GET, PUT, POST, etc.
 		if (!isset($server['REQUEST_METHOD']))
 		{
@@ -78,6 +68,8 @@ class RESTReq
 		list ($this->classname, $this->subpath) =
 			// Split up into class and sub-path.
 			explode("/", $this->path, 2);
+		// XXX - If there's only a class, presumably ought to
+		// throw an exception.
 
 		// Parameters passed in through the URL
 		if (isset($server['QUERY_STRING']))
@@ -85,6 +77,26 @@ class RESTReq
 
 		if (isset($server['CONTENT_TYPE']))
 			$this->content_type = $server['CONTENT_TYPE'];
+
+		// If the body wasn't specified, use stdin.
+		// We use this rather than $_POST because if the
+		// method wasn't POST, PHP won't parse it for us.
+		if (!isset($body))
+			$this->body = file_get_contents("php://input");
+
+		// XXX - Parse the body: get the content type, and
+		// parse it as JSON, XML, YAML, or whatever.
+		// json_decode(): http://php.net/manual/en/function.json-decode.php
+		switch ($this->content_type)
+		{
+		    case "text/json":
+			$this->body = json_decode($this->body);
+			break;
+		    default:
+			// Leave it alone. Maybe a handler class knows
+			// what to do with it.
+			break;
+		}
 
 		// XXX - Authenticate the client.
 		// Authorization should probably happen at the class
