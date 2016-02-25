@@ -39,10 +39,13 @@ class RESTReq
 	protected $subpath = NULL;
 	protected $url_params = array();
 	protected $content_type = NULL;
-	protected $body= NULL;
+	// XXX - Is there a reason to keep both the text and parsed
+	// versions of the body?
+	protected $body_text = NULL;
+	protected $body = NULL;
 	protected $outfmt = "json";	// Desired output format
 
-	function __construct(&$server = NULL, &$body = NULL)
+	function __construct(&$server = NULL, &$body_text = NULL)
 	{
 		global $_SERVER;
 
@@ -81,8 +84,10 @@ class RESTReq
 		// If the body wasn't specified, use stdin.
 		// We use this rather than $_POST because if the
 		// method wasn't POST, PHP won't parse it for us.
-		if (!isset($body))
-			$this->body = file_get_contents("php://input");
+		if (isset($body_text))
+			$this->body_text = $body_text;
+		else
+			$this->body_text = file_get_contents("php://input");
 
 		// XXX - Parse the body: get the content type, and
 		// parse it as JSON, XML, YAML, or whatever.
@@ -164,9 +169,14 @@ class RESTReq
 		return $this->content_type;
 	}
 
-	// XXX - Should this return the parsed version of the body?
+	// body: returns parsed version of the body
 	function body() {
 		return $this->body;
+	}
+
+	// body_text: returns raw text version of the body
+	function body_text() {
+		return $this->body_text;
 	}
 
 	// print_struct
@@ -225,6 +235,7 @@ $retval["class"] = $rreq->classname();
 $retval["subpath"] = $rreq->subpath();
 $retval["outfmt"] = $rreq->url_param("o");
 $retval["content_type"] = $rreq->content_type();
+$retval["body_text"] = $rreq->body_text();
 $retval["body"] = $rreq->body();
 // XXX - Should there be a method for getting all the URL parameters?
 
