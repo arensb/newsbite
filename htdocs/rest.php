@@ -274,7 +274,6 @@ switch ($rreq->classname())
 // XXX - HTTP response. Usually 200, but we might need to send 4xx or
 // even 5xx.
 
-// XXX - Send the return value, in the format the user wants.
-
+// Send the return value, in the format the user wants.
 $rreq->finish(200, NULL, $retval);
 ?>
