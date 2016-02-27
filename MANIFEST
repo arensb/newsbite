@@ -62,7 +62,6 @@ htdocs/loadopml.php
 htdocs/login.php
 htdocs/markitems.php
 htdocs/newsbite.manifest.php
-htdocs/opml.php
 htdocs/rest.php
 htdocs/sync.php
 htdocs/unsubscribe.php

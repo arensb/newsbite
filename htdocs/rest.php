@@ -284,6 +284,17 @@ switch ($rreq->classname())
 	}
 	// XXX
 	break;
+    case "opml":	// OPML feeds
+	try {
+		$err = require_once("rest_opml.inc");
+		$retval = opml_stuff($rreq);
+	} catch (Exception $e) {
+		// echo "Caught exception ", print_r($e, true);
+		$rreq->finish(400, "Class " . $rreq->classname() .
+			      ": Caught an exception");
+	}
+	// XXX
+	break;
     case "feed":
 	// XXX
 	break;

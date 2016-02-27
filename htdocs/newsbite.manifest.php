@@ -38,7 +38,6 @@ images/newsbite-splash-ipad.png
 loadopml.php
 login.php
 markitems.php
-opml.php
 sync.php
 update.php
 <?php // The files after "CACHE:" will be cached ?>
