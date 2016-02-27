@@ -65,14 +65,19 @@ class RESTReq
 		// Get the path. The first part is the class, and the
 		// rest is either a subclass, an identifier, or
 		// something.
+		// It's not an error to just specify a class. In that
+		// case, the subpath is NULL.
 		$this->path = $server['PATH_INFO'];
-		$this->path = preg_replace(',^/,', '', $this->path);
-					// Remove leading slash
-		list ($this->classname, $this->subpath) =
-			// Split up into class and sub-path.
-			explode("/", $this->path, 2);
-		// XXX - If there's only a class, presumably ought to
-		// throw an exception.
+		if (preg_match(',^/?([^/]+)(?:/(.*))?,',
+			       $this->path,
+			       $matches))
+		{
+			$this->classname = $matches[1];
+			if (count($matches) > 2)
+				$this->subpath   = $matches[2];
+		} else {
+			throw new RESTInvalidCommand();
+		}
 
 		// Parameters passed in through the URL
 		if (isset($server['QUERY_STRING']))
