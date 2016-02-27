@@ -2,12 +2,12 @@
 // REST-related classes and such. Inspired by
 // http://www.lornajane.net/posts/2012/building-a-restful-php-server-understanding-the-request
 
-// RESTNoMethodException
+// RESTNoVerbException
 // Exception thrown when one tries to create a REST request with no
-// method (GET, POST, etc.)
-class RESTNoMethodException extends Exception {};
+// verb (GET, POST, etc.)
+class RESTNoVerbException extends Exception {};
 
-class RESTInvalidMethod extends Exception {};
+class RESTInvalidVerb extends Exception {};
 class RESTInvalidCommand extends Exception {};
 
 /* RESTReq
@@ -24,7 +24,7 @@ class RESTInvalidCommand extends Exception {};
  */
 class RESTReq
 {
-	protected $method = NULL;
+	protected $verb = NULL;
 	// $path is the path underneath the root.
 	// $classname is the first element of $path, and
 	// $subpath is the rest of it.
@@ -55,13 +55,13 @@ class RESTReq
 		if (!isset($server))
 			$server = &$_SERVER;
 
-		// Query method: GET, PUT, POST, etc.
+		// Query verb: GET, PUT, POST, etc.
 		if (!isset($server['REQUEST_METHOD']))
 		{
-			// XXX - Abort: we need a method.
-			throw new RESTNoMethodException();
+			// XXX - Abort: we need a verb.
+			throw new RESTNoVerbException();
 		}
-		$this->method = $server['REQUEST_METHOD'];
+		$this->verb = $server['REQUEST_METHOD'];
 
 		// Get the path. The first part is the class, and the
 		// rest is either a subclass, an identifier, or
@@ -89,7 +89,7 @@ class RESTReq
 
 		// If the body wasn't specified, use stdin.
 		// We use this rather than $_POST because if the
-		// method wasn't POST, PHP won't parse it for us.
+		// verb wasn't POST, PHP won't parse it for us.
 		if (isset($body_text))
 			$this->body_text = $body_text;
 		else
@@ -141,14 +141,14 @@ class RESTReq
 	// XXX - dispatch(), to decide where the request should go:
 	// which function should handle this request? Notionally, I
 	// guess it should just look up a table with
-	// { method, class+subclass, ID } -> function
+	// { verb, class+subclass, ID } -> function
 	//
 	// Let's leave this until a bit later, when we have a better
 	// idea of what makes sense.
 
 	// Accessors
-	function method() {
-		return $this->method;
+	function verb() {
+		return $this->verb;
 	}
 
 	function path() {
@@ -226,7 +226,7 @@ class RESTReq
 		// If it's an error, log it.
 		if ($status < 200 || $status > 299)
 			error_log("Exiting " .
-				  $this->method() . " " .
+				  $this->verb() . " " .
 				  $this->path() .
 				  " with status $status," .
 				  (isset($msg) ?
@@ -244,7 +244,7 @@ class RESTReq
 
 $rreq = new RESTReq();
 $retval = array();
-$retval["method"] = $rreq->method();
+$retval["verb"] = $rreq->verb();
 $retval["path"] = $rreq->path();
 $retval["class"] = $rreq->classname();
 $retval["subpath"] = $rreq->subpath();

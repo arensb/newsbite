@@ -11,14 +11,14 @@ function info_stuff($rreq)
 		return GET_info($rreq);
 
 	    case "version":
-		switch ($rreq->method())
+		switch ($rreq->verb())
 		{
 		    case "GET":
 			return GET_info_version($rreq);
 
 		    default:
-			error_log("rest_info: bad method " . $rreq->method());
-			throw new RESTInvalidMethod();
+			error_log("rest_info: bad verb " . $rreq->verb());
+			throw new RESTInvalidVerb();
 		}
 
 	    default:
