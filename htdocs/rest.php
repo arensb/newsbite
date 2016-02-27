@@ -222,6 +222,15 @@ class RESTReq
 	// By default, this
 	function finish($status = 200, $msg = NULL, $retval = NULL)
 	{
+		// If it's an error, log it.
+		if ($status < 200 || $status > 299)
+			error_log("Exiting " .
+				  $this->method() . " " .
+				  $this->path() .
+				  " with status $status," .
+				  (isset($msg) ?
+				   "Error message \"$msg\"." :
+				   "No error message."));
 		http_response_code($status);
 		if (isset($msg) && $msg != "")
 			header("X-Newsbite-Error: " . $msg);
