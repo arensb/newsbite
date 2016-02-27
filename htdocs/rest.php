@@ -7,6 +7,7 @@
 // method (GET, POST, etc.)
 class RESTNoMethodException extends Exception {};
 
+class RESTInvalidMethod extends Exception {};
 class RESTInvalidCommand extends Exception {};
 
 /* RESTReq
@@ -261,13 +262,25 @@ $retval["body"] = $rreq->body();
 // XXX - Figure out where to send the request
 switch ($rreq->classname())
 {
-    case "test":
+    case "test":	// Testing
 	try {
 		$err = require_once("rest_test.inc");
 		$retval = test_stuff($rreq);
 	} catch (Exception $e) {
 		// echo "Caught exception ", print_r($e, true);
-		$rreq->finish(400, "Caught an exception");
+		$rreq->finish(400, "Class " . $rreq->classname() .
+			      ": Caught an exception");
+	}
+	// XXX
+	break;
+    case "info":	// Information about Newsbite
+	try {
+		$err = require_once("rest_info.inc");
+		$retval = info_stuff($rreq);
+	} catch (Exception $e) {
+		// echo "Caught exception ", print_r($e, true);
+		$rreq->finish(400, "Class " . $rreq->classname() .
+			      ": Caught an exception");
 	}
 	// XXX
 	break;
