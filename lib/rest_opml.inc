@@ -15,6 +15,10 @@ require_once("database.inc");
  */
 function opml_stuff($rreq)
 {
+error_log("inside opml_stuff");
+error_log("verb: " . $rreq->verb());
+error_log("classname: " . $rreq->classname());
+error_log("subpath: " . $rreq->subpath());
 	switch ($rreq->subpath())
 	{
 	    case NULL:
@@ -25,10 +29,11 @@ function opml_stuff($rreq)
 			return GET_OPML($rreq);
 
 		    case "POST":
-			return PUT_OPML($rreq);
+			return POST_OPML($rreq);
 
 		    case "PUT":
-			return POST_OPML($rreq);
+error_log("calling PUT_OPML");
+			return PUT_OPML($rreq);
 
 		    default:
 			error_log("rest_info: bad verb " . $rreq->verb());
@@ -106,6 +111,8 @@ function GET_OPML($rreq)
 function POST_OPML($rreq)
 {
 	// XXX
+error_log("inside POST_OPML, rreq " . print_r($rreq, true));
+return array("status" => "ok");
 }
 
 function PUT_OPML($rreq)
