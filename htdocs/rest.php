@@ -85,7 +85,19 @@ class RESTReq
 			parse_str($server['QUERY_STRING'], $this->url_params);
 
 		if (isset($server['CONTENT_TYPE']))
-			$this->content_type = $server['CONTENT_TYPE'];
+		{
+			$fields = preg_split('/\s*;\s*/', $server['CONTENT_TYPE']);
+				// XXX - According to
+				// http://www.ietf.org/rfc/rfc3875 ,
+				// the "Content-Type" header can be
+				// followed by parameters of the form
+				// "var=value", separated by
+				// semicolons. This is most usually
+				// used for "charset=UTF-8". Right
+				// now, we don't care about those, but
+				// we do need to get the content type.
+			$this->content_type = $fields[0];
+		}
 
 		// If the body wasn't specified, use stdin.
 		// We use this rather than $_POST because if the
@@ -101,7 +113,7 @@ class RESTReq
 		switch ($this->content_type)
 		{
 		    case "application/json":
-			$this->body = json_decode($this->body);
+			$this->body = json_decode($this->body_text);
 			break;
 		    default:
 			// Leave it alone. Maybe a handler class knows
