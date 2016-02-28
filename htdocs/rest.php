@@ -100,7 +100,7 @@ class RESTReq
 		// json_decode(): http://php.net/manual/en/function.json-decode.php
 		switch ($this->content_type)
 		{
-		    case "text/json":
+		    case "application/json":
 			$this->body = json_decode($this->body);
 			break;
 		    default:
@@ -192,7 +192,7 @@ class RESTReq
 		switch ($this->outfmt)
 		{
 		    case "json":
-			header("Content-type: text/json; charset=utf-8");
+			header("Content-type: application/json; charset=utf-8");
 			echo json_encode($val);
 			break;
 

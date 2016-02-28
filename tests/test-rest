@@ -26,7 +26,7 @@ rm -f /tmp/curl-out.$$
 ########################################
 # cat a JSON body
 curl -sS -X POST \
-	-H 'Content-Type: text/json' \
+	-H 'Content-Type: application/json' \
 	-d '{"foo":"bar","baz":"quux"}' \
 	${REST_BASE}/test/cat > /tmp/curl-out.$$
 
