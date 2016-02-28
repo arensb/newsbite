@@ -13,7 +13,7 @@ $out_fmt = "html";
 require_once("common.inc");
 require_once("database.inc");
 
-if ($_FILES['opml'] == ""):
+if (!isset($_FILES['opml']) || $_FILES['opml'] == ""):
 	// Prompt for an OPML file
 ########################################
 	echo '<', '?xml version="1.0" encoding="UTF-8"?', ">\n";
@@ -25,6 +25,7 @@ if ($_FILES['opml'] == ""):
 <title>NewsBite: Load OPML</title>
 <link rel="stylesheet" type="text/css" href="css/style.css" media="all" />
 <link rel="stylesheet" type="text/css" href="css/opml.css" media="all" />
+<script type="text/javascript" src="js/jquery.js"></script>
 <meta name="theme-color" content="#8080c0" />
 </head>
 <body>
@@ -38,10 +39,28 @@ if ($_FILES['opml'] == ""):
   <input type="submit" name="doit" value="Upload file"/>
 </form>
 
+<button id="opml-button">Upload OPML</button>
+
+<script type="text/javascript">
+$(document).ready(function(){
+	$("#opml-button").on("click", function(ev) {
+		console.log("Clicked on button.");
+		var req = new XMLHttpRequest();
+		req.open("POST", "w1/opml", true);
+		// XXX - Why is "PUT" not allowed?
+		req.setRequestHeader("Content-Type",
+				     "application/json; charset=UTF-8");
+		req.send(JSON.stringify({
+				  foo: "bar",
+				}));
+	});
+});
+</script>
 </body>
 </html>
 <?php
 ########################################
+	exit(0);
 endif;
 
 $load = $_FILES['opml'];	// Name of OPML file to load
