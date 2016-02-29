@@ -121,6 +121,12 @@ class RESTReq
 		// XXX - Parse the body: get the content type, and
 		// parse it as JSON, XML, YAML, or whatever.
 		// json_decode(): http://php.net/manual/en/function.json-decode.php
+
+		// XXX - Do we want to move this code to body()? That
+		// way, if the implementing code doesn't actually need
+		// the body to be parsed, we needn't waste time
+		// parsing it. Then again, that's probably a rare
+		// case.
 		switch ($this->content_type)
 		{
 		    case "application/json":
@@ -162,8 +168,6 @@ class RESTReq
 				$this->finish(406, "Unknown output format.");
 			}
 		}
-
-		// XXX
 	}
 
 	/* _parse_xml
