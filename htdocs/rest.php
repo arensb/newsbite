@@ -10,6 +10,89 @@ class RESTNoVerbException extends Exception {};
 class RESTInvalidVerb extends Exception {};
 class RESTInvalidCommand extends Exception {};
 
+/*****************************************
+ * xml_to_object
+ * From  efredricksen at gmail dot com, at
+ * http://php.net/manual/en/function.xml-parse-into-struct.php
+ */
+class XmlElement {
+  var $name;
+  var $attributes;
+  var $content;
+  var $children;
+};
+
+function xml_to_object($xml) {
+  $parser = xml_parser_create();
+  xml_parser_set_option($parser, XML_OPTION_CASE_FOLDING, 0);
+  xml_parser_set_option($parser, XML_OPTION_SKIP_WHITE, 1);
+  xml_parse_into_struct($parser, $xml, $tags);
+  xml_parser_free($parser);
+
+  $elements = array();  // the currently filling [child] XmlElement array
+  $stack = array();
+  foreach ($tags as $tag) {
+error_log("parsing tag " . print_r($tag, true));
+    $index = count($elements);
+    if ($tag['type'] == "complete" || $tag['type'] == "open") {
+      $elements[$index] = new XmlElement;
+      $elements[$index]->name = $tag['tag'];
+      $elements[$index]->attributes = $tag['attributes'];
+      $elements[$index]->content = $tag['value'];
+      if ($tag['type'] == "open") {  // push
+        $elements[$index]->children = array();
+        $stack[count($stack)] = &$elements;
+        $elements = &$elements[$index]->children;
+      }
+    }
+    if ($tag['type'] == "close") {  // pop
+      $elements = &$stack[count($stack) - 1];
+      unset($stack[count($stack) - 1]);
+    }
+  }
+  return $elements[0];  // the single top-level element
+}
+/***** end of contributed code ***********************************/
+
+//		function _opml_element_start($parser, $fullname, $attrs)
+//		{
+//error_log("inside _opml_element_start($fullname)");
+//			global $opml;
+//			global $opml_urls;
+//
+//			// XXX - Would be nice to handle categories at
+//			// some point.
+//			if ($fullname != "outline")
+//				// We only care about <outline> elements.
+//				return;
+//			// Can't skip entries that don't have a
+//			// type="rss" attribute, because LJ exports
+//			// its OPML files with only 'text' and
+//			// 'xmlURL'.
+//
+//			// $entry will be appended to $opml. It's
+//			// basically $attrs, but with every attribute
+//			// normalilzed to lower case, since different
+//			// OPML generators use different
+//			// capitalization
+//			$entry = array();
+//
+//			/* Lowercase all of the attributes */
+//			foreach ($attrs as $k => $v)
+//			{
+//				$entry[strtolower($k)] = $v;
+//			}
+//
+//			/* Make sure there's a feed URL */
+//			if ($entry['xmlurl'] == "")
+//				// This entry doesn't have a URL. Ignore it.
+//				return;
+//
+//			/* Append the entry and the URL to our lists */
+//			$opml[] = $entry;
+//			$opml_urls[] = $entry['xmlurl'];
+//		}
+
 /* RESTReq
  * Main class for a REST request.
  * Typically, you would
@@ -115,6 +198,12 @@ class RESTReq
 		    case "application/json":
 			$this->body = json_decode($this->body_text);
 			break;
+
+		    case "text/xml":
+			$this->body = $this->_parse_xml($this->body_text);
+error_log("Parsed XML body: " . print_r($this->body), true);
+			break;
+
 		    default:
 			// Leave it alone. Maybe a handler class knows
 			// what to do with it.
@@ -148,6 +237,31 @@ class RESTReq
 		}
 
 		// XXX
+	}
+
+	function _parse_xml($text)
+	{
+		return xml_to_object($text);
+error_log("inside _parse_xml");
+
+		/* Parse the file using XML Parser */
+		$xml_parser = xml_parser_create();
+		xml_parser_set_option($xml_parser, XML_OPTION_CASE_FOLDING, false);
+		xml_parser_set_option($xml_parser, XML_OPTION_SKIP_WHITE, true);
+		$values = array();
+		$index = array();
+		$err = xml_parse_into_struct($xml_parser,
+					     $text,
+					     $values, $index);
+			// XXX - Error-checking.
+			// xml_parse_into_struct() returs 0 (failure)
+			// and 1 (success), not FALSE and TRUE. Be
+			// sure to check.
+		// XXX - $values is rather useless. Ought to rearrange
+		// it into a tree.
+		$this->body = $values;
+		error_log("parsed XML: " . print_r($values, true));
+		error_log("index: " . print_r($index, true));
 	}
 
 	// XXX - dispatch(), to decide where the request should go:
@@ -279,7 +393,6 @@ switch ($rreq->classname())
 		$err = require_once("rest_test.inc");
 		$retval = test_stuff($rreq);
 	} catch (Exception $e) {
-		// echo "Caught exception ", print_r($e, true);
 		$rreq->finish(400, "Class " . $rreq->classname() .
 			      ": Caught an exception");
 	}
