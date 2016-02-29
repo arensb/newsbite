@@ -107,6 +107,21 @@ function GET_OPML($rreq)
 <?php
 }
 
+/* POST_OPML
+ * POST /opml - Batch-subscribe to a bunch of feeds in OPML format.
+ */
+// XXX - The SQL part of this is much much faster if all the
+// subscriptions are batched together:
+//	INSERT INTO feeds (title, feed_url) VALUES
+//		(title1, feed1),
+//		(title2, feed2),
+//		...
+// instead of
+//	INSERT INTO feeds (title, feed_url) VALUES (title1, feed1);
+//	INSERT INTO feeds (title, feed_url) VALUES (title2, feed2);
+//	...
+// But for that we need a db_add_feed()-ish function that'll take
+// multiple feeds.
 function POST_OPML($rreq)
 {
 	global $db_errno;
@@ -118,7 +133,6 @@ function POST_OPML($rreq)
 			// there's a warning, raise it to 1 unless
 			// it's already at 2.
 
-error_log("Inside POST_OPML");
 	$retval = array();
 	$opml = $rreq->body();
 
@@ -151,7 +165,6 @@ error_log("Inside POST_OPML");
 	{
 		$feed_name = $elt->attributes['text'];
 		$feed_url  = $elt->attributes['xmlUrl'];
-//error_log("Found element [$feed_name], url [$feed_url]");
 		$elt_status = array(
 			"name"	=> $feed_name,
 			"url"	=> $feed_url,
