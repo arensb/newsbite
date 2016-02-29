@@ -109,6 +109,7 @@ function GET_OPML($rreq)
 
 function POST_OPML($rreq)
 {
+error_log("Inside POST_OPML");
 	$opml = $rreq->body();
 
 	/* Look for the <opml><body><outline> elements.
@@ -127,11 +128,24 @@ function POST_OPML($rreq)
 			     "message" => "No <outline> elements in OPML."
 			);
 
+	// Get the list of feeds we're already subscribed to
+	$feeds = db_get_feeds();
+
 	// Loop through the <outline>s, looking for the stuff we want.
 	foreach ($opml_outlines as $elt)
 	{
 error_log("Found element [" . $elt->attributes['text'] . "], url [" . $elt->attributes['xmlUrl'] . "]");
+		// Check whether we're already subscribed to this feed.
+		foreach ($feeds as $f)
+		{
+			if ($elt->attributes['xmlUrl'] == $f['feed_url'])
+			{
+				error_log("-- We're already subscribed to this feed.");
+				continue 2;
+			}
+		}
 		/* Add the feed */
+error_log("++ Ought to subscribe to this feed");
 //		$err = db_add_feed(array("title"	=> $o['text'],
 //					 "feed_url"	=> $o['xmlurl']));
 		// XXX - Error-checking
@@ -141,6 +155,10 @@ return array("status" => "ok");
 
 function PUT_OPML($rreq)
 {
-	// XXX
+	// XXX - Presumably, this should be like POST /opml, except
+	// that the subscription list is overwritten rather than
+	// edited. That is, make the 'feeds' table match the posted
+	// OPML file, i.e., unsubscribe from anything that's not
+	// on the list.
 }
 ?>
