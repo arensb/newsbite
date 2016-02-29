@@ -109,7 +109,17 @@ function GET_OPML($rreq)
 
 function POST_OPML($rreq)
 {
+	global $db_errno;
+	global $db_errmsg;
+
+	$err_level = 0;	// 0 = ok, 1 = warning, 2 = error. This is a
+			// high-water mark for the code that follows:
+			// if there's an error, raise it to 2. If
+			// there's a warning, raise it to 1 unless
+			// it's already at 2.
+
 error_log("Inside POST_OPML");
+	$retval = array();
 	$opml = $rreq->body();
 
 	/* Look for the <opml><body><outline> elements.
@@ -119,38 +129,82 @@ error_log("Inside POST_OPML");
 	// Find the <body>
 	$opml_body = $opml->findChildrenByName("body");
 	if (!isset($opml_body))
+		// XXX - How to signal to the caller that there was an
+		// error?
 		return array("status" => "error",
 			     "message" => "No <body> in OPML."
 			);
 	$opml_outlines = $opml_body[0]->findChildrenByName("outline");
 	if (!isset($opml_body))
+		// XXX - How to signal to the caller that there was an
+		// error?
 		return array("status" => "error",
 			     "message" => "No <outline> elements in OPML."
 			);
 
 	// Get the list of feeds we're already subscribed to
 	$feeds = db_get_feeds();
+	$retval['statuses'] = array();
 
 	// Loop through the <outline>s, looking for the stuff we want.
 	foreach ($opml_outlines as $elt)
 	{
-error_log("Found element [" . $elt->attributes['text'] . "], url [" . $elt->attributes['xmlUrl'] . "]");
+		$feed_name = $elt->attributes['text'];
+		$feed_url  = $elt->attributes['xmlUrl'];
+//error_log("Found element [$feed_name], url [$feed_url]");
+		$elt_status = array(
+			"name"	=> $feed_name,
+			"url"	=> $feed_url,
+			);
 		// Check whether we're already subscribed to this feed.
 		foreach ($feeds as $f)
 		{
-			if ($elt->attributes['xmlUrl'] == $f['feed_url'])
+			if ($feed_url == $f['feed_url'])
 			{
-				error_log("-- We're already subscribed to this feed.");
+				error_log("We're already subscribed to $feed_url");
+				$elt_status['status'] = "ok";
+				$elt_status['message'] = "already subscribed";
+				array_push($retval['statuses'], $elt_status);
 				continue 2;
 			}
 		}
 		/* Add the feed */
-error_log("++ Ought to subscribe to this feed");
-//		$err = db_add_feed(array("title"	=> $o['text'],
-//					 "feed_url"	=> $o['xmlurl']));
-		// XXX - Error-checking
+		error_log("Subscribing to feed \"$feed_name\" at $feed_url");
+		$err = db_add_feed(array("title"	=> $feed_name,
+					 "feed_url"	=> $feed_url));
+		if ($err)
+		{
+			$elt_status['status'] = "ok";
+		} else {
+			$elt_status['status'] = "error";
+			$elt_status['message'] = "DB error " .
+				$db_errno . ": \"" .
+				$db_errmsg . "\"";
+			error_log("Database error $db_errno subscribing  to $feed_url: \"$db_errmsg\"");
+			$err_level = 2;
+		}
+		array_push($retval['statuses'], $elt_status);
 	}
-return array("status" => "ok");
+
+	/* Record the overall error level for the POST OPML operation. */
+	switch ($err_level)
+	{
+	    case 0:
+		$retval['status'] = "ok";
+		break;
+	    case 1:
+		$retval['status'] = "warning";
+		break;
+	    case 2:
+		$retval['status'] = "error";
+		break;
+	    default:		// This isn't even a valid error level!
+		$retval['status'] = "error";
+		$retval['message'] = "Unknown error level $err_level.";
+		break;
+	}
+
+	return $retval;
 }
 
 function PUT_OPML($rreq)
