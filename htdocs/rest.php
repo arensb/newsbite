@@ -10,50 +10,16 @@ class RESTNoVerbException extends Exception {};
 class RESTInvalidVerb extends Exception {};
 class RESTInvalidCommand extends Exception {};
 
-/*****************************************
- * xml_to_object
- * From  efredricksen at gmail dot com, at
- * http://php.net/manual/en/function.xml-parse-into-struct.php
+/* XmlElement
+ * Used when converting from XML to data structure. Used by
+ * _parse_xml, below.
  */
 class XmlElement {
-  var $name;
-  var $attributes;
-  var $content;
-  var $children;
+	var $name;
+	var $attributes;
+	var $content;
+	var $children;
 };
-
-function xml_to_object($xml) {
-  $parser = xml_parser_create();
-  xml_parser_set_option($parser, XML_OPTION_CASE_FOLDING, 0);
-  xml_parser_set_option($parser, XML_OPTION_SKIP_WHITE, 1);
-  xml_parse_into_struct($parser, $xml, $tags);
-  xml_parser_free($parser);
-
-  $elements = array();  // the currently filling [child] XmlElement array
-  $stack = array();
-  foreach ($tags as $tag) {
-    $index = count($elements);
-    if ($tag['type'] == "complete" || $tag['type'] == "open") {
-      $elements[$index] = new XmlElement;
-      $elements[$index]->name = $tag['tag'];
-      if (isset($tag['attributes']))
-        $elements[$index]->attributes = $tag['attributes'];
-      if (isset($tag['value']))
-        $elements[$index]->content = $tag['value'];
-      if ($tag['type'] == "open") {  // push
-        $elements[$index]->children = array();
-        $stack[count($stack)] = &$elements;
-        $elements = &$elements[$index]->children;
-      }
-    }
-    if ($tag['type'] == "close") {  // pop
-      $elements = &$stack[count($stack) - 1];
-      unset($stack[count($stack) - 1]);
-    }
-  }
-  return $elements[0];  // the single top-level element
-}
-/***** end of contributed code ***********************************/
 
 /* RESTReq
  * Main class for a REST request.
@@ -200,9 +166,50 @@ class RESTReq
 		// XXX
 	}
 
+	/* _parse_xml
+	 * Convert XML text to a data structure. Based on
+	 * xml_to_object by efredricksen at gmail dot com, at
+	 * http://php.net/manual/en/function.xml-parse-into-struct.php
+	 */
 	function _parse_xml($text)
 	{
-		return xml_to_object($text);
+		$parser = xml_parser_create();
+		xml_parser_set_option($parser, XML_OPTION_CASE_FOLDING, 0);
+		xml_parser_set_option($parser, XML_OPTION_SKIP_WHITE, 1);
+		xml_parse_into_struct($parser, $xml, $tags);
+		xml_parser_free($parser);
+
+		$elements = array();
+				// the currently filling [child] XmlElement array
+		$stack = array();
+		foreach ($tags as $tag)
+		{
+			$index = count($elements);
+			if ($tag['type'] == "complete" ||
+			    $tag['type'] == "open")
+			{
+				$elements[$index] = new XmlElement;
+				$elements[$index]->name = $tag['tag'];
+				if (isset($tag['attributes']))
+					$elements[$index]->attributes = $tag['attributes'];
+				if (isset($tag['value']))
+					$elements[$index]->content = $tag['value'];
+				if ($tag['type'] == "open")
+				{
+					// push
+					$elements[$index]->children = array();
+					$stack[count($stack)] = &$elements;
+					$elements = &$elements[$index]->children;
+				}
+			}
+			if ($tag['type'] == "close")
+			{
+				// pop
+				$elements = &$stack[count($stack) - 1];
+				unset($stack[count($stack) - 1]);
+			}
+		}
+		return $elements[0];  // the single top-level element
 	}
 
 	// XXX - dispatch(), to decide where the request should go:
