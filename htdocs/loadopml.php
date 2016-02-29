@@ -39,9 +39,50 @@ if (!isset($_FILES['opml']) || $_FILES['opml'] == ""):
   <input type="submit" name="doit" value="Upload file"/>
 </form>
 
+<hr/>
+<input type="file" name="opml-file" id="opml-file"/>
 <button id="opml-button">Upload OPML</button>
 
 <script type="text/javascript">
+// upload_opml_file
+// Take a File objects, reads the corresponding file, and sends a POST
+// REST request.
+function upload_opml_file(f)
+{
+	// send_opml_rest
+	// Perform the actual REST call to send the file.
+	function send_opml_rest(ev)
+	{
+		// XXX
+		console.log("Inside send_opml_rest ", ev);
+		var contents = ev.target.result;
+		console.debug("file contents: ", contents);
+
+		// XXX - Is it worth checking that this is a proper
+		// OPML file, or at least an XML file, or at least has
+		// a reasonable header?
+
+		// XXX - Send AJAX request, as below.
+		var req = new XMLHttpRequest();
+		req.open("POST", "w1/opml", true);
+		// XXX - Why is "PUT" not allowed?
+		req.setRequestHeader("Content-Type",
+				     "text/xml; charset=UTF-8");
+		req.send(contents);
+			// XXX - Error-checking.
+	}
+
+	if (!f instanceof File)
+	{
+		console.error("upload_opml_file was not given a proper file: ", f);
+		// XXX - Alert the user?
+		return;
+	}
+	var reader = new FileReader();
+	reader.onload = send_opml_rest;
+	reader.readAsText(f);
+}
+
 $(document).ready(function(){
 	$("#opml-button").on("click", function(ev) {
 		console.log("Clicked on button.");
@@ -52,7 +93,28 @@ $(document).ready(function(){
 				     "application/json; charset=UTF-8");
 		req.send(JSON.stringify({
 				  foo: "bar",
+				a: ["first","second","third"],
 				}));
+	});
+	$("#opml-file").on("change", function(ev) {
+			console.log("opml-file changed", ev);
+			upload_opml_file(ev.target.files[0]);
+			return;
+
+			var thefile = ev.target.files[0];
+			console.log("thefile: ", thefile);
+			if (!thefile)
+			{
+				console.error("can't find file ", thefile);
+				return;
+			}
+			console.log("file: ", thefile);
+			var reader = new FileReader();
+			reader.onload = function(e) {
+				var contents = e.target.result;
+				console.log("filereader file: ", contents);
+			};
+			reader.readAsText(thefile);
 	});
 });
 </script>
