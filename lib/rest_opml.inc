@@ -32,7 +32,6 @@ error_log("subpath: " . $rreq->subpath());
 			return POST_OPML($rreq);
 
 		    case "PUT":
-error_log("calling PUT_OPML");
 			return PUT_OPML($rreq);
 
 		    default:
@@ -110,8 +109,33 @@ function GET_OPML($rreq)
 
 function POST_OPML($rreq)
 {
-	// XXX
-error_log("inside POST_OPML, rreq " . print_r($rreq, true));
+	$opml = $rreq->body();
+
+	/* Look for the <opml><body><outline> elements.
+	 * Get 'xmlurl' for the feed.
+	 * Get 'text' for the title.
+	 */
+	// Find the <body>
+	$opml_body = $opml->findChildrenByName("body");
+	if (!isset($opml_body))
+		return array("status" => "error",
+			     "message" => "No <body> in OPML."
+			);
+	$opml_outlines = $opml_body[0]->findChildrenByName("outline");
+	if (!isset($opml_body))
+		return array("status" => "error",
+			     "message" => "No <outline> elements in OPML."
+			);
+
+	// Loop through the <outline>s, looking for the stuff we want.
+	foreach ($opml_outlines as $elt)
+	{
+error_log("Found element [" . $elt->attributes['text'] . "], url [" . $elt->attributes['xmlUrl'] . "]");
+		/* Add the feed */
+//		$err = db_add_feed(array("title"	=> $o['text'],
+//					 "feed_url"	=> $o['xmlurl']));
+		// XXX - Error-checking
+	}
 return array("status" => "ok");
 }
 
