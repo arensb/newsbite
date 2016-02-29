@@ -19,6 +19,24 @@ class XmlElement {
 	var $attributes;
 	var $content;
 	var $children;
+
+	function findChildrenByName($name, $limit = 0)
+	{
+		$retval = array();
+		if (!isset($this->children))
+			// No such child
+			return FALSE;
+
+		foreach ($this->children as $child)
+		{
+			if (isset($child->name) &&
+			    $child->name == $name)
+				array_push($retval, $child);
+		}
+		if (count($retval) > 0)
+			return $retval;
+		return FALSE;
+	}
 };
 
 /* RESTReq
@@ -365,6 +383,9 @@ switch ($rreq->classname())
 	try {
 		$err = require_once("rest_opml.inc");
 		$retval = opml_stuff($rreq);
+		// XXX - How can we figure out whether this was a
+		// normal return, or an error, or whatever? Do we want
+		// to rely on exceptions?
 	} catch (Exception $e) {
 		// echo "Caught exception ", print_r($e, true);
 		$rreq->finish(400, "Class " . $rreq->classname() .
