@@ -32,13 +32,14 @@ function xml_to_object($xml) {
   $elements = array();  // the currently filling [child] XmlElement array
   $stack = array();
   foreach ($tags as $tag) {
-error_log("parsing tag " . print_r($tag, true));
     $index = count($elements);
     if ($tag['type'] == "complete" || $tag['type'] == "open") {
       $elements[$index] = new XmlElement;
       $elements[$index]->name = $tag['tag'];
-      $elements[$index]->attributes = $tag['attributes'];
-      $elements[$index]->content = $tag['value'];
+      if (isset($tag['attributes']))
+        $elements[$index]->attributes = $tag['attributes'];
+      if (isset($tag['value']))
+        $elements[$index]->content = $tag['value'];
       if ($tag['type'] == "open") {  // push
         $elements[$index]->children = array();
         $stack[count($stack)] = &$elements;
