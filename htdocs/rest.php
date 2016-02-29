@@ -175,7 +175,7 @@ class RESTReq
 	 * xml_to_object by efredricksen at gmail dot com, at
 	 * http://php.net/manual/en/function.xml-parse-into-struct.php
 	 */
-	function _parse_xml($text)
+	function _parse_xml($xml)
 	{
 		$parser = xml_parser_create();
 		xml_parser_set_option($parser, XML_OPTION_CASE_FOLDING, 0);
