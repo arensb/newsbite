@@ -3,7 +3,7 @@
 * Methods
 From [[https://en.wikipedia.org/wiki/Hypertext_Transfer_Protocol#Request_methods][Wikipedia]]:
 ** GET
-Fetch a resource. Don't change anythign.
+Fetch a resource. Don't change anything.
 ** HEAD
 Metainformation about a resource.
 Maybe this can be used to get metainformation about an item, without

@@ -8,6 +8,7 @@ Makefile.common
 Makefile.local
 README.hacking
 README.md
+README.REST
 TODO
 fix-schema-1.0.0-185-g58d7254.sql
 fix-schema-1.0.0-189-gcf4db7c.sql
@@ -62,6 +63,7 @@ htdocs/login.php
 htdocs/markitems.php
 htdocs/newsbite.manifest.php
 htdocs/opml.php
+htdocs/rest.php
 htdocs/sync.php
 htdocs/unsubscribe.php
 htdocs/update.php
