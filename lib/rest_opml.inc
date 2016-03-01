@@ -15,6 +15,10 @@ require_once("database.inc");
  */
 function opml_stuff($rreq)
 {
+error_log("inside opml_stuff");
+error_log("verb: " . $rreq->verb());
+error_log("classname: " . $rreq->classname());
+error_log("subpath: " . $rreq->subpath());
 	switch ($rreq->subpath())
 	{
 	    case NULL:
@@ -25,10 +29,10 @@ function opml_stuff($rreq)
 			return GET_OPML($rreq);
 
 		    case "POST":
-			return PUT_OPML($rreq);
+			return POST_OPML($rreq);
 
 		    case "PUT":
-			return POST_OPML($rreq);
+			return PUT_OPML($rreq);
 
 		    default:
 			error_log("rest_info: bad verb " . $rreq->verb());
@@ -103,13 +107,125 @@ function GET_OPML($rreq)
 <?php
 }
 
+/* POST_OPML
+ * POST /opml - Batch-subscribe to a bunch of feeds in OPML format.
+ */
+// XXX - The SQL part of this is much much faster if all the
+// subscriptions are batched together:
+//	INSERT INTO feeds (title, feed_url) VALUES
+//		(title1, feed1),
+//		(title2, feed2),
+//		...
+// instead of
+//	INSERT INTO feeds (title, feed_url) VALUES (title1, feed1);
+//	INSERT INTO feeds (title, feed_url) VALUES (title2, feed2);
+//	...
+// But for that we need a db_add_feed()-ish function that'll take
+// multiple feeds.
 function POST_OPML($rreq)
 {
-	// XXX
+	global $db_errno;
+	global $db_errmsg;
+
+	$err_level = 0;	// 0 = ok, 1 = warning, 2 = error. This is a
+			// high-water mark for the code that follows:
+			// if there's an error, raise it to 2. If
+			// there's a warning, raise it to 1 unless
+			// it's already at 2.
+
+	$retval = array();
+	$opml = $rreq->body();
+
+	/* Look for the <opml><body><outline> elements.
+	 * Get 'xmlurl' for the feed.
+	 * Get 'text' for the title.
+	 */
+	// Find the <body>
+	$opml_body = $opml->findChildrenByName("body");
+	if (!isset($opml_body))
+		// XXX - How to signal to the caller that there was an
+		// error?
+		return array("status" => "error",
+			     "message" => "No <body> in OPML."
+			);
+	$opml_outlines = $opml_body[0]->findChildrenByName("outline");
+	if (!isset($opml_body))
+		// XXX - How to signal to the caller that there was an
+		// error?
+		return array("status" => "error",
+			     "message" => "No <outline> elements in OPML."
+			);
+
+	// Get the list of feeds we're already subscribed to
+	$feeds = db_get_feeds();
+	$retval['statuses'] = array();
+
+	// Loop through the <outline>s, looking for the stuff we want.
+	foreach ($opml_outlines as $elt)
+	{
+		$feed_name = $elt->attributes['text'];
+		$feed_url  = $elt->attributes['xmlUrl'];
+		$elt_status = array(
+			"name"	=> $feed_name,
+			"url"	=> $feed_url,
+			);
+		// Check whether we're already subscribed to this feed.
+		foreach ($feeds as $f)
+		{
+			if ($feed_url == $f['feed_url'])
+			{
+				error_log("We're already subscribed to $feed_url");
+				$elt_status['status'] = "ok";
+				$elt_status['message'] = "already subscribed";
+				array_push($retval['statuses'], $elt_status);
+				continue 2;
+			}
+		}
+		/* Add the feed */
+		error_log("Subscribing to feed \"$feed_name\" at $feed_url");
+		$err = db_add_feed(array("title"	=> $feed_name,
+					 "feed_url"	=> $feed_url));
+		if ($err)
+		{
+			$elt_status['status'] = "ok";
+		} else {
+			$elt_status['status'] = "error";
+			$elt_status['message'] = "DB error " .
+				$db_errno . ": \"" .
+				$db_errmsg . "\"";
+			error_log("Database error $db_errno subscribing  to $feed_url: \"$db_errmsg\"");
+			$err_level = 2;
+		}
+		array_push($retval['statuses'], $elt_status);
+	}
+
+	/* Record the overall error level for the POST OPML operation. */
+	switch ($err_level)
+	{
+	    case 0:
+		$retval['status'] = "ok";
+		break;
+	    case 1:
+		$retval['status'] = "warning";
+		break;
+	    case 2:
+		$retval['status'] = "error";
+		break;
+	    default:		// This isn't even a valid error level!
+		$retval['status'] = "error";
+		$retval['message'] = "Unknown error level $err_level.";
+		break;
+	}
+
+	return $retval;
 }
 
 function PUT_OPML($rreq)
 {
-	// XXX
+	// XXX - Presumably, this should be like POST /opml, except
+	// that the subscription list is overwritten rather than
+	// edited. That is, make the 'feeds' table match the posted
+	// OPML file, i.e., unsubscribe from anything that's not
+	// on the list.
 }
 ?>

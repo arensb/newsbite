@@ -10,6 +10,35 @@ class RESTNoVerbException extends Exception {};
 class RESTInvalidVerb extends Exception {};
 class RESTInvalidCommand extends Exception {};
 
+/* XmlElement
+ * Used when converting from XML to data structure. Used by
+ * _parse_xml, below.
+ */
+class XmlElement {
+	var $name;
+	var $attributes;
+	var $content;
+	var $children;
+
+	function findChildrenByName($name, $limit = 0)
+	{
+		$retval = array();
+		if (!isset($this->children))
+			// No such child
+			return FALSE;
+
+		foreach ($this->children as $child)
+		{
+			if (isset($child->name) &&
+			    $child->name == $name)
+				array_push($retval, $child);
+		}
+		if (count($retval) > 0)
+			return $retval;
+		return FALSE;
+	}
+};
+
 /* RESTReq
  * Main class for a REST request.
  * Typically, you would
@@ -85,7 +114,19 @@ class RESTReq
 			parse_str($server['QUERY_STRING'], $this->url_params);
 
 		if (isset($server['CONTENT_TYPE']))
-			$this->content_type = $server['CONTENT_TYPE'];
+		{
+			$fields = preg_split('/\s*;\s*/', $server['CONTENT_TYPE']);
+				// XXX - According to
+				// http://www.ietf.org/rfc/rfc3875 ,
+				// the "Content-Type" header can be
+				// followed by parameters of the form
+				// "var=value", separated by
+				// semicolons. This is most usually
+				// used for "charset=UTF-8". Right
+				// now, we don't care about those, but
+				// we do need to get the content type.
+			$this->content_type = $fields[0];
+		}
 
 		// If the body wasn't specified, use stdin.
 		// We use this rather than $_POST because if the
@@ -98,11 +139,22 @@ class RESTReq
 		// XXX - Parse the body: get the content type, and
 		// parse it as JSON, XML, YAML, or whatever.
 		// json_decode(): http://php.net/manual/en/function.json-decode.php
+
+		// XXX - Do we want to move this code to body()? That
+		// way, if the implementing code doesn't actually need
+		// the body to be parsed, we needn't waste time
+		// parsing it. Then again, that's probably a rare
+		// case.
 		switch ($this->content_type)
 		{
-		    case "text/json":
-			$this->body = json_decode($this->body);
+		    case "application/json":
+			$this->body = json_decode($this->body_text);
 			break;
+
+		    case "text/xml":
+			$this->body = $this->_parse_xml($this->body_text);
+			break;
+
 		    default:
 			// Leave it alone. Maybe a handler class knows
 			// what to do with it.
@@ -134,8 +186,52 @@ class RESTReq
 				$this->finish(406, "Unknown output format.");
 			}
 		}
+	}
 
-		// XXX
+	/* _parse_xml
+	 * Convert XML text to a data structure. Based on
+	 * xml_to_object by efredricksen at gmail dot com, at
+	 * http://php.net/manual/en/function.xml-parse-into-struct.php
+	 */
+	function _parse_xml($xml)
+	{
+		$parser = xml_parser_create();
+		xml_parser_set_option($parser, XML_OPTION_CASE_FOLDING, 0);
+		xml_parser_set_option($parser, XML_OPTION_SKIP_WHITE, 1);
+		xml_parse_into_struct($parser, $xml, $tags);
+		xml_parser_free($parser);
+
+		$elements = array();
+				// the currently filling [child] XmlElement array
+		$stack = array();
+		foreach ($tags as $tag)
+		{
+			$index = count($elements);
+			if ($tag['type'] == "complete" ||
+			    $tag['type'] == "open")
+			{
+				$elements[$index] = new XmlElement;
+				$elements[$index]->name = $tag['tag'];
+				if (isset($tag['attributes']))
+					$elements[$index]->attributes = $tag['attributes'];
+				if (isset($tag['value']))
+					$elements[$index]->content = $tag['value'];
+				if ($tag['type'] == "open")
+				{
+					// push
+					$elements[$index]->children = array();
+					$stack[count($stack)] = &$elements;
+					$elements = &$elements[$index]->children;
+				}
+			}
+			if ($tag['type'] == "close")
+			{
+				// pop
+				$elements = &$stack[count($stack) - 1];
+				unset($stack[count($stack) - 1]);
+			}
+		}
+		return $elements[0];  // the single top-level element
 	}
 
 	// XXX - dispatch(), to decide where the request should go:
@@ -192,7 +288,7 @@ class RESTReq
 		switch ($this->outfmt)
 		{
 		    case "json":
-			header("Content-type: text/json; charset=utf-8");
+			header("Content-type: application/json; charset=utf-8");
 			echo json_encode($val);
 			break;
 
@@ -267,7 +363,6 @@ switch ($rreq->classname())
 		$err = require_once("rest_test.inc");
 		$retval = test_stuff($rreq);
 	} catch (Exception $e) {
-		// echo "Caught exception ", print_r($e, true);
 		$rreq->finish(400, "Class " . $rreq->classname() .
 			      ": Caught an exception");
 	}
@@ -288,6 +383,9 @@ switch ($rreq->classname())
 	try {
 		$err = require_once("rest_opml.inc");
 		$retval = opml_stuff($rreq);
+		// XXX - How can we figure out whether this was a
+		// normal return, or an error, or whatever? Do we want
+		// to rely on exceptions?
 	} catch (Exception $e) {
 		// echo "Caught exception ", print_r($e, true);
 		$rreq->finish(400, "Class " . $rreq->classname() .
