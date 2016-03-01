@@ -10,7 +10,7 @@ echo "test 1:"
 cat /tmp/curl-out.$$
 echo ""
 rm -f /tmp/curl-out.$$
-exit 0
+#exit 0
 
 ########################################
 # cat a plain text body
