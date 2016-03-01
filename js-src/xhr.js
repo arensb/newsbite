@@ -4,26 +4,6 @@
 #ifndef _xhr_js_
 #define _xhr_js_
 
-/* createXMLHttpRequest
- * Create a new XMLHttpRequest object, hopefully in a
- * browser-independent manner.
- */
-// I'm not sure why, but Chrome really wants
-//	createXMLHttpRequest = function() ...
-// rather than
-//	function createXMLHttpRequest()
-var createXMLHttpRequest = function()
-{
-	var request = false;
-	try {
-		request = new XMLHttpRequest();
-	} catch (e) {
-		console.error("Error creating XMLHttpRequest: "+e);
-		request = false;
-	}
-	return request;
-}
-
 /* get_json_data
  * Send a request for JSON data.
  * 'url' is the URL from which to fetch the data.
@@ -223,10 +203,10 @@ msg_add("Can't parse JSON line");
 
 	/* get_json_data() main */
 
-	var request = createXMLHttpRequest();
+	var request = new XMLHttpRequest();
 	if (!request)
 	{
-msg_add("get_json_data: can't createXMLHttpRequest: "+request);
+msg_add("get_json_data: can't create XMLHttpRequest: "+request);
 		return null;
 	}
 
