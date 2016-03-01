@@ -41,7 +41,7 @@ nickname of a feed without touching (or knowing) its URL, groups, etc.
 * What's the current interface?
 What services/knobs/etc. are currently there?
 
-** addfeed.php
+** TODO addfeed.php
    - Subscribe to a feed. Takes RSS URL.
    - (Register feed reader in Firefox.)
 
@@ -50,7 +50,7 @@ What services/knobs/etc. are currently there?
 : PUT /feed
 : 	OPML in body
 
-** editfeed.php
+** TODO editfeed.php
    - Update information about a feed:
      - nickname
      - site URL
@@ -64,14 +64,14 @@ What services/knobs/etc. are currently there?
 : 	url=...
 : 	...
 
-** feeds.php
+** TODO feeds.php
    - Get list of feeds
 
 : GET /feed
 
 : GET /feed/123
 
-** group.php
+** TODO group.php
    - create a group
    - delete a group
    - rename a group
@@ -90,7 +90,8 @@ What services/knobs/etc. are currently there?
 ** index.php
 Nothing. This is a template.
 
-** loadopml.php
+** DONE loadopml.php
+   CLOSED: [2016-03-01 Tue 10:13]
    - Subscribe to feeds from an OPML feed
 I guess this is a batch version of subscribing.
 PUT /feed
@@ -98,13 +99,13 @@ could take either a URL, or an OPML file.
 
 See [[* addfeed.php]], above.
 
-** login.php
+** TODO login.php
    - login
 Issue an authorization token.
 
 : GET /login
 
-** markitems.php
+** TODO markitems.php
    - mark items as read/unread
 
 : PUT /article/123
@@ -113,12 +114,13 @@ Issue an authorization token.
 : PUT /article/123
 and in body, have a JSON structure listing these for a bunch of articles.
 
-** opml.php
+** DONE opml.php
+   CLOSED: [2016-03-01 Tue 10:13]
    - Return an OPML document
 
 : GET /opml
 
-** sync.php
+** TODO sync.php
    - sync: update $ihave[] items, return the top 100 for a feed
 This really needs to be broken up into components.
 
@@ -128,12 +130,12 @@ XXX
 : 	?read=unread		# default
 : 	&max_items=100		# default
 
-** unsubscribe.php
+** TODO unsubscribe.php
    - remove a feed
 
 : DELETE /feed/123
 
-** update.php
+** TODO update.php
    - fetch/update a feed
    - fetch/update all feeds
 ** view.php
