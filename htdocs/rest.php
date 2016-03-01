@@ -360,7 +360,7 @@ switch ($rreq->classname())
 {
     case "test":	// Testing
 	try {
-		$err = require_once("rest_test.inc");
+		$err = require_once("rest/test.inc");
 		$retval = test_stuff($rreq);
 	} catch (Exception $e) {
 		$rreq->finish(400, "Class " . $rreq->classname() .
@@ -370,7 +370,7 @@ switch ($rreq->classname())
 	break;
     case "info":	// Information about Newsbite
 	try {
-		$err = require_once("rest_info.inc");
+		$err = require_once("rest/info.inc");
 		$retval = info_stuff($rreq);
 	} catch (Exception $e) {
 		// echo "Caught exception ", print_r($e, true);
@@ -381,7 +381,7 @@ switch ($rreq->classname())
 	break;
     case "opml":	// OPML feeds
 	try {
-		$err = require_once("rest_opml.inc");
+		$err = require_once("rest/opml.inc");
 		$retval = opml_stuff($rreq);
 		// XXX - How can we figure out whether this was a
 		// normal return, or an error, or whatever? Do we want

@@ -30,6 +30,7 @@ RECURSIVE_DIRS =	\
 	htdocs/images \
 	htdocs/js \
 	lib \
+	lib/rest \
 	plugins
 
 # XXX - Create htdocs/.htaccess based on the directories above
