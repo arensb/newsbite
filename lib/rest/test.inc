@@ -1,62 +1,73 @@
 <?php
-function test_stuff($rreq)
-{
-	switch ($rreq->subpath())
+
+class RESTController_test {
+	function __construct()
 	{
-	    case "hello":
-		// Just return a fixed string.
-		return test_hello($rreq);
-
-	    case "echo":
-		// Echo what the user sent us.
-		return test_echo($rreq);
-
-	    case "cat":
-		// Print the body back at the caller.
-		return test_cat($rreq);
-
-	    default:
-		throw new RESTInvalidCommand();
+		//error_log("Inside RESTController_test::__construct");
 	}
 
-	// This should never happen
-	return array("Australia" => "WTF?");
-}
+	/* hello
+	 * Just return a fixed "hello world" result.
+	 */
+	function hello_test(&$rreq)
+	{
+		return array("hello" => "world");
+	}
 
-/* test_hello
- * Just return a fixed "hello world" result.
- */
-function test_hello(&$rreq)
-{
-	return array("hello" => "world");
-}
+	/* echo
+	 * Get the "s"(tring) parameter, and send back an array of the form
+	 * { "answer" => $string }
+	 */
+	function echo_test(&$rreq)
+	{
+		$string = $rreq->url_param("s");
+		if (isset($string))
+			return array("answer" => $string);
+		return array("answer" => "You didn't say anything.");
+	}
 
-/* test_echo
- * Get the "s"(tring) parameter, and send back an array of the form
- * { "answer" => $string }
- */
-function test_echo(&$rreq)
-{
-	$string = $rreq->url_param("s");
-	if (isset($string))
-		return array("answer" => $string);
-	return array("answer" => "You didn't say anything.");
-}
+	/* cat
+	 * Echo the sender's body back at them.
+	 */
+	function cat_test(&$rreq)
+	{
+		$body_type = $rreq->content_type();
+		$body = $rreq->body();
 
-/* test_cat
- * Echo the sender's body back at them.
- */
-function test_cat(&$rreq)
-{
-	$body_type = $rreq->content_type();
-	$body = $rreq->body();
+		if (!isset($body) || $body == "")
+			$body = "[This body intentionally left blank.]";
 
-	if (!isset($body) || $body == "")
-		$body = "[This body intentionally left blank.]";
+		return array(
+			"body_type" =>  $body_type,
+			"body" => print_r($body, true),
+			);
+	}
 
-	return array(
-		"body_type" =>  $body_type,
-		"body" => print_r($body, true),
-	);
+	/* run
+	 * Take an instance of a REST request, and dispatch it.
+	 */
+	function run($rreq)
+	{
+		switch ($rreq->subpath())
+		{
+		    case "hello":
+			// Just return a fixed string.
+			return $this->hello_test($rreq);
+
+		    case "echo":
+			// Echo what the user sent us.
+			return $this->echo_test($rreq);
+
+		    case "cat":
+			// Print the body back at the caller.
+			return $this->cat_test($rreq);
+
+		    default:
+			throw new RESTInvalidCommand();
+		}
+
+		// This should never happen
+		return array("Australia" => "WTF?");
+	}
 }
 ?>
