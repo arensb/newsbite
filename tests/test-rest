@@ -1,0 +1,36 @@
+#!/bin/sh
+REST_BASE="http://carrot.ooblick.com/newsbite/w1"
+
+########################################
+# hello world
+curl -sSv --trace-time -X OPTIONS \
+	${REST_BASE}/test/hello \
+	-d 'hello' > /tmp/curl-out.$$
+echo "test 1:"
+cat /tmp/curl-out.$$
+echo ""
+rm -f /tmp/curl-out.$$
+exit 0
+
+########################################
+# cat a plain text body
+curl -sS -X PUT \
+	-H 'Content-Type: text/plain' \
+	-d 'This is a dummy body' \
+	${REST_BASE}/test/cat > /tmp/curl-out.$$
+echo "test 2:"
+cat /tmp/curl-out.$$
+echo ""
+rm -f /tmp/curl-out.$$
+
+########################################
+# cat a JSON body
+curl -sS -X POST \
+	-H 'Content-Type: text/json' \
+	-d '{"foo":"bar","baz":"quux"}' \
+	${REST_BASE}/test/cat > /tmp/curl-out.$$
+
+echo "test 3:"
+cat /tmp/curl-out.$$
+echo ""
+rm -f /tmp/curl-out.$$

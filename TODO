@@ -150,16 +150,6 @@
 	text-overflow: "clip" | "ellipsis" | <string>;
   When text doesn't fit into the alloted box, can use an ellipsis for
   the text that doesn't fit.
-- Is it worth making the back-end RESTful? See:
-  http://www.infoq.com/articles/rest-introduction
-  This might be more of a headache than it's worth: to do it elegantly
-  would mean fixing all of the back-end scripts to accept methods
-  other than GET and POST: DELETE, PUT, etc. (see
-  http://www.w3.org/Protocols/rfc2616/rfc2616-sec9.html ) would all
-  have their own meanings.
-	Plus, apparently REST encourages you to use full URLs for
-  resources, rather than internal identifiers. But here we don't
-  really have anything worth sharing with the wider world, IMHO.
 - "use strict": apparently modern JavaScript implementations grok
 	"use strict";
   https://developer.mozilla.org/en-US/docs/JavaScript/Reference/Functions_and_function_scope/Strict_mode
@@ -184,14 +174,6 @@
 		"use strict";
 		... body of script ...
 	})();
-- Vibrating:
-	window.navigator.vibrate(200)
-		Vibrate for 200 ms.
-	window.navigator.vibrate([200, 100, 200])
-		Vibrate for 200ms, then pause for 100ms, then vibrate
-		for 200ms
-  Unfortunately, only Firefox for Android currently supports this
-  AFAIK.
 - Getters and setters:
   https://developer.mozilla.org/en-US/docs/JavaScript/Guide/Working_with_Objects?redirectlocale=en-US&redirectslug=Core_JavaScript_1.5_Guide%2FWorking_with_Objects#Defining_getters_and_setters
 - Profiling: according to 

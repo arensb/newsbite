@@ -7,6 +7,7 @@
 // method (GET, POST, etc.)
 class RESTNoMethodException extends Exception {};
 
+class RESTInvalidMethod extends Exception {};
 class RESTInvalidCommand extends Exception {};
 
 /* RESTReq
@@ -39,10 +40,13 @@ class RESTReq
 	protected $subpath = NULL;
 	protected $url_params = array();
 	protected $content_type = NULL;
-	protected $body= NULL;
+	// XXX - Is there a reason to keep both the text and parsed
+	// versions of the body?
+	protected $body_text = NULL;
+	protected $body = NULL;
 	protected $outfmt = "json";	// Desired output format
 
-	function __construct(&$server = NULL, &$body = NULL)
+	function __construct(&$server = NULL, &$body_text = NULL)
 	{
 		global $_SERVER;
 
@@ -62,14 +66,19 @@ class RESTReq
 		// Get the path. The first part is the class, and the
 		// rest is either a subclass, an identifier, or
 		// something.
+		// It's not an error to just specify a class. In that
+		// case, the subpath is NULL.
 		$this->path = $server['PATH_INFO'];
-		$this->path = preg_replace(',^/,', '', $this->path);
-					// Remove leading slash
-		list ($this->classname, $this->subpath) =
-			// Split up into class and sub-path.
-			explode("/", $this->path, 2);
-		// XXX - If there's only a class, presumably ought to
-		// throw an exception.
+		if (preg_match(',^/?([^/]+)(?:/(.*))?,',
+			       $this->path,
+			       $matches))
+		{
+			$this->classname = $matches[1];
+			if (count($matches) > 2)
+				$this->subpath   = $matches[2];
+		} else {
+			throw new RESTInvalidCommand();
+		}
 
 		// Parameters passed in through the URL
 		if (isset($server['QUERY_STRING']))
@@ -81,8 +90,10 @@ class RESTReq
 		// If the body wasn't specified, use stdin.
 		// We use this rather than $_POST because if the
 		// method wasn't POST, PHP won't parse it for us.
-		if (!isset($body))
-			$this->body = file_get_contents("php://input");
+		if (isset($body_text))
+			$this->body_text = $body_text;
+		else
+			$this->body_text = file_get_contents("php://input");
 
 		// XXX - Parse the body: get the content type, and
 		// parse it as JSON, XML, YAML, or whatever.
@@ -164,9 +175,14 @@ class RESTReq
 		return $this->content_type;
 	}
 
-	// XXX - Should this return the parsed version of the body?
+	// body: returns parsed version of the body
 	function body() {
 		return $this->body;
+	}
+
+	// body_text: returns raw text version of the body
+	function body_text() {
+		return $this->body_text;
 	}
 
 	// print_struct
@@ -207,6 +223,15 @@ class RESTReq
 	// By default, this
 	function finish($status = 200, $msg = NULL, $retval = NULL)
 	{
+		// If it's an error, log it.
+		if ($status < 200 || $status > 299)
+			error_log("Exiting " .
+				  $this->method() . " " .
+				  $this->path() .
+				  " with status $status," .
+				  (isset($msg) ?
+				   "Error message \"$msg\"." :
+				   "No error message."));
 		http_response_code($status);
 		if (isset($msg) && $msg != "")
 			header("X-Newsbite-Error: " . $msg);
@@ -225,6 +250,7 @@ $retval["class"] = $rreq->classname();
 $retval["subpath"] = $rreq->subpath();
 $retval["outfmt"] = $rreq->url_param("o");
 $retval["content_type"] = $rreq->content_type();
+$retval["body_text"] = $rreq->body_text();
 $retval["body"] = $rreq->body();
 // XXX - Should there be a method for getting all the URL parameters?
 
@@ -236,13 +262,25 @@ $retval["body"] = $rreq->body();
 // XXX - Figure out where to send the request
 switch ($rreq->classname())
 {
-    case "test":
+    case "test":	// Testing
 	try {
 		$err = require_once("rest_test.inc");
 		$retval = test_stuff($rreq);
 	} catch (Exception $e) {
 		// echo "Caught exception ", print_r($e, true);
-		$rreq->finish(400, "Caught an exception");
+		$rreq->finish(400, "Class " . $rreq->classname() .
+			      ": Caught an exception");
+	}
+	// XXX
+	break;
+    case "info":	// Information about Newsbite
+	try {
+		$err = require_once("rest_info.inc");
+		$retval = info_stuff($rreq);
+	} catch (Exception $e) {
+		// echo "Caught exception ", print_r($e, true);
+		$rreq->finish(400, "Class " . $rreq->classname() .
+			      ": Caught an exception");
 	}
 	// XXX
 	break;
@@ -263,7 +301,6 @@ switch ($rreq->classname())
 // XXX - HTTP response. Usually 200, but we might need to send 4xx or
 // even 5xx.
 
-// XXX - Send the return value, in the format the user wants.
-
+// Send the return value, in the format the user wants.
 $rreq->finish(200, NULL, $retval);
 ?>

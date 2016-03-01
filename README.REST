@@ -20,7 +20,11 @@ Delete a resource.
 ** TRACE
 Echo the request.
 
-Not sure this is useful in a RESTful world.
+Not sure this is useful in a RESTful world. Plus, it's considered
+dangerous in general, so Apache disables it by default. And many
+webmasters/security officers are likely to look askance at any request
+to turn it on.
+
 ** OPTIONS
 Returns the HTTP methods that the server accepts for a URL.
 
