@@ -13,8 +13,14 @@ Though if HEAD can't return an HTTP body, then this can be useful to
 see whether something exists.
 ** POST
 Update an existing resource.
+
+Though http://www.restapitutorial.com/lessons/httpmethods.html
+says POST is for creating.
 ** PUT
 Add a resource, replacing an existing one if necessary.
+
+Though http://www.restapitutorial.com/lessons/httpmethods.html
+says PUT is for updating/replacing.
 ** DELETE
 Delete a resource.
 ** TRACE
@@ -38,6 +44,10 @@ Apply partial modifications to a resource.
 
 Sounds like this means changing an existing resource, e.g., change the
 nickname of a feed without touching (or knowing) its URL, groups, etc.
+
+http://www.restapitutorial.com/lessons/httpmethods.html
+says PATCH is for updating/modifying an existing resource.
+
 * What's the current interface?
 What services/knobs/etc. are currently there?
 
