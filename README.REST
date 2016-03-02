@@ -140,3 +140,17 @@ XXX
    - fetch/update all feeds
 ** view.php
 Nothing. This is a template.
+* To do
+** TODO option
+*** TODO GET /option
+Get global options
+*** TODO GET /option/123
+Get options for feed 123
+*** TODO POST /option
+    opt=option
+    val=value
+Set global option
+*** TODO POST /option/123
+    opt=option
+    val=value
+Set feed 123 option.
