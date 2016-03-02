@@ -356,43 +356,34 @@ $retval["body"] = $rreq->body();
 // XXX - Check authentication.
 
 // XXX - Figure out where to send the request
-switch ($rreq->classname())
+$classname = $rreq->classname();
+	// XXX - Perhaps sanitize $classname: allow only letters,
+	// digits, and underscore?
+switch ($classname)
 {
-    case "test":	// Testing
-	try {
-		$err = require_once("rest/test.inc");
-		$retval = test_stuff($rreq);
-	} catch (Exception $e) {
-		$rreq->finish(400, "Class " . $rreq->classname() .
-			      ": Caught an exception");
-	}
-	// XXX
-	break;
+    case "test":
     case "info":	// Information about Newsbite
-	try {
-		$err = require_once("rest/info.inc");
-		$retval = info_stuff($rreq);
-	} catch (Exception $e) {
-		// echo "Caught exception ", print_r($e, true);
-		$rreq->finish(400, "Class " . $rreq->classname() .
-			      ": Caught an exception");
-	}
-	// XXX
-	break;
     case "opml":	// OPML feeds
 	try {
-		$err = require_once("rest/opml.inc");
-		$retval = opml_stuff($rreq);
-		// XXX - How can we figure out whether this was a
-		// normal return, or an error, or whatever? Do we want
-		// to rely on exceptions?
+		// Load the code that'll handle this class.
+		$err = require_once("rest/$classname.inc");
+			// XXX - Error-checking.
+
+		// Create and run the controller for this class.
+		$ctrl_classname = "RESTController_$classname";
+		$controller = new $ctrl_classname();
+			// XXX - Error-checking
+		$retval = $controller->run($rreq);
+			// XXX - How can we figure out whether this
+			// was a normal return, or an error, or
+			// whatever? Do we want to rely on exceptions?
 	} catch (Exception $e) {
-		// echo "Caught exception ", print_r($e, true);
-		$rreq->finish(400, "Class " . $rreq->classname() .
-			      ": Caught an exception");
-	}
-	// XXX
+		error_log("Exception while loading rest/$classname.inc: " .
+			  print_r($e, true));
+		$rreq->finish(400, "Class $classname: Caught an exception");
+	} 
 	break;
+
     case "feed":
 	// XXX
 	break;
