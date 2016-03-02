@@ -25,9 +25,14 @@ class RESTController_test {
 	function echo_test(&$rreq)
 	{
 		$string = $rreq->url_param("s");
-		if (isset($string))
-			return array("answer" => $string);
-		return array("answer" => "You didn't say anything.");
+		if (!isset($string))
+			$string = "You didn't say anything.";
+		return array("answer"	=> $string,
+			     "verb"	=> $rreq->verb(),
+			     "path"	=> $rreq->path(),
+			     "class"	=> $rreq->classname(),
+			     "content-type"	=> $rreq->content_type()
+			);
 	}
 
 	/* cat
