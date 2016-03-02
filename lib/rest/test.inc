@@ -11,6 +11,10 @@ class RESTController_test {
 	 */
 	function hello_test(&$rreq)
 	{
+		if ($rreq->verb() == "HEAD")
+			header("X-Head: Yes");
+		else
+			header("X-Head: No");
 		return array("hello" => "world");
 	}
 
