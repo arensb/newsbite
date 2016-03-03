@@ -365,6 +365,7 @@ switch ($classname)
     case "test":
     case "info":	// Information about Newsbite
     case "opml":	// OPML feeds
+    case "feed":
 	try {
 		// Load the code that'll handle this class.
 		$err = require_once("rest/$classname.inc");
@@ -386,9 +387,6 @@ switch ($classname)
 	} 
 	break;
 
-    case "feed":
-	// XXX
-	break;
     case "group":
 	// XXX
 	break;
