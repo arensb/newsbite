@@ -142,7 +142,7 @@ error_log("ought to db_add_feed(): " . print_r($params, true));
 	/* get_all_feeds_info
 	 * Get information about all feeds.
 	 */
- 	function get_all_feeds_info($rreq)
+	function get_all_feeds_info($rreq)
 	{
 		// Collect the information to return
 		$feeds = db_get_feeds(TRUE);
