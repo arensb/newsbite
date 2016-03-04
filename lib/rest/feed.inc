@@ -1,4 +1,5 @@
 <?php
+// XXX - Want common.inc in production. Actually, we just want authentication/authorization.
 //require_once("common.inc");
 require_once("database.inc");
 
