@@ -22,10 +22,6 @@ class RESTNoVerbException extends RESTException {
 	// constructor with an error number and message.
 	public $errmsg = "No verb";
 };
-
-class RESTInvalidVerb extends RESTException {
-	public $errmsg = "Invalid verb";
-};
 class RESTInvalidCommand extends RESTException {
 	public $errmsg = "Invalid command";
 };

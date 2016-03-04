@@ -21,7 +21,7 @@ class RESTController_info {
 
 			    default:
 				error_log("rest_info: bad verb " . $rreq->verb());
-				throw new RESTInvalidVerb();
+				throw new RESTException(NULL, "Invalid verb.");
 			}
 
 		    default:
