@@ -14,14 +14,6 @@ class RESTException extends Exception {
 	}
 };
 
-// RESTNoVerbException
-// Exception thrown when one tries to create a REST request with no
-// verb (GET, POST, etc.)
-class RESTNoVerbException extends RESTException {
-	// XXX - It would probably make more sense to call the parent's
-	// constructor with an error number and message.
-	public $errmsg = "No verb";
-};
 class RESTInvalidCommand extends RESTException {
 	public $errmsg = "Invalid command";
 };
@@ -105,10 +97,7 @@ class RESTReq
 
 		// Query verb: GET, PUT, POST, etc.
 		if (!isset($server['REQUEST_METHOD']))
-		{
-			// XXX - Abort: we need a verb.
-			throw new RESTNoVerbException();
-		}
+			throw new RESTException(NULL, "No verb");
 		$this->verb = $server['REQUEST_METHOD'];
 
 		// Get the path. The first part is the class, and the
