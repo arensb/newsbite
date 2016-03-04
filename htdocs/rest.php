@@ -1,14 +1,37 @@
 <?php
 // REST-related classes and such. Inspired by
 // http://www.lornajane.net/posts/2012/building-a-restful-php-server-understanding-the-request
+class RESTException extends Exception {
+	public $errno = NULL;
+	public $errmsg = NULL;
+
+	function __construct($_errno = NULL, $_errmsg = NULL)
+	{
+		if (isset($_errno))
+			$this->errno = $_errno;
+		if (isset($_errmsg))
+			$this->errmsg = $_errmsg;
+	}
+};
 
 // RESTNoVerbException
 // Exception thrown when one tries to create a REST request with no
 // verb (GET, POST, etc.)
-class RESTNoVerbException extends Exception {};
+class RESTNoVerbException extends RESTException {
+	// XXX - It would probably make more sense to call the parent's
+	// constructor with an error number and message.
+	public $errmsg = "No verb";
+};
 
-class RESTInvalidVerb extends Exception {};
-class RESTInvalidCommand extends Exception {};
+class RESTInvalidVerb extends RESTException {
+	public $errmsg = "Invalid verb";
+};
+class RESTInvalidCommand extends RESTException {
+	public $errmsg = "Invalid command";
+};
+class RESTInvalidArgument extends RESTException {
+	public $errmsg = "Invalid argument";
+};
 
 /* XmlElement
  * Used when converting from XML to data structure. Used by
@@ -379,7 +402,8 @@ switch ($classname)
 			// whatever? Do we want to rely on exceptions?
 	} catch (Exception $e) {
 		error_log("Exception while loading rest/$classname.inc: " .
-			  print_r($e, true));
+			  (isset($e->errno) ? $e->errno . ": " : "") .
+			  (isset($e->errmsg) ? $e->errmsg : ""));
 		$rreq->finish(400, "Class $classname: Caught an exception");
 	} 
 	break;
