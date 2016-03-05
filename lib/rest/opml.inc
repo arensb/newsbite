@@ -39,7 +39,7 @@ error_log("subpath: " . $rreq->subpath());
 			    default:
 				error_log("rest_info: bad verb " . $rreq->verb());
 				throw new RESTException(NULL,
-					"Bad verb.");
+					"Bad verb");
 			}
 
 			$rreq->finish(200);
@@ -48,7 +48,7 @@ error_log("subpath: " . $rreq->subpath());
 			error_log("rest_info: bad subpath " .
 				  ($rreq->subpath() === NULL ? "NULL" :
 				   $rreq->subpath()));
-			throw new RESTInvalidCommand();
+			throw new RESTException(NULL, "Invalid command");
 		}
 	}
 

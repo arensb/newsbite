@@ -28,7 +28,7 @@ class RESTController_info {
 			error_log("rest info: bad subpath " .
 				  ($rreq->subpath() === NULL ? "NULL" :
 				   $rreq->subpath()));
-			throw new RESTInvalidCommand();
+			throw new RESTException(NULL, "Invalid command");
 		}
 
 		// This should never happen

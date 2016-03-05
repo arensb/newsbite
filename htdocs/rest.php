@@ -14,9 +14,6 @@ class RESTException extends Exception {
 	}
 };
 
-class RESTInvalidCommand extends RESTException {
-	public $errmsg = "Invalid command";
-};
 class RESTInvalidArgument extends RESTException {
 	public $errmsg = "Invalid argument";
 };
