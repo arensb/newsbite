@@ -2,6 +2,7 @@
 // XXX - Want common.inc in production. Actually, we just want authentication/authorization.
 //require_once("common.inc");
 require_once("database.inc");
+require_once("net.inc");
 
 /* feed REST controller
  *	GET /feed	Get information about all feeds
@@ -53,7 +54,6 @@ class RESTController_feed {
 				return $this->add_feed($rreq);
 
 			    case "DELETE":
-				// XXX - Unsubscribe from a feed
 				if (!isset($feed_id))
 					// Error if $feed_id is not set.
 					throw new RESTException(NULL, "ID not found");
@@ -83,23 +83,42 @@ class RESTController_feed {
 			"feed_url"	=> $feed_url,
 			);
 
-		// XXX - username
+		// username
+		// XXX - PHP complains that ->body() is not an array, and
+		// thus undefined value in lookup.
 		$username = $rreq->body()->{'username'};
 		if (isset($username))
 			$params['username'] = $username;
 
-		// XXX - password
+		// password
+		// XXX - PHP complains that ->body() is not an array, and
+		// thus undefined value in lookup.
 		$passwd = $rreq->body()->{'password'};
 		if (isset($passwd))
 			$params['passwd'] = $passwd;
-error_log("ought to db_add_feed(): " . print_r($params, true));
 
-		// XXX - db_add_feed()
-		// XXX - db_update_feed()
-		return array("status"	=> "ok",
-			     "feed"	=> $feed_url,
-			     // XXX - Information about the feed?
-			);
+		// db_add_feed()
+		$feed_id = db_add_feed($params);
+		if ($feed_id === false)
+			throw new RESTException(NULL, "Error adding feed");
+
+		// XXX - In the REST world, do we really want to
+		// update the feed now? Should we try to keep it small
+		// and modular, and have "add feed" be separate from
+		// "update feed"?
+		// XXX - And for that matter, should we just call
+		// $this->update_feed() once it's written?
+
+		/* Refresh the new feed, to get info and new articles */
+		$err = update_feed($feed_id);
+		if (!$err)
+			// XXX - Better error reporting: include error message
+			throw new RESTException(NULL, "Error updating new feed.");
+		if (isset($err['status']) && $err['status'] != 0)
+			throw new RESTException($err['status'],
+						$err['errmsg']);
+
+		return array("id"	=> $feed_id);
 	}
 
 	/* unsubscribe
