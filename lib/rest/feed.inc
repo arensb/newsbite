@@ -152,8 +152,8 @@ class RESTController_feed {
 			'active'	=> $info['active'],
 			'stale'		=> $info['stale'],
 
-			'num_read'	=> $counts['num_read'],
-			'num_unread'	=> $counts['num_unread'],
+			'num_read'	=> $counts['read'],
+			'num_unread'	=> $counts['unread'],
 		);
 
 		return $retval;
