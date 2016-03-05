@@ -47,13 +47,17 @@ class RESTController_feed {
 
 			    case "PUT":
 				// Subscribe to a feed
-				// XXX - Error if $id is set
+				if (isset($feed_id))
+					// Error if $id is set
+					throw new RESTException(NULL, "ID not allowed");
 				return $this->add_feed($rreq);
 
 			    case "DELETE":
 				// XXX - Unsubscribe from a feed
-				// Error if $id is not set.
-				return $this->unsubscribe($rreq);
+				if (!isset($feed_id))
+					// Error if $feed_id is not set.
+					throw new RESTException(NULL, "ID not found");
+				return $this->unsubscribe($feed_id, $rreq);
 
 			    case "POST":
 				// XXX - Update information for a feed
