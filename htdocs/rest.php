@@ -14,10 +14,6 @@ class RESTException extends Exception {
 	}
 };
 
-class RESTInvalidArgument extends RESTException {
-	public $errmsg = "Invalid argument";
-};
-
 /* XmlElement
  * Used when converting from XML to data structure. Used by
  * _parse_xml, below.
