@@ -19,7 +19,17 @@ echo ""
 #	{"id":123}
 FEED_ID=`sed 's/.*"id":\([0-9][0-9]*\).*/\1/' < output.json`
 
-echo "=== Get info"
+
+echo "=== Get info about all feeds"
+curl -sSv -X GET \
+	-o output.json \
+	${REST_BASE}/feed
+echo "Output:"
+#cat output.json
+json_pp < output.json
+echo ""
+
+echo "=== Get info about one feed"
 curl -sSv -X GET \
 	-o output.json \
 	${REST_BASE}/feed/${FEED_ID}
