@@ -105,11 +105,13 @@ error_log("ought to db_add_feed(): " . print_r($params, true));
 	/* unsubscribe
 	 * Unsubscribe from a feed
 	 */
-	function unsubscribe($rreq)
+	function unsubscribe($feed_id, $rreq)
 	{
-		// XXX - Get feed ID
-		// XXX - See unsubscribe.php, I think.
-		error_log("Inside unsubscribe: " . $rreq->subpath());
+		error_log("Unsubscribing from feed " . $feed_id);
+		/* Go ahead and unsubscribe */
+		db_delete_feed($feed_id);
+			// XXX - Error-checking?
+
 		return array("status"	=> "ok");
 	}
 
