@@ -73,8 +73,6 @@ class RESTController_feed {
 	/* add_feed
 	 * Subscribe to a feed.
 	 */
-	// XXX - Tested with
-	// curl -sSv -X PUT -H 'Content-Type: application/json' http://carrot.ooblick.com/newsbite/w1/feed -d '{"url":"http://www.foo.com/dummy/rss","username":"arensb"}'
 	function add_feed($rreq)
 	{
 		$feed_url = $rreq->body()->{'url'};
