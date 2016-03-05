@@ -1,14 +1,18 @@
 <?php
 // REST-related classes and such. Inspired by
 // http://www.lornajane.net/posts/2012/building-a-restful-php-server-understanding-the-request
+class RESTException extends Exception {
+	public $errno = NULL;
+	public $errmsg = NULL;
 
-// RESTNoVerbException
-// Exception thrown when one tries to create a REST request with no
-// verb (GET, POST, etc.)
-class RESTNoVerbException extends Exception {};
-
-class RESTInvalidVerb extends Exception {};
-class RESTInvalidCommand extends Exception {};
+	function __construct($_errno = NULL, $_errmsg = NULL)
+	{
+		if (isset($_errno))
+			$this->errno = $_errno;
+		if (isset($_errmsg))
+			$this->errmsg = $_errmsg;
+	}
+};
 
 /* XmlElement
  * Used when converting from XML to data structure. Used by
@@ -86,10 +90,7 @@ class RESTReq
 
 		// Query verb: GET, PUT, POST, etc.
 		if (!isset($server['REQUEST_METHOD']))
-		{
-			// XXX - Abort: we need a verb.
-			throw new RESTNoVerbException();
-		}
+			throw new RESTException(NULL, "No verb");
 		$this->verb = $server['REQUEST_METHOD'];
 
 		// Get the path. The first part is the class, and the
@@ -106,7 +107,7 @@ class RESTReq
 			if (count($matches) > 2)
 				$this->subpath   = $matches[2];
 		} else {
-			throw new RESTInvalidCommand();
+			throw new RESTException(NULL, "Invalid command");
 		}
 
 		// Parameters passed in through the URL
@@ -379,7 +380,8 @@ switch ($classname)
 			// whatever? Do we want to rely on exceptions?
 	} catch (Exception $e) {
 		error_log("Exception while loading rest/$classname.inc: " .
-			  print_r($e, true));
+			  (isset($e->errno) ? $e->errno . ": " : "") .
+			  (isset($e->errmsg) ? $e->errmsg : ""));
 		$rreq->finish(400, "Class $classname: Caught an exception");
 	} 
 	break;

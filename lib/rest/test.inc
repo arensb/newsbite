@@ -72,7 +72,7 @@ class RESTController_test {
 			return $this->cat_test($rreq);
 
 		    default:
-			throw new RESTInvalidCommand();
+			throw new RESTException(NULL, "Invalid command");
 		}
 
 		// This should never happen

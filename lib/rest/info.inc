@@ -21,14 +21,14 @@ class RESTController_info {
 
 			    default:
 				error_log("rest_info: bad verb " . $rreq->verb());
-				throw new RESTInvalidVerb();
+				throw new RESTException(NULL, "Invalid verb.");
 			}
 
 		    default:
 			error_log("rest info: bad subpath " .
 				  ($rreq->subpath() === NULL ? "NULL" :
 				   $rreq->subpath()));
-			throw new RESTInvalidCommand();
+			throw new RESTException(NULL, "Invalid command");
 		}
 
 		// This should never happen
