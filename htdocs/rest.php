@@ -107,7 +107,7 @@ class RESTReq
 			if (count($matches) > 2)
 				$this->subpath   = $matches[2];
 		} else {
-			throw new RESTInvalidCommand();
+			throw new RESTException(NULL, "Invalid command");
 		}
 
 		// Parameters passed in through the URL
