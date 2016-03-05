@@ -84,16 +84,12 @@ class RESTController_feed {
 			);
 
 		// username
-		// XXX - PHP complains that ->body() is not an array, and
-		// thus undefined value in lookup.
-		$username = $rreq->body()->{'username'};
+		$username = $rreq->body_param('username');
 		if (isset($username))
 			$params['username'] = $username;
 
 		// password
-		// XXX - PHP complains that ->body() is not an array, and
-		// thus undefined value in lookup.
-		$passwd = $rreq->body()->{'password'};
+		$passwd = $rreq->body_param('password');
 		if (isset($passwd))
 			$params['passwd'] = $passwd;
 

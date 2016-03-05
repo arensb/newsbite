@@ -282,6 +282,24 @@ class RESTReq
 		return $this->body_text;
 	}
 
+	// body_param
+	// Commonly, the body will be a JSON hash, of the form
+	//	{
+	//		"param1": value1,
+	//		"param2": value2,
+	//		...
+	//	}
+	// For these, it's convenient to just pull a given parameter
+	// out of the body.
+	function body_param($param)
+	{
+		if (!is_array($this->body))
+			return NULL;
+		if (!array_key_exists($param, $this->body))
+			return NULL;
+		return $this->body[$param];
+	}
+
 	// print_struct
 	// Print a data structure in the desired output format.
 	function print_struct(&$val)
