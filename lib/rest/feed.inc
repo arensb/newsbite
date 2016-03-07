@@ -60,8 +60,11 @@ class RESTController_feed {
 				return $this->unsubscribe($feed_id, $rreq);
 
 			    case "POST":
-				// XXX - Update information for a feed
-				break;
+				// Update information for a feed
+				if (!isset($feed_id))
+					// Error if $feed_id is not set.
+					throw new RESTException(NULL, "ID not found");
+				return $this->set_feed_info($feed_id, $rreq);
 			}
 			break;
 
@@ -198,5 +201,112 @@ class RESTController_feed {
 		}
 
 		return $retval;
+	}
+
+	/* set_feed_info
+	 * Update a feed's information. The feed must already exist.
+	 * Body parameters:
+	 *	- nickname: feed's nickname (displayed instead of title)
+	 *	- url: site URL
+	 *	- feed_url: RSS feed URL
+	 *	- active: boolean: should the feed be displayed/updated?
+	 *	- username: username, for logging in
+	 *	- passwd: password, for logging in
+	 *	- groups: array of gids that the feed is in (explicitly)
+	 */
+	function set_feed_info($feed_id, $rreq)
+	{
+		// XXX - Blatantly stolen from editfeed.php get_feed_info().
+		// Check and adapt it.
+
+		$feed_info = db_get_feed($feed_id);
+		if ($feed_info === NULL)
+			throw new RESTException(NULL, "Invalid feed ID: $feed_id");
+
+		/* Build an assoc of new values */
+		$new = array();
+		// I'm not sure why or how $_REQUEST values acquire
+		// backslashes in front of quotation marks, but they do.
+		$new['nickname'] = $rreq->body_param('nickname');
+		$new['url']      = $rreq->body_param('url');
+		$new['feed_url'] = $rreq->body_param('feed_url');
+		$new['active']   = $rreq->body_param('active') ? TRUE : FALSE;
+		$new['username'] = $rreq->body_param('username');
+		$new['passwd']   = $rreq->body_param('password');
+error_log("new is now " . print_r($new, true));
+
+		// XXX - Perhaps try to fetch the feed if the feed URL,
+		// username, or password has changed?
+
+		$ok = true;
+		$errors = array();
+
+		// XXX - Check parameters.
+
+		if (!$ok)
+		{
+			// XXX - This is rather theoretical. We don't actually
+			// check anything.
+			throw new RESTException(NULL, "You supplied a bad value of some kind. Go back and fix it.");
+		}
+
+		/* Update the list of groups that the feed is in:
+		 * $old_groups is the groups the feed is currently in.
+		 * $new_groups is the ones it should be in, as gleaned from
+		 * $_REQUEST.
+		 * Diff the two to see whichg groups to remove the feed from,
+		 * and which ones to add it to.
+		 */
+		// XXX - Should this go in a separate method? Like
+		// PUT /feed/123/groups? For that matter, should all
+		// of these be settable this way?
+		$new_groups = $rreq->body_param('groups');
+		if (isset($new_groups))
+		{
+			// Check $new_groups: it should be an array of
+			// (negative) integers.
+			if (!is_array($new_groups))
+				throw new RESTException(NULL, "groups isn't an array");
+			foreach ($new_groups as $gid)
+			{
+				if (!is_numeric($gid) || !is_integer($gid+0))
+					throw new RESTException("non-integer GID");
+				if ($gid > 0)
+					throw new RESTExceptino("non-negative GID");
+			}
+
+			$old_groups = $feed_info['groups'];
+
+			/* Compare $old_groups and $new_groups, and see what
+			 * needs to be changed.
+			 */
+			// First diff: see which groups to remove the feed from.
+			$diffs = array_diff($old_groups, $new_groups);
+			if (count($diffs) != 0)
+			{
+				foreach ($diffs as $gid)
+				{
+					// Remove feed $feed_id from group $g
+					db_group_remove_member($gid, $feed_id);
+				}
+			}
+
+			// Second diff: see which groups to add the feed to.
+			$diffs = array_diff($new_groups, $old_groups);
+			if (count($diffs) != 0)
+			{
+				foreach ($diffs as $gid)
+				{
+					echo "Add feed $feed_id to group $g<br/>\n";
+					db_group_add_member($gid, $feed_id);
+				}
+			}
+		}
+
+		/* No errors. Update the database. */
+		db_update_feed_info($feed_id, $new);
+			// XXX - Error-checking
+
+		return array("status"	=> "ok");
 	}
 }
