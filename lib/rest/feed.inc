@@ -20,6 +20,15 @@ class RESTController_feed {
 		// If the subpath is of the form
 		//	123/foo/bar
 		// then "123" is taken as the feed ID.
+		// XXX - This will never match
+		//	/feed/update/123
+		// So do we want to look for a numeric path component,
+		// and break "feed/foo/123/bar/baz" into "feed/foo",
+		// ID==123, and "bar/baz"?
+		// Or would it be better to split the path up into an
+		// array, by slashes, and treat it a little like
+		// $ARGV?
+		$subclass = NULL;
 		$feed_id = NULL;
 		$cmd = $rreq->shift_pathv();
 
@@ -27,6 +36,22 @@ class RESTController_feed {
 		{
 			$feed_id = $cmd;
 			$cmd = $rreq->shift_pathv();
+		}
+
+		$subclass = $rreq->shift_pathv();
+error_log("now subclass [$subclass], feed_id [$feed_id], pathv " . print_r($rreq->pathv(), true));
+		switch ($subclass)
+		{
+		    case "update":
+			// XXX
+			return array("status"	=> "Let me get back to you.");
+
+		    case "":
+		    case NULL:
+			break;
+
+		    default:
+			throw new RESTException(NULL, "Unknown subclass $subclass");
 		}
 
 		switch ($cmd)
@@ -63,6 +88,20 @@ class RESTController_feed {
 					// Error if $feed_id is not set.
 					throw new RESTException(NULL, "ID not found");
 				return $this->set_feed_info($feed_id, $rreq);
+			}
+			break;
+
+		    case "update":
+			switch ($rreq->verb())
+			{
+			    case "PUT":
+				if (isset($feed_id))
+					return $this->update_feed($feed_id, $rreq);
+				else
+					return $this->update_all_feeds($rreq);
+
+			    default:
+				throw new RESTException(NULL, "Invalid verb");
 			}
 			break;
 
@@ -306,5 +345,55 @@ error_log("new is now " . print_r($new, true));
 			// XXX - Error-checking
 
 		return array("status"	=> "ok");
+	}
+
+	/* update_feed
+	 * PUT /feed/update/123
+	 * Update a feed
+	 */
+	function update_feed($feed_id, $rreq)
+	{
+		// XXX
+		error_log("Updating feed $feed_id");
+
+		$feed = db_get_feed($feed_id);
+		if ($feed === NULL)
+		{
+			// Invalid feed ID, presumably..
+			error_log("Invalid feed ID: $feed_id");
+			throw new RESTException(NULL, "Invalid feed ID: $feed_id");
+		}
+
+		$err = update_feed($feed_id, $feed);
+		if (!$err)
+		{
+			// XXX - This should never happen
+			throw new RESTException(NULL,
+						"update_feed() returned " .
+						($err == "" ?
+						 var_export($err) : $err))
+				;
+		}
+
+		/* Error-checking */
+		if (isset($err['status']) && $err['status'] != 0)
+			return array('state'	=> "error",
+				     'feed_id'	=> $feed_id,
+				     'error'	=> $err['errmsg'],
+				);
+
+		return array('state'	=> "end",
+			     'feed_id'	=> $err['id'],
+			     'title'	=> $err['title'],
+			     'counts'	=> $err['counts'],
+			);
+	}
+
+	/* update_all_feeds
+	 * PUT /feed/update
+	 */
+	function update_all_feeds($rreq)
+	{
+		// XXX
 	}
 }
