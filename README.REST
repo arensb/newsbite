@@ -51,7 +51,8 @@ says PATCH is for updating/modifying an existing resource.
 * What's the current interface?
 What services/knobs/etc. are currently there?
 
-** TODO addfeed.php
+** DONE addfeed.php
+   CLOSED: [2016-03-07 Mon 09:25]
    - Subscribe to a feed. Takes RSS URL.
    - (Register feed reader in Firefox.)
 
@@ -60,7 +61,8 @@ What services/knobs/etc. are currently there?
 : PUT /feed
 : 	OPML in body
 
-** TODO editfeed.php
+** DONE editfeed.php
+   CLOSED: [2016-03-07 Mon 09:25]
    - Update information about a feed:
      - nickname
      - site URL
@@ -74,7 +76,8 @@ What services/knobs/etc. are currently there?
 : 	url=...
 : 	...
 
-** TODO feeds.php
+** DONE feeds.php
+   CLOSED: [2016-03-07 Mon 10:25]
    - Get list of feeds
 
 : GET /feed
@@ -140,7 +143,8 @@ XXX
 : 	?read=unread		# default
 : 	&max_items=100		# default
 
-** TODO unsubscribe.php
+** DONE unsubscribe.php
+   CLOSED: [2016-03-07 Mon 09:25]
    - remove a feed
 
 : DELETE /feed/123
