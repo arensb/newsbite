@@ -44,3 +44,14 @@ curl -sSv -X DELETE \
 echo "Output:"
 cat output.json
 echo ""
+
+echo "=== Modifying a feed"
+now=`date`
+curl -sSv -X POST \
+	-o output.json \
+	-H 'Content-Type: application/json' \
+	-d "{\"nickname\":\"Astro stuff $now\"}" \
+	${REST_BASE}/feed/174
+echo "Output:"
+cat output.json
+echo ""
