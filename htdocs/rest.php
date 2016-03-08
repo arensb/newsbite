@@ -66,9 +66,11 @@ class RESTReq
 	// If the REST root is http://foo.com/w1/ , then
 	// http://foo.com/w1/feeds/stats/123 ->
 	//	$path == "feeds/stats/123"
+	//	$pathv == ("feeds", "stats", "123")
 	//	$classname == "feeds"
 	//	$subpath == "stats/123"
 	protected $path = NULL;
+	protected $pathv = array();
 	protected $classname = NULL;
 	protected $subpath = NULL;
 	protected $url_params = array();
@@ -99,6 +101,16 @@ class RESTReq
 		// It's not an error to just specify a class. In that
 		// case, the subpath is NULL.
 		$this->path = $server['PATH_INFO'];
+
+		/* Break up the path into components */
+		// XXX - If this becomes standard and replaces
+		// $subpath and friends, do we want to use 'preg_*' or
+		// something to strip the leading slash?
+		$this->pathv = explode("/", $this->path);
+		if ($this->pathv[0] == "")
+			array_shift($this->pathv);
+error_log("pathv [" . print_r($this->pathv, TRUE));
+
 		if (preg_match(',^/?([^/]+)(?:/(.*))?,',
 			       $this->path,
 			       $matches))
