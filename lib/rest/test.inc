@@ -57,7 +57,8 @@ class RESTController_test {
 	 */
 	function run($rreq)
 	{
-		switch ($rreq->subpath())
+		$cmd = $rreq->shift_pathv();
+		switch ($cmd)
 		{
 		    case "hello":
 			// Just return a fixed string.
