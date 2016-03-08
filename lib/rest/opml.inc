@@ -17,10 +17,6 @@ class RESTController_opml {
 	 */
 	function run($rreq)
 	{
-error_log("inside opml_stuff");
-error_log("verb: " . $rreq->verb());
-error_log("classname: " . $rreq->classname());
-error_log("subpath: " . $rreq->subpath());
 		switch ($rreq->subpath())
 		{
 		    case NULL:
