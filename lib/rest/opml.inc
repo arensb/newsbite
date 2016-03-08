@@ -17,7 +17,8 @@ class RESTController_opml {
 	 */
 	function run($rreq)
 	{
-		switch ($rreq->subpath())
+		$cmd = $rreq->shift_pathv();
+		switch ($cmd)
 		{
 		    case NULL:
 		    case "":
@@ -41,9 +42,9 @@ class RESTController_opml {
 			$rreq->finish(200);
 
 		    default:
-			error_log("rest_info: bad subpath " .
-				  ($rreq->subpath() === NULL ? "NULL" :
-				   $rreq->subpath()));
+			error_log("rest_info: bad command " .
+				  ($cmd === NULL ? "NULL" :
+				   $cmd));
 			throw new RESTException(NULL, "Invalid command");
 		}
 	}
