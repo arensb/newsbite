@@ -93,6 +93,10 @@ lib/hooks.inc
 lib/json.inc
 lib/net.inc
 lib/parse-feed.inc
+lib/rest/feed.inc
+lib/rest/info.inc
+lib/rest/opml.inc
+lib/rest/test.inc
 lib/xml-output.inc
 php.ini
 plugins/Makefile
@@ -119,3 +123,5 @@ plugins/zemanta.php
 schema.sql
 tests/README
 tests/close-unopened-tags.xml
+tests/test-rest
+tests/test-rest-feeds
