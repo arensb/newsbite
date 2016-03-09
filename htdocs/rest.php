@@ -72,7 +72,7 @@ class RESTReq
 	protected $path = NULL;
 	protected $pathv = array();
 	protected $classname = NULL;
-	protected $subpath = NULL;
+	protected $subpath = NULL;	// XXX - Try to get rid of this
 	protected $url_params = array();
 	protected $content_type = NULL;
 	// XXX - Is there a reason to keep both the text and parsed
@@ -110,12 +110,18 @@ class RESTReq
 		if ($this->pathv[0] == "")
 			array_shift($this->pathv);
 error_log("pathv [" . print_r($this->pathv, TRUE));
+		if (count($this->pathv) > 0)
+		{
+			$this->classname = $this->pathv[0];
+			array_shift($this->pathv);
+		} else
+			throw new RESTException(NULL, "Invalid command");
 
 		if (preg_match(',^/?([^/]+)(?:/(.*))?,',
 			       $this->path,
 			       $matches))
 		{
-			$this->classname = $matches[1];
+			//$this->classname = $matches[1];
 			if (count($matches) > 2)
 				$this->subpath   = $matches[2];
 		} else {
@@ -266,6 +272,19 @@ error_log("pathv [" . print_r($this->pathv, TRUE));
 
 	function classname() {
 		return $this->classname;
+	}
+
+	function pathv($n = NULL)
+	{
+		if (isset($n))
+			return $this->pathv[$n];
+		else
+			return $this->pathv;
+	}
+
+	function shift_pathv()
+	{
+		return array_shift($this->pathv);
 	}
 
 	function subpath() {
