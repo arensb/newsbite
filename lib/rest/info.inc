@@ -6,7 +6,8 @@ class RESTController_info {
 	 */
 	function run($rreq)
 	{
-		switch ($rreq->subpath())
+		$cmd = $rreq->shift_pathv();
+		switch ($cmd)
 		{
 		    case NULL:
 		    case "":
@@ -25,9 +26,8 @@ class RESTController_info {
 			}
 
 		    default:
-			error_log("rest info: bad subpath " .
-				  ($rreq->subpath() === NULL ? "NULL" :
-				   $rreq->subpath()));
+			error_log("rest info: bad command " .
+				  ($cmd === NULL ? "NULL" : $cmd));
 			throw new RESTException(NULL, "Invalid command");
 		}
 
