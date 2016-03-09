@@ -17,41 +17,39 @@ require_once("net.inc");
 class RESTController_feed {
 	function run($rreq)
 	{
-		// If the subpath is of the form
-		//	123/foo/bar
-		// then "123" is taken as the feed ID.
-		// XXX - This will never match
-		//	/feed/update/123
-		// So do we want to look for a numeric path component,
-		// and break "feed/foo/123/bar/baz" into "feed/foo",
-		// ID==123, and "bar/baz"?
-		// Or would it be better to split the path up into an
-		// array, by slashes, and treat it a little like
-		// $ARGV?
-		$subclass = NULL;
+		/* At this point, pathv might be:
+		 *	1) ""
+		 *	2) 123
+		 *	3) update
+		 *	4) update/123
+		 * In cases 2 and 4, "123" is the feed ID.
+		 * In cases 3 and 4, $cmd is "update";
+		 * in cases 1 and 2, $cmd is "".
+		 */
+		$cmd = NULL;
 		$feed_id = NULL;
-		$cmd = $rreq->shift_pathv();
 
-		if (is_numeric($cmd) && is_integer($cmd+0))
+		$arg = $rreq->pathv(0);
+		if ($arg == "")
 		{
-			$feed_id = $cmd;
+			// GET /feed
+			$cmd = NULL;
+			$feed_id = NULL;
+		} elseif (is_numeric($arg) && is_integer($arg+0))
+		{
+			// GET /feed/123
+			$feed_id = $rreq->shift_pathv();
+			$cmd = NULL;
+		} else {
+			// GET /feed/update
+			// GET /feed/update/123
 			$cmd = $rreq->shift_pathv();
-		}
-
-		$subclass = $rreq->shift_pathv();
-error_log("now subclass [$subclass], feed_id [$feed_id], pathv " . print_r($rreq->pathv(), true));
-		switch ($subclass)
-		{
-		    case "update":
-			// XXX
-			return array("status"	=> "Let me get back to you.");
-
-		    case "":
-		    case NULL:
-			break;
-
-		    default:
-			throw new RESTException(NULL, "Unknown subclass $subclass");
+			$arg = $rreq->pathv(0);
+			if (is_numeric($arg) && is_integer($arg+0))
+			{
+				// GET /feed/update/123
+				$feed_id = $rreq->shift_pathv();
+			}
 		}
 
 		switch ($cmd)
@@ -367,7 +365,11 @@ error_log("new is now " . print_r($new, true));
 		$err = update_feed($feed_id, $feed);
 		if (!$err)
 		{
-			// XXX - This should never happen
+			// This should never happen
+			error_log("Unexpected error: " .
+				  "update_feed() returned " .
+				  ($err == "" ?
+				   var_export($err) : $err));
 			throw new RESTException(NULL,
 						"update_feed() returned " .
 						($err == "" ?
@@ -377,10 +379,13 @@ error_log("new is now " . print_r($new, true));
 
 		/* Error-checking */
 		if (isset($err['status']) && $err['status'] != 0)
+		{
+			error_log("Error: returning { feed_id $feed_id, error " . $err['errmsg'] . "}");
 			return array('state'	=> "error",
 				     'feed_id'	=> $feed_id,
 				     'error'	=> $err['errmsg'],
 				);
+		}
 
 		return array('state'	=> "end",
 			     'feed_id'	=> $err['id'],
