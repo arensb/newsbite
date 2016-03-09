@@ -21,17 +21,15 @@ class RESTController_feed {
 		//	123/foo/bar
 		// then "123" is taken as the feed ID.
 		$feed_id = NULL;
-		$subpath = $rreq->subpath();
-		if (preg_match (',(\d+)(?:/(.*))?,', $subpath, $matches))
+		$cmd = $rreq->shift_pathv();
+
+		if (is_numeric($cmd) && is_integer($cmd+0))
 		{
-			$feed_id = $matches[1];
-			if (count($matches) > 2)
-				$subpath = $matches[2];
-			else
-				$subpath = NULL;
+			$feed_id = $cmd;
+			$cmd = $rreq->shift_pathv();
 		}
 
-		switch ($subpath)
+		switch ($cmd)
 		{
 		    case "":
 		    case NULL:
@@ -69,7 +67,7 @@ class RESTController_feed {
 			break;
 
 		    default:
-			return array("error" => "What's up with subpath " . $rreq->subpath());
+			throw new RESTException(NULL, "Bad command $cmd");
 		}
 	}
 

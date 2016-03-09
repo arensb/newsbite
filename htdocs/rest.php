@@ -60,17 +60,15 @@ class RESTReq
 	protected $verb = NULL;
 	// $path is the path underneath the root.
 	// $classname is the first element of $path, and
-	// $subpath is the rest of it.
-	// Sometimes $subpath is an identifier, but it could be method
-	// and identifier.
+	// $pathv (array) is the rest of it.
 	// If the REST root is http://foo.com/w1/ , then
 	// http://foo.com/w1/feeds/stats/123 ->
 	//	$path == "feeds/stats/123"
 	//	$classname == "feeds"
-	//	$subpath == "stats/123"
+	//	$pathv == ("stats", "123")
 	protected $path = NULL;
+	protected $pathv = array();
 	protected $classname = NULL;
-	protected $subpath = NULL;
 	protected $url_params = array();
 	protected $content_type = NULL;
 	// XXX - Is there a reason to keep both the text and parsed
@@ -97,18 +95,22 @@ class RESTReq
 		// rest is either a subclass, an identifier, or
 		// something.
 		// It's not an error to just specify a class. In that
-		// case, the subpath is NULL.
+		// case, $pathv is an empty array.
 		$this->path = $server['PATH_INFO'];
-		if (preg_match(',^/?([^/]+)(?:/(.*))?,',
-			       $this->path,
-			       $matches))
+
+		/* Break up the path into components */
+		// XXX - Do we want to use 'preg_*' or something to
+		// strip the leading slash?
+		$this->pathv = explode("/", $this->path);
+		if ($this->pathv[0] == "")
+			array_shift($this->pathv);
+		if (count($this->pathv) > 0)
 		{
-			$this->classname = $matches[1];
-			if (count($matches) > 2)
-				$this->subpath   = $matches[2];
-		} else {
+			// There was a slash at the beginning of the path.
+			$this->classname = $this->pathv[0];
+			array_shift($this->pathv);
+		} else
 			throw new RESTException(NULL, "Invalid command");
-		}
 
 		// Parameters passed in through the URL
 		if (isset($server['QUERY_STRING']))
@@ -256,8 +258,17 @@ class RESTReq
 		return $this->classname;
 	}
 
-	function subpath() {
-		return $this->subpath;
+	function pathv($n = NULL)
+	{
+		if (isset($n))
+			return $this->pathv[$n];
+		else
+			return $this->pathv;
+	}
+
+	function shift_pathv()
+	{
+		return array_shift($this->pathv);
 	}
 
 	function url_param($name)
@@ -362,7 +373,7 @@ $retval = array();
 $retval["verb"] = $rreq->verb();
 $retval["path"] = $rreq->path();
 $retval["class"] = $rreq->classname();
-$retval["subpath"] = $rreq->subpath();
+$retval["pathv"] = $rreq->pathv();
 $retval["outfmt"] = $rreq->url_param("o");
 $retval["content_type"] = $rreq->content_type();
 $retval["body_text"] = $rreq->body_text();

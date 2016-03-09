@@ -17,11 +17,8 @@ class RESTController_opml {
 	 */
 	function run($rreq)
 	{
-error_log("inside opml_stuff");
-error_log("verb: " . $rreq->verb());
-error_log("classname: " . $rreq->classname());
-error_log("subpath: " . $rreq->subpath());
-		switch ($rreq->subpath())
+		$cmd = $rreq->shift_pathv();
+		switch ($cmd)
 		{
 		    case NULL:
 		    case "":
@@ -45,9 +42,9 @@ error_log("subpath: " . $rreq->subpath());
 			$rreq->finish(200);
 
 		    default:
-			error_log("rest_info: bad subpath " .
-				  ($rreq->subpath() === NULL ? "NULL" :
-				   $rreq->subpath()));
+			error_log("rest_info: bad command " .
+				  ($cmd === NULL ? "NULL" :
+				   $cmd));
 			throw new RESTException(NULL, "Invalid command");
 		}
 	}
