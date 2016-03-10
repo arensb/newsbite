@@ -64,7 +64,7 @@ class RESTController_group {
 					// Get information about one group
 					return $this->get_group_info($group_id, $rreq);
 				else
-					// XXX - GET /group
+					// GET /group
 					// Get information about all groups
 					return $this->get_all_groups_info($rreq);
 				break;
@@ -74,7 +74,8 @@ class RESTController_group {
 				if (isset($group_id))
 					// Error if $id is set
 					throw new RESTException(NULL, "ID not allowed");
-				// XXX - PUT /group
+				// PUT /group
+				//	&parent_id=-123
 				return $this->add_group($rreq);
 
 			    case "DELETE":
@@ -118,6 +119,37 @@ class RESTController_group {
 	function get_all_groups_info($rreq)
 	{
 		return group_tree(TRUE);
+	}
+
+	function add_group($rreq)
+	{
+		$name = $rreq->body_param('name');
+			// XXX - Error-checking
+		$parent_id = $rreq->body_param('parent_id');
+			// XXX - Defaults to -1
+		if (!isset($parent_id))
+			$parent_id = -1;
+		if (!is_numeric($parent_id) || !is_integer($parent_id+0))
+			throw new RESTException(NULL, "Invalid group ID");
+
+		$parent = db_get_group($parent_id);
+		if ($parent === NULL)
+			abort("Invalid parent group");
+
+		// XXX - Is there anything to check wrt the name?
+		$new_group = db_add_group($name, $parent_id);
+		if ($new_group === NULL)
+		{
+			global $db_errno;
+			global $db_errmsg;
+
+			return array('state',	"error",
+				     'errno',	$db_errno,
+				     'error',	$db_errmsg);
+		}
+
+		$new_group['state'] = "ok";
+		return $new_group;
 	}
 }
 ?>
