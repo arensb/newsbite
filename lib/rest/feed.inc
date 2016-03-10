@@ -17,16 +17,39 @@ require_once("net.inc");
 class RESTController_feed {
 	function run($rreq)
 	{
-		// If the subpath is of the form
-		//	123/foo/bar
-		// then "123" is taken as the feed ID.
+		/* At this point, pathv might be:
+		 *	1) ""
+		 *	2) 123
+		 *	3) update
+		 *	4) update/123
+		 * In cases 2 and 4, "123" is the feed ID.
+		 * In cases 3 and 4, $cmd is "update";
+		 * in cases 1 and 2, $cmd is "".
+		 */
+		$cmd = NULL;
 		$feed_id = NULL;
-		$cmd = $rreq->shift_pathv();
 
-		if (is_numeric($cmd) && is_integer($cmd+0))
+		$arg = $rreq->pathv(0);
+		if ($arg == "")
 		{
-			$feed_id = $cmd;
+			// GET /feed
+			$cmd = NULL;
+			$feed_id = NULL;
+		} elseif (is_numeric($arg) && is_integer($arg+0))
+		{
+			// GET /feed/123
+			$feed_id = $rreq->shift_pathv();
+			$cmd = NULL;
+		} else {
+			// GET /feed/update
+			// GET /feed/update/123
 			$cmd = $rreq->shift_pathv();
+			$arg = $rreq->pathv(0);
+			if (is_numeric($arg) && is_integer($arg+0))
+			{
+				// GET /feed/update/123
+				$feed_id = $rreq->shift_pathv();
+			}
 		}
 
 		switch ($cmd)
@@ -63,6 +86,20 @@ class RESTController_feed {
 					// Error if $feed_id is not set.
 					throw new RESTException(NULL, "ID not found");
 				return $this->set_feed_info($feed_id, $rreq);
+			}
+			break;
+
+		    case "update":
+			switch ($rreq->verb())
+			{
+			    case "PUT":
+				if (isset($feed_id))
+					return $this->update_feed($feed_id, $rreq);
+				else
+					return $this->update_all_feeds($rreq);
+
+			    default:
+				throw new RESTException(NULL, "Invalid verb");
 			}
 			break;
 
@@ -306,5 +343,64 @@ error_log("new is now " . print_r($new, true));
 			// XXX - Error-checking
 
 		return array("status"	=> "ok");
+	}
+
+	/* update_feed
+	 * PUT /feed/update/123
+	 * Update a feed
+	 */
+	function update_feed($feed_id, $rreq)
+	{
+		// XXX
+		error_log("Updating feed $feed_id");
+
+		$feed = db_get_feed($feed_id);
+		if ($feed === NULL)
+		{
+			// Invalid feed ID, presumably..
+			error_log("Invalid feed ID: $feed_id");
+			throw new RESTException(NULL, "Invalid feed ID: $feed_id");
+		}
+
+		$err = update_feed($feed_id, $feed);
+		if (!$err)
+		{
+			// This should never happen
+			error_log("Unexpected error: " .
+				  "update_feed() returned " .
+				  ($err == "" ?
+				   var_export($err) : $err));
+			throw new RESTException(NULL,
+						"update_feed() returned " .
+						($err == "" ?
+						 var_export($err) : $err))
+				;
+		}
+
+		/* Error-checking */
+		if (isset($err['status']) && $err['status'] != 0)
+		{
+			error_log("Error: returning { feed_id $feed_id, error " . $err['errmsg'] . "}");
+			return array('state'	=> "error",
+				     'feed_id'	=> $feed_id,
+				     'error'	=> $err['errmsg'],
+				);
+		}
+
+		return array('state'	=> "end",
+			     'feed_id'	=> $err['id'],
+			     'title'	=> $err['title'],
+			     'counts'	=> $err['counts'],
+			);
+	}
+
+	/* update_all_feeds
+	 * PUT /feed/update
+	 */
+	function update_all_feeds($rreq)
+	{
+		$handler = new cumulative_handler();
+		update_all_feeds($handler);
+		return $handler->finish();
 	}
 }

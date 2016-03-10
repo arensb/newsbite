@@ -121,10 +121,10 @@ Issue an authorization token.
 ** TODO markitems.php
    - mark items as read/unread
 
-: PUT /article/123
+: POST /article/123
 : 	?read={1|0}&t=$updateTime
 	or
-: PUT /article/123
+: POST /article/123
 and in body, have a JSON structure listing these for a bunch of articles.
 
 ** DONE opml.php
@@ -138,8 +138,8 @@ and in body, have a JSON structure listing these for a bunch of articles.
 This really needs to be broken up into components.
 
 XXX
-: GET /feed/all
-: GET /feed/123
+: GET /article
+: GET /article/123
 : 	?read=unread		# default
 : 	&max_items=100		# default
 
@@ -149,7 +149,8 @@ XXX
 
 : DELETE /feed/123
 
-** TODO update.php
+** DONE update.php
+   CLOSED: [2016-03-10 Thu 08:23]
    - fetch/update a feed
    - fetch/update all feeds
 ** view.php
