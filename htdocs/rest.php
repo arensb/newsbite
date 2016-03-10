@@ -268,7 +268,7 @@ class RESTReq
 	{
 		if (isset($n))
 		{
-			if ($n > count($this->pathv))
+			if ($n >= count($this->pathv))
 				return NULL;
 			return $this->pathv[$n];
 		} else
