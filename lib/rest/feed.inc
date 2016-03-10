@@ -113,7 +113,7 @@ class RESTController_feed {
 	 */
 	function add_feed($rreq)
 	{
-		$feed_url = $rreq->body()->{'url'};
+		$feed_url = $rreq->body_param('url');
 				// XXX - Error-checking
 		$params = array(
 			"feed_url"	=> $feed_url,
