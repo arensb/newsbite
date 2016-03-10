@@ -258,11 +258,20 @@ class RESTReq
 		return $this->classname;
 	}
 
+	/* pathv
+	 * With a non-NULL argument, return the $n-th element of
+	 * $pathv (starting at 0). If $pathv is shorter than $n,
+	 * return NULL.
+	 * Without an argument, just return $pathv.
+	 */
 	function pathv($n = NULL)
 	{
 		if (isset($n))
+		{
+			if ($n > count($this->pathv))
+				return NULL;
 			return $this->pathv[$n];
-		else
+		} else
 			return $this->pathv;
 	}
 
