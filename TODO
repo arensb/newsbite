@@ -77,6 +77,11 @@
   and different people may deal with this differently (UTF-8 vs. HTML
   entities). Perhaps safest to assume that they're HTML and clean up
   (if possible, only do entity translation, and throw out any markup).
+- REST: Move the class from htdocs/rest.php to lib/rest.inc
+- REST: Would it make sense to take some of the methods out of REST
+  controller classes, and make them global functions?
+	Yes if that makes them easier to call from exernal programs,
+  or if they don't really use OO-ness.
 - Bug: keybindings.js doesn't handle non-letter bindings well: "?"
   gets turned into Spanish upside-down question mark by toUpperCase().
 	Need a notation to bind Esc.
