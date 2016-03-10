@@ -1,0 +1,12 @@
+#!/bin/sh
+REST_BASE="http://carrot.ooblick.com/newsbite/w1"
+FEED_ID=248
+echo "===== Updating feed $FEED_ID"
+curl -sSv -X PUT \
+	-o output.json \
+	${REST_BASE}/feed/update/${FEED_ID}
+
+echo "===== Updating all feeds"
+curl -sSv -X PUT \
+	-o output.json \
+	${REST_BASE}/feed/update
