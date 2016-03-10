@@ -85,25 +85,6 @@
 - Bug: keybindings.js doesn't handle non-letter bindings well: "?"
   gets turned into Spanish upside-down question mark by toUpperCase().
 	Need a notation to bind Esc.
-- REST: Probably want a RESTController class, from which all the
-  other controllers inherit.
-	It'd probably be nice to give it a table (that can be
-  initialized by a class constant, or by the constructor) that maps
-  { verb, path } => function
-	What qualifies as a path, though, and how should conflicts be
-  resolved? If the table has
-	PUT a		=> func0
-	PUT a/b		=> func1
-	PUT a/b/c	=> func2
-  does func2 take precedence because it's the most specific, or does
-  func0 take precedence because it can call other methods?
-	Perhaps another approach would be to allow only single-word
-  paths: "PUT a/b" is not allowed, and would have to be handled by an
-  "a_b" controller.
-	That is, if you have "GET /foo/bar/baz/123", then REST passes
-  it to RESTController_foo, with path "foo".
-	RESTController_foo, in turn, recognizes "bar" as a keyword,
-  and passes the request down to RESTController_foo_bar, with path "baz".
 - IMAP interface: would it be possible to write a Dovecot plugin to
   present an IMAP interface to the database? That way, you could use
   any mail reader, and the database would be kept in sync.
