@@ -399,6 +399,8 @@ error_log("new is now " . print_r($new, true));
 	 */
 	function update_all_feeds($rreq)
 	{
-		// XXX
+		$handler = new cumulative_handler();
+		update_all_feeds($handler);
+		return $handler->finish();
 	}
 }
