@@ -62,6 +62,7 @@ class RESTController_group {
 				if (isset($group_id))
 					// XXX - GET /group/-123
 					// Get information about one group
+					// XXX - Do we even want this?
 					return $this->get_group_info($group_id, $rreq);
 				else
 					// GET /group
@@ -82,10 +83,10 @@ class RESTController_group {
 				if (!isset($group_id))
 					// Error if $group_id is not set.
 					throw new RESTException(NULL, "ID not found");
-				// XXX - DELETE /group/-123
+				// DELETE /group/-123
 				// Delete group -123. Reparent its
 				// children.
-				return $this->unsubscribe($group_id, $rreq);
+				return $this->delete_group($group_id, $rreq);
 
 			    case "POST":
 				if (!isset($group_id))
@@ -150,6 +151,22 @@ class RESTController_group {
 
 		$new_group['state'] = "ok";
 		return $new_group;
+	}
+
+	function delete_group($group_id, $rreq)
+	{
+		// XXX - Sanity check? Make sure $group_id is an integer,
+		// and negative, and a group that exists?
+
+		if (db_delete_group($group_id))
+		{
+			// Group was deleted successfully
+			return array('state'	=> 'ok');
+		} else {
+			return array('state',	"error",
+				     'errno',	$db_errno,
+				     'error',	$db_errmsg);
+		}
 	}
 }
 ?>
