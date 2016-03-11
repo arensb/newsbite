@@ -137,11 +137,11 @@ class RESTController_group {
 		$name = $rreq->body_param('name');
 			// XXX - Error-checking
 		$parent_id = $rreq->body_param('parent_id');
-			// XXX - Defaults to -1
 		if (!isset($parent_id))
+			// Defaults to -1, the root group.
 			$parent_id = -1;
 		if (!is_numeric($parent_id) || !is_integer($parent_id+0))
-			throw new RESTException(NULL, "Invalid group ID");
+			throw new RESTException(NULL, "Invalid parent group ID");
 
 		$parent = db_get_group($parent_id);
 		if ($parent === NULL)
@@ -165,9 +165,12 @@ class RESTController_group {
 
 	function delete_group($group_id, $rreq)
 	{
-		// XXX - Sanity check? Make sure $group_id is an integer,
-		// and negative, and a group that exists?
-
+		/* Sanity check. Make sure the group ID is an integer.
+		 * We don't care whether such a group exists, because
+		 * we're about to delete in any case.
+		 */
+		if (!is_numeric($group_id) || !is_integer($group_id+0))
+			throw new RESTException(NULL, "Invalid group ID");
 		if (db_delete_group($group_id))
 		{
 			// Group was deleted successfully
