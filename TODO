@@ -77,6 +77,11 @@
   and different people may deal with this differently (UTF-8 vs. HTML
   entities). Perhaps safest to assume that they're HTML and clean up
   (if possible, only do entity translation, and throw out any markup).
+- REST: $rreq is used so often in the controllers, it probably makes
+  sense to move it into a RESTController parent class.
+	- Create this parent class.
+	- Move $rreq into it
+	- See which functions make sense as standalones
 - REST: Move the class from htdocs/rest.php to lib/rest.inc
 - REST: Would it make sense to take some of the methods out of REST
   controller classes, and make them global functions?
