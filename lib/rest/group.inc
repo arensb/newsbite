@@ -60,9 +60,8 @@ class RESTController_group {
 			{
 			    case "GET":
 				if (isset($group_id))
-					// XXX - GET /group/-123
+					// GET /group/-123
 					// Get information about one group
-					// XXX - Do we even want this?
 					return $this->get_group_info($group_id, $rreq);
 				else
 					// GET /group
@@ -115,6 +114,17 @@ class RESTController_group {
 		    default:
 			throw new RESTException(NULL, "Bad command $cmd");
 		}
+	}
+
+	/* get_group_info
+	 * Get information about a single group.
+	 */
+	function get_group_info($group_id, $rreq)
+	{
+		$info = db_get_group($group_id);
+		if ($info === NULL)
+			throw new RESTException("Bad group ID");
+		return $info;
 	}
 
 	function get_all_groups_info($rreq)
