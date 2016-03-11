@@ -84,7 +84,8 @@ What services/knobs/etc. are currently there?
 
 : GET /feed/123
 
-** TODO group.php
+** DONE group.php
+   CLOSED: [2016-03-11 Fri 08:34]
    - create a group
    - delete a group
    - rename a group
@@ -99,6 +100,13 @@ What services/knobs/etc. are currently there?
 
 : POST /group/-123
 : 	?parent=$newparent
+
+** TODO Group methods
+   - reparent a group
+   - change a group's information
+
+These methods aren't implemented in htdocs/group.php, which is why I'm
+marking the REST version as done, but still ought to be implemented.
 
 ** index.php
 Nothing. This is a template.
