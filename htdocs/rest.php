@@ -405,6 +405,7 @@ switch ($classname)
     case "opml":	// OPML feeds
     case "feed":
     case "group":
+    case "article":
 	try {
 		// Load the code that'll handle this class.
 		$err = require_once("rest/$classname.inc");
@@ -426,11 +427,9 @@ switch ($classname)
 	} 
 	break;
 
-    case "article":
-	// XXX
-	break;
     default:
 	// XXX - Die with an error?
+	$rreq->finish(400, "Invalid class");
 	break;
 }
 
