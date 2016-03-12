@@ -3,7 +3,6 @@
 //require_once("common.inc");
 require_once("database.inc");
 
-
 /* article REST controller
  *	GET /article
  *		&feed={123|all}
@@ -60,14 +59,11 @@ class RESTController_article {
 			    case "GET":
 				if (isset($art_id))
 					// GET /article/123
-					// Get one article
-					// XXX - This isn't actually used,
-					// but it's easy to implement.
+					// Get one article.
 					return $this->get_article($art_id, $rreq);
 				else
 					// GET /article
-					// Get information about all groups
-					// XXX - Write this
+					// Get several articles.
 					return $this->get_articles($rreq);
 				break;
 
@@ -95,6 +91,112 @@ class RESTController_article {
 		    default:
 			throw new RESTException(NULL, "Bad command $cmd");
 		}
+	}
+
+	/* get_article
+	 * Get one article. This isn't actually used anywhere, but
+	 * hey, it's easy to implement.
+	 */
+	function get_article($art_id, $rreq)
+	{
+		$ids = array($art_id);
+		$articles = db_get_items($ids);
+		if (count($articles) == 0)
+			return NULL;
+		return $articles[0];
+	}
+
+	/* get_articles
+	 * Get the latest N articles, either from a specific feed, or
+	 * from all feeds.
+	 *	n	Max. number of articles to return (default: 100)
+	 *	ihave	array of article IDs.
+	 * If $ihave is given, return the latest N articles that
+	 * aren't in $ihave.
+	 */
+	// XXX - base36-encoding in PHP:
+	//	base_convert(1000000, 10, 36) == "lfls"
+	//	base_convert("lfls", 36, 10) == 1000000
+	// In JavaScript:
+	//	(1000000).toString(36) == "lfls"
+	//	parseInt("lfls", 36) == 1000000
+	function get_articles($rreq)
+	{
+		// Get feed id (NULL->all)
+		$feed_id = $rreq->body_param('feed_id');
+
+		if (!isset($feed_id))
+			// Defaults to "all"
+			$feed_id = "all";
+		else
+			// Make sure feed ID is sane.
+			if (!is_numeric($feed_id) ||
+			    !is_integer($feed_id+0))
+				throw new RESTException(NULL, "Invalid feed ID");
+
+		// Get max-articles
+		$max_articles = $rreq->body_param('n');
+		if (!isset($max_articles))
+			// Defaults to 100
+			$max_articles = 100;
+		else
+			// Make sure $max_articles is sane.
+			if (!is_numeric($max_articles) ||
+			    !is_integer($max_articles+0))
+				throw new RESTException(NULL, "Invalid parameter n");
+
+		// XXX - (Eventually: Get group ID)
+
+		// Get ihave[]
+		// This is expected to be an array of item IDs
+		// (integers).
+		$ihave = $rreq->body_param('ihave');
+		if (!isset($ihave))
+			$ihave = array();
+		if (!is_array($ihave))
+			throw new RESTException(NULL, "Not an array");
+
+		$retval = array();
+
+		// Get items with db_get_some_feed_items(). If there
+		// are any that don't appear in $ihave, add them to
+		// $retval.
+		$get_feed_args = array(
+			"read"		=> "unread",
+			"max_items"	=> count($ihave) + $max_articles,
+					// The +$max_articles is so
+					// that even if the first 100
+					// articles are in $ihave,
+					// we'll get the next 100 to
+					// return to the client.
+			);
+		if (is_integer($feed_id))
+			$get_feed_args['feed_id'] = $feed_id;
+		$all_items = db_get_some_feed_items($get_feed_args);
+
+		$n = 0;
+		foreach ($all_items as $item)
+		{
+			if (in_array($item['id'], $ihave))
+			{
+				// The client already has this item.
+
+				// XXX - How fast is in_array()? Do we
+				// want to do some kind of bulk
+				// comparison, or something?
+//error_log("Skipping article in \$ihave");
+				continue;
+			}
+
+
+			array_push($retval, $item);
+				// XXX - Do we need to run clean-html
+				// on anything? Fixed-length fields in
+				// 'items'.
+			if (++$n > $max_articles)
+				break;
+		}
+		return $retval;
 	}
 }
 ?>
