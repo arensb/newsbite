@@ -78,11 +78,15 @@ class RESTController_article {
 			    case "POST":
 				if (isset($art_id))
 					// Error if $art_id is not set.
+
+					// XXX - Perhaps eventually add
+					// POST /article/read/123?read={true|false},
+					// for marking individual articles?
 					throw new RESTException(NULL, "ID not found");
 				// POST /article/read
 				// Mark articles as read/unread
 				return $this->mark_articles($rreq);
-		
+
 			    default:
 				throw new RESTException(NULL, "Invalid verb");
 			}

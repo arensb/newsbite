@@ -126,7 +126,8 @@ Issue an authorization token.
 
 : GET /login
 
-** TODO markitems.php
+** DONE markitems.php
+   CLOSED: [2016-03-21 Mon 11:47]
    - mark items as read/unread
 
 : POST /article/123
@@ -151,7 +152,8 @@ Might want to use an array of arrays, to save space.
 
 : GET /opml
 
-** TODO sync.php
+** DONE sync.php
+   CLOSED: [2016-03-21 Mon 11:47]
    - sync: update $ihave[] items, return the top 100 for a feed
 This really needs to be broken up into components.
 
