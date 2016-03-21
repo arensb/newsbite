@@ -79,7 +79,7 @@ class RESTController_article {
 				if (isset($art_id))
 					// Error if $art_id is not set.
 					throw new RESTException(NULL, "ID not found");
-				// XXX - POST /article/read
+				// POST /article/read
 				// Mark articles as read/unread
 				return $this->mark_articles($rreq);
 		
@@ -184,7 +184,6 @@ class RESTController_article {
 				// XXX - How fast is in_array()? Do we
 				// want to do some kind of bulk
 				// comparison, or something?
-//error_log("Skipping article in \$ihave");
 				continue;
 			}
 
@@ -196,6 +195,111 @@ class RESTController_article {
 			if (++$n > $max_articles)
 				break;
 		}
+		return $retval;
+	}
+
+	/* mark_articles()
+	 * Take an array of articles and statuses, update the database
+	 * where necessary, and send back to the client a list of
+	 * corrections.
+	 */
+	function mark_articles($rreq)
+	{
+		// Get $ihave
+		// This is a hash of the form $id => [is_read?, mtime]
+		// $ihave == {
+		//	123 => array(true, $mtime),
+		//	456 => array(false, $mtime2),
+		//	...
+		// }
+
+		$ihave = $rreq->body_param('ihave');
+		if (!isset($ihave))
+		{
+			error_log("mark_articles() without an ihave");
+			throw new RESTException(NULL, "Missing ihave parameter"
+		}
+		if (!is_object($ihave) && !is_array($ihave))
+			throw new RESTException(NULL, "Not a hash");
+		$client_ids = array();
+		foreach ($ihave as $key => $value)
+		{
+			// Make sure each ID is reasonable
+			if (!is_numeric($key) || !is_integer($key+0))
+				throw new RESTException(NULL, "Invalid ID");
+			$client_ids[] = $key;
+
+			// XXX - Check $value, perhaps, to make sure
+			// it has a boolean and a non-negative
+			// integer?
+		}
+
+		// Get the articles in $ihave
+		$db_items = db_get_items($client_ids);
+
+		// Convert $db_items from an array of items, to a hash
+		// indexed by item ID.
+		$db_items_new = array();
+		foreach ($db_items as $item)
+		{
+			$db_items_new[$item['id']] = $item;
+		}
+		$db_items = $db_items_new;
+		unset($db_items_new);
+
+		// Compare client's $ihave against the database
+		$retval = array();
+		foreach ($client_ids as $id)
+		{
+			// If $db_items doesn't have $id, the article has
+			// been deleted. Tell the client that.
+			if (!isset($db_items[$id]))
+			{
+				$retval[] = array(
+					"id"		=> $id,
+					"action"	=> "delete",
+					);
+				continue;
+			}
+
+			// If the caller and database agree on an
+			// article's is_read status, all is well.
+			// Ignore this one.
+			if ((bool) $ihave[$id][0] ==
+			    (bool) $db_items[$id]['is_read'])
+				continue;
+
+			/* By this point, the caller and database disagree */
+			if ($ihave[$id][1] > $db_items[$id]['mtime'])
+			{
+				// Update the database
+				db_mark_items((bool) $ihave[$id][0],
+					      array($id));
+				// XXX - Would it be more efficient to
+				// collect the IDs and 'is_read's of all
+				// the items to mark, and mark them all
+				// at once?
+
+				// Make sure the client hears about this.
+				$retval[] = array("id"		=> $id,
+						  "is_read"	=> (bool) $ihave[$id][0],
+						  "mtime"	=> $ihave[$id][1]
+					);
+			} else {
+				// Database is more recent than the
+				// client. In case of a tie, the
+				// database wins.
+				//
+				// Tell the client that its idea of
+				// the is_read state is wrong.
+				$retval[] = array("id"		=> $id,
+						  "is_read"	=> $db_items[$id]['is_read'],
+						  "mtime"	=> $db_items[$id]['mtime']
+					);
+			}
+		}
+
+		// Send differences back to the client.
 		return $retval;
 	}
 }
