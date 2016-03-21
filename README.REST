@@ -126,7 +126,8 @@ Issue an authorization token.
 
 : GET /login
 
-** TODO markitems.php
+** DONE markitems.php
+   CLOSED: [2016-03-21 Mon 11:47]
    - mark items as read/unread
 
 : POST /article/123
@@ -135,13 +136,24 @@ Issue an authorization token.
 : POST /article/123
 and in body, have a JSON structure listing these for a bunch of articles.
 
+Perhaps
+: POST /article/read
+in the body, have a data structure. Probably an array:
+:    [
+:      { id:123, read:true, mtime:<12:00:00> },
+:      { id:456, read:false, mtime:<12:00:15> },
+:      ...
+:    ]
+Might want to use an array of arrays, to save space.
+
 ** DONE opml.php
    CLOSED: [2016-03-01 Tue 10:13]
    - Return an OPML document
 
 : GET /opml
 
-** TODO sync.php
+** DONE sync.php
+   CLOSED: [2016-03-21 Mon 11:47]
    - sync: update $ihave[] items, return the top 100 for a feed
 This really needs to be broken up into components.
 

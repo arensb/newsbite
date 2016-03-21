@@ -151,7 +151,7 @@ class RESTReq
 		switch ($this->content_type)
 		{
 		    case "application/json":
-			$this->body = json_decode($this->body_text);
+			$this->body = json_decode($this->body_text, true);
 			break;
 
 		    case "text/xml":
@@ -313,11 +313,11 @@ class RESTReq
 	// out of the body.
 	function body_param($param)
 	{
-		if (!is_object($this->body))
+		if (!is_array($this->body))
 			return NULL;
 		if (!array_key_exists($param, $this->body))
 			return NULL;
-		return $this->body->$param;
+		return $this->body[$param];
 	}
 
 	// print_struct
@@ -405,6 +405,7 @@ switch ($classname)
     case "opml":	// OPML feeds
     case "feed":
     case "group":
+    case "article":
 	try {
 		// Load the code that'll handle this class.
 		$err = require_once("rest/$classname.inc");
@@ -426,11 +427,9 @@ switch ($classname)
 	} 
 	break;
 
-    case "article":
-	// XXX
-	break;
     default:
 	// XXX - Die with an error?
+	$rreq->finish(400, "Invalid class");
 	break;
 }
 

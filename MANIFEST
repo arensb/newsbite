@@ -93,7 +93,9 @@ lib/hooks.inc
 lib/json.inc
 lib/net.inc
 lib/parse-feed.inc
+lib/rest/article.inc
 lib/rest/feed.inc
+lib/rest/group.inc
 lib/rest/info.inc
 lib/rest/opml.inc
 lib/rest/test.inc
