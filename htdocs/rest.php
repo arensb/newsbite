@@ -151,7 +151,7 @@ class RESTReq
 		switch ($this->content_type)
 		{
 		    case "application/json":
-			$this->body = json_decode($this->body_text);
+			$this->body = json_decode($this->body_text, true);
 			break;
 
 		    case "text/xml":
