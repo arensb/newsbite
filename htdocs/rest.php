@@ -313,11 +313,11 @@ class RESTReq
 	// out of the body.
 	function body_param($param)
 	{
-		if (!is_object($this->body))
+		if (!is_array($this->body))
 			return NULL;
 		if (!array_key_exists($param, $this->body))
 			return NULL;
-		return $this->body->$param;
+		return $this->body[$param];
 	}
 
 	// print_struct
