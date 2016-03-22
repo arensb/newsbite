@@ -2,6 +2,7 @@
 #include "guess-mobile.js"
 #include "defer.js"
 #include "xhr.js"
+#include "rest.js"
 #include "keybindings.js"
 #include "PatEvent.js"
 #include "types.js"
@@ -1290,4 +1291,15 @@ function update_size()
 	$("#width").html(window.innerWidth);
 	$("#height").html(window.innerHeight);
 	$("#dpi").html($("#one-inch").width());
+}
+
+// XXX - Need to set base at config or install time.
+REST.base = "http://carrot.ooblick.com/newsbite/w1";
+function hello_test()
+{
+	var callback = function(err, errmsg, value)
+	{
+		console.log("Inside hello_test callback. err: ", err, ", errmsg: ", errmsg, ", value: ", value);
+	}
+	REST.call("GET", "test/hello", undefined, callback, undefined);
 }

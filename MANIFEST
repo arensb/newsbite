@@ -81,6 +81,7 @@ js-src/defer.js
 js-src/guess-mobile.js
 js-src/keybindings.js
 js-src/load_module.js
+js-src/rest.js
 js-src/status-msg.js
 js-src/types.js
 js-src/xhr.js

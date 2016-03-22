@@ -153,6 +153,7 @@ $(function() {
 
 <div class="button-box" id="top-button-box">
   <button onclick="this.blur(); slow_sync()">Slow Sync</button>
+  <button onclick="this.blur(); hello_test()">Hello test</button>
 </div>
 
 <div id="itemlist"><img src="images/Ajax-loader.gif"/></div>
