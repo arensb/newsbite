@@ -221,7 +221,7 @@ class RESTController_article {
 		if (!isset($ihave))
 		{
 			error_log("mark_articles() without an ihave");
-			throw new RESTException(NULL, "Missing ihave parameter"
+			throw new RESTException(NULL, "Missing ihave parameter");
 		}
 		if (!is_object($ihave) && !is_array($ihave))
 			throw new RESTException(NULL, "Not a hash");
