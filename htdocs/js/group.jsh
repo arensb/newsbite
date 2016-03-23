@@ -4,6 +4,7 @@
 #include "guess-mobile.js"
 // #include "defer.js"
 #include "xhr.js"
+#include "rest.js"
 /*#include "keybindings.js"*/
 /*#include "PatEvent.js"*/
 /*#include "types.js"*/
@@ -35,8 +36,10 @@ function refresh_group_tree()
 	/* _draw_group_tree
 	 * Find the #group-tree div, and populate it with a tree of groups.
 	 */
-	function _draw_group_tree(tree)
+	function _draw_group_tree(err, errmsg, tree)
 	{
+		// XXX - Check err to make sure the call was successful.
+
 		/* Find #group-tree */
 		var group_list = $("#group-tree");
 
@@ -103,12 +106,11 @@ function refresh_group_tree()
 	}
 
 	// refresh_group_tree main:
-	get_json_data("group.php",
-		      { command:	'tree',
-		      },
-		      _draw_group_tree,
-		      null,
-		      false);
+	REST.call("GET", "group", undefined,
+		  _draw_group_tree,
+		  function(err, errmsg){
+			  console.log("GET /group error: "+err+": "+errmsg);
+		  });
 }
 
 /* add_group
