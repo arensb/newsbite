@@ -4,10 +4,12 @@
 #ifndef _rest_js_
 #define _rest_js_
 
+#include "config.js"	// Get local configuration Config {}.
+
 /* REST
  */
 var REST = {
-	base: undefined,
+	base: Config.REST_prefix+"/w1",
 }
 
 /* rest_call

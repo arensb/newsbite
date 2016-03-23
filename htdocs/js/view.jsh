@@ -1293,10 +1293,9 @@ function update_size()
 	$("#dpi").html($("#one-inch").width());
 }
 
-// XXX - Need to set base at config or install time.
-REST.base = "http://carrot.ooblick.com/newsbite/w1";
 function hello_test()
 {
+	console.debug("REST.base " + REST.base);
 	var callback = function(err, errmsg, value)
 	{
 		console.log("Inside hello_test callback. err: ", err, ", errmsg: ", errmsg, ", value: ", value);

@@ -23,7 +23,11 @@ DISTNAME =	${PROJECT}-${REV}
 #endif
 include Makefile.common
 
+# Directories to recurse into.
+# Here, 'js-src' comes before 'htdocs/js' so that js-src/config.js
+# will be built by 'make depend'.
 RECURSIVE_DIRS =	\
+	js-src \
 	htdocs \
 	htdocs/css \
 	htdocs/fonts \

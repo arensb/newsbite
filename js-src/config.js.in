@@ -1,0 +1,11 @@
+/* config.js(.in)
+ * Local configuration, generated at install time.
+ */
+#ifndef _config_js_
+#define _config_js_
+
+var Config = {
+	REST_prefix: "@HT_PREFIX@",
+};
+
+#endif	// _config_js_
