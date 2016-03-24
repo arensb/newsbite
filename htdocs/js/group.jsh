@@ -3,7 +3,7 @@
  */
 #include "guess-mobile.js"
 // #include "defer.js"
-#include "xhr.js"
+//#include "xhr.js"
 #include "rest.js"
 /*#include "keybindings.js"*/
 /*#include "PatEvent.js"*/
@@ -134,7 +134,6 @@ function add_group(ev)
 		  },
 		  function(err, errmsg, value) {
 			  // XXX - Error-checking
-console.debug("About to refresh group tree");
 			  refresh_group_tree();
 		  },
 		  function(err, errmsg) {
