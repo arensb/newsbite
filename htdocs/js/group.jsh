@@ -2,17 +2,8 @@
  * JavaScript functions for the group-editing page.
  */
 #include "guess-mobile.js"
-// #include "defer.js"
-//#include "xhr.js"
 #include "rest.js"
-/*#include "keybindings.js"*/
-/*#include "PatEvent.js"*/
-/*#include "types.js"*/
 #include "Template.js"
-/*#include "CacheManager.js"*/
-//#include "load_module.js"
-// XXX - Should block multiple updates from occurring in parallel.
-/*#include "status-msg.js"*/
 
 document.addEventListener("DOMContentLoaded", init, false);
 
