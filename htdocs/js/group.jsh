@@ -110,7 +110,8 @@ function refresh_group_tree()
 		  _draw_group_tree,
 		  function(err, errmsg){
 			  console.log("GET /group error: "+err+": "+errmsg);
-		  });
+		  },
+		  undefined);
 }
 
 /* add_group
@@ -126,26 +127,19 @@ function add_group(ev)
 	var parent = this.elements["parent"].value;
 		// XXX - Do we care that 'parent' is a string, not an int?
 
-	// Make AJAX call to create group
-	get_json_data("group.php",
-		      { command:	"add",
-			name:		name,
-			parent:		parent
-		      },
-		      // Handler
-		      function(value)
-		      {
-			      // Update the group tree, above.
-			      refresh_group_tree();
-		      },
-		      // Error handler
-		      function(status, msg)
-		      {
-			      console.error("Failed to create group: error "+
-					    status+
-					    ", error "+err);
-		      },
-		      true);
+	// Make REST call to create group
+	REST.call("PUT", "group",
+		  { name:	name,
+		    parent:	parent,
+		  },
+		  function(err, errmsg, value) {
+			  // XXX - Error-checking
+console.debug("About to refresh group tree");
+			  refresh_group_tree();
+		  },
+		  function(err, errmsg) {
+			  console.error("Failed to create group: error "+err+": "+errmsg);
+		  });
 }
 
 /* edit_group
