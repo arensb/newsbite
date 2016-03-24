@@ -8,6 +8,7 @@
  */
 #include "types.js"		// Feed and Item classes
 #include "xhr.js"		// For AJAX requests
+#include "rest.js"		// For REST calls
 #include "defer.js"		// Put off long initialization until later
 
 /* CacheManager.js
@@ -340,14 +341,14 @@ CacheManager.prototype.update_feeds = function(cb)
 	/* update_feeds() main */
 	var self = this;	// Remember 'this' to pass to callback
 				// function.
-//msg_add("get_json_data(feeds.php)");
-	get_json_data("feeds.php",
-		      { },
-		      update_feeds_callback,
-		      function(status, msg) {	// Error handler
-			      msg_add("feeds.php JSON failed: "+status+": "+msg);
-		      },
-		      true);
+	REST.call("GET", "feed", null,
+		  function(err, errmsg, value) {
+			  // XXX - Error-checking
+			  update_feeds_callback(value);
+		  },
+		  function(err, errmsg) {
+			  msg_add("Getting feeds failed: "+err+": "+errmsg);
+		  });
 }
 
 /* store_feeds
