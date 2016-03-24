@@ -183,25 +183,16 @@ console.log("Inside delete_group, gid: ", gid);
 	var parent_entry = this_entry.parents(".group-entry:first");
 	var child_entries = this_entry.children(".child-groups");
 
-	// XXX - Make an AJAX call to delete the group.
-	get_json_data("group.php",
-		      { command:	"delete",
-			id:		gid,
-		      },
-		      // Handler
-		      function(value)
-		      {
-			      // Update the group tree, above.
-			      refresh_group_tree();
-		      },
-		      // Error handler
-		      function(status, msg)
-		      {
-			      console.error("Failed to delete group: error "+
-					    status+
-					    ", error "+err);
-		      },
-		      true);
+	// Make REST call to delete group.
+	REST.call("DELETE", "group/"+gid,
+		  null,
+		  function(err, errmsg, value) {
+			  // XXX - Error-handling
+			  refresh_group_tree();
+		  },
+		  function(err, errmsg) {
+			  console.error("Failed to delete group: "+err+": "+errmsg);
+		  });
 
 	// XXX - Update the copy of the group tree in local storage.
 	// XXX - Update feeds in local storage?
