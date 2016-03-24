@@ -3,7 +3,7 @@
  */
 #include "guess-mobile.js"
 // #include "defer.js"
-#include "xhr.js"
+#include "rest.js"
 #include "keybindings.js"
 #include "PatEvent.js"
 #include "types.js"
@@ -147,16 +147,25 @@ function update_feed(id)
 	// XXX - If updating one feed, ought to only clear that line
 	clear_status();
 
-	get_json_data("update.php",
-		      { id:	id,
-		      },
-		      update_feed_handler,
-		      function(status, msg) {
-			      console.error("update_feed error: status "+
-					    status +
-					    ", msg " + msg);
-		      },
-		      false);
+	if (id == null || id == "all")
+		// XXX - I'm pretty sure this doesn't work: you can
+		// click the "update all feeds" button, and I think
+		// something gets updated, but there's no indication
+		// to the user.
+		// In REST we don't have the non-batch AJAX request,
+		// so we don't get the fancy update visuals. But that
+		// apparently broke some time back.
+		REST.call("PUT", "feed/update", null,
+			  function(err, errmsg, value) {
+				  update_feed_handler(value);
+			  },
+			  undefined);
+	else
+		REST.call("PUT", "feed/update/"+id, null,
+			  function(err, errmsg, value) {
+				  update_feed_handler(value);
+			  },
+			  undefined);
 
 	return false;
 }
