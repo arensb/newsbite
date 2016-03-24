@@ -101,7 +101,7 @@ msg_add("I caught a weird error: "+e);
 				// parameters, etc. of the original request?
 				console.error(request);
 				console.error("Can't parse response: "+e);
-msg_add("get_json_data: Can't parse response");
+msg_add("REST.call: Can't parse response");
 				console.log(request.responseText);
 				value = undefined;
 			}
