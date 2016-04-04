@@ -369,6 +369,7 @@ function flush_queues()
 
 	// mark_request: an object encapsulating everything we want to keep
 	// track of during this operation
+	// XXX - Delete this?
 	mark_request = {};
 	mark_request.read = new Array();
 	mark_request.unread = new Array();
@@ -376,15 +377,37 @@ function flush_queues()
 	/* Assign each element of mark_read to either mark_request.read
 	 * or mark_request.unread.
 	 */
+	// XXX - Ought to replace 'mark_read' with a more explicit table:
+	// have mark_item1() set is_read_state[item_id] = [is_read, mtime];
+	// Then we can have a more granular record of what was marked,
+	// when. But in the meantime, just use the existing interface.
+console.debug("first mark_read: ", mark_read);
 	for (var i in mark_read)
 	{
 		if (mark_read[i])
 			mark_request.read.push(i);
 		else
 			mark_request.unread.push(i);
-		delete(mark_read[i]);
+//		delete(mark_read[i]);
 	}
 
+	/* Build a hash of mark requests to feed to the REST call.
+	 */
+	var mark_request2 = {};	// Rename this once mark_request is gone
+	var now = Math.floor(new Date().getTime()/1000);
+console.debug("second mark_read: ", mark_read);
+	for (var id in mark_read)
+	{
+console.debug("Marking id "+id+" with is_read == "+new Boolean(mark_read[id]));
+		mark_request2[id] = [ new Boolean(mark_read[id]),
+				      now
+				    ];
+	}
+mark_read = {};
+
+var use_rest = true;
+if (!use_rest)
+{
 	get_json_data("markitems.php",
 		      { "mark-read":	mark_request.read.join(","),
 		        "mark-unread":	mark_request.unread.join(","),
@@ -398,15 +421,70 @@ function flush_queues()
 		      true);
 }
 
+	function parse_flush_response2(err, errmsg, value)
+	{
+		/* 'value' is an array of hashes:
+		 * value == [
+		 *	{ id: 12345, action: "delete" },
+		 *	{ id: 12346, is_read: true, mtime: 123456789 },
+		 * ]
+		 */
+console.debug("Got REST response", value);
+		for (var i in value)
+		{
+			var art = value[i];
+console.debug("Looking at response entry "+art);
+			console.debug("id "+art.id);
+			var item = document.getElementById("item-"+art.id);
+
+			if (art.action == "delete")
+			{
+console.debug("marking deleted=yes (because deleted)");
+				item.setAttribute("deleted", "yes");
+				continue;
+			}
+			if (art.is_read)
+			{
+console.debug("marking deleted=yes");
+				item.setAttribute("deleted", "yes");
+				continue;
+			} else {
+console.debug("marking deleted=no");
+				item.setAttribute("deleted", "no");
+			}
+		}
+	}
+
+	function parse_flush_error2(err, errmsg)
+	{
+		msg_add("Error marking items: "+err+": "+errmsg);
+		// XXX - What else needs to be done? Presumably we'll
+		// try again later.
+	}
+
+if (use_rest)
+{
+console.debug("REST POST article/read", {ihave:mark_request2});
+	REST.call("POST", "article/read",
+		  {ihave: mark_request2},
+		  parse_flush_response2,
+		  parse_flush_error2);
+}
+}
+
 function parse_flush_response(value, req)
 {
+console.debug("Inside parse_flush_response:", value, req);
 	for (var i in req.read)
 	{
+console.debug("Examining read item ", i);
 		var item = document.getElementById("item-"+req.read[i]);
 			// XXX - Should have a table of
 			// currently-displayed items.
+console.debug("item:", item);
 		if (item == null)
 			continue;
+console.debug("Setting attribute deleted=yes");
 		item.setAttribute("deleted", "yes");
 			// XXX - What else needs to be done to mark an
 			// item as read?
@@ -418,11 +496,14 @@ function parse_flush_response(value, req)
 	}
 	for (var i in req.unread)
 	{
+console.debug("Examining unread item ", i);
 		var item = document.getElementById("item-"+req.unread[i]);
 			// XXX - Should have a table of
 			// currently-displayed items.
+console.debug("item:", item);
 		if (item == null)
 			continue;
+console.debug("Setting attribute deleted=no");
 		item.setAttribute("deleted", "no");
 			// XXX - What else needs to be done to mark
 			// the item as unread?
