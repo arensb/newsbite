@@ -76,6 +76,7 @@ image-src/newsbite-splash.xcf
 js-src/CacheManager.js
 js-src/PatEvent.js
 js-src/Template.js
+js-src/config.js.in
 js-src/defer.js
 js-src/guess-mobile.js
 js-src/keybindings.js
