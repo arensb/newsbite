@@ -71,7 +71,6 @@ if (isNaN(new Date(JSON.parse(JSON.stringify(new Date()))).getTime()))
 	};
 
 var mark_read = {};		// Hash of item_id -> is_read? values
-var mark_request = null;	// Data for marking items as read/unread
 var current_item = null;	// Current item, for keybindings and such
 
 var cache = new CacheManager();	// Cache manager for locally-stored data
@@ -369,31 +368,18 @@ function flush_queues()
 
 	// mark_request: an object encapsulating everything we want to keep
 	// track of during this operation
-	// XXX - Delete this?
-	mark_request = {};
-	mark_request.read = new Array();
-	mark_request.unread = new Array();
-
-	/* Assign each element of mark_read to either mark_request.read
-	 * or mark_request.unread.
-	 */
 	// XXX - Ought to replace 'mark_read' with a more explicit table:
 	// have mark_item1() set is_read_state[item_id] = [is_read, mtime];
 	// Then we can have a more granular record of what was marked,
 	// when. But in the meantime, just use the existing interface.
-console.debug("first mark_read: ", mark_read);
-	for (var i in mark_read)
-	{
-		if (mark_read[i])
-			mark_request.read.push(i);
-		else
-			mark_request.unread.push(i);
-//		delete(mark_read[i]);
-	}
+
+	/* Assign each element of mark_read to either mark_request.read
+	 * or mark_request.unread.
+	 */
 
 	/* Build a hash of mark requests to feed to the REST call.
 	 */
-	var mark_request2 = {};	// Rename this once mark_request is gone
+	var mark_request2 = {};	// XXX - Rename this once mark_request is gone
 	var now = Math.floor(new Date().getTime()/1000);
 console.debug("second mark_read: ", mark_read);
 	for (var id in mark_read)
@@ -403,7 +389,7 @@ console.debug("Marking id "+id+" with is_read == "+new Boolean(mark_read[id]));
 				      now
 				    ];
 	}
-mark_read = {};
+	mark_read = {};
 
 	function parse_flush_response2(err, errmsg, value)
 	{
@@ -451,95 +437,6 @@ console.debug("REST POST article/read", {ihave:mark_request2});
 		  {ihave: mark_request2},
 		  parse_flush_response2,
 		  parse_flush_error2);
-}
-
-function parse_flush_response(value, req)
-{
-console.debug("Inside parse_flush_response:", value, req);
-	for (var i in req.read)
-	{
-console.debug("Examining read item ", i);
-		var item = document.getElementById("item-"+req.read[i]);
-			// XXX - Should have a table of
-			// currently-displayed items.
-console.debug("item:", item);
-		if (item == null)
-			continue;
-console.debug("Setting attribute deleted=yes");
-		item.setAttribute("deleted", "yes");
-			// XXX - What else needs to be done to mark an
-			// item as read?
-
-		// XXX - If there are more than 10 deleted items in
-		// onscreen, delete the oldest ones
-		// - delete from onscreen
-		// - remove from localStorage
-	}
-	for (var i in req.unread)
-	{
-console.debug("Examining unread item ", i);
-		var item = document.getElementById("item-"+req.unread[i]);
-			// XXX - Should have a table of
-			// currently-displayed items.
-console.debug("item:", item);
-		if (item == null)
-			continue;
-console.debug("Setting attribute deleted=no");
-		item.setAttribute("deleted", "no");
-			// XXX - What else needs to be done to mark
-			// the item as unread?
-		// XXX - If there are now more than 25 unread articles
-		// on screen, remove some. (Which ones?)
-	}
-}
-
-function parse_flush_error(status, msg, mark_request)
-{
-	msg_add("Error marking items: "+status+": "+msg);
-
-	/* Put the items to be marked back on mark_read */
-	for (var i in mark_request.read)
-	{
-		var id = mark_request.read[i];
-		if (mark_read[id] == undefined)
-			mark_read[id] = true;
-
-		/* Mark the in-cache copy as read */
-		// XXX - A loop inside a loop seems inefficient. This
-		// is probably slow. Then again, we're only iterating
-		// over the short list of what's on screen.
-		for (var j in onscreen.items)
-		{
-			var item = onscreen.items[j];
-			if (item.id == id)
-			{
-				item.is_read = true;
-				cache.store_item(item);
-				// XXX - Delete it from cache?
-			}
-		}
-	}
-	for (var i in mark_request.unread)
-	{
-		var id = mark_request.unread[i];
-		if (mark_read[id] == undefined)
-			mark_read[id] = false;
-
-		/* Mark the in-cache copy as unread */
-		// XXX - A loop inside a loop seems inefficient. This
-		// is probably slow. Then again, we're only iterating
-		// over the short list of what's on screen.
-		for (var j in onscreen.items)
-		{
-			var item = onscreen.items[j];
-			if (item.id == id)
-			{
-				item.is_read = false;
-				cache.store_item(item);
-				// XXX - Re-fetch it from the server?
-			}
-		}
-	}
 }
 
 /* mark_item1
