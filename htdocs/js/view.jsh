@@ -357,7 +357,7 @@ function set_pane(container, state)
 }
 
 /* flush_queues
- * Send the contents of the queues to markitems.php
+ * Send the contents of the queues to the server.
  */
 // XXX - Move most of the item-marking stuff to CacheManager.js
 function flush_queues()
@@ -405,22 +405,6 @@ console.debug("Marking id "+id+" with is_read == "+new Boolean(mark_read[id]));
 	}
 mark_read = {};
 
-var use_rest = true;
-if (!use_rest)
-{
-	get_json_data("markitems.php",
-		      { "mark-read":	mark_request.read.join(","),
-		        "mark-unread":	mark_request.unread.join(","),
-		      },
-		      function(value) {
-			      parse_flush_response(value, mark_request);
-		      },
-		      function(status, msg) {
-			      parse_flush_error(status, msg, mark_request);
-		      },
-		      true);
-}
-
 	function parse_flush_response2(err, errmsg, value)
 	{
 		/* 'value' is an array of hashes:
@@ -462,14 +446,11 @@ console.debug("marking deleted=no");
 		// try again later.
 	}
 
-if (use_rest)
-{
 console.debug("REST POST article/read", {ihave:mark_request2});
 	REST.call("POST", "article/read",
 		  {ihave: mark_request2},
 		  parse_flush_response2,
 		  parse_flush_error2);
-}
 }
 
 function parse_flush_response(value, req)

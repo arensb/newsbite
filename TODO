@@ -344,7 +344,6 @@
   UPDATE: or maybe not. Can't reproduce.
 	lib/json.inc
 	lib/common.inc
-	htdocs/markitems.php
 	htdocs/update.php
 	htdocs/feeds.php
 	htdocs/view.php
@@ -1138,16 +1137,6 @@
   update rarely). The idea is, these rules can define a
   partially-ordered set. It would be cool to use these to determine
   the order in which to display articles.
-- Rethink how markitems.php works, which arguments it takes. Check
-  whichever template calls it (view.tpl and item.tpl?).
-	The easiest, no-JavaScript case is probably the way FoF does
-  it: if we're displaying unread items, give the option of marking
-  items as read. If we're displaying all items, give the option of
-  marking items as unread.
-	Perhaps do this by adding a hidden "new_state" input field to
-  the form (and of course update markitems.php to check for it).
-	With JavaScript, we can toggle the state of each item as the
-  user requests.
 - There are a bunch of times when it's handy to parse XML files:
   reading RSS feeds, importing OPML, parsing HTML pages to find the
   feeds, etc.
