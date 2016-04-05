@@ -372,6 +372,7 @@ function flush_queues()
 	// have mark_item1() set is_read_state[item_id] = [is_read, mtime];
 	// Then we can have a more granular record of what was marked,
 	// when. But in the meantime, just use the existing interface.
+	var mark_request = {};
 
 	/* Assign each element of mark_read to either mark_request.read
 	 * or mark_request.unread.
@@ -379,13 +380,12 @@ function flush_queues()
 
 	/* Build a hash of mark requests to feed to the REST call.
 	 */
-	var mark_request2 = {};	// XXX - Rename this once mark_request is gone
 	var now = Math.floor(new Date().getTime()/1000);
 console.debug("second mark_read: ", mark_read);
 	for (var id in mark_read)
 	{
 console.debug("Marking id "+id+" with is_read == "+new Boolean(mark_read[id]));
-		mark_request2[id] = [ new Boolean(mark_read[id]),
+		mark_request[id] = [ new Boolean(mark_read[id]),
 				      now
 				    ];
 	}
@@ -432,9 +432,9 @@ console.debug("marking deleted=no");
 		// try again later.
 	}
 
-console.debug("REST POST article/read", {ihave:mark_request2});
+console.debug("REST POST article/read", {ihave:mark_request});
 	REST.call("POST", "article/read",
-		  {ihave: mark_request2},
+		  {ihave: mark_request},
 		  parse_flush_response2,
 		  parse_flush_error2);
 }
