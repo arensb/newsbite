@@ -391,7 +391,7 @@ console.debug("Marking id "+id+" with is_read == "+new Boolean(mark_read[id]));
 	}
 	mark_read = {};
 
-	function parse_flush_response2(err, errmsg, value)
+	function parse_flush_response(err, errmsg, value)
 	{
 		/* 'value' is an array of hashes:
 		 * value == [
@@ -425,7 +425,7 @@ console.debug("marking deleted=no");
 		}
 	}
 
-	function parse_flush_error2(err, errmsg)
+	function parse_flush_error(err, errmsg)
 	{
 		msg_add("Error marking items: "+err+": "+errmsg);
 		// XXX - What else needs to be done? Presumably we'll
@@ -435,8 +435,8 @@ console.debug("marking deleted=no");
 console.debug("REST POST article/read", {ihave:mark_request});
 	REST.call("POST", "article/read",
 		  {ihave: mark_request},
-		  parse_flush_response2,
-		  parse_flush_error2);
+		  parse_flush_response,
+		  parse_flush_error);
 }
 
 /* mark_item1
