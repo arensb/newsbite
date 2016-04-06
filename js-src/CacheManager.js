@@ -526,7 +526,7 @@ CacheManager.prototype.slow_sync = function(feed_id, user_cb, user_err_cb)
 	{
 		// XXX - Error-checking
 
-msg_add("sync.php returned ok, I assume: ", err, errmsg);
+msg_add("sync call returned ok, I assume: ", err, errmsg);
 		// XXX - Sanity checking for value: make sure it's an
 		// array, of length > 0.
 

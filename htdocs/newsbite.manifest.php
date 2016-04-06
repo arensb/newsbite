@@ -37,7 +37,6 @@ images/newsbite-splash-ipad.png
 #NETWORK:
 loadopml.php
 login.php
-sync.php
 update.php
 <?php // The files after "CACHE:" will be cached ?>
 #CACHE:

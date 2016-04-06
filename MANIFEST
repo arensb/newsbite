@@ -62,7 +62,6 @@ htdocs/loadopml.php
 htdocs/login.php
 htdocs/newsbite.manifest.php
 htdocs/rest.php
-htdocs/sync.php
 htdocs/unsubscribe.php
 htdocs/update.php
 htdocs/view.php
