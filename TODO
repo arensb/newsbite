@@ -339,14 +339,6 @@
 		},
 		false);
 - Perhaps add Xdebug extension for PHP: profiler.
-- Speed: jsonify() is apparently quite a time hog: adds ~15% time
-  to just using json_encode().
-  UPDATE: or maybe not. Can't reproduce.
-	lib/json.inc
-	lib/common.inc
-	htdocs/update.php
-	htdocs/feeds.php
-	htdocs/view.php
 - Add a /* SCHEMA */ comment everywhere where the code needs to be
   modified when the schema changes.
 - WaPo articles have <wp:web-link>, <wp:mobile-link>, <wp:share-link>,
