@@ -380,10 +380,8 @@ function flush_queues()
 	/* Build a hash of mark requests to feed to the REST call.
 	 */
 	var now = Math.floor(new Date().getTime()/1000);
-console.debug("second mark_read: ", mark_read);
 	for (var id in mark_read)
 	{
-console.debug("Marking id "+id+" with is_read == "+new Boolean(mark_read[id]));
 		mark_request[id] = [ new Boolean(mark_read[id]),
 				      now
 				    ];
@@ -398,27 +396,22 @@ console.debug("Marking id "+id+" with is_read == "+new Boolean(mark_read[id]));
 		 *	{ id: 12346, is_read: true, mtime: 123456789 },
 		 * ]
 		 */
-console.debug("Got REST response", value);
 		for (var i in value)
 		{
 			var art = value[i];
-console.debug("Looking at response entry "+art);
 			console.debug("id "+art.id);
 			var item = document.getElementById("item-"+art.id);
 
 			if (art.action == "delete")
 			{
-console.debug("marking deleted=yes (because deleted)");
 				item.setAttribute("deleted", "yes");
 				continue;
 			}
 			if (art.is_read)
 			{
-console.debug("marking deleted=yes");
 				item.setAttribute("deleted", "yes");
 				continue;
 			} else {
-console.debug("marking deleted=no");
 				item.setAttribute("deleted", "no");
 			}
 		}
@@ -431,7 +424,6 @@ console.debug("marking deleted=no");
 		// try again later.
 	}
 
-console.debug("REST POST article/read", {ihave:mark_request});
 	REST.call("POST", "article/read",
 		  {ihave: mark_request},
 		  parse_flush_response,

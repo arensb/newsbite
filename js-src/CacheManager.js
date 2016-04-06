@@ -519,7 +519,6 @@ CacheManager.prototype.purge_item = function(item_id)
 
 CacheManager.prototype.slow_sync = function(feed_id, user_cb, user_err_cb)
 {
-console.debug("Inside slow_sync()");
 	/* Inner helper functions */
 
 	// REST callback when things go well
@@ -543,7 +542,6 @@ msg_add("sync.php returned ok, I assume: ", err, errmsg);
 			{
 				// This item doesn't exist in the
 				// database. Remove it from cache.
-console.log("Purging "+entry.id+" because it's deleted");
 				me.purge_item(entry.id);
 				continue;
 			}
@@ -551,13 +549,11 @@ console.log("Purging "+entry.id+" because it's deleted");
 			if (entry.is_read)
 			{
 				// This item is read. Remove from cache.
-console.log("Purging "+entry.id+" because it's read");
 				me.purge_item(entry.id);
 				continue;
 			}
 
 			// This is a new item. Add it to cache.
-console.log("Adding "+entry.id+" because it's unread");
 			try {
 			var item = new Item(entry);
 			me.store_item(item);
@@ -568,20 +564,16 @@ console.log("Adding "+entry.id+" because it's unread");
 			}
 
 			// XXX - What's left?
-console.log("What should I do with this?:\n%o", entry);
+			console.error("What should I do with this?:\n", entry);
 		}
-
-console.debug("slow_sync_cb part 2("+err+", \""+errmsg+"\",", value);
 
 		// Build updated $ihave, to send to GET /article. This
 		// one's just a list of article IDs that we already
 		// have, so the server doesn't send us duplicates.
 		var ihave = [];
-console.debug("creating new ihave from ", me.itemindex);
 		for (var id in me.itemindex)
 		{
 			var header = me.itemindex[id];
-console.debug("Adding id ", header.id);
 			if (feed_id != "all" && header.feed_id != feed_id)
 				// If we're just looking at one feed,
 				// ignore the articles that aren't in
@@ -589,11 +581,8 @@ console.debug("Adding id ", header.id);
 				continue;
 			ihave.push(header.id);
 		}
-console.debug("Getting some more articles from "+feed_id);
-console.debug("feed_id: "+feed_id);
-console.debug("ihave: ", ihave);
 
-		// XXX - Get more articles from this feed
+		// Get more articles from this feed
 		REST.call("GET",
 			  "article" + (feed_id == "all" ? "" : "/"+feed_id),
 			  { "ihave": ihave },
@@ -620,7 +609,6 @@ console.debug("ihave: ", ihave);
 		{
 			var entry = value[i];
 
-console.log("Adding "+entry.id+" because it's unread");
 			try {
 				var item = new Item(entry);
 				me.store_item(item);
@@ -632,7 +620,6 @@ console.log("Adding "+entry.id+" because it's unread");
 		}
 
 		// Call callback function
-console.debug("About to call user callback function, if any.");
 		if (typeof(user_cb) == "function")
 			user_cb();
 	}
