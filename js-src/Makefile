@@ -33,6 +33,6 @@ depend::	Make.depend
 Make.depend:	${JS_SRC} ${OTHER_FILES}
 	$(RM) $@
 	for i in $(JS_SRC); do \
-		$(MAKEDEPEND) -I$(TOP)/js-src -MT `echo "$$i" | sed 's/\.jsh$$/.js/'` $$i >> $@; \
+		$(MAKEDEPEND) -I$(TOP)/js-src -MT $$i < $$i >> $@; \
 	done
 
