@@ -1,7 +1,6 @@
 /*						-*- JavaScript -*- */
 #include "guess-mobile.js"
 #include "defer.js"
-#include "xhr.js"
 #include "rest.js"
 #include "keybindings.js"
 #include "PatEvent.js"

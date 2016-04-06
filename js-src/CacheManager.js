@@ -7,7 +7,6 @@
 /* XXX - Add functions to mark items as read/unread.
  */
 #include "types.js"		// Feed and Item classes
-#include "xhr.js"		// For AJAX requests
 #include "rest.js"		// For REST calls
 #include "defer.js"		// Put off long initialization until later
 
@@ -525,7 +524,7 @@ CacheManager.prototype.slow_sync = function(feed_id, user_cb, user_err_cb)
 console.debug("Inside slow_sync()");
 	/* Inner helper functions */
 
-	// get_json_data callback when things go well
+	// REST callback when things go well
 	function slow_sync_cb(value)
 	{
 msg_add("sync.php returned ok");
@@ -616,7 +615,7 @@ console.debug("ihave: ", ihave);
 			  get_articles_error);
 	}
 
-	// get_json_data callback when there's an error
+	// REST callback when there's an error
 	function slow_sync_error(status, msg)
 	{
 		console.log("slow_sync_error ", status, ": ", msg);
