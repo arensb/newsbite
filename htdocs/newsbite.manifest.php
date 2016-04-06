@@ -2,7 +2,6 @@ CACHE MANIFEST
 # Nonce: <?php echo strftime("%Y-%m-%dT%H:%M:%S"),"\n" ?>
 addfeed.php
 editfeed.php
-feeds.php
 group.php
 index.php
 unsubscribe.php
@@ -37,8 +36,6 @@ images/newsbite-splash-ipad.png
 #NETWORK:
 loadopml.php
 login.php
-markitems.php
-sync.php
 update.php
 <?php // The files after "CACHE:" will be cached ?>
 #CACHE:

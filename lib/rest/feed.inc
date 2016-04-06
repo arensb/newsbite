@@ -387,6 +387,8 @@ error_log("new is now " . print_r($new, true));
 				);
 		}
 
+		// XXX - This "state: end" business is bogus. Replace
+		// it with a proper state, maybe?
 		return array('state'	=> "end",
 			     'feed_id'	=> $err['id'],
 			     'title'	=> $err['title'],

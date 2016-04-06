@@ -339,15 +339,6 @@
 		},
 		false);
 - Perhaps add Xdebug extension for PHP: profiler.
-- Speed: jsonify() is apparently quite a time hog: adds ~15% time
-  to just using json_encode().
-  UPDATE: or maybe not. Can't reproduce.
-	lib/json.inc
-	lib/common.inc
-	htdocs/markitems.php
-	htdocs/update.php
-	htdocs/feeds.php
-	htdocs/view.php
 - Add a /* SCHEMA */ comment everywhere where the code needs to be
   modified when the schema changes.
 - WaPo articles have <wp:web-link>, <wp:mobile-link>, <wp:share-link>,
@@ -429,40 +420,9 @@
   http://developers.facebook.com/docs/reference/plugins/send/
 - markitem code in view.jsh is old and crufty. Fix it.
 	Use AJAX call from xhr.
-- Perhaps have "login" as an AJAX service. Send credentials to a
+- Perhaps have "login" as a REST service. Send credentials to a
   password-protected page; have the page send back a JSON status
   message and a cookie that can be used to retrieve the other pages.
-
-	When an AJAX request to sync.php is made and the session has
-  expired, the server sends back:
-
-	[17:50:19.852] <?xml version="1.0" encoding="UTF-8"?>
-	<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
-		"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
-	<html>
-	<head>
-	<title>NewsBite: Error</title>
-	<link rel="stylesheet" type="text/css" href="css/style.css"
-	  media="all" />
-	<link rel="stylesheet" type="text/css" href="css/abort.css"
-	  media="all" />
-	</head>
-	<body id="abort-body">
-	
-	<h1>Error</h1>
-	
-	<p>Invalid feed ID: &quot;&quot;.</p>
-	
-	<hr/>
-	
-	<ul>
-	  <li><a href="index.php">Feed index</a></li>
-	</ul>
-	
-	</body>
-	</html>
-	 @ http://www.ooblick.com/newsbite/js/view.js:145
-
 - Maybe ought to store a feed's language, so that we can figure out
   how to sort its name correctly in the main feed display (e.g.,
   "Le Monde" (fr) => "MONDE LE", and "El Mundo" (es) => "MUNDO EL").
@@ -1138,16 +1098,6 @@
   update rarely). The idea is, these rules can define a
   partially-ordered set. It would be cool to use these to determine
   the order in which to display articles.
-- Rethink how markitems.php works, which arguments it takes. Check
-  whichever template calls it (view.tpl and item.tpl?).
-	The easiest, no-JavaScript case is probably the way FoF does
-  it: if we're displaying unread items, give the option of marking
-  items as read. If we're displaying all items, give the option of
-  marking items as unread.
-	Perhaps do this by adding a hidden "new_state" input field to
-  the form (and of course update markitems.php to check for it).
-	With JavaScript, we can toggle the state of each item as the
-  user requests.
 - There are a bunch of times when it's handy to parse XML files:
   reading RSS feeds, importing OPML, parsing HTML pages to find the
   feeds, etc.

@@ -7,7 +7,7 @@
 /* XXX - Add functions to mark items as read/unread.
  */
 #include "types.js"		// Feed and Item classes
-#include "xhr.js"		// For AJAX requests
+#include "rest.js"		// For REST calls
 #include "defer.js"		// Put off long initialization until later
 
 /* CacheManager.js
@@ -57,9 +57,7 @@ function CacheManager()
 				// localStorage.
 			// XXX - Keep track of size?
 	this.last_sync = undefined;
-// XXX - Is this.last_sync used? - Yes. Ought to remember it
-				// Time of last update fetched through
-				// "updates.php".
+// XXX - Is this.last_sync used? - I don't think so.
 
 	/* Scan localStorage for stuff saved since last time.
 	 */
@@ -307,7 +305,6 @@ CacheManager.prototype.update_feeds = function(cb)
 	/* Inner helper functions */
 	function update_feeds_callback(value)
 	{
-//msg_add("get_json_data(feeds.php) returned.");
 		// XXX - Ought to update existing feed info, rather
 		// than just replace what's there. [[In particular, if
 		// 'value' doesn't contain the read/unread counts,
@@ -340,14 +337,14 @@ CacheManager.prototype.update_feeds = function(cb)
 	/* update_feeds() main */
 	var self = this;	// Remember 'this' to pass to callback
 				// function.
-//msg_add("get_json_data(feeds.php)");
-	get_json_data("feeds.php",
-		      { },
-		      update_feeds_callback,
-		      function(status, msg) {	// Error handler
-			      msg_add("feeds.php JSON failed: "+status+": "+msg);
-		      },
-		      true);
+	REST.call("GET", "feed", null,
+		  function(err, errmsg, value) {
+			  // XXX - Error-checking
+			  update_feeds_callback(value);
+		  },
+		  function(err, errmsg) {
+			  msg_add("Getting feeds failed: "+err+": "+errmsg);
+		  });
 }
 
 /* store_feeds
@@ -524,10 +521,12 @@ CacheManager.prototype.slow_sync = function(feed_id, user_cb, user_err_cb)
 {
 	/* Inner helper functions */
 
-	// get_json_data callback when things go well
-	function slow_sync_cb(value)
+	// REST callback when things go well
+	function slow_sync_cb(err, errmsg, value)
 	{
-msg_add("sync.php returned ok");
+		// XXX - Error-checking
+
+msg_add("sync call returned ok, I assume: ", err, errmsg);
 		// XXX - Sanity checking for value: make sure it's an
 		// array, of length > 0.
 
@@ -565,7 +564,59 @@ msg_add("sync.php returned ok");
 			}
 
 			// XXX - What's left?
-console.log("What should I do with this?:\n%o", entry);
+			console.error("What should I do with this?:\n", entry);
+		}
+
+		// Build updated $ihave, to send to GET /article. This
+		// one's just a list of article IDs that we already
+		// have, so the server doesn't send us duplicates.
+		var ihave = [];
+		for (var id in me.itemindex)
+		{
+			var header = me.itemindex[id];
+			if (feed_id != "all" && header.feed_id != feed_id)
+				// If we're just looking at one feed,
+				// ignore the articles that aren't in
+				// that feed.
+				continue;
+			ihave.push(header.id);
+		}
+
+		// Get more articles from this feed
+		REST.call("GET",
+			  "article" + (feed_id == "all" ? "" : "/"+feed_id),
+			  { "ihave": ihave },
+			  get_articles_cb,
+			  get_articles_error);
+	}
+
+	// REST callback when there's an error
+	function slow_sync_error(status, msg)
+	{
+		console.log("slow_sync_error ", status, ": ", msg);
+		msg_add("slow_sync_error "+status+": "+msg);
+		if (typeof(user_err_cb) == "function")
+			user_err_cb(status, msg);
+	}
+
+	/* get_articles_cb
+	 * Callback function for when we get more articles.
+	 */
+	function get_articles_cb(err, errmsg, value)
+	{
+		// 'value' is an array of items.
+		for (var i in value)
+		{
+			var entry = value[i];
+
+			try {
+				var item = new Item(entry);
+				me.store_item(item);
+				continue;
+			} catch(e) {
+				console.error("Can't add item: %o", e);
+				console.trace();
+			}
 		}
 
 		// Call callback function
@@ -573,13 +624,13 @@ console.log("What should I do with this?:\n%o", entry);
 			user_cb();
 	}
 
-	// get_json_data callback when there's an error
-	function slow_sync_error(status, msg)
+	/* get_articles_error
+	 * Callback function for GET /article fails.
+	 */
+	function get_articles_error(err, errmsg)
 	{
-		console.log("slow_sync_error ", status, ": ", msg);
-		msg_add("slow_sync_error "+status+": "+msg);
-		if (typeof(user_err_cb) == "function")
-			user_err_cb(status, msg);
+		msg_add("Getting articles failed: "+err+": "+errmsg);
+		console.error("Getting articles failed: "+err+": "+errmsg);
 	}
 
 	/* slow_sync() main */
@@ -592,22 +643,21 @@ console.log("What should I do with this?:\n%o", entry);
 	{
 		/* Compose list of {id, mtime, is_read} entries to send */
 		var header = this.itemindex[id];
-		tosend[header.id] = {
-			     is_read:	header.is_read,
-			     mtime:	header.mtime,
-			};
+		tosend[header.id] = [ header.is_read, header.mtime ];
 	}
 
 	/* Send to server */
-msg_add("get_json_data(sync.php)");
-	get_json_data("sync.php",
-		      {id: feed_id,
-		       ihave: JSON.stringify(tosend),
-		      },
-		      slow_sync_cb,
-		      slow_sync_error,
-		      true);
-	// Response will be collected by slow_sync_cb
+
+	// The REST version doesn't do everything. We need to
+	// make two calls:
+
+	// 1) Tell the server about all the items we have, and whether
+	// they're read or not. Get an update.
+	// 2) Fetch the latest articles from 'feed_id'.
+	REST.call("POST", "article/read",
+		  { ihave: tosend },
+		  slow_sync_cb,
+		  slow_sync_error);
 }
 
 #endif	// _CacheManager_js_

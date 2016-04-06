@@ -2,16 +2,8 @@
  * JavaScript functions for the group-editing page.
  */
 #include "guess-mobile.js"
-// #include "defer.js"
-#include "xhr.js"
-/*#include "keybindings.js"*/
-/*#include "PatEvent.js"*/
-/*#include "types.js"*/
+#include "rest.js"
 #include "Template.js"
-/*#include "CacheManager.js"*/
-//#include "load_module.js"
-// XXX - Should block multiple updates from occurring in parallel.
-/*#include "status-msg.js"*/
 
 document.addEventListener("DOMContentLoaded", init, false);
 
@@ -35,8 +27,10 @@ function refresh_group_tree()
 	/* _draw_group_tree
 	 * Find the #group-tree div, and populate it with a tree of groups.
 	 */
-	function _draw_group_tree(tree)
+	function _draw_group_tree(err, errmsg, tree)
 	{
+		// XXX - Check err to make sure the call was successful.
+
 		/* Find #group-tree */
 		var group_list = $("#group-tree");
 
@@ -103,12 +97,12 @@ function refresh_group_tree()
 	}
 
 	// refresh_group_tree main:
-	get_json_data("group.php",
-		      { command:	'tree',
-		      },
-		      _draw_group_tree,
-		      null,
-		      false);
+	REST.call("GET", "group", undefined,
+		  _draw_group_tree,
+		  function(err, errmsg){
+			  console.log("GET /group error: "+err+": "+errmsg);
+		  },
+		  undefined);
 }
 
 /* add_group
@@ -124,26 +118,18 @@ function add_group(ev)
 	var parent = this.elements["parent"].value;
 		// XXX - Do we care that 'parent' is a string, not an int?
 
-	// Make AJAX call to create group
-	get_json_data("group.php",
-		      { command:	"add",
-			name:		name,
-			parent:		parent
-		      },
-		      // Handler
-		      function(value)
-		      {
-			      // Update the group tree, above.
-			      refresh_group_tree();
-		      },
-		      // Error handler
-		      function(status, msg)
-		      {
-			      console.error("Failed to create group: error "+
-					    status+
-					    ", error "+err);
-		      },
-		      true);
+	// Make REST call to create group
+	REST.call("PUT", "group",
+		  { name:	name,
+		    parent:	parent,
+		  },
+		  function(err, errmsg, value) {
+			  // XXX - Error-checking
+			  refresh_group_tree();
+		  },
+		  function(err, errmsg) {
+			  console.error("Failed to create group: error "+err+": "+errmsg);
+		  });
 }
 
 /* edit_group
@@ -187,25 +173,16 @@ console.log("Inside delete_group, gid: ", gid);
 	var parent_entry = this_entry.parents(".group-entry:first");
 	var child_entries = this_entry.children(".child-groups");
 
-	// XXX - Make an AJAX call to delete the group.
-	get_json_data("group.php",
-		      { command:	"delete",
-			id:		gid,
-		      },
-		      // Handler
-		      function(value)
-		      {
-			      // Update the group tree, above.
-			      refresh_group_tree();
-		      },
-		      // Error handler
-		      function(status, msg)
-		      {
-			      console.error("Failed to delete group: error "+
-					    status+
-					    ", error "+err);
-		      },
-		      true);
+	// Make REST call to delete group.
+	REST.call("DELETE", "group/"+gid,
+		  null,
+		  function(err, errmsg, value) {
+			  // XXX - Error-handling
+			  refresh_group_tree();
+		  },
+		  function(err, errmsg) {
+			  console.error("Failed to delete group: "+err+": "+errmsg);
+		  });
 
 	// XXX - Update the copy of the group tree in local storage.
 	// XXX - Update feeds in local storage?

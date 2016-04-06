@@ -209,6 +209,7 @@ class RESTController_article {
 	 */
 	function mark_articles($rreq)
 	{
+error_log("Inside mark_articles()");
 		// Get $ihave
 		// This is a hash of the form $id => [is_read?, mtime]
 		// $ihave == {
@@ -226,7 +227,10 @@ class RESTController_article {
 		if (!is_object($ihave) && !is_array($ihave))
 			throw new RESTException(NULL, "Not a hash");
 		$client_ids = array();
-		foreach ($ihave as $key => $value)
+		foreach ($ihave as $key => &$value)
+			// In this foreach loop, note that &$value is
+			// by-reference, because we might be changing
+			// it.
 		{
 			// Make sure each ID is reasonable
 			if (!is_numeric($key) || !is_integer($key+0))
@@ -236,6 +240,11 @@ class RESTController_article {
 			// XXX - Check $value, perhaps, to make sure
 			// it has a boolean and a non-negative
 			// integer?
+
+			// mtime is probably a date. If so, convert it
+			// to a time_t.
+			if (!is_numeric($value[1]) || !is_integer($value[1]+0))
+				$value[1] = strtotime($value[1]);
 		}
 
 		// Get the articles in $ihave
@@ -276,6 +285,7 @@ class RESTController_article {
 			/* By this point, the caller and database disagree */
 			if ($ihave[$id][1] > $db_items[$id]['mtime'])
 			{
+error_log("Update the database");
 				// Update the database
 				db_mark_items((bool) $ihave[$id][0],
 					      array($id));
@@ -290,6 +300,7 @@ class RESTController_article {
 						  "mtime"	=> $ihave[$id][1]
 					);
 			} else {
+error_log("Update the client");
 				// Database is more recent than the
 				// client. In case of a tie, the
 				// database wins.
@@ -304,6 +315,7 @@ class RESTController_article {
 		}
 
 		// Send differences back to the client.
+error_log("Returning differences: " . print_r($retval, true));
 		return $retval;
 	}
 }

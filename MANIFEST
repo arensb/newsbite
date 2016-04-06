@@ -37,7 +37,6 @@ htdocs/css/style.css
 htdocs/css/unsubscribe.css
 htdocs/css/view.css
 htdocs/editfeed.php
-htdocs/feeds.php
 htdocs/fonts/Roboto-Regular-webfont.woff
 htdocs/fonts/Roboto-Thin-webfont.woff
 htdocs/group.php
@@ -60,10 +59,8 @@ htdocs/js/view.js
 htdocs/js/view.jsh
 htdocs/loadopml.php
 htdocs/login.php
-htdocs/markitems.php
 htdocs/newsbite.manifest.php
 htdocs/rest.php
-htdocs/sync.php
 htdocs/unsubscribe.php
 htdocs/update.php
 htdocs/view.php
@@ -77,10 +74,12 @@ image-src/newsbite-splash.xcf
 js-src/CacheManager.js
 js-src/PatEvent.js
 js-src/Template.js
+js-src/config.js.in
 js-src/defer.js
 js-src/guess-mobile.js
 js-src/keybindings.js
 js-src/load_module.js
+js-src/rest.js
 js-src/status-msg.js
 js-src/types.js
 js-src/xhr.js
