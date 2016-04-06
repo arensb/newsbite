@@ -33,12 +33,12 @@ images/gray-bg.jpg
 images/newsbite-icon.png
 images/newsbite-splash-ipad.png
 <?php // The files after the "NETWORK:" line will be fetched each time. ?>
-#NETWORK:
+NETWORK:
 loadopml.php
 login.php
 update.php
 <?php // The files after "CACHE:" will be cached ?>
-#CACHE:
+CACHE:
 # Fetch anything else from the network, always.
 NETWORK:
 *

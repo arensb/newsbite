@@ -7,6 +7,7 @@
 $verbose = FALSE;		// Enables verbose output
 
 $default_fmt = "html";
+$feed_id = NULL;
 if (php_sapi_name() == "cli")
 {
 	$default_fmt = "console";	// If we're on the command line, default to text output.
@@ -26,7 +27,8 @@ if (php_sapi_name() == "cli")
 	$quiet   = isset($opts["q"]);
 } else {
 	// We're running from CGI. Get feed ID from the HTTP request.
-	$feed_id = $_REQUEST["id"];
+	if (isset($_REQUEST["id"]))
+		$feed_id = $_REQUEST["id"];
 }
 
 require_once("common.inc");
