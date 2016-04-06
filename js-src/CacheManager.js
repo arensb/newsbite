@@ -57,9 +57,7 @@ function CacheManager()
 				// localStorage.
 			// XXX - Keep track of size?
 	this.last_sync = undefined;
-// XXX - Is this.last_sync used? - Yes. Ought to remember it
-				// Time of last update fetched through
-				// "updates.php".
+// XXX - Is this.last_sync used? - I don't think so.
 
 	/* Scan localStorage for stuff saved since last time.
 	 */
@@ -525,9 +523,11 @@ console.debug("Inside slow_sync()");
 	/* Inner helper functions */
 
 	// REST callback when things go well
-	function slow_sync_cb(value)
+	function slow_sync_cb(err, errmsg, value)
 	{
-msg_add("sync.php returned ok");
+		// XXX - Error-checking
+
+msg_add("sync.php returned ok, I assume: ", err, errmsg);
 		// XXX - Sanity checking for value: make sure it's an
 		// array, of length > 0.
 
@@ -571,26 +571,12 @@ console.log("Adding "+entry.id+" because it's unread");
 console.log("What should I do with this?:\n%o", entry);
 		}
 
-		// Call callback function
-		// XXX - This should probably be called after we get some
-		// new articles.
-		if (typeof(user_cb) == "function")
-			user_cb();
-	}
+console.debug("slow_sync_cb part 2("+err+", \""+errmsg+"\",", value);
 
-	function slow_sync_cb2(err, errmsg, value)
-	{
-console.debug("slow_sync_cb2("+err+", \""+errmsg+"\",", value);
-		// XXX - Fold this into slow_sync_cb() when we get rid
-		// of get_json_data().
-
-		// XXX - Error-checking
-		slow_sync_cb(value);
-
-		// XXX - Deal with response from marking articles.
-		// XXX - Build updated $ihave
+		// Build updated $ihave, to send to GET /article. This
+		// one's just a list of article IDs that we already
+		// have, so the server doesn't send us duplicates.
 		var ihave = [];
-
 console.debug("creating new ihave from ", me.itemindex);
 		for (var id in me.itemindex)
 		{
@@ -644,6 +630,11 @@ console.log("Adding "+entry.id+" because it's unread");
 				console.trace();
 			}
 		}
+
+		// Call callback function
+console.debug("About to call user callback function, if any.");
+		if (typeof(user_cb) == "function")
+			user_cb();
 	}
 
 	/* get_articles_error
@@ -660,17 +651,12 @@ console.log("Adding "+entry.id+" because it's unread");
 	var me = this;		// 'this' for child functions.
 
 	/* Get list of items in cache */
-	var tosend = {};	// XXX - Get rid of this when we switch to REST
-	var tosend2 = {};	// XXX - Rename this when we switch to REST
+	var tosend = {};
 	for (var id in this.itemindex)
 	{
 		/* Compose list of {id, mtime, is_read} entries to send */
 		var header = this.itemindex[id];
-		tosend[header.id] = {
-			     is_read:	header.is_read,
-			     mtime:	header.mtime,
-			};
-		tosend2[header.id] = [ header.is_read, header.mtime ];
+		tosend[header.id] = [ header.is_read, header.mtime ];
 	}
 
 	/* Send to server */
@@ -682,8 +668,8 @@ console.log("Adding "+entry.id+" because it's unread");
 	// they're read or not. Get an update.
 	// 2) Fetch the latest articles from 'feed_id'.
 	REST.call("POST", "article/read",
-		  { ihave: tosend2 },
-		  slow_sync_cb2,
+		  { ihave: tosend },
+		  slow_sync_cb,
 		  slow_sync_error);
 }
 
