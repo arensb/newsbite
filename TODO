@@ -85,7 +85,6 @@
 	- Create this parent class.
 	- Move $rreq into it
 	- See which functions make sense as standalones
-- REST: Move the class from htdocs/rest.php to lib/rest.inc
 - REST: Would it make sense to take some of the methods out of REST
   controller classes, and make them global functions?
 	Yes if that makes them easier to call from exernal programs,

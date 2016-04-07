@@ -49,7 +49,7 @@ htdocs/images/Loading.gif
 htdocs/images/gray-bg.jpg
 htdocs/images/newsbite-icon.png
 htdocs/images/newsbite-splash-ipad.png
-htdocs/index.php
+htdocs/index.html
 htdocs/js/Makefile
 htdocs/js/feeds.jsh
 htdocs/js/group.jsh
@@ -92,6 +92,7 @@ lib/hooks.inc
 lib/json.inc
 lib/net.inc
 lib/parse-feed.inc
+lib/rest.inc
 lib/rest/article.inc
 lib/rest/feed.inc
 lib/rest/group.inc
