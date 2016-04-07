@@ -1,4 +1,7 @@
 <?php
+$default_fmt = "json";
+require_once("common.inc");	// For authentication, mostly
+
 // REST-related classes and such. Inspired by
 // http://www.lornajane.net/posts/2012/building-a-restful-php-server-understanding-the-request
 class RESTException extends Exception {
@@ -79,6 +82,11 @@ class RESTReq
 
 	function __construct(&$server = NULL, &$body_text = NULL)
 	{
+		/* We don't authenticate or authorize the caller here.
+		 * Rather, we rely on .htaccess to authenticate (and
+		 * assume that anyone who's authenticated is
+		 * authorized).
+		 */
 		global $_SERVER;
 
 		// If the server variables weren't specified, use
@@ -163,11 +171,6 @@ class RESTReq
 			// what to do with it.
 			break;
 		}
-
-		// XXX - Authenticate the client.
-		// Authorization should probably happen at the class
-		// level.
-		// Parse the "newsbite_user" cookie, if there is one.
 
 		// Find out what kind of output the client wants:
 		$outfmt = $this->url_param("o");
