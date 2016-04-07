@@ -36,17 +36,8 @@ function get_json_data(url, params, handler, err_handler, batch)
 			var errmsg;
 
 			/* Get HTTP status */
-			// XXX - Is this try/catch even necessary?
-			// AFAICT it comes from the earliest revision
-			// of this function, when I may have been
-			// overly paranoid.
-			try {
-				err = request.status;
-				errmsg = request.statusText;
-			} catch (e) {
-				err = 1;
-msg_add("I caught a weird error: "+e);
-			}
+			err = request.status;
+			errmsg = request.statusText;
 
 			/* If the HTTP status isn't 200, abort the request */
 			if (err != 200)

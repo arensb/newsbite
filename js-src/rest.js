@@ -60,17 +60,8 @@ REST.call = function(verb, path, params, handler, err_handler)
 			var errmsg;
 
 			/* Get HTTP status */
-			// XXX - Is this try/catch even necessary?
-			// AFAICT it comes from the earliest revision
-			// of this function, when I may have been
-			// overly paranoid.
-			try {
-				err = request.status;
-				errmsg = request.statusText;
-			} catch (e) {
-				err = 1;
-msg_add("I caught a weird error: "+e);
-			}
+			err = request.status;
+			errmsg = request.statusText;
 
 			/* If the HTTP status is 401, that means the
 			 * request failed because you're not logged
@@ -113,17 +104,8 @@ msg_add("I caught a weird error: "+e);
 			var errmsg;
 
 			/* Get HTTP status */
-			// XXX - Is this try/catch even necessary?
-			// AFAICT it comes from the earliest revision
-			// of this function, when I may have been
-			// overly paranoid.
-			try {
-				err = request.status;
-				errmsg = request.statusText;
-			} catch (e) {
-				err = 1;
-msg_add("I caught a weird error: "+e);
-			}
+			err = request.status;
+			errmsg = request.statusText;
 
 			// The response is a JSON object.
 			if (request.responseText == "")
