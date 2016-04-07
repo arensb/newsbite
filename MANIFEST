@@ -126,3 +126,4 @@ tests/README
 tests/close-unopened-tags.xml
 tests/test-rest
 tests/test-rest-feeds
+tests/update-feed
