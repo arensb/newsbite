@@ -27,6 +27,25 @@ REST.call = function(verb, path, params, handler, err_handler)
 {
 	var request;
 
+	/* login_retry
+	 * If a REST call fails because we're not logged in, log in
+	 * and try again.
+	 */
+	function login_retry()
+	{
+		// Fetch login.php. The "o=json" bit is really to make
+		// it work with a RESTful request.
+		REST.call("GET", "login?o=json", null,
+			  function(err, errmsg, value) {
+				  // XXX - Error-checking.
+				  return REST.call(verb, path, params, handler, err_handler);
+			  },
+			  function(err, errmsg) {
+				  console.error("Failed to log in: "+err+": "+errmsg);
+			  });
+		// XXX - Retry this call
+	}
+
 	function rest_call_callback()
 	{
 		// XXX - Adapt this from get_json_callback_batch
@@ -53,6 +72,18 @@ REST.call = function(verb, path, params, handler, err_handler)
 msg_add("I caught a weird error: "+e);
 			}
 
+			/* If the HTTP status is 401, that means the
+			 * request failed because you're not logged
+			 * in. So log in and try again.
+			 */
+			if (err == 401)
+			{
+				// Abort the current request.
+				request.abort();
+				request.aborted = true;
+
+				login_retry();
+			}
 //			/* If the HTTP status isn't 200, abort the request */
 //			if (err != 200)
 //			{
@@ -78,6 +109,22 @@ msg_add("I caught a weird error: "+e);
 //			}
 			return;
 		    case 4:
+			var err;
+			var errmsg;
+
+			/* Get HTTP status */
+			// XXX - Is this try/catch even necessary?
+			// AFAICT it comes from the earliest revision
+			// of this function, when I may have been
+			// overly paranoid.
+			try {
+				err = request.status;
+				errmsg = request.statusText;
+			} catch (e) {
+				err = 1;
+msg_add("I caught a weird error: "+e);
+			}
+
 			// The response is a JSON object.
 			if (request.responseText == "")
 				// XXX - No text given. Should have better
