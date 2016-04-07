@@ -2,6 +2,9 @@
   file, a bunch of entries in the `counts` table were created badly:
   they all have num_read==9. In those cases where there aren't 9 items
   total, this leads to a negative unread count.
+	Looks like this was due to the update_item trigger being
+  truncated: it was missing the "WHERE" line at the end. Does this
+  happen in real life?
 - Bug?: The feed URL is being updated where it arguably shouldn't be:
 	When update.php runs, it says that a feed has an HTTP redirect,
   e.g.,
