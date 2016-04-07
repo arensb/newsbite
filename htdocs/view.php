@@ -47,7 +47,7 @@ var page_top_tmpl_text = '<img class="feed-icon" src="@image@"/>\
 <div class="feed-description">@description@</div>\
 \
 <ul class="feed-tools">\
-  <li><a href="index.php">Feed index</a></li>\
+  <li><a href="index.html">Feed index</a></li>\
   <li><a href="update.php?id=@id@">Update feed</a></li>\
   <li><a href="editfeed.php?id=@id@">Edit feed</a></li>\
   <li><a href="unsubscribe.php?id=@id@">Unsubscribe from feed</a></li>\

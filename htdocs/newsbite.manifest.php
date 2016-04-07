@@ -1,9 +1,9 @@
 CACHE MANIFEST
 # Nonce: <?php echo strftime("%Y-%m-%dT%H:%M:%S"),"\n" ?>
+index.html
 addfeed.php
 editfeed.php
 group.php
-index.php
 unsubscribe.php
 view.php
 js/feeds.js

@@ -28,7 +28,7 @@ if ($confirm == "yes")
 		// XXX - Error-checking
 
 	/* Redirect back to the main page */
-	redirect_to("index.php");
+	redirect_to("index.html");
 	exit(0);
 }
 

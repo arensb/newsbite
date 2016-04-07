@@ -344,7 +344,7 @@ function update_feed_info($feed_id)
 	if ($new['active'])
 		redirect_to("view.php#id=$feed_id");
 	else
-		redirect_to("index.php");
+		redirect_to("index.html");
 }
 
 /* html_group_list

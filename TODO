@@ -148,8 +148,6 @@
 	Electoral Vote (123) in News (-2)
 	Electoral Vote (123) in All (-1)
 	Politics (-3) in All (-1)
-- Authentication: perhaps allow clients to send either a cookie, or an
-  auth=<token> parameter. That might be easier for REST.
 - Use OAuth for authentication?
   http://oauth.net/2/
   Except it's apparentlly a mess, hard to use, hard to know when it's
