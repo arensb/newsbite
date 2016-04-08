@@ -367,7 +367,7 @@ class RESTReq
 			error_log("Exiting " .
 				  $this->verb() . " " .
 				  $this->path() .
-				  " with status $status," .
+				  " with status $status, " .
 				  (isset($msg) ?
 				   "Error message \"$msg\"." :
 				   "No error message."));
