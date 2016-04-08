@@ -2,7 +2,7 @@
 /* rest_opml
  * OPML-related REST stuff.
  */
-require_once("common.inc");
+require_once("common.inc");		// Mostly for authentication
 require_once("database.inc");
 
 class RESTController_opml {

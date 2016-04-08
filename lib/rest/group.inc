@@ -1,7 +1,5 @@
 <?php
-// XXX - Want common.inc in production. Actually, we just want authentication/authorization.
-$NO_AUTH_CHECK=TRUE;		// XXX - Remove in production
-require_once("common.inc");
+require_once("common.inc");		// Mostly for authentication
 require_once("database.inc");
 require_once("group.inc");
 
@@ -91,25 +89,11 @@ class RESTController_group {
 				if (!isset($group_id))
 					// Error if $group_id is not set.
 					throw new RESTException(NULL, "ID not found");
-				// XXX - POST /group/-123
+				// POST /group/-123
 				// Update information for a group
 				return $this->set_group_info($group_id, $rreq);
 			}
 			break;
-
-		//    case "update":
-		//	switch ($rreq->verb())
-		//	{
-		//	    case "PUT":
-		//		if (isset($group_id))
-		//			return $this->update_group($group_id, $rreq);
-		//		else
-		//			return $this->update_all_groups($rreq);
-		//
-		//	    default:
-		//		throw new RESTException(NULL, "Invalid verb");
-		//	}
-		//	break;
 
 		    default:
 			throw new RESTException(NULL, "Bad command $cmd");

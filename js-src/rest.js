@@ -22,7 +22,6 @@ var REST = {
  *	data is returned.
  * 'err_handler' is a function that will be called in case of error.
  */
-// XXX - What parameters do handler and err_handler take?
 REST.call = function(verb, path, params, handler, err_handler)
 {
 	var request;
@@ -38,17 +37,17 @@ REST.call = function(verb, path, params, handler, err_handler)
 		REST.call("GET", "login?o=json", null,
 			  function(err, errmsg, value) {
 				  // XXX - Error-checking.
+
+				  // Retry the call
 				  return REST.call(verb, path, params, handler, err_handler);
 			  },
 			  function(err, errmsg) {
 				  console.error("Failed to log in: "+err+": "+errmsg);
 			  });
-		// XXX - Retry this call
 	}
 
 	function rest_call_callback()
 	{
-		// XXX - Adapt this from get_json_callback_batch
 		switch (request.readyState)
 		{
 		    case 0:		// Uninitialized
@@ -89,14 +88,6 @@ REST.call = function(verb, path, params, handler, err_handler)
 //				// XXX - Does a non-200 HTTP request
 //				// count as an error in the REST
 //				// world?
-//
-//				// XXX - If the status is 401 (not
-//				// logged in), then ought to log in
-//				// through login.php, then resubmit
-//				// the original request.
-//				if (err_handler != null)
-//					err_handler(request.status,
-//						    request.statusText);
 //			}
 			return;
 		    case 4:
@@ -120,14 +111,12 @@ REST.call = function(verb, path, params, handler, err_handler)
 			} catch (e) {
 				// XXX - Do something smarter?
 
-				// XXX - When the session times out, this is
-				// where things fail, because the server
-				// returns HTTP. Probably ought to check the
-				// status code; if it's 401, then we need to
-				// log back in, then resubmit the AJAX
+				// XXX - When the session times out,
+				// this is where things fail, because
+				// the server returns HTTP. Probably
+				// ought to check the status code. If
+				// it's a timeout, retry the original
 				// request.
-				// Is there any memory anywhere of the URL,
-				// parameters, etc. of the original request?
 				console.error(request);
 				console.error("Can't parse response: "+e);
 msg_add("REST.call: Can't parse response");
@@ -156,7 +145,7 @@ msg_add("rest_call: can't create XMLHttpRequest: "+request);
 	request.setRequestHeader('Content-Type', 'application/json');
 	request.timeout = 10000;		// Timeout, in ms.
 
-	// XXX - Construct body
+	// Construct body
 	var body = null;
 	if (params != undefined)
 		body = JSON.stringify(params);

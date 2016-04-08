@@ -1,6 +1,5 @@
 <?php
-// XXX - Want common.inc in production. Actually, we just want authentication/authorization.
-//require_once("common.inc");
+require_once("common.inc");		// Mostly for authentication
 require_once("database.inc");
 require_once("net.inc");
 
@@ -252,8 +251,6 @@ class RESTController_feed {
 	function set_feed_info($feed_id, $rreq)
 	{
 		// XXX - Blatantly stolen from editfeed.php get_feed_info().
-		// Check and adapt it.
-
 		$feed_info = db_get_feed($feed_id);
 		if ($feed_info === NULL)
 			throw new RESTException(NULL, "Invalid feed ID: $feed_id");
@@ -351,8 +348,7 @@ error_log("new is now " . print_r($new, true));
 	 */
 	function update_feed($feed_id, $rreq)
 	{
-		// XXX
-		error_log("Updating feed $feed_id");
+error_log("Updating feed $feed_id");
 
 		$feed = db_get_feed($feed_id);
 		if ($feed === NULL)
