@@ -583,9 +583,9 @@ msg_add("sync call returned ok, I assume: ", err, errmsg);
 		}
 
 		// Get more articles from this feed
-		REST.call("GET",
-			  "article" + (feed_id == "all" ? "" : "/"+feed_id),
-			  { "ihave": ihave },
+		REST.call("GET", "article",
+			  { "feed_id": feed_id,
+			    "ihave": ihave },
 			  get_articles_cb,
 			  get_articles_error);
 	}
