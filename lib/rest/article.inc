@@ -137,11 +137,17 @@ class RESTController_article {
 		if (!isset($feed_id))
 			// Defaults to "all"
 			$feed_id = "all";
-		else
+		else {
 			// Make sure feed ID is sane.
 			if (!is_numeric($feed_id) ||
 			    !is_integer($feed_id+0))
 				throw new RESTException(NULL, "Invalid feed ID");
+			// Apparently is_numeric("123"), but not
+			// is_integer("123"). But if we add 0, we turn
+			// the string into an ingeger. Let's do that,
+			// because that'll make life simpler.
+			$feed_id += 0;
+		}
 
 		// Get max-articles
 		$max_articles = $rreq->body_param('n');
