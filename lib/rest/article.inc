@@ -3,14 +3,11 @@ require_once("common.inc");		// Mainly for authorization.
 require_once("database.inc");
 
 /* article REST controller
- *	GET /article
- *		&feed={123|all}
- *		&group=123
- *		&limit=100
- *		&read		Include read articles
- *		XXX - Should this be broken down into, say,
- *		GET /article/feed?feed_id=123
- *		GET /article/group?gid=-123
+ *	GET /article/123
+ *	POST /article/latest
+ *		feed_id={123|all}	Defaults to "all"
+ *		n=100			Defaults to 100
+ *		group=$gid
  *	POST /article/read
  *		Mark article(s) as read/unread
  */
@@ -56,18 +53,27 @@ class RESTController_article {
 			switch ($rreq->verb())
 			{
 			    case "GET":
-				if (isset($art_id))
+				if (!isset($art_id))
+					throw new RESTException(NULL, "ID not found");
 					// GET /article/123
 					// Get one article.
 					return $this->get_article($art_id, $rreq);
-				else
-					// GET /article
-					// Get several articles.
-					return $this->get_articles($rreq);
 				break;
 
 			    default:
 				throw new RESTException(NULL, "Invalid verb");
+			}
+			break;
+
+		    case "latest":
+			switch ($rreq->verb())
+			{
+			    case "POST":
+				if (isset($art_id))
+					// Error if $art_id is set.
+					throw new RESTException(NULL, "ID not found");
+				return $this->get_articles($rreq);
+				break;
 			}
 			break;
 
@@ -76,12 +82,12 @@ class RESTController_article {
 			{
 			    case "POST":
 				if (isset($art_id))
-					// Error if $art_id is not set.
+					// Error if $art_id is set.
 
 					// XXX - Perhaps eventually add
 					// POST /article/read/123?read={true|false},
 					// for marking individual articles?
-					throw new RESTException(NULL, "ID not found");
+					throw new RESTException(NULL, "ID not allowed");
 				// POST /article/read
 				// Mark articles as read/unread
 				return $this->mark_articles($rreq);
