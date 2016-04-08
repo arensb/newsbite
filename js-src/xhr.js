@@ -4,26 +4,6 @@
 #ifndef _xhr_js_
 #define _xhr_js_
 
-/* createXMLHttpRequest
- * Create a new XMLHttpRequest object, hopefully in a
- * browser-independent manner.
- */
-// I'm not sure why, but Chrome really wants
-//	createXMLHttpRequest = function() ...
-// rather than
-//	function createXMLHttpRequest()
-var createXMLHttpRequest = function()
-{
-	var request = false;
-	try {
-		request = new XMLHttpRequest();
-	} catch (e) {
-		console.error("Error creating XMLHttpRequest: "+e);
-		request = false;
-	}
-	return request;
-}
-
 /* get_json_data
  * Send a request for JSON data.
  * 'url' is the URL from which to fetch the data.
@@ -56,17 +36,8 @@ function get_json_data(url, params, handler, err_handler, batch)
 			var errmsg;
 
 			/* Get HTTP status */
-			// XXX - Is this try/catch even necessary?
-			// AFAICT it comes from the earliest revision
-			// of this function, when I may have been
-			// overly paranoid.
-			try {
-				err = request.status;
-				errmsg = request.statusText;
-			} catch (e) {
-				err = 1;
-msg_add("I caught a weird error: "+e);
-			}
+			err = request.status;
+			errmsg = request.statusText;
 
 			/* If the HTTP status isn't 200, abort the request */
 			if (err != 200)
@@ -223,10 +194,10 @@ msg_add("Can't parse JSON line");
 
 	/* get_json_data() main */
 
-	var request = createXMLHttpRequest();
+	var request = new XMLHttpRequest();
 	if (!request)
 	{
-msg_add("get_json_data: can't createXMLHttpRequest: "+request);
+msg_add("get_json_data: can't create XMLHttpRequest: "+request);
 		return null;
 	}
 

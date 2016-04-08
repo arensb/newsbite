@@ -83,6 +83,62 @@ abstract class feed_update_handler
 	abstract function error($feed_id, $feed_title, $msg);
 }
 
+/* cumulative_handler
+
+ * A handler for update_all_feeds() that just collects all of the
+ * data, and returns it all at the end.
+ */
+class cumulative_handler extends feed_update_handler
+{
+	private $current_feed;
+	private $feed_status;
+		// XXX - Should there be an overall status? That is,
+		// if one or two
+
+	function __constructor()
+	{
+		$this->current_feed = NULL;
+		$this->feed_status = array();
+	}
+
+	/* start_feed: we're about to start updating the given feed */
+	function start_feed($feed_id, $feed_title)
+	{
+		$this->current_feed = array(
+			"id"	=> $feed_id,
+			"title"	=> $feed_title,
+			);
+	}
+
+	/* end_feed: we've finished updating the given feed */
+	function end_feed(&$feed)
+	{
+		foreach ($feed as $key => $value)
+		{
+			$this->current_feed[$key] = $value;
+		}
+		$this->feed_status[] = $this->current_feed;
+	}
+
+	/* error: an error has occurred */
+	function error($feed_id, $feed_title, $msg)
+	{
+		error_log("error in feed $feed_id: $feed_title: $msg");
+		// XXX - Record an error for the current feed?
+		$this->current_feed['status'] = "error";
+		if (isset($this->current_feed['errmsg']))
+			$this->current_feed['errmsg'] .= $msg;
+		else
+			$this->current_feed['errmsg'] = $msg;
+	}
+
+	function finish()
+	{
+		$this->feed_status[] = $this->current_feed;
+		return $this->feed_status;
+	}
+}
+
 /* update_all_feeds
  * As the name implies, this updates all the feeds listed in the
  * database.

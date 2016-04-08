@@ -1,3 +1,10 @@
+- Bug: On the dev box, at some point, possibly when I imported an OPML
+  file, a bunch of entries in the `counts` table were created badly:
+  they all have num_read==9. In those cases where there aren't 9 items
+  total, this leads to a negative unread count.
+	Looks like this was due to the update_item trigger being
+  truncated: it was missing the "WHERE" line at the end. Does this
+  happen in real life?
 - Bug?: The feed URL is being updated where it arguably shouldn't be:
 	When update.php runs, it says that a feed has an HTTP redirect,
   e.g.,
@@ -73,6 +80,15 @@
   and different people may deal with this differently (UTF-8 vs. HTML
   entities). Perhaps safest to assume that they're HTML and clean up
   (if possible, only do entity translation, and throw out any markup).
+- REST: $rreq is used so often in the controllers, it probably makes
+  sense to move it into a RESTController parent class.
+	- Create this parent class.
+	- Move $rreq into it
+	- See which functions make sense as standalones
+- REST: Would it make sense to take some of the methods out of REST
+  controller classes, and make them global functions?
+	Yes if that makes them easier to call from exernal programs,
+  or if they don't really use OO-ness.
 - Bug: keybindings.js doesn't handle non-letter bindings well: "?"
   gets turned into Spanish upside-down question mark by toUpperCase().
 	Need a notation to bind Esc.
@@ -132,8 +148,6 @@
 	Electoral Vote (123) in News (-2)
 	Electoral Vote (123) in All (-1)
 	Politics (-3) in All (-1)
-- Authentication: perhaps allow clients to send either a cookie, or an
-  auth=<token> parameter. That might be easier for REST.
 - Use OAuth for authentication?
   http://oauth.net/2/
   Except it's apparentlly a mess, hard to use, hard to know when it's
@@ -150,16 +164,6 @@
 	text-overflow: "clip" | "ellipsis" | <string>;
   When text doesn't fit into the alloted box, can use an ellipsis for
   the text that doesn't fit.
-- Is it worth making the back-end RESTful? See:
-  http://www.infoq.com/articles/rest-introduction
-  This might be more of a headache than it's worth: to do it elegantly
-  would mean fixing all of the back-end scripts to accept methods
-  other than GET and POST: DELETE, PUT, etc. (see
-  http://www.w3.org/Protocols/rfc2616/rfc2616-sec9.html ) would all
-  have their own meanings.
-	Plus, apparently REST encourages you to use full URLs for
-  resources, rather than internal identifiers. But here we don't
-  really have anything worth sharing with the wider world, IMHO.
 - "use strict": apparently modern JavaScript implementations grok
 	"use strict";
   https://developer.mozilla.org/en-US/docs/JavaScript/Reference/Functions_and_function_scope/Strict_mode
@@ -184,14 +188,6 @@
 		"use strict";
 		... body of script ...
 	})();
-- Vibrating:
-	window.navigator.vibrate(200)
-		Vibrate for 200 ms.
-	window.navigator.vibrate([200, 100, 200])
-		Vibrate for 200ms, then pause for 100ms, then vibrate
-		for 200ms
-  Unfortunately, only Firefox for Android currently supports this
-  AFAIK.
 - Getters and setters:
   https://developer.mozilla.org/en-US/docs/JavaScript/Guide/Working_with_Objects?redirectlocale=en-US&redirectslug=Core_JavaScript_1.5_Guide%2FWorking_with_Objects#Defining_getters_and_setters
 - Profiling: according to 
@@ -343,15 +339,6 @@
 		},
 		false);
 - Perhaps add Xdebug extension for PHP: profiler.
-- Speed: jsonify() is apparently quite a time hog: adds ~15% time
-  to just using json_encode().
-  UPDATE: or maybe not. Can't reproduce.
-	lib/json.inc
-	lib/common.inc
-	htdocs/markitems.php
-	htdocs/update.php
-	htdocs/feeds.php
-	htdocs/view.php
 - Add a /* SCHEMA */ comment everywhere where the code needs to be
   modified when the schema changes.
 - WaPo articles have <wp:web-link>, <wp:mobile-link>, <wp:share-link>,
@@ -433,40 +420,6 @@
   http://developers.facebook.com/docs/reference/plugins/send/
 - markitem code in view.jsh is old and crufty. Fix it.
 	Use AJAX call from xhr.
-- Perhaps have "login" as an AJAX service. Send credentials to a
-  password-protected page; have the page send back a JSON status
-  message and a cookie that can be used to retrieve the other pages.
-
-	When an AJAX request to sync.php is made and the session has
-  expired, the server sends back:
-
-	[17:50:19.852] <?xml version="1.0" encoding="UTF-8"?>
-	<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
-		"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
-	<html>
-	<head>
-	<title>NewsBite: Error</title>
-	<link rel="stylesheet" type="text/css" href="css/style.css"
-	  media="all" />
-	<link rel="stylesheet" type="text/css" href="css/abort.css"
-	  media="all" />
-	</head>
-	<body id="abort-body">
-	
-	<h1>Error</h1>
-	
-	<p>Invalid feed ID: &quot;&quot;.</p>
-	
-	<hr/>
-	
-	<ul>
-	  <li><a href="index.php">Feed index</a></li>
-	</ul>
-	
-	</body>
-	</html>
-	 @ http://www.ooblick.com/newsbite/js/view.js:145
-
 - Maybe ought to store a feed's language, so that we can figure out
   how to sort its name correctly in the main feed display (e.g.,
   "Le Monde" (fr) => "MONDE LE", and "El Mundo" (es) => "MUNDO EL").
@@ -760,8 +713,6 @@
   -webkit-column-gap: 1.5em;
   -webkit-column-rule: 1px solid #c4c8cc;
   }
-- AJAX requests can be blocked due to authentication. Should return a
-  status code of some sort, and allow the user to log in. How?
 - Worker threads could be useful. However, iPad doesn't seem to
   support them.
 	One way to handle this might to have synthetic events: with
@@ -786,10 +737,6 @@
 	checkpoint.doneWith("that");
 	checkpoint.doneWith("theother");
   and once they've all checked in, checkpoint runs cont_func().
-- Maybe just give up on maintaining ChangeLog. Just use ChangeLog.git
-  to get this year's changes.
-	Should also have a NEWS file with changes users might care
-  about.
 - Feed maintenance: feeds go stale, get deleted, etc. all the time.
   It'd be really nice if the index page showed the ones with errors.
 	Check the HTTP status: if it's 4xx, then the feed is dead.
@@ -952,10 +899,6 @@
 - There should really be a tool for testing plugins.
 	For removing ads and such: it'd be nice to plug the XML or the
   article into a temp file, and 
-- Should there be an external log file, for debugging and whatnot?
-	It'd also be nice to add a pile of monitoring, to be able to
-  see what happens when, to optimize properly.
-	Perhaps use syslog? I think it's a core function in PHP.
 - Makefile:
 	Run tests:
 		Try to call various functions and make sure they return
@@ -1142,16 +1085,6 @@
   update rarely). The idea is, these rules can define a
   partially-ordered set. It would be cool to use these to determine
   the order in which to display articles.
-- Rethink how markitems.php works, which arguments it takes. Check
-  whichever template calls it (view.tpl and item.tpl?).
-	The easiest, no-JavaScript case is probably the way FoF does
-  it: if we're displaying unread items, give the option of marking
-  items as read. If we're displaying all items, give the option of
-  marking items as unread.
-	Perhaps do this by adding a hidden "new_state" input field to
-  the form (and of course update markitems.php to check for it).
-	With JavaScript, we can toggle the state of each item as the
-  user requests.
 - There are a bunch of times when it's handy to parse XML files:
   reading RSS feeds, importing OPML, parsing HTML pages to find the
   feeds, etc.

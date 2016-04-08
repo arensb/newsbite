@@ -1,0 +1,34 @@
+#!/bin/sh
+REST_BASE="http://carrot.ooblick.com/newsbite/w1"
+ART_ID=23944
+
+echo "=== Get an article"
+curl -sSv -X GET \
+	-o output.json \
+	${REST_BASE}/article/${ART_ID}
+echo "Output:"
+cat output.json
+echo ""
+
+echo "=== Get many articles"
+curl -sSv -X GET \
+	-o output.json \
+	-H 'Content-Type: application/json' \
+	-d '{"ihave":["344168"]}' \
+	${REST_BASE}/article
+echo "Output:"
+cat output.json
+echo ""
+
+echo "=== Mark some articles"
+curl -sSv -X POST \
+	-o output.json \
+	-H 'Content-Type: application/json' \
+	-d '{"ihave":{"344165":[true,1458561330],"344167":[false,1458561330]}}' \
+	${REST_BASE}/article/read
+echo "Output:"
+cat output.json
+echo ""
+
+#	-d '{"ihave":["foo":["1","1458561330"]]}' \
+#	-d '{"ihave":{"123":["1","1458561330"],"456":["0","1458561330"}}' \

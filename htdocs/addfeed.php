@@ -10,9 +10,13 @@ require_once("common.inc");
 require_once("database.inc");
 require_once("net.inc");
 
-$feed_url = $_REQUEST['feed_url'];
+$feed_url = NULL;
+if (isset($_REQUEST['feed_url']))
+	$feed_url = $_REQUEST['feed_url'];
 	// XXX - Probably needs to be escaped. Can there be quotes in URLs?
-$page_url = $_REQUEST['page_url'];
+$page_url = NULL;
+if (isset($_REQUEST['page_url']))
+	$page_url = $_REQUEST['page_url'];
 	// URL of page whose feed to subscribe to.
 
 /* If we were given the URL to a content page, rather than directly to
@@ -84,10 +88,13 @@ if (isset($page_url))
 /* If we were given a single feed_url, subscribe to it, and refresh it
  * immediately.
  */
+$params = Array(
+	"feed_url"	=> "",
+	"username"	=> "",
+	"passwd"	=> "",
+	);
 if (isset($feed_url))
 {
-	$params = Array();
-
 	$params['feed_url'] = $feed_url;
 	if (isset($_REQUEST['username']))
 		$params['username'] = $_REQUEST['username'];

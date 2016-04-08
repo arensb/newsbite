@@ -37,7 +37,7 @@ echo "<", '?xml version="1.0" encoding="UTF-8"?', ">\n";
     <span class="submenu-title">Feeds</span>
     <ul class="tools-menu">
       <li><a href="addfeed.php">Add a feed</a></li>
-      <li><a href="opml.php">Subscription list as OPML</a></li>
+      <li><a href="w1/opml">Subscription list as OPML</a></li>
       <li><a href="loadopml.php">Add OPML file</a></li>
     </ul>
   </li>

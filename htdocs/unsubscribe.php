@@ -9,7 +9,9 @@ require_once("hooks.inc");
 
 load_hooks(PLUGIN_DIR);
 
-$feed_id = $_REQUEST['id'];		// ID of feed to show
+$feed_id = NULL;
+if (isset($_REQUEST['id']))
+	$feed_id = $_REQUEST['id'];		// ID of feed to show
 /* Make sure $feed_id is an integer */
 if (is_numeric($feed_id) && is_integer($feed_id+0))
 	$feed_id = (int) $feed_id;
@@ -26,7 +28,7 @@ if ($confirm == "yes")
 		// XXX - Error-checking
 
 	/* Redirect back to the main page */
-	redirect_to("index.php");
+	redirect_to("index.html");
 	exit(0);
 }
 
