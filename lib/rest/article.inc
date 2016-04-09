@@ -137,6 +137,9 @@ class RESTController_article {
 		if (!isset($feed_id))
 			// Defaults to "all"
 			$feed_id = "all";
+		elseif ($feed_id == "all")
+			// Okay
+			;
 		else {
 			// Make sure feed ID is sane.
 			if (!is_numeric($feed_id) ||
