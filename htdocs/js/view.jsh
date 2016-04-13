@@ -1242,13 +1242,3 @@ function update_size()
 	$("#height").html(window.innerHeight);
 	$("#dpi").html($("#one-inch").width());
 }
-
-function hello_test()
-{
-	console.debug("REST.base " + REST.base);
-	var callback = function(err, errmsg, value)
-	{
-		console.log("Inside hello_test callback. err: ", err, ", errmsg: ", errmsg, ", value: ", value);
-	}
-	REST.call("GET", "test/hello", undefined, callback, undefined);
-}
