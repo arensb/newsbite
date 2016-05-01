@@ -13,7 +13,7 @@ body {
 }
 
 /* Rules for small screens */
-@media screen and (max-width: 5in) {
+@media screen and (max-width: 4in) {
 	.button-box-left {
 		display:	none;
 	}
