@@ -20,11 +20,11 @@ body {
 	border-bottom-color:	navy;
 }
 
-.button-box input {
+.icon-box input {
 	font-size:	16pt;
 	padding-left:	2px;
 	padding-right:	2px;
-
+	-webkit-transform:	scale(1.5);
 }
 
 input[type="checkbox"].mark-check {

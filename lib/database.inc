@@ -1159,6 +1159,7 @@ EOT;
 	{
 		# Make sure is_read is properly converted to boolean.
 		$row['is_read'] = $row['is_read'] ? TRUE : FALSE;
+		$row['mtime'] += 0;	// Make sure it's an integer.
 		$retval[] = $row;
 	}
 

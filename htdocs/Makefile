@@ -1,5 +1,6 @@
 include ../Makefile.common
 
+HTML_FILES =	$(wildcard *.html)
 PHP_FILES =	$(wildcard *.php)
 OTHER_FILES =	htaccess.sample \
 		newsbite.manifest
@@ -20,7 +21,7 @@ clean::
 
 install::	all
 	mkdir -p ${INSTALL_HTDOCS}
-	for i in ${PHP_FILES} ${OTHER_FILES}; do \
+	for i in ${HTML_FILES} ${PHP_FILES} ${OTHER_FILES}; do \
 		install -c -m 444 "$$i" ${INSTALL_HTDOCS}; \
 	done
 

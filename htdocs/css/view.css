@@ -13,7 +13,7 @@ body {
 }
 
 /* Rules for small screens */
-@media screen and (max-width: 5in) {
+@media screen and (max-width: 4in) {
 	.button-box-left {
 		display:	none;
 	}
@@ -166,11 +166,17 @@ p {
 
 /* End navbar */
 
-.button-box {
+.icon-box {
 	margin-left:		1em;
 	margin-right:		1em;
 	margin-top:		0.5em;
 	margin-bottom:		0.5em;
+}
+
+.icon-box input {
+	/* Checkboxes */
+	-moz-transform:	scale(1.5);
+	-webkit-transform:	scale(1.5);
 }
 
 .button-box button {

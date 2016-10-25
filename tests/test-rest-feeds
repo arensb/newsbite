@@ -1,0 +1,57 @@
+#!/bin/sh
+REST_BASE="http://carrot.ooblick.com/newsbite/w1"
+
+echo "=== Adding a feed"
+# XXX - Set the feed URL
+FEED_URL="http://stackoverflow.com/feeds/question/2474097"
+curl -sSv -X PUT \
+	-o output.json \
+	-H 'Content-Type: application/json' \
+	-d "{\"url\":\"${FEED_URL}\"}" \
+	${REST_BASE}/feed
+echo "Output:"
+cat output.json
+echo ""
+#exit 1
+
+# Get the feed ID, so we can unsubscribe
+# output.json should be of the form
+#	{"id":123}
+FEED_ID=`sed 's/.*"id":\([0-9][0-9]*\).*/\1/' < output.json`
+
+
+echo "=== Get info about all feeds"
+curl -sSv -X GET \
+	-o output.json \
+	${REST_BASE}/feed
+echo "Output:"
+#cat output.json
+json_pp < output.json
+echo ""
+
+echo "=== Get info about one feed"
+curl -sSv -X GET \
+	-o output.json \
+	${REST_BASE}/feed/${FEED_ID}
+echo "Output:"
+cat output.json
+echo ""
+
+echo "=== Deleting a feed"
+curl -sSv -X DELETE \
+	-o output.json \
+	${REST_BASE}/feed/${FEED_ID}
+echo "Output:"
+cat output.json
+echo ""
+
+echo "=== Modifying a feed"
+now=`date`
+curl -sSv -X POST \
+	-o output.json \
+	-H 'Content-Type: application/json' \
+	-d "{\"nickname\":\"Astro stuff $now\"}" \
+	${REST_BASE}/feed/174
+echo "Output:"
+cat output.json
+echo ""

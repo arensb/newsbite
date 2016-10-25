@@ -207,7 +207,7 @@ echo '<', '?xml version="1.0" encoding="UTF-8"?', ">\n";
 <hr/>
 
 <ul>
-  <li><a href="index.php">Feed index</a></li>
+  <li><a href="index.html">Feed index</a></li>
 </ul>
 
 </body>

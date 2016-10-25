@@ -1,10 +1,9 @@
 CACHE MANIFEST
 # Nonce: <?php echo strftime("%Y-%m-%dT%H:%M:%S"),"\n" ?>
+index.html
 addfeed.php
 editfeed.php
-feeds.php
 group.php
-index.php
 unsubscribe.php
 view.php
 js/feeds.js
@@ -34,15 +33,12 @@ images/gray-bg.jpg
 images/newsbite-icon.png
 images/newsbite-splash-ipad.png
 <?php // The files after the "NETWORK:" line will be fetched each time. ?>
-#NETWORK:
+NETWORK:
 loadopml.php
 login.php
-markitems.php
-opml.php
-sync.php
 update.php
 <?php // The files after "CACHE:" will be cached ?>
-#CACHE:
+CACHE:
 # Fetch anything else from the network, always.
 NETWORK:
 *

@@ -54,14 +54,17 @@ $NO_AUTH_CHECK = true;		// Don't authenticate the user in
 $default_fmt = "html";
 require_once("common.inc");
 
-$from = urldecode($_REQUEST['from']);	// Where did user come from?
+$from = NULL;
+if (isset($_REQUEST['from']))
+	$from = urldecode($_REQUEST['from']);	// Where did user come from?
 if (!isset($from) || $from == "")
 {
 	// XXX - This doesn't preserve the "#" anchor, so we'd have
 	// to say we came from "view.php?id=123" rather than
 	// "view.php#id=123".
 
-	$from = $_SERVER['HTTP_REFERER'];
+	if (isset($_SERVER['HTTP_REFERER']))
+		$from = $_SERVER['HTTP_REFERER'];
 }
 
 if ($from == "")

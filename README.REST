@@ -1,0 +1,191 @@
+						-*- Org -*-
+
+* Methods
+From [[https://en.wikipedia.org/wiki/Hypertext_Transfer_Protocol#Request_methods][Wikipedia]]:
+** GET
+Fetch a resource. Don't change anything.
+** HEAD
+Metainformation about a resource.
+Maybe this can be used to get metainformation about an item, without
+the summary or body.
+
+Though if HEAD can't return an HTTP body, then this can be useful to
+see whether something exists.
+** POST
+Update an existing resource.
+
+Though http://www.restapitutorial.com/lessons/httpmethods.html
+says POST is for creating.
+** PUT
+Add a resource, replacing an existing one if necessary.
+
+Though http://www.restapitutorial.com/lessons/httpmethods.html
+says PUT is for updating/replacing.
+** DELETE
+Delete a resource.
+** TRACE
+Echo the request.
+
+Not sure this is useful in a RESTful world. Plus, it's considered
+dangerous in general, so Apache disables it by default. And many
+webmasters/security officers are likely to look askance at any request
+to turn it on.
+
+** OPTIONS
+Returns the HTTP methods that the server accepts for a URL.
+
+Can request "*" instead of a specific URL.
+** CONNECT
+Set up a TCP tunnel.
+
+I don't think this is useful.
+** PATCH
+Apply partial modifications to a resource.
+
+Sounds like this means changing an existing resource, e.g., change the
+nickname of a feed without touching (or knowing) its URL, groups, etc.
+
+http://www.restapitutorial.com/lessons/httpmethods.html
+says PATCH is for updating/modifying an existing resource.
+
+* What's the current interface?
+What services/knobs/etc. are currently there?
+
+** DONE addfeed.php
+   CLOSED: [2016-03-07 Mon 09:25]
+   - Subscribe to a feed. Takes RSS URL.
+   - (Register feed reader in Firefox.)
+
+: PUT /feed?url=$URL
+
+: PUT /feed
+: 	OPML in body
+
+** DONE editfeed.php
+   CLOSED: [2016-03-07 Mon 09:25]
+   - Update information about a feed:
+     - nickname
+     - site URL
+     - feed URL
+     - groups
+     - active or not
+     - Username/password
+
+: POST /feed/123?
+: 	nickname=...
+: 	url=...
+: 	...
+
+** DONE feeds.php
+   CLOSED: [2016-03-07 Mon 10:25]
+   - Get list of feeds
+
+: GET /feed
+
+: GET /feed/123
+
+** DONE group.php
+   CLOSED: [2016-03-11 Fri 08:34]
+   - create a group
+   - delete a group
+   - rename a group
+   - reparent a group
+
+: PUT /group
+
+: DELETE /group/-123
+
+: POST /group/-123
+: 	?name=$newname
+
+: POST /group/-123
+: 	?parent=$newparent
+
+** TODO Group methods
+   - reparent a group
+   - change a group's information
+
+These methods aren't implemented in htdocs/group.php, which is why I'm
+marking the REST version as done, but still ought to be implemented.
+
+** index.php
+Nothing. This is a template.
+
+** DONE loadopml.php
+   CLOSED: [2016-03-01 Tue 10:13]
+   - Subscribe to feeds from an OPML feed
+I guess this is a batch version of subscribing.
+PUT /feed
+could take either a URL, or an OPML file.
+
+See [[* addfeed.php]], above.
+
+** TODO login.php
+   - login
+Issue an authorization token.
+
+: GET /login
+
+** DONE markitems.php
+   CLOSED: [2016-03-21 Mon 11:47]
+   - mark items as read/unread
+
+: POST /article/123
+: 	?read={1|0}&t=$updateTime
+	or
+: POST /article/123
+and in body, have a JSON structure listing these for a bunch of articles.
+
+Perhaps
+: POST /article/read
+in the body, have a data structure. Probably an array:
+:    [
+:      { id:123, read:true, mtime:<12:00:00> },
+:      { id:456, read:false, mtime:<12:00:15> },
+:      ...
+:    ]
+Might want to use an array of arrays, to save space.
+
+** DONE opml.php
+   CLOSED: [2016-03-01 Tue 10:13]
+   - Return an OPML document
+
+: GET /opml
+
+** DONE sync.php
+   CLOSED: [2016-03-21 Mon 11:47]
+   - sync: update $ihave[] items, return the top 100 for a feed
+This really needs to be broken up into components.
+
+XXX
+: GET /article
+: GET /article/123
+: 	?read=unread		# default
+: 	&max_items=100		# default
+
+** DONE unsubscribe.php
+   CLOSED: [2016-03-07 Mon 09:25]
+   - remove a feed
+
+: DELETE /feed/123
+
+** DONE update.php
+   CLOSED: [2016-03-10 Thu 08:23]
+   - fetch/update a feed
+   - fetch/update all feeds
+** view.php
+Nothing. This is a template.
+* To do
+** TODO option
+*** TODO GET /option
+Get global options
+*** TODO GET /option/123
+Get options for feed 123
+*** TODO POST /option
+    opt=option
+    val=value
+Set global option
+*** TODO POST /option/123
+    opt=option
+    val=value
+Set feed 123 option.

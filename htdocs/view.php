@@ -47,7 +47,7 @@ var page_top_tmpl_text = '<img class="feed-icon" src="@image@"/>\
 <div class="feed-description">@description@</div>\
 \
 <ul class="feed-tools">\
-  <li><a href="index.php">Feed index</a></li>\
+  <li><a href="index.html">Feed index</a></li>\
   <li><a href="update.php?id=@id@">Update feed</a></li>\
   <li><a href="editfeed.php?id=@id@">Edit feed</a></li>\
   <li><a href="unsubscribe.php?id=@id@">Unsubscribe from feed</a></li>\
@@ -126,6 +126,16 @@ var item_tmpl_text = '<article class="item" id="item-@id@">\
 <link rel="stylesheet" type="text/css" href="css/view.css" media="all" />
 <script type="text/javascript" src="js/jquery.js"></script>
 <script type="text/javascript" src="js/view.js"></script>
+<script type="text/javascript">
+$(function() {
+	// Leave one browser-window's worth of height at the bottom of
+	// the page. This is so that when you collapse the last post on the
+	// page, it doesn't jump jarringly.
+	// XXX - Ought to attach a listener or something that updates this
+	// when the window is resized. Unless "100%" DTRT.
+	$("#bottom-button-box").css("margin-bottom", $(window).height());
+});
+</script>
 </head>
 <body id="view-body" orientation="up">
 <div id="test-info">Width: <label id="width">?</label>, Height: <label id="height">?</label>; dpi: <label id="dpi">?</label></div>
@@ -141,18 +151,16 @@ var item_tmpl_text = '<article class="item" id="item-@id@">\
 
 <div id="page-top">Feed information goes here</div>
 
-<div class="button-box">
+<div class="button-box" id="top-button-box">
   <button onclick="this.blur(); slow_sync()">Slow Sync</button>
 </div>
 
 <div id="itemlist"><img src="images/Ajax-loader.gif"/></div>
 
-<div class="button-box">
+<div class="button-box" id="bottom-button-box">
   <button onclick="this.blur(); slow_sync()">Slow Sync</button>
   <button onclick="localStorage.clear()">Clear localStorage</button>
 </div>
 
-<p>User <?=$auth_user?>, session expires <?=$auth_expiration?>.</p>
-<div id="page_bottom" style="margin-top: 100%;"></div>
 </body>
 </html>

@@ -8,7 +8,9 @@ require_once("common.inc");
 require_once("database.inc");
 require_once("group.inc");
 
-$feed_id = $_REQUEST['id'];		// ID of feed to show
+$feed_id = NULL;
+if (isset($_REQUEST['id']))
+	$feed_id = $_REQUEST['id'];		// ID of feed to show
 /* Make sure $feed_id is an integer */
 if (is_numeric($feed_id) && is_integer($feed_id+0))
 	$feed_id = (int) $feed_id;
@@ -342,7 +344,7 @@ function update_feed_info($feed_id)
 	if ($new['active'])
 		redirect_to("view.php#id=$feed_id");
 	else
-		redirect_to("index.php");
+		redirect_to("index.html");
 }
 
 /* html_group_list
