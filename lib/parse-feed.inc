@@ -265,7 +265,32 @@ function parse_feed($feed_text)
 	array_push($_context, $node);
 
 	/* Start parsing */
+global $the_feed_title;
+global $the_feed_text;
+if (preg_match(',<title>(.*?)</title>,', $feed_text, $matches))
+	$feed_title = $matches[1];
+else
+	$feed_title = "[untitled feed]";
+$the_feed_text = $feed_text;
+//error_log("Starting to parse $feed_title");
 	$err = xml_parse($xml_parser, $feed_text, true);
+//error_log("Finished parsing $feed_title: $err");
+//error_log("feed_err [$feed_err], feed_errmsg [$feed_errmsg]");
+
+	if ($feed_err)
+	{
+		// Even if the feed text was well-formed XML, it may
+		// not have been a proper RSS or Atom feed (usually
+		// HTML).
+
+		// Set the error message, and let the caller do any
+		// error-reporting.
+//error_log("At top level, we know there's an error.");
+		$feed_errmsg = "Handler error: $feed_errmsg";
+
+		// The handlers have found an error.
+		return FALSE;
+	}
 
 	if ($err == 0)
 	{
@@ -276,14 +301,6 @@ function parse_feed($feed_text)
 
 		# XXX - There's still stuff in $_context. Perhaps a partial
 		# list of items can be fished out from that.
-		return FALSE;
-	} else	if ($feed_err)
-	{
-		// Set the error message, and let the caller do any
-		// error-reporting.
-		$feed_errmsg = "Handler error: $feed_errmsg";
-
-		// The handlers have found an error.
 		return FALSE;
 	}
 
@@ -310,6 +327,7 @@ function _feed_abort($parser, $err, $msg)
 	/* Set the error code and message */
 	$feed_err = $err;
 	$feed_errmsg = $msg;
+//error_log("Inside _feed_abort [$feed_err]: [$feed_errmsg]");
 }
 
 /* _element_start_handler
@@ -344,6 +362,9 @@ function _element_start_handler($parser, $fullname, $attrs)
 	if (count($_context) == 1)	// Only the topmost collector
 					// on the context stack so far
 	{
+//error_log("I think I'm looking at root element: [$fullname] " . print_r($attrs, true));
+//error_log("name [$name]");
+//error_log("ns_url [$ns_url]");
 		/* Figure out what kind of file this is */
 
 		if (isset($ns2url[""]))
@@ -359,16 +380,22 @@ function _element_start_handler($parser, $fullname, $attrs)
 				// declared.
 				_feed_abort($parser, 1,
 					    "No handler for default namespace");
+				return;
 			} 
 		} elseif ($ns_url == "")
 		{
+//error_log("\$ns_url is == empty string");
 			// No explicit default namespace declaration,
 			// and root has no prefix. This can still be
 			// okay if the root node is "rss".
 			if ($name != "rss")
+			{
+//error_log("aborting: not RSS");
 				// This is probably HTML or something.
 				_feed_abort($parser, 1,
 					    "Unknown document type");
+				return;
+			}
 		}
 
 		/* Can we process the root node?
@@ -386,12 +413,14 @@ function _element_start_handler($parser, $fullname, $attrs)
 			// Error: no handler
 			_feed_abort($parser, 1,
 				    "No handler for this document type");
+			return;
 		}
 
 		/* Call init handler, if any */
 		if (isset($url2handler[$ns_url]["init"]) &&
 		    function_exists($url2handler[$ns_url]["init"]))
 		{
+//error_log("About to init " . print_r($_context, true));
 			# Pass along $attrs as an additional argument: can
 			# give a hint to the parser whether which version
 			# of RSS we're dealing with.
@@ -402,8 +431,11 @@ function _element_start_handler($parser, $fullname, $attrs)
 				);
 			/* Allow the handler to abort processing */
 			if (!$err)
+			{
 				_feed_abort($parser, 1,
 					    "Aborted by init handler");
+				return;
+			}
 		}
 	}
 
@@ -466,8 +498,11 @@ function _element_start_handler($parser, $fullname, $attrs)
 				);
 			/* Allow the handler to abort processing */
 			if (!$err)
+			{
 				_feed_abort($parser, 1,
 					    "Aborted by attribute handler");
+				return;
+			}
 		}
 	}
 
@@ -523,8 +558,11 @@ function _element_end_handler($parser, $fullname)
 		);
 	/* Allow handler to abort processing */
 	if (!$err)
+	{
 		_feed_abort($parser, 1,
 			    "Aborted by element handler");
+		return;
+	}
 }
 
 /* _cdata_handler
@@ -720,6 +758,8 @@ function default_attribute_handler(
 // http://cyber.law.harvard.edu/rss/rss.html
 function rss_init($url, $prefix, &$attrs)
 {
+global $the_feed_title;
+global $the_feed_text;
 	// XXX - Look at $attrs['version'] to see which version of RSS
 	// we're dealing with.
 if (isset($attrs['version']))
