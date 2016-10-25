@@ -39,12 +39,14 @@ body {
 /*	font-size:	1pt;*/
 }
 
-.button-box input {
+.icon-box input {
 	font-size:	9pt;
 	padding-left:	2px;
 	padding-right:	2px;
 	margin-left:	2px;
 	margin-right:	2px;
+	-webkit-transform:	scale(1.5);
+	-moz-transform:	scale(1.5);
 }
 
 .item .item-summary,
