@@ -873,14 +873,14 @@ function item2node(item)
 	// Fill in values to plug into item template
 	var item_values = {
 		id:		item.id,
-		url:		encodeURI(item.url),
+		url:		item.url,
 		url_attr:	(mobile != "" ?
 				 'target="_blank"'
 				 : ""),
 			// On mobile devices, open title link in a new
 			// window.
 		title:		title,
-		feed_url:	encodeURI(item_feed.url),
+		feed_url:	item_feed.url,
 		feed_title:	item_feed.displaytitle(),
 		author:		item.author,
 			// XXX - If author is empty, shouldn't display
@@ -893,8 +893,8 @@ function item2node(item)
 			// Pretty-print the date.
 		summary:	item.summary,
 		content:	item.content,
-		comment_url:	encodeURI(item.comment_url),
-		comment_rss:	encodeURI(item.comment_rss),
+		comment_url:	item.comment_url,
+		comment_rss:	item.comment_rss,
 		// Indicate whether collapsible (both content and
 		// summary exist), and whether to display summary or
 		// content.
