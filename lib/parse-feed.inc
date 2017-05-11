@@ -2093,6 +2093,11 @@ function rdf_element_handler(
 		    case "channel":
 		    case "item":
 			// XXX - Make sure $children is a string
+#error_log("before post_link: ".$children);
+			run_hooks("post_link", array(&$children));
+#error_log("after post_link: ".$children);
+if (is_array($children))
+error_log("After hooks, link is array\n");
 			$retval['url'] = $children;
 			break;
 
