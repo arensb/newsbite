@@ -6,7 +6,7 @@
  * Try to remove all of the "utm_<foo>=<value>" parameters in a URL.
  * These are related to Google AdSense.
  */
-function deutmify_link($link)
+function deutmify_link(&$link)
 {
 #error_log("deutmify: old [$link]");
 	$newlink = preg_replace('{\b([\?\&]utm_\w+=([^\&]*|\"[^\"]*\"))}',
