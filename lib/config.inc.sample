@@ -5,9 +5,6 @@ $DB_NAME = "newsbite";		// Database name
 $DB_USER = "newsbiteuser";	// Database user name
 $DB_PASS = "newsbitepass";	// Database user's password
 
-/* Age in days when articles are automatically deleted */
-$AUTODELETE_DAYS = 90;
-
 /* How old the latest post must be, in days, before the feed is
  * considered stale.
  */

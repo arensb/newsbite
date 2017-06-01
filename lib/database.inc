@@ -1102,24 +1102,19 @@ EOT;
 	// b) Feeds that don't give dates, such as Perry Bible
 	// Fellowship. In this case, the feed parser should insert an
 	// artificial date.
-	global $AUTODELETE_DAYS;
-
-	if ($AUTODELETE_DAYS != 0)
-	{
-		$query = <<<EOT
+	$query = <<<EOT
 DELETE FROM	items
 WHERE		feed_id = ?
   AND		pub_date < NOW() -
 		  INTERVAL get_option(feed_id, "autodelete") DAY
 EOT;
-		$stmt = $dbh->prepare($query);
-			// XXX - Error-checking
-		$err = $stmt->bind_param("i",
-					 $feed_id);
-			// XXX - Error-checking
-		$err = $stmt->execute();
-			// XXX - Error-checking
-	}
+	$stmt = $dbh->prepare($query);
+		// XXX - Error-checking
+	$err = $stmt->bind_param("i",
+				 $feed_id);
+		// XXX - Error-checking
+	$err = $stmt->execute();
+		// XXX - Error-checking
 
 	/* Return count of new/updated items */
 	return $update_counts;
