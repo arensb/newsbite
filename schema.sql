@@ -17,6 +17,10 @@ CREATE TABLE feed_options (
 )
 DEFAULT CHARSET=utf8mb4;
 
+/* Set defaults for options. */
+INSERT INTO feed_options (feed_id, name, value) VALUES
+	(-1, "autodelete", 90);		# When to expunge old posts.
+
 /* groups
  * For grouping feeds into nested groups.
  * 'parent' says which group this group belongs to. The root group has
@@ -30,7 +34,7 @@ CREATE TABLE groups (
 )
 DEFAULT CHARSET=utf8mb4;
 
-/* Create one mandtory group: "All", with ID -1 */
+/* Create one mandatory group: "All", with ID -1 */
 INSERT INTO groups (name, parent) VALUES ("All", -1);
 UPDATE groups SET id=-1 WHERE id=last_insert_id();
 

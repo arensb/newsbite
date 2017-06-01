@@ -28,3 +28,7 @@ BEGIN
 	RETURN @retval;
 END //
 DELIMITER ;
+
+/* Set defaults for options. */
+INSERT INTO feed_options (feed_id, name, value) VALUES
+	(-1, "autodelete", 90);		# When to expunge old posts.
