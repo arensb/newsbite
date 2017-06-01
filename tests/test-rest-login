@@ -1,0 +1,12 @@
+#!/bin/sh
+REST_BASE="http://carrot.ooblick.com/newsbite/w1"
+ART_ID=23944
+
+echo "=== Log in"
+curl -sSv -X GET \
+	-o output.json \
+	-u arensb:foo \
+	${REST_BASE}/login
+echo "Output:"
+cat output.json
+echo ""
