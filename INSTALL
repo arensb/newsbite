@@ -45,7 +45,7 @@ INSTALLATION:
 
 	In MySQL, as a user with administrative rights:
 
-	> grant delete, insert, select, update
+	> grant delete, insert, select, update, execute
 	  on newsbite.*
 	  to `newsbiteuser`@`localhost`
 	  identified by "newsbitepassword";
