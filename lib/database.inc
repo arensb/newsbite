@@ -1114,7 +1114,7 @@ EOT;
 		// XXX - Better error-checking
 		error_log("prepare error " . $dbh->errno .
 			": \"" . $dbh->error .
-			"\"<br/>\n";
+			"\"<br/>\n");
 	}
 	$err = $stmt->bind_param("i",
 				 $feed_id);
