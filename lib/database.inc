@@ -1109,7 +1109,13 @@ WHERE		feed_id = ?
 		  INTERVAL get_option(feed_id, "autodelete") DAY
 EOT;
 	$stmt = $dbh->prepare($query);
-		// XXX - Error-checking
+	if ($stmt === FALSE)
+	{
+		// XXX - Better error-checking
+		error_log("prepare error " . $dbh->errno .
+			": \"" . $dbh->error .
+			"\"<br/>\n";
+	}
 	$err = $stmt->bind_param("i",
 				 $feed_id);
 		// XXX - Error-checking
