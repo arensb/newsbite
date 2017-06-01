@@ -23,7 +23,7 @@ BEGIN
 
 	SELECT	`value` into @retval
 	FROM	`feed_options`
-	WHERE	`feed_id` = 0;
+	WHERE	`feed_id` = -1;
 
 	RETURN @retval;
 END //
