@@ -265,13 +265,10 @@ function parse_feed($feed_text)
 	array_push($_context, $node);
 
 	/* Start parsing */
-global $the_feed_title;
-global $the_feed_text;
 if (preg_match(',<title>(.*?)</title>,', $feed_text, $matches))
 	$feed_title = $matches[1];
 else
 	$feed_title = "[untitled feed]";
-$the_feed_text = $feed_text;
 //error_log("Starting to parse $feed_title");
 	$err = xml_parse($xml_parser, $feed_text, true);
 //error_log("Finished parsing $feed_title: $err");
@@ -758,8 +755,6 @@ function default_attribute_handler(
 // http://cyber.law.harvard.edu/rss/rss.html
 function rss_init($url, $prefix, &$attrs)
 {
-global $the_feed_title;
-global $the_feed_text;
 	// XXX - Look at $attrs['version'] to see which version of RSS
 	// we're dealing with.
 if (isset($attrs['version']))
