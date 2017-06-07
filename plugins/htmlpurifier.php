@@ -118,6 +118,8 @@ function htmlpurify_init()
 
 function htmlpurify(&$retval, $maxlen = NULL)
 {
+global $feed_info;
+#error_log("inside htmlpurify, feed_info == " . print_r($feed_info, true));
 	# $maxlen is used for saying, "the purified string must fit in
 	# 255 characters".
 	# I don't think HTMLPurify has a setting for this, so it'd have to
