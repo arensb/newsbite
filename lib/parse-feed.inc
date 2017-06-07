@@ -192,6 +192,17 @@ $feed_err = 0;		// Error code.
 			// XXX - Is it worth expanding this?
 $feed_errmsg = "";	// Error message
 
+/* $feed_info
+ * Holds information about the current feed.
+ * In many cases, it's useful to know what kind of feed we're looking at:
+ * whether it's RSS 1.0 or 2.0, which language it's in, the title, and
+ * so on.
+ * $feed_info is a holder for this information, a free-form hash that
+ * element handlers can use to store information for other element
+ * handlers.
+ */
+$feed_info = array();
+
 /* parse_feed
  * Take an XML string (read from a file or URL) and parse it down to a
  * PHP data structure of the form
@@ -265,6 +276,8 @@ function parse_feed($feed_text)
 	array_push($_context, $node);
 
 	/* Start parsing */
+	global $feed_info;
+	$feed_info = array();
 if (preg_match(',<title>(.*?)</title>,', $feed_text, $matches))
 	$feed_title = $matches[1];
 else
@@ -336,6 +349,7 @@ function _element_start_handler($parser, $fullname, $attrs)
 	global $url2handler;
 	global $url2ns;
 
+#error_log("_e_s_h($fullname, " . print_r($attrs, true) . ")");
 	/* Parse $fullname into URL and name */
 	if (preg_match('/^(.*):(.*)$/', $fullname, $match))
 	{
@@ -345,6 +359,7 @@ function _element_start_handler($parser, $fullname, $attrs)
 		$ns_url = "";
 		$name = $fullname;
 	}
+#error_log("$fullname -> $ns_url, $name");
 
 	/* Create a new node */
 	$node = array(
@@ -755,6 +770,7 @@ function default_attribute_handler(
 // http://cyber.law.harvard.edu/rss/rss.html
 function rss_init($url, $prefix, &$attrs)
 {
+#error_log("Inside rss_init()");
 	// XXX - Look at $attrs['version'] to see which version of RSS
 	// we're dealing with.
 if (isset($attrs['version']))
@@ -774,6 +790,7 @@ function rss_element_handler(
 	&$retval,	// Fill in the blanks here
 	&$context)	// Where we are at the moment
 {
+	global $feed_info;
 #error_log("rss_element_handler: $elt_name");
 	$parent = $context[count($context)-1]['name'];
 			// Get parent node's name
@@ -788,6 +805,7 @@ function rss_element_handler(
 		switch ($parent)
 		{
 		    case "channel":
+			$feed_info['title'] = $children;
 		    case "image":
 		    case "item":
 		    case "textInput":
@@ -828,7 +846,12 @@ error_log("Before hooks, link is array\n");
 if (is_array($children))
 error_log("After hooks, link is array\n");
 			$retval['url'] = $children;
+			break;
 		    case "channel":
+			$feed_info['url'] = $children;
+error_log("Found channel/link [$feed_info[url]]");
+			$retval['url'] = $children;
+			break;
 		    case "textInput":
 			$retval['url'] = $children;
 			break;
@@ -1087,6 +1110,7 @@ error_log("After hooks, link is array\n");
 		switch ($parent)
 		{
 		    case "channel":
+			$feed_info['lang'] = $children;
 			$retval[$elt_name] = $children;
 			break;
 		    default:
@@ -1183,6 +1207,7 @@ error_log("After hooks, link is array\n");
 		{
 		    case "channel":
 			// XXX - Make sure $children is a string
+			$feed_info['ttl'] = $children * 60;
 			$retval[$elt_name] = $children * 60;
 			break;
 		    default:
@@ -1291,6 +1316,11 @@ function rss_attribute_handler(
 	&$context	// Where we are at the moment
 	)
 {
+# XXX - Here, we'd like to be able to tell handlers what kind of
+# feed we're dealing with: RSS 1.0, RSS 2.0, Atom, or what.
+# Unfortunately, $context doesn't seem to have this information yet.
+
+#error_log("inside rss_attribute_handler, prefix [$prefix], name [$name], value [$value], context [" . print_r($context, true) . "]");
 	// XXX - Check for prefix, and pass through.
 	if ($prefix == "")
 		$retval[$name] = $value;
