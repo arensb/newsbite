@@ -849,7 +849,7 @@ error_log("After hooks, link is array\n");
 			break;
 		    case "channel":
 			$feed_info['url'] = $children;
-error_log("Found channel/link [$feed_info[url]]");
+#error_log("Found channel/link [$feed_info[url]]");
 			$retval['url'] = $children;
 			break;
 		    case "textInput":
