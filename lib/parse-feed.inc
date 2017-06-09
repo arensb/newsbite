@@ -139,6 +139,7 @@ add_xml_handler("http://purl.org/rss/1.0/",
 	));
 add_xml_handler("http://www.w3.org/1999/02/22-rdf-syntax-ns#",
 	array(
+		"init"		=> 'rdf_init',
 		"element"	=> 'rdf_element_handler',
 	));
 
@@ -771,13 +772,21 @@ function default_attribute_handler(
 function rss_init($url, $prefix, &$attrs)
 {
 #error_log("Inside rss_init()");
-	// XXX - Look at $attrs['version'] to see which version of RSS
+	global $feed_info;
+
+	$feed_info['feed_type'] = "rss";
+
+	// Look at $attrs['version'] to see which version of RSS
 	// we're dealing with.
-if (isset($attrs['version']))
-//error_log("RSS version [$attrs[version]]: $url");
-;
-else
-error_log("RSS without version: $url");
+	if (isset($attrs['version']))
+	{
+#		error_log("RSS version [$attrs[version]]: $url");
+		$feed_info['feed_type_version'] = $attrs['version'];
+	} else {
+		error_log("RSS without version: $url");
+		$feed_info['feed_type_version'] = 0;
+				// Just so there's always a version.
+	}
 	return true;
 }
 
@@ -1538,8 +1547,33 @@ function rss_attribute_handler(
  * Atom initialization hook. Do whatever is necessary to initialize
  * Atom.
  */
+# XXX - The Atom feeds I've seen use
+#	< ? xml version="1.0" encoding="UTF-8" ? >
+#	<feed
+#	 xmlns="http://www.w3.org/2005/Atom"
+#	 xml:lang="en-US"
+# to indicate the language. Note that there's no "xmlns:xml", because
+# that's bound to http://www.w3.org/XML/1998/namespace by the standard
+# (https://www.w3.org/XML/1998/namespace). We'd have to process that,
+# and pass it along.
+# So add a handler for that namespace. I think it only includes
+#	xml:lang (document/element language)
+#	xml:space (does whitespace matter?)
+#	xml:id (an identifier)
+#	xml:Father (ignore this)
+
 function atom_init($url, $prefix, &$attrs)
 {
+	global $feed_info;
+	$feed_info['feed_type'] = "atom";
+
+	$feed_info['feed_type_version'] = "1.0";
+		# XXX - AFAIK there's currently only one version of
+		# Atom. When and if a new one comes out, presumably
+		# either $url will change (right now, it's always
+		# "http://www.w3.org/2005/Atom"), or they'll add
+		# a version attribute, or something.
+
 	return true;
 }
 
@@ -1630,6 +1664,10 @@ function atom_element_handler(
 		switch ($parent)
 		{
 		    case "feed":
+			$feed_info['title'] = $children;
+			// Fall through.
+			# XXX - Should the title be sanitized with
+			# clean-html?
 		    case "entry":
 			// XXX - Make sure $children is a string.
 			# Clean up HTML
@@ -1726,6 +1764,7 @@ function atom_element_handler(
 					$retval['feed_url'] = $attrs['href'];
 				else
 					$retval['url'] = $attrs['href'];
+				$feed_info['url'] = $retval['url'];
 				break;
 
 			    case "replies":
@@ -2074,6 +2113,18 @@ function atom_attribute_handler(
 }
 
 /********** RDF ***********************************************/
+function rdf_init($url, $prefix, &$attrs)
+{
+#error_log("Inside rdf_init($url, $prefix, " . print_r($attrs, true) . ")");
+	global $feed_info;
+
+	$feed_info['feed_type'] = "rdf";
+	$feed_info['feed_type_version'] = "1.0";
+		# XXX - There are versions 1.0 and 1.1 of RDF, but
+		# I don't know how to tell them apart.
+}
+
+# XXX - Need a way to set $feed_info[language] in RDF documents.
 function rdf_element_handler(
 	$ns_url,	// URL of this element's namespace
 	$prefix,	// Namespace of this element
@@ -2083,6 +2134,8 @@ function rdf_element_handler(
 	&$retval,	// Fill in the blanks here
 	&$context)	// Where we are at the moment
 {
+	global $feed_info;
+
 	$parent = $context[count($context)-1]['name'];
 
 	switch ($elt_name)
@@ -2097,6 +2150,7 @@ function rdf_element_handler(
 		{
 		    case "channel":
 			// XXX - Make sure $children is a string
+			$feed_info['title'] = $children;
 			$retval[$elt_name] = $children;
 			break;
 
@@ -2116,6 +2170,8 @@ function rdf_element_handler(
 		switch ($parent)
 		{
 		    case "channel":
+			$feed_info['url'] = $children;
+			// Fall through.
 		    case "item":
 			// XXX - Make sure $children is a string
 #error_log("before post_link: ".$children);
