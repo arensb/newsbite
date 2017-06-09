@@ -118,6 +118,9 @@ function htmlpurify_init()
 
 function htmlpurify(&$retval, $maxlen = NULL)
 {
+	global $feed_info;
+	global $purifier_config;
+#error_log("inside htmlpurify, feed_info == " . print_r($feed_info, true));
 	# $maxlen is used for saying, "the purified string must fit in
 	# 255 characters".
 	# I don't think HTMLPurify has a setting for this, so it'd have to
@@ -142,8 +145,26 @@ function htmlpurify(&$retval, $maxlen = NULL)
 		# purifying it.
 		return $retval;
 
-	if (!isset($purifier))
+	// Originally, we tried to use a singleton, creating an
+	// HTMLPurifier::Config object only when needed. But once
+	// HTMLPurifier reads an object, it finalizes its
+	// configuration so that it can't be changed anymore.
+	// This means that we can't set the base URL for new posts, so
+	// instead we create a new purifier each time. Hopefully this
+	// won't be too inefficient.
+	# XXX - Currently, we're creating a new purifier config and
+	# new purifier for every snippet of HTML, be it a title, summary,
+	# post content, or whatever. Ideally we should do this only at
+	# the beginning of a new post.
+
+#	if (!isset($purifier))
 		htmlpurify_init();
+
+	if (!empty($feed_info['url']))
+	{
+		$purifier_config->set('URI.Base', $feed_info['url']);
+		$purifier_config->set('URI.MakeAbsolute', TRUE);
+	}
 
 	if (isset($maxlen) && strlen($retval) > $maxlen)
 	{
