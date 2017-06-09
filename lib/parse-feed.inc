@@ -279,13 +279,7 @@ function parse_feed($feed_text)
 	/* Start parsing */
 	global $feed_info;
 	$feed_info = array();
-if (preg_match(',<title>(.*?)</title>,', $feed_text, $matches))
-	$feed_title = $matches[1];
-else
-	$feed_title = "[untitled feed]";
-//error_log("Starting to parse $feed_title");
 	$err = xml_parse($xml_parser, $feed_text, true);
-//error_log("Finished parsing $feed_title: $err");
 //error_log("feed_err [$feed_err], feed_errmsg [$feed_errmsg]");
 
 	if ($feed_err)
