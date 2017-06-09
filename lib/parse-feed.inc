@@ -1559,6 +1559,7 @@ function rss_attribute_handler(
 function atom_init($url, $prefix, &$attrs)
 {
 	global $feed_info;
+#error_log("Inside atom_init($url, $prefix, " . print_r($attrs, true) . ")");
 	$feed_info['feed_type'] = "atom";
 
 	$feed_info['feed_type_version'] = "1.0";
@@ -2073,6 +2074,8 @@ function atom_element_handler(
 				  array($elt_name,
 					&$children,
 					&$context));
+			if (!empty($attrs['xml:lang']))
+				$feed_info['lang'] = $attrs['xml:lang'];
 			$retval = $children;
 			break;
 
@@ -2335,7 +2338,8 @@ function xml_attribute_handler(
 	&$context	// Where we are at the moment
 	)
 {
-//	error_log("Inside xml_attribute_handler($name)");
+//	error_log("Inside xml_attribute_handler($ns_url, $prefix, $name, $value)");
+	$retval["xml:$name"] = $value;
 	return true;
 }
 ?>
