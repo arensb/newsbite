@@ -1092,31 +1092,35 @@ EOT;
 	$err = $stmt->execute();
 			// XXX - Error-checking
 
-	/* Delete old items from database */
+	/* Delete old items from database.
+	 * Here, we look up the "autodelete" option for the feed in
+	 * question, and delete the items older than that many days.
+	 */
 	// XXX - This is potentially a problem with
 	// a) An article that has gone unread n+1 days, and was just
 	// updated. In this case, you had n days to read it. Cope.
 	// b) Feeds that don't give dates, such as Perry Bible
 	// Fellowship. In this case, the feed parser should insert an
 	// artificial date.
-	global $AUTODELETE_DAYS;
-
-	if ($AUTODELETE_DAYS != 0)
-	{
-		$query = <<<EOT
+	$query = <<<EOT
 DELETE FROM	items
 WHERE		feed_id = ?
-  AND		pub_date < NOW() - INTERVAL ? DAY
+  AND		pub_date < NOW() -
+		  INTERVAL get_option(feed_id, "autodelete") DAY
 EOT;
-		$stmt = $dbh->prepare($query);
-			// XXX - Error-checking
-		$err = $stmt->bind_param("ii",
-				  $feed_id,
-				  $AUTODELETE_DAYS);
-			// XXX - Error-checking
-		$err = $stmt->execute();
-			// XXX - Error-checking
+	$stmt = $dbh->prepare($query);
+	if ($stmt === FALSE)
+	{
+		// XXX - Better error-checking
+		error_log("prepare error " . $dbh->errno .
+			": \"" . $dbh->error .
+			"\"<br/>\n");
 	}
+	$err = $stmt->bind_param("i",
+				 $feed_id);
+		// XXX - Error-checking
+	$err = $stmt->execute();
+		// XXX - Error-checking
 
 	/* Return count of new/updated items */
 	return $update_counts;

@@ -139,6 +139,7 @@ add_xml_handler("http://purl.org/rss/1.0/",
 	));
 add_xml_handler("http://www.w3.org/1999/02/22-rdf-syntax-ns#",
 	array(
+		"init"		=> 'rdf_init',
 		"element"	=> 'rdf_element_handler',
 	));
 
@@ -191,6 +192,17 @@ $feed_err = 0;		// Error code.
 			// 1 - Some error
 			// XXX - Is it worth expanding this?
 $feed_errmsg = "";	// Error message
+
+/* $feed_info
+ * Holds information about the current feed.
+ * In many cases, it's useful to know what kind of feed we're looking at:
+ * whether it's RSS 1.0 or 2.0, which language it's in, the title, and
+ * so on.
+ * $feed_info is a holder for this information, a free-form hash that
+ * element handlers can use to store information for other element
+ * handlers.
+ */
+$feed_info = array();
 
 /* parse_feed
  * Take an XML string (read from a file or URL) and parse it down to a
@@ -265,16 +277,9 @@ function parse_feed($feed_text)
 	array_push($_context, $node);
 
 	/* Start parsing */
-global $the_feed_title;
-global $the_feed_text;
-if (preg_match(',<title>(.*?)</title>,', $feed_text, $matches))
-	$feed_title = $matches[1];
-else
-	$feed_title = "[untitled feed]";
-$the_feed_text = $feed_text;
-//error_log("Starting to parse $feed_title");
+	global $feed_info;
+	$feed_info = array();
 	$err = xml_parse($xml_parser, $feed_text, true);
-//error_log("Finished parsing $feed_title: $err");
 //error_log("feed_err [$feed_err], feed_errmsg [$feed_errmsg]");
 
 	if ($feed_err)
@@ -339,6 +344,7 @@ function _element_start_handler($parser, $fullname, $attrs)
 	global $url2handler;
 	global $url2ns;
 
+#error_log("_e_s_h($fullname, " . print_r($attrs, true) . ")");
 	/* Parse $fullname into URL and name */
 	if (preg_match('/^(.*):(.*)$/', $fullname, $match))
 	{
@@ -348,6 +354,7 @@ function _element_start_handler($parser, $fullname, $attrs)
 		$ns_url = "";
 		$name = $fullname;
 	}
+#error_log("$fullname -> $ns_url, $name");
 
 	/* Create a new node */
 	$node = array(
@@ -758,15 +765,22 @@ function default_attribute_handler(
 // http://cyber.law.harvard.edu/rss/rss.html
 function rss_init($url, $prefix, &$attrs)
 {
-global $the_feed_title;
-global $the_feed_text;
-	// XXX - Look at $attrs['version'] to see which version of RSS
+#error_log("Inside rss_init()");
+	global $feed_info;
+
+	$feed_info['feed_type'] = "rss";
+
+	// Look at $attrs['version'] to see which version of RSS
 	// we're dealing with.
-if (isset($attrs['version']))
-//error_log("RSS version [$attrs[version]]: $url");
-;
-else
-error_log("RSS without version: $url");
+	if (isset($attrs['version']))
+	{
+#		error_log("RSS version [$attrs[version]]: $url");
+		$feed_info['feed_type_version'] = $attrs['version'];
+	} else {
+		error_log("RSS without version: $url");
+		$feed_info['feed_type_version'] = 0;
+				// Just so there's always a version.
+	}
 	return true;
 }
 
@@ -779,6 +793,7 @@ function rss_element_handler(
 	&$retval,	// Fill in the blanks here
 	&$context)	// Where we are at the moment
 {
+	global $feed_info;
 #error_log("rss_element_handler: $elt_name");
 	$parent = $context[count($context)-1]['name'];
 			// Get parent node's name
@@ -793,6 +808,7 @@ function rss_element_handler(
 		switch ($parent)
 		{
 		    case "channel":
+			$feed_info['title'] = $children;
 		    case "image":
 		    case "item":
 		    case "textInput":
@@ -833,7 +849,12 @@ error_log("Before hooks, link is array\n");
 if (is_array($children))
 error_log("After hooks, link is array\n");
 			$retval['url'] = $children;
+			break;
 		    case "channel":
+			$feed_info['url'] = $children;
+#error_log("Found channel/link [$feed_info[url]]");
+			$retval['url'] = $children;
+			break;
 		    case "textInput":
 			$retval['url'] = $children;
 			break;
@@ -1092,6 +1113,7 @@ error_log("After hooks, link is array\n");
 		switch ($parent)
 		{
 		    case "channel":
+			$feed_info['lang'] = $children;
 			$retval[$elt_name] = $children;
 			break;
 		    default:
@@ -1188,6 +1210,7 @@ error_log("After hooks, link is array\n");
 		{
 		    case "channel":
 			// XXX - Make sure $children is a string
+			$feed_info['ttl'] = $children * 60;
 			$retval[$elt_name] = $children * 60;
 			break;
 		    default:
@@ -1296,6 +1319,11 @@ function rss_attribute_handler(
 	&$context	// Where we are at the moment
 	)
 {
+# XXX - Here, we'd like to be able to tell handlers what kind of
+# feed we're dealing with: RSS 1.0, RSS 2.0, Atom, or what.
+# Unfortunately, $context doesn't seem to have this information yet.
+
+#error_log("inside rss_attribute_handler, prefix [$prefix], name [$name], value [$value], context [" . print_r($context, true) . "]");
 	// XXX - Check for prefix, and pass through.
 	if ($prefix == "")
 		$retval[$name] = $value;
@@ -1513,8 +1541,34 @@ function rss_attribute_handler(
  * Atom initialization hook. Do whatever is necessary to initialize
  * Atom.
  */
+# XXX - The Atom feeds I've seen use
+#	< ? xml version="1.0" encoding="UTF-8" ? >
+#	<feed
+#	 xmlns="http://www.w3.org/2005/Atom"
+#	 xml:lang="en-US"
+# to indicate the language. Note that there's no "xmlns:xml", because
+# that's bound to http://www.w3.org/XML/1998/namespace by the standard
+# (https://www.w3.org/XML/1998/namespace). We'd have to process that,
+# and pass it along.
+# So add a handler for that namespace. I think it only includes
+#	xml:lang (document/element language)
+#	xml:space (does whitespace matter?)
+#	xml:id (an identifier)
+#	xml:Father (ignore this)
+
 function atom_init($url, $prefix, &$attrs)
 {
+	global $feed_info;
+#error_log("Inside atom_init($url, $prefix, " . print_r($attrs, true) . ")");
+	$feed_info['feed_type'] = "atom";
+
+	$feed_info['feed_type_version'] = "1.0";
+		# XXX - AFAIK there's currently only one version of
+		# Atom. When and if a new one comes out, presumably
+		# either $url will change (right now, it's always
+		# "http://www.w3.org/2005/Atom"), or they'll add
+		# a version attribute, or something.
+
 	return true;
 }
 
@@ -1605,6 +1659,10 @@ function atom_element_handler(
 		switch ($parent)
 		{
 		    case "feed":
+			$feed_info['title'] = $children;
+			// Fall through.
+			# XXX - Should the title be sanitized with
+			# clean-html?
 		    case "entry":
 			// XXX - Make sure $children is a string.
 			# Clean up HTML
@@ -1701,6 +1759,7 @@ function atom_element_handler(
 					$retval['feed_url'] = $attrs['href'];
 				else
 					$retval['url'] = $attrs['href'];
+				$feed_info['url'] = $retval['url'];
 				break;
 
 			    case "replies":
@@ -2015,6 +2074,8 @@ function atom_element_handler(
 				  array($elt_name,
 					&$children,
 					&$context));
+			if (!empty($attrs['xml:lang']))
+				$feed_info['lang'] = $attrs['xml:lang'];
 			$retval = $children;
 			break;
 
@@ -2049,6 +2110,18 @@ function atom_attribute_handler(
 }
 
 /********** RDF ***********************************************/
+function rdf_init($url, $prefix, &$attrs)
+{
+#error_log("Inside rdf_init($url, $prefix, " . print_r($attrs, true) . ")");
+	global $feed_info;
+
+	$feed_info['feed_type'] = "rdf";
+	$feed_info['feed_type_version'] = "1.0";
+		# XXX - There are versions 1.0 and 1.1 of RDF, but
+		# I don't know how to tell them apart.
+}
+
+# XXX - Need a way to set $feed_info[language] in RDF documents.
 function rdf_element_handler(
 	$ns_url,	// URL of this element's namespace
 	$prefix,	// Namespace of this element
@@ -2058,6 +2131,8 @@ function rdf_element_handler(
 	&$retval,	// Fill in the blanks here
 	&$context)	// Where we are at the moment
 {
+	global $feed_info;
+
 	$parent = $context[count($context)-1]['name'];
 
 	switch ($elt_name)
@@ -2072,6 +2147,7 @@ function rdf_element_handler(
 		{
 		    case "channel":
 			// XXX - Make sure $children is a string
+			$feed_info['title'] = $children;
 			$retval[$elt_name] = $children;
 			break;
 
@@ -2091,6 +2167,8 @@ function rdf_element_handler(
 		switch ($parent)
 		{
 		    case "channel":
+			$feed_info['url'] = $children;
+			// Fall through.
 		    case "item":
 			// XXX - Make sure $children is a string
 #error_log("before post_link: ".$children);
@@ -2260,7 +2338,8 @@ function xml_attribute_handler(
 	&$context	// Where we are at the moment
 	)
 {
-//	error_log("Inside xml_attribute_handler($name)");
+//	error_log("Inside xml_attribute_handler($ns_url, $prefix, $name, $value)");
+	$retval["xml:$name"] = $value;
 	return true;
 }
 ?>

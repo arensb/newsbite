@@ -17,6 +17,10 @@ CREATE TABLE feed_options (
 )
 DEFAULT CHARSET=utf8mb4;
 
+/* Set defaults for options. */
+INSERT INTO feed_options (feed_id, name, value) VALUES
+	(-1, "autodelete", 90);		# When to expunge old posts.
+
 /* groups
  * For grouping feeds into nested groups.
  * 'parent' says which group this group belongs to. The root group has
@@ -30,7 +34,7 @@ CREATE TABLE groups (
 )
 DEFAULT CHARSET=utf8mb4;
 
-/* Create one mandtory group: "All", with ID -1 */
+/* Create one mandatory group: "All", with ID -1 */
 INSERT INTO groups (name, parent) VALUES ("All", -1);
 UPDATE groups SET id=-1 WHERE id=last_insert_id();
 
@@ -187,3 +191,40 @@ FOR EACH ROW
 	UPDATE counts
 	SET num_read = num_read + NEW.is_read - OLD.is_read
 	WHERE counts.feed_id = OLD.feed_id;
+
+/* get_option function
+ * Get the value of option `opt` for feed with ID `fid`, and return it.
+ * If it's not explicitly set for the feed, get the default.
+ * If there's no default, return NULL.
+ */
+/* XXX - If the feed doesn't have the option, ought to see whether the
+ * feed is in a group that has the option set, and whether *that* group
+ * is in a group that has the option set, and so on, recursively.
+ * 	This raises another question: what if the feed is in two groups
+ * that have different values for $option? It's tempting to say that
+ * the result is undefined. Is there a better answer?
+ */
+DELIMITER //
+CREATE FUNCTION `get_option`
+    (fid INT,
+     opt CHAR(64))
+    RETURNS	CHAR(255)
+BEGIN
+	SET @retval = NULL;
+
+	# Get the option value for this particular feed.
+	SELECT	`value` into @retval
+	FROM	`feed_options`
+	WHERE	`feed_id` = fid;
+
+	IF @retval IS NOT NULL THEN
+	   RETURN @retval;
+	END IF;
+
+	SELECT	`value` into @retval
+	FROM	`feed_options`
+	WHERE	`feed_id` = -1;
+
+	RETURN @retval;
+END //
+DELIMITER ;
