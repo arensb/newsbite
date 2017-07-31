@@ -295,6 +295,9 @@ error_log("Inside mark_articles()");
 			if ((bool) $ihave[$id][0] ==
 			    (bool) $db_items[$id]['is_read'])
 			{
+				# XXX - If $ihave[id][1] is false, as
+				# has been known to happen, then this will
+				# send back false/undefined as the mtime.
 				$retval[] = array("id"		=> $id,
 						  "is_read"	=> (bool) $ihave[$id][0],
 						  "mtime"	=> $ihave[$id][1]
