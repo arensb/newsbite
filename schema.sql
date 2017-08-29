@@ -7,6 +7,7 @@ CREATE TABLE options (
 	value		VARCHAR(255),
 	PRIMARY KEY(name)
 )
+ENGINE=InnoDB
 DEFAULT CHARSET=utf8mb4;
 
 CREATE TABLE feed_options (
@@ -15,6 +16,7 @@ CREATE TABLE feed_options (
 	value		VARCHAR(255),
 	PRIMARY KEY(feed_id, name)
 )
+ENGINE=InnoDB
 DEFAULT CHARSET=utf8mb4;
 
 /* Set defaults for options. */
@@ -32,6 +34,7 @@ CREATE TABLE groups (
 	name		VARCHAR(127),
 	PRIMARY KEY(id)
 )
+ENGINE=InnoDB
 DEFAULT CHARSET=utf8mb4;
 
 /* Create one mandatory group: "All", with ID -1 */
@@ -50,6 +53,7 @@ CREATE TABLE group_members (
 	parent		INT		NOT NULL DEFAULT -1,
 	UNIQUE KEY (member, parent)
 )
+ENGINE=InnoDB
 DEFAULT CHARSET=utf8mb4;
 
 CREATE TABLE feeds (
@@ -74,6 +78,7 @@ CREATE TABLE feeds (
 	passwd		char(32),	# Password, for authentication
 	PRIMARY KEY(id)
 )
+ENGINE=InnoDB
 DEFAULT CHARSET=utf8mb4;
 
 /* items
@@ -115,6 +120,7 @@ CREATE TABLE items (
 	KEY `is_read` (`is_read`),
 	KEY `mtime` (`mtime`)
 )
+ENGINE=InnoDB
 DEFAULT CHARSET=utf8mb4;
 
 /* counts
@@ -127,6 +133,7 @@ CREATE TABLE counts (
 	num_read	INT,
 	PRIMARY KEY(feed_id)
 )
+ENGINE=InnoDB
 DEFAULT CHARSET=utf8mb4;
 
 /* add_feed
