@@ -359,12 +359,13 @@ function html_group_list($group)
 		$marked = array_key_exists("marked", $group) &&
 			$group['marked'];
 	echo "<li>",
-		"<input type=\"checkbox\" name=\"group_",
+		"<label><input type=\"checkbox\" name=\"group_",
 		$group['id'],
 		"\"",
 		($marked ? " checked" : ""),
 		"/>",
-		 htmlspecialchars($group['name']);
+		 htmlspecialchars($group['name']),
+		 "</label>";
 
 	// If this group has children, recursively call html_group_list()
 	// to display their tree.
