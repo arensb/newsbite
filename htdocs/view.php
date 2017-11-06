@@ -136,6 +136,7 @@ $(function() {
 	$("#bottom-button-box").css("margin-bottom", $(window).height());
 });
 </script>
+<script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>
 </head>
 <body id="view-body" orientation="up">
 <div id="test-info">Width: <label id="width">?</label>, Height: <label id="height">?</label>; dpi: <label id="dpi">?</label></div>
