@@ -516,6 +516,7 @@ function _save_handle($feed_id, &$feed_text)
 		// XXX - OTOH, the error messages arguably mess up
 		// JSON output. Should this be inside a try {} block
 		// or something?
+		rotate_cache($feed_id);
 		@$fh = fopen(FEED_CACHE . "/$feed_id", "w");
 		if ($fh)
 		{
@@ -713,5 +714,20 @@ function _http_status(&$text)
 	}
 
 	return array($http_status, $http_error, $extra);
+}
+
+// rotate_cache
+// Rotate cache file /tmp/feed-cache/n to n.0, n.1, etc.
+function rotate_cache($feed_id)
+{
+        $generations = 10;	# How many generations to keep
+
+        for ($n = $generations - 1; $n > 0; $n--)
+        {
+            @rename(FEED_CACHE . "/${feed_id}.${n}",
+                    FEED_CACHE . "/${feed_id}." . ($n+1));
+        }
+        @rename(FEED_CACHE . "/${feed_id}",
+                FEED_CACHE . "/${feed_id}.0");
 }
 ?>
