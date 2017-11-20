@@ -722,12 +722,12 @@ function rotate_cache($feed_id)
 {
         $generations = 10;	# How many generations to keep
 
-        for ($n = $generations - 1; $n > 0; $n--)
+        for ($n = $generations - 1; $n >= 0; $n--)
         {
-            @rename(FEED_CACHE . "/${feed_id}.${n}",
-                    FEED_CACHE . "/${feed_id}." . ($n+1));
+		@rename(FEED_CACHE . "/${feed_id}.${n}",
+		       FEED_CACHE . "/${feed_id}." . ($n+1));
         }
         @rename(FEED_CACHE . "/${feed_id}",
-                FEED_CACHE . "/${feed_id}.0");
+	       FEED_CACHE . "/${feed_id}.0");
 }
 ?>
