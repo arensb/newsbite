@@ -49,10 +49,12 @@ body {
 	display:		none;
 }
 
+/*
 input[type="checkbox"].mark-check {
 	width:			3.0em;
 	height:			3.0em;
 }
+*/
 
 input[type="submit"],
 input[type="reset"] {
