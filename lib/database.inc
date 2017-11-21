@@ -807,6 +807,8 @@ function db_update_feed($feed_id, $feed)
 {
 	$dbh = db_connect();
 
+	$feed_opts = db_get_feed_options($feed_id);
+
 	/* Update information about the feed itself */
 	db_update_feed_info($feed_id, $feed);
 
@@ -953,20 +955,29 @@ EOT;
 
 //echo "<pre>\$author [$author]</pre>\n";
 
-		if (isset($item['guid']))
+		switch ($feed_opts['id-from'])
 		{
-			$guid = $item['guid'];
-			if (strlen($guid) > 127)
-			{
-				# error_log("Hashing overly-long guid $guid");
-				$guid = md5($guid);
-			}
-		} else {
-			// This item doesn't have a GUID, so make one.
-			// URLs can get arbitrarily long, and all we
-			// want is something unique, so just use a
-			// hash of the long URL.
+		    case "url":
 			$guid = md5($item['url']);
+			break;
+
+		    case "guid":
+		    default:
+			if (isset($item['guid']))
+			{
+				$guid = $item['guid'];
+				if (strlen($guid) > 127)
+				{
+					# error_log("Hashing overly-long guid $guid");
+					$guid = md5($guid);
+				}
+			} else {
+				// This item doesn't have a GUID, so make one.
+				// URLs can get arbitrarily long, and all we
+				// want is something unique, so just use a
+				// hash of the long URL.
+				$guid = md5($item['url']);
+			}
 		}
 
 		/* Something is quite picky about the value of

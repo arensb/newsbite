@@ -80,15 +80,6 @@
   and different people may deal with this differently (UTF-8 vs. HTML
   entities). Perhaps safest to assume that they're HTML and clean up
   (if possible, only do entity translation, and throw out any markup).
-- Add a "guid_from" option to feeds: defaults to "guid"; other values
-  can include "url" and "title".
-	Says what to use as a unique identifier for items in a feed.
-  Feeds like Google News summary use some internal GUID that changes
-  when a story (or cluster) is updated, even though the URL doesn't.
-  That means that using <guid> for the ID makes for a bunch of
-  nearly-identical articles.
-	Some feeds have repeating titles, so shouldn't use the title
-  as an ID, but it should be an option for other feeds.
 - REST: $rreq is used so often in the controllers, it probably makes
   sense to move it into a RESTController parent class.
 	- Create this parent class.
