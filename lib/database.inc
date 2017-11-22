@@ -268,6 +268,8 @@ EOT
 # XXX - db_set_feed_options($feed_id, $options (opt => value ...)
 function db_set_feed_option($feed_id, $opt, $val)
 {
+	$dbh = db_connect();
+
 	$query = <<<EOT
 INSERT INTO	feed_options
 	(feed_id, name, value)
