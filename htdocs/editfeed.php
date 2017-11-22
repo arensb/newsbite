@@ -353,6 +353,26 @@ function update_feed_info($feed_id)
 	db_update_feed_info($feed_id, $new);
 		// XXX - Error-checking
 
+	/* Update feed options */
+	// autodelete
+	$opt_autodelete = $_REQUEST['opt_autodelete'] + 0;
+	if (is_numeric($opt_autodelete) &&
+	    is_integer($opt_autodelete) &&
+	    $opt_autodelete > 0)
+		db_set_feed_option($feed_id, 'autodelete', $opt_autodelete);
+
+	// id-from
+	switch ($_REQUEST['opt_id-from'])
+	{
+	    case "guid":
+	    case "url":
+		db_set_feed_option($feed_id, 'id-from', $_REQUEST['opt_id-from']);
+		break;
+
+	    case NULL:
+		break;
+	}
+
 	/* Redirect to the feed view page */
 	if ($new['active'])
 		redirect_to("view.php#id=$feed_id");
