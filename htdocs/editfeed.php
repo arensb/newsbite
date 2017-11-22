@@ -100,6 +100,7 @@ function show_form($feed_id)
 	mark_groups($feed_id, $groups);
 
 	$feed_opts = db_get_feed_options($feed['id']);
+	$default_opts = db_get_feed_options(-1);
 ########################################
 echo '<', '?xml version="1.0" encoding="UTF-8"?', ">\n";
 ?>
@@ -241,20 +242,32 @@ echo '<', '?xml version="1.0" encoding="UTF-8"?', ">\n";
   <tr>
     <th class="section-title" colspan="0">Options</th>
   </tr>
-<?php
-    if (count($feed_opts) > 0):
-	foreach ($feed_opts as $opt => $value):
-?>
-    <tr>
-      <th><?=$opt?></th>
-      <td><input type="number"
-		name="opt_<?=$opt?>"
-		value="<?=$feed_opts[$opt]?>" /></td>
-    </tr>
-<?php
-	  endforeach;
-    endif;
-?>
+
+  <!-- autodelete: after how many days to delete posts. -->
+  <tr>
+	<th>Autodelete days</th>
+    <td><input type="number"
+	name="opt_autodelete"
+	value="<?=$feed_opts['autodelete']?>"></input>
+	(default: <?=$default_opts['autodelete']?>)
+    </td>
+  </tr>
+
+  <!-- id-from: where to get the unique ID of a post. -->
+  <tr>
+    <th>ID from</th>
+    <td>
+      <select name="opt_id-from">
+        <option value="guid"
+            <?=!isset($feed_opts['id-from']) || $feed_opts['id-from'] == "guid" ?
+		" selected" : "" ?>
+	>GUID field, or URL otherwise (default)</option>
+        <option value="url"
+            <?=$feed_opts['id-from'] == "url" ? " selected" : "" ?>
+        >The URL of the post</option>
+      </select>
+    </td>
+  </tr>
 </table>
 
 <input type="reset" value="Clear changes"/>
