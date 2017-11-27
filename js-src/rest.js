@@ -163,7 +163,7 @@ msg_add("rest_call: can't create XMLHttpRequest: "+request);
 	if (handler)
 		request.onreadystatechange = rest_call_callback;
 
-	if (verb == "GET" && body != "")
+	if (verb == "GET" && body != null && body != "")
 		console.error("GET "+verb+" "+request+" has a body. It won't be sent.")
 	request.send(body);
 }
