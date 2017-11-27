@@ -299,6 +299,7 @@ error_log("Inside mark_articles()");
 				# has been known to happen, then this will
 				# send back false/undefined as the mtime.
 				$retval[] = array("id"		=> $id,
+						  "feed_id"	=> (int) $db_items[$id]['feed_id'],
 						  "is_read"	=> (bool) $ihave[$id][0],
 						  "mtime"	=> $ihave[$id][1]
 					);
