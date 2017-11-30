@@ -517,6 +517,13 @@ CacheManager.prototype.purge_item = function(item_id)
 	delete this.itemindex[item_id];
 }
 
+/* XXX - Need to rewrite slow_sync. How?
+ * - client sends list of articles: {item_id, is_read, mtime} tuples
+ * - server updates database accordingly
+ * - server sends back the same list of articles, with updated is_read and
+ *   mtime. Perhaps other fields, if last_update is newer than client's mtime.
+ * - client updates its on-screen and in-local-storage database.
+ */
 CacheManager.prototype.slow_sync = function(feed_id, user_cb, user_err_cb)
 {
 	/* Inner helper functions */
@@ -554,6 +561,8 @@ msg_add("sync call returned ok, I assume: ", err, errmsg);
 			}
 
 			// This is a new item. Add it to cache.
+			// XXX - Or it might just be the updated status of
+			// an existing entry.
 			try {
 			var item = new Item(entry);
 			me.store_item(item);
