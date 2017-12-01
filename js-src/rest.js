@@ -24,7 +24,7 @@ var REST = {
  */
 REST.call = function(verb, path, params, handler, err_handler)
 {
-console.debug("Inside REST.call "+verb+" "+path, params, handler, err_handler);
+console.debug("Inside REST.call "+verb+" "+path, params);
 	var request;
 
 	/* login_retry
@@ -163,8 +163,8 @@ msg_add("rest_call: can't create XMLHttpRequest: "+request);
 	if (handler)
 		request.onreadystatechange = rest_call_callback;
 
-	if (verb == "GET" && body != "")
-		console.error("GET "+verb+" "+request+" has a body. It won't be sent.")
+	if (verb == "GET" && body != null && body != "")
+		console.error("GET "+verb+" "+request+" has a body. It won't be sent:", body);
 	request.send(body);
 }
 

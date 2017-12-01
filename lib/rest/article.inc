@@ -291,10 +291,20 @@ error_log("Inside mark_articles()");
 
 			// If the caller and database agree on an
 			// article's is_read status, all is well.
-			// Ignore this one.
+			// Send back the is_read status, and its mtime.
 			if ((bool) $ihave[$id][0] ==
 			    (bool) $db_items[$id]['is_read'])
+			{
+				# XXX - If $ihave[id][1] is false, as
+				# has been known to happen, then this will
+				# send back false/undefined as the mtime.
+				$retval[] = array("id"		=> $id,
+						  "feed_id"	=> (int) $db_items[$id]['feed_id'],
+						  "is_read"	=> (bool) $ihave[$id][0],
+						  "mtime"	=> $ihave[$id][1]
+					);
 				continue;
+			}
 
 			/* By this point, the caller and database disagree */
 			if ($ihave[$id][1] > $db_items[$id]['mtime'])
@@ -329,7 +339,7 @@ error_log("Update the client");
 		}
 
 		// Send differences back to the client.
-error_log("Returning differences: " . print_r($retval, true));
+error_log("Returning results: " . print_r($retval, true));
 		return $retval;
 	}
 }

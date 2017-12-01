@@ -151,6 +151,13 @@ Item.prototype.displaytitle = function()
  */
 Item.prototype._toDate = function(value)
 {
+	if (typeof value == "number")
+	{
+		// It's an integer (or at least a number). Assume it's
+		// a time_t. Convert seconds to milliseconds, and
+		// create a Date.
+		return new Date(parseInt(value)*1000)
+	}
 	if (typeof value == "string")
 	{
 		// 'value' might be an ISO8601 date, or it might be a
