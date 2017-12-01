@@ -560,16 +560,29 @@ msg_add("sync call returned ok, I assume: ", err, errmsg);
 				continue;
 			}
 
-			// This is a new item. Add it to cache.
-			// XXX - Or it might just be the updated status of
-			// an existing entry.
-			try {
-			var item = new Item(entry);
-			me.store_item(item);
-			continue;
-			} catch(e) {
-				console.error("Can't add item: %o", e);
-				console.trace();
+			// Look up the item in cache, so we know what
+			// to do with it.
+			var old_item = me.get_item(entry.id);
+			if (old_item == null)
+			{
+				// This is a new entry. Add it to the
+				// cache.
+				try {
+					var item = new Item(entry);
+					me.store_item(item);
+					continue;
+				} catch(e) {
+					console.error("Can't add item: %o", e);
+					console.trace();
+				}
+				continue;
+			} else {
+				// This is an update to an existing entry
+				console.debug("Updating old_item: ", old_item);
+				old_item.is_read = (entry.is_read == true);
+				old_item.mtime = entry.mtime;
+				me.store_item(old_item);
+				continue;
 			}
 
 			// XXX - What's left?
