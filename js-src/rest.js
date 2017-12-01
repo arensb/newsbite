@@ -24,7 +24,7 @@ var REST = {
  */
 REST.call = function(verb, path, params, handler, err_handler)
 {
-console.debug("Inside REST.call "+verb+" "+path, params, handler, err_handler);
+console.debug("Inside REST.call "+verb+" "+path, params);
 	var request;
 
 	/* login_retry
