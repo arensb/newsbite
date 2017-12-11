@@ -1,3 +1,4 @@
+
 /*
  * Feed view
  */
@@ -462,6 +463,12 @@ input[type="checkbox"].mark-check:checked label {
 	 * kerning.
 	 */
 	font-feature-settings:	"liga" 1, "kern" 1;
+}
+
+.item-summary img,
+.item-content img {
+	max-width:	100%;		/* Don't overflow the article */
+	height:		auto;		/* Scale images */
 }
 
 /* Mark the currently-selected item with a blue left border */
