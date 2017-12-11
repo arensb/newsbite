@@ -520,9 +520,20 @@ function mark_item1(ev)
 	addnewnode:
 	if (item_div.is_read)
 	{
-		var last_item = onscreen.items[onscreen.items.length-1];
-				// Get last item in onscreen.items.
-		var more_items = cache.getitems(feed_id, last_item, 0, 1);
+		// Look up the last article on the screen
+		var last_item = $("#itemlist article.item").last().get(0);
+		var last_item_item;
+		if (last_item == null)
+		{
+			// XXX - There are no items in the list. This
+			// should never happen, seeing as how we're
+			// marking an item that's displayed.
+			last_item_item = -1;	// XXX - Not sure this is right.
+		} else {
+			last_itemitem = cache.get_item(last_item.item_id);
+		}
+
+		var more_items = cache.getitems(feed_id, last_item_item, 0, 1);
 				// Get the next one after that in cache
 		if (more_items == null || more_items.length < 2)
 			// If getitems() returned < 2 items, then
