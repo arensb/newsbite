@@ -439,6 +439,8 @@ function flush_queues()
  */
 function mark_item1(ev)
 {
+	var now = new Date();
+
 	/* Find the enclosing <div class="item"> by going up the parent
 	 * chain.
 	 */
@@ -469,17 +471,20 @@ function mark_item1(ev)
 	/* Add the item ID to the queue of items to mark as read/unread */
 	mark_read[item_id] = item_div.is_read;
 
-	/* Find the item's entry in onscreen.items, and mark it */
-	for (var i = 0, l = onscreen.items.length; i < l; i++)
+
+	// XXX - Mark the item as read/unread in cache, and update its
+	// mtime.
+	var c = cache.get_item(item_id);
+	if (c == null)
 	{
-		var item = onscreen.items[i];
-		if (item.id != item_id)
-			continue;
-		item.is_read = item_div.is_read;
-		item.mtime = new Date();
-		cache.store_item(item);
-				// Mark in the cache as well.
+		// Couldn't find the item in cache. Something went
+		// wrong.
+		// XXX - What to do?
+		return;
 	}
+	c.is_read = item_div.is_read;
+	c.mtime = now;
+	cache.store_item(c);
 
 // XXX - Deferring the following block seems to improve performance
 // (in that mark_item1() is no longer the function in which we spend
