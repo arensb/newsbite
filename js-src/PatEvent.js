@@ -277,6 +277,8 @@ PatEvent._add_binding = function(node, evtype, selector, handler, capture)
 
 	// Add a DOMNodeInserted listener to this node, so we can find
 	// out if it gets any new children.
+	// XXX - Chrome complains about this:
+	// [Violation] Added synchronous DOM mutation listener to a 'DOMNodeInserted' event. Consider using MutationObserver to make the page more responsive.
 	node.addEventListener("DOMNodeInserted",
 			      PatEvent._event_node_added,
 			      false);
