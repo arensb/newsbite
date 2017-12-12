@@ -735,32 +735,14 @@ function move_down()
 		// XXX - Instead of selecting the topmost item,
 		// perhaps ought to find the topmost one in the
 		// visible window.
-		current_item = onscreen.items[0].node;
-		$(current_item).addClass("current-item");
+		current_item = $("#itemlist article.item").first().get(0);
 	} else {
-		$(current_item).removeClass("current-item");
+		var next_item = $(current_item).next();
 
-		/* Find the current item in onscreen.items, so we can
-		 * get the next one.
-		 */
-		// Try using something like:
-		// XXX - next_item = $(current_item).next();
-		var i;
-		for (i = 0; i < onscreen.items.length; i++)
+		if (next_item.length != 0)
 		{
-			if (onscreen.items[i].node == current_item)
-				// Found it.
-				break;
-		}
-		if (i >= onscreen.items.length - 1)
-		{
-			/* Couldn't find current item, or we're at the
-			 * last item.
-			 */
-			// XXX - Perhaps oughtto load the next item
-			// from cache.
-		} else {
-			current_item = onscreen.items[++i].node;
+			$(current_item).removeClass("current-item");
+			current_item = $(next_item).get(0);
 		}
 	}
 
