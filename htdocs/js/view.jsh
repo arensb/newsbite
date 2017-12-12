@@ -695,7 +695,7 @@ function expand_all()
  */
 function move_up()
 {
-	if ($("#itemlist article").length == 0)
+	if ($("#itemlist article.item").length == 0)
 		return;
 
 	if (current_item == null)
@@ -716,8 +716,6 @@ function move_up()
 	}
 
 	$(current_item).addClass("current-item");
-		// Instead of a JQuery object, make this a reference
-		// to the <div>
 
 	// Scroll so that the new current item is at the top
 	window.scrollTo(0, current_item.offsetTop + body_top_offset);
@@ -728,7 +726,7 @@ function move_up()
  */
 function move_down()
 {
-	if (onscreen.items.length == 0)
+	if ($("#itemlist article.item").length == 0)
 		return;
 
 	if (current_item == null)
