@@ -252,6 +252,10 @@ console.log("I don't have this feed: ["+feed_id+"]");
 		};
 		onscreen.items = cache.getitems(feed_id, null, 0, 25);
 	}
+	// XXX - Instead of onscreen, just fetch the first 25
+	// articles with
+	// cache.getitems(feed_id, null, 0, 25);
+	// as above.
 
 	// Draw what we've got so far, if anything
 
@@ -349,9 +353,6 @@ function set_pane(container, state)
 	item_div = item_div[0];
 	if (item_div.offsetTop < window.pageYOffset)
 		window.scrollTo(0, item_div.offsetTop);
-
-	// XXX - Find entry in onscreen.items. Mark its state. Save to
-	// cache.
 }
 
 /* flush_queues
@@ -694,7 +695,7 @@ function expand_all()
  */
 function move_up()
 {
-	if (onscreen.items.length == 0)
+	if ($("#itemlist article").length == 0)
 		return;
 
 	if (current_item == null)
@@ -703,34 +704,20 @@ function move_up()
 		// XXX - Instead of selecting the bottommost item,
 		// perhaps ought to find the bottommost one in the
 		// visible window.
-		current_item = onscreen.items[onscreen.items.length-1].node;
-		$(current_item).addClass("current-item");
+		current_item = $("#itemlist article.item").last().get(0);
 	} else {
-		$(current_item).removeClass("current-item");
+		var prev_item = $(current_item).prev();
 
-		/* Find the current item in onscreen.items, so we can
-		 * get the next one.
-		 */
-		var i;
-		for (i = 0; i < onscreen.items.length; i++)
+		if (prev_item.length != 0)
 		{
-			if (onscreen.items[i].node == current_item)
-				// Found it.
-				break;
-		}
-		if (i == 0 || i >= onscreen.items.length)
-		{
-			/* Couldn't find current item, or we're at the
-			 * last item.
-			 */
-			// XXX - Perhaps oughtto load the next item
-			// from cache.
-		} else {
-			current_item = onscreen.items[--i].node;
+			$(current_item).removeClass("current-item");
+			current_item = $(prev_item).get(0);
 		}
 	}
 
 	$(current_item).addClass("current-item");
+		// Instead of a JQuery object, make this a reference
+		// to the <div>
 
 	// Scroll so that the new current item is at the top
 	window.scrollTo(0, current_item.offsetTop + body_top_offset);
@@ -758,6 +745,8 @@ function move_down()
 		/* Find the current item in onscreen.items, so we can
 		 * get the next one.
 		 */
+		// Try using something like:
+		// XXX - next_item = $(current_item).next();
 		var i;
 		for (i = 0; i < onscreen.items.length; i++)
 		{
