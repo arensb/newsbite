@@ -87,11 +87,8 @@ var onscreen;		// List of displayed items
 	//		whether marked as read or not
 	//	}
 	// }
-	// Perhaps have
-	//	onscreen.prepend_items(list)
-	//	onscreen.append_items(list)
 
-	// XXX - Delete this? Especially with JQuery, having a
+	// XXX - Delete this. Especially with JQuery, having a
 	// separate variable for what's on screen is probably more
 	// trouble than it's worth. Just use $("#itemlist article") or
 	// some such.
@@ -251,6 +248,8 @@ console.log("I don't have this feed: ["+feed_id+"]");
 			cur_ypos:	0,
 		};
 		onscreen.items = cache.getitems(feed_id, null, 0, 25);
+			// XXX - Delete this once we no longer use
+			// onscreen.items
 	}
 	// XXX - Instead of onscreen, just fetch the first 25
 	// articles with
@@ -261,6 +260,8 @@ console.log("I don't have this feed: ["+feed_id+"]");
 
 	// XXX - If feeds is null, can't draw anything.
 	if (feeds != null &&
+	    // XXX - Instead of onscreen.items, get the articles fetched
+	    // from cache, above.
 	    onscreen.items != null &&
 	    onscreen.items.length > 0)
 		redraw_itemlist();
@@ -557,6 +558,8 @@ function mark_item1(ev)
 
 			itemlist.appendChild(new_node);
 			onscreen.items.push(new_item);
+				// XXX - Don't need this once we never use
+				// onscreen.items
 		}
 	}
 }).defer(1, null);
@@ -822,6 +825,8 @@ msg_add("slow_sync 1 done");
 
 		// We're running for the first time, so get the top
 		// (latest) articles from the cache.
+		// XXX - Delete this block once we no longer refer
+		// to onscreen.items.
 		onscreen.items = cache.getitems(feed_id, null, 0, 25);
 		cache.setItem("onscreen", onscreen);
 
@@ -963,6 +968,15 @@ function redraw_itemlist()
 
 	// Add the new list
 	itemlist.appendChild(new_itemlist);
+}
+
+/* redraw_itemlist2
+ * Redraw the list of items visible on screen.
+ */
+// XXX - A drop-in replacement for redraw_itemlist()
+function redraw_itemlist2()
+{
+	var items = cache.getitems(feed_id, null, 0, 25);
 }
 
 /* set_feed_fields
