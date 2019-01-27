@@ -339,7 +339,7 @@ error_log("Update the client");
 		}
 
 		// Send differences back to the client.
-error_log("Returning results: " . print_r($retval, true));
+#error_log("Returning results: " . print_r($retval, true));
 		return $retval;
 	}
 }

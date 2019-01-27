@@ -963,6 +963,10 @@ EOT;
 			$guid = md5($item['url']);
 			break;
 
+		    case "title":
+			$guid = md5($item['title']);
+			break;
+
 		    case "guid":
 		    default:
 			if (isset($item['guid']))

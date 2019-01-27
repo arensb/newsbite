@@ -84,6 +84,56 @@ class HTMLPurifier_Filter_Vimeo extends HTMLPurifier_Filter
 	}
 }
 
+/* HTMLPurifier_Filter_TwitterIframe
+ * Allow embedded tweets that use <iframe>
+ */
+# XXX - Wonkette includes embedded tweets using iframes local to them:
+#  <iframe
+#      class="rm-shortcode"
+#      data-rm-shortcode-id="6PRR5H1533090858"
+#      frameborder="0"
+#      height="150"
+#      id="twitter-embed-1024341961778622465"
+#      scrolling="no"
+#      src="/res/community/twitter_embed/?iframe_id=twitter-embed-1024341961778622465&created_ts=1533057129.0&screen_name=jeanguerre&text=BREAKING%3A+Commander+Jonathan+White+of+HHS+just+admitted+he+warned+Trump+%40realDonaldTrump+%26amp%3B+Sessions+about+%22signific%E2%80%A6+https%3A%2F%2Ft.co%2FR6xuN4LPGc&id=1024341961778622465&name=Jean+Guerrero"
+#      width="100%">
+#  </iframe>
+#
+# Twitter currently suggests embedding tweets with;
+# <blockquote class="twitter-tweet" data-lang="en">
+#   <p lang="en" dir="ltr">
+#     The Dumbest of Times. <a href="https://t.co/kRqalAlSud">https://t.co/kRqalAlSud</a>
+#   </p>
+#   &mdash; Don Millard (@OTOOLEFAN) <a href="https://twitter.com/OTOOLEFAN/status/1024659338575667202?ref_src=twsrc%5Etfw">August 1, 2018</a>
+# </blockquote>
+# <script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>
+
+class HTMLPurifier_Filter_TwitterIframe extends HTMLPurifier_Filter
+{
+	public $name = 'TwitterIframe';
+
+	/* The approach is a simple one, outlined in the YouTube filter:
+	 * in preFilter, replace <iframe [stuff]></iframe> with
+	 * <span class="vimeo-iframe>[stuff]</span>
+	 * Then, in postFilter, recreate the original <iframe>.
+	 *
+	 * Presumably this can be used for other trusted iframes.
+	 */
+	public function preFilter($html, $config, $context)
+	{
+		$pre_regex = '#<iframe ([^>]*src=["\']https?://www.youtube.com/embed/[^>]*)></iframe>#s';
+		$pre_replace = '<span class="youtube-iframe">\1</span>';
+		return preg_replace($pre_regex, $pre_replace, $html);
+	}
+
+	public function postFilter($html, $config, $context)
+	{
+		return preg_replace('#<span class="youtube-iframe">(.*?)</span>#s',
+				    '<iframe $1></iframe>',
+				    $html);
+	}
+}
+
 # htmlpurify_init
 # Set up the singleton purifier
 function htmlpurify_init()
@@ -106,6 +156,7 @@ function htmlpurify_init()
 			      array(
 				      new HTMLPurifier_Filter_YouTubeIframe(),
 				      new HTMLPurifier_Filter_Vimeo()
+#				      new HTMLPurifier_Filter_TwitterIframe()
 				      ));
 
 	# Increase the max image height
