@@ -265,6 +265,9 @@ echo '<', '?xml version="1.0" encoding="UTF-8"?', ">\n";
         <option value="url"
             <?=$feed_opts['id-from'] == "url" ? " selected" : "" ?>
         >The URL of the post</option>
+        <option value="title"
+            <?=$feed_opts['id-from'] == "title" ? " selected" : "" ?>
+        >The title of the post</option>
       </select>
     </td>
   </tr>
@@ -366,6 +369,8 @@ function update_feed_info($feed_id)
 	{
 	    case "guid":
 	    case "url":
+	    case "title":
+		error_log("Setting $feed_id id-from to " . $_REQUEST['opt_id-from']);
 		db_set_feed_option($feed_id, 'id-from', $_REQUEST['opt_id-from']);
 		break;
 
