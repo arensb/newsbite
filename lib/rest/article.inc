@@ -1,6 +1,6 @@
 <?php
-require_once("common.inc");		// Mainly for authorization.
-require_once("database.inc");
+require_once("lib/common.inc");		// Mainly for authorization.
+require_once("lib/database.inc");
 
 /* article REST controller
  *	GET /article/123

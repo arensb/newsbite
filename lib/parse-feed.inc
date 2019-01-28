@@ -3,7 +3,7 @@
  * Functions for parsing RSS (and similar) XML feed files.
  */
 
-require_once("hooks.inc");
+require_once("lib/hooks.inc");
 
 /* Note on time:
  * One bit of odd behavior that might be reported as a bug is that the
