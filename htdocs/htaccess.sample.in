@@ -95,5 +95,5 @@ AddType text/javascript .js
 
 	# For w1/login, redirect to the non-RESTful login script.
 	RewriteRule ^w1/login		login.php	[L,QSA]
-	RewriteRule ^w1/(.*)		rest.php/$1	[L]
+	RewriteRule ^w1/(.*)		rest.php?path=$1	[L,QSA]
 </IfModule>

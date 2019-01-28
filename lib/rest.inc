@@ -105,7 +105,7 @@ class RESTReq
 		// something.
 		// It's not an error to just specify a class. In that
 		// case, $pathv is an empty array.
-		$this->path = $server['PATH_INFO'];
+		$this->path = $_GET['path'];
 
 		/* Break up the path into components */
 		// XXX - Do we want to use 'preg_*' or something to
