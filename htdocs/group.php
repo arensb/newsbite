@@ -4,9 +4,9 @@
  */
 // XXX - Ought to be split up into HTML and REST.
 $default_fmt = "html";		// Default
-require_once("common.inc");
-//require_once("database.inc");
-require_once("group.inc");
+require_once("lib/common.inc");
+//require_once("lib/database.inc");
+require_once("lib/group.inc");
 
 /* Get parameters */
 $cmd = "";

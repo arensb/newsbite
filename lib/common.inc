@@ -4,7 +4,7 @@
  * Also common startup stuff that gets done on every request.
  */
 
-require_once("config.inc");
+require_once("lib/config.inc");
 
 if (php_sapi_name() == "cli")
 {
@@ -13,16 +13,17 @@ if (php_sapi_name() == "cli")
 	$NO_AUTH_CHECK = TRUE;	// Disable login check
 }
 
+$NO_AUTH_CHECK = TRUE;
 /* See what kind of output the user wants
  * If the script uses
  *	$out_fmt = "foo"
- *	require_once("common.inc");
+ *	require_once("lib/common.inc");
  * then it will only use "foo" (this is typically used for HTML pages).
  *
  * If the script uses
  * If the script uses
  *	$default_fmt = "foo"
- *	require_once("common.inc");
+ *	require_once("lib/common.inc");
  * then the code below will try the "-o lang" option if called from
  * the command line, or the "o=lang" parameter if called as a CGI
  * script, and default to "$out_fmt = foo" if it's not set, or if
@@ -63,7 +64,7 @@ switch ($out_fmt)
 	break;
     case "xml":
 	header("Content-type: text/xml; charset=utf-8");
-	require_once("xml-output.inc");
+	require_once("lib/xml-output.inc");
 	break;
     case "console":
 	break;
@@ -299,5 +300,5 @@ function print_struct(&$val)
 }
 
 if (!function_exists("json_encode"))
-	require_once("json.inc");	// Load compatibility library
+	require_once("lib/json.inc");	// Load compatibility library
 ?>

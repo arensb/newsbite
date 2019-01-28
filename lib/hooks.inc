@@ -2,7 +2,7 @@
 /* hooks.inc
  * Functions for dealing with hooks.
  */
-require_once("config.inc");
+require_once("lib/config.inc");
 
 /* hooks
  * The entries in this array are hook names; the values are arrays of

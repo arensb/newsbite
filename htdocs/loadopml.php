@@ -3,8 +3,8 @@
  * Load an OPML subscription list.
  */
 $out_fmt = "html";
-require_once("common.inc");
-require_once("database.inc");
+require_once("lib/common.inc");
+require_once("lib/database.inc");
 
 if (!isset($_FILES['opml']) || $_FILES['opml'] == ""):
 	// Prompt for an OPML file

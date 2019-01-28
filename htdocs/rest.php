@@ -1,7 +1,7 @@
 <?php
 $default_fmt = "json";
-require_once("common.inc");	// For authentication, mostly
-require_once("rest.inc");
+require_once("lib/common.inc");	// For authentication, mostly
+require_once("lib/rest.inc");
 
 $rreq = new RESTReq();
 $retval = array();

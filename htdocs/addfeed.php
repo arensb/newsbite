@@ -6,9 +6,9 @@
 // XXX - Split this up into HTML form vs. REST
 
 $out_fmt = "html";		// Mandatory output format
-require_once("common.inc");
-require_once("database.inc");
-require_once("net.inc");
+require_once("lib/common.inc");
+require_once("lib/database.inc");
+require_once("lib/net.inc");
 
 $feed_url = NULL;
 if (isset($_REQUEST['feed_url']))

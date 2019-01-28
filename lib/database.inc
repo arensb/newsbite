@@ -10,8 +10,8 @@
  * Currently about 98% of all items are marked read: there's 1.5Mb of data
  * for unread articles.
  */
-require_once("config.inc");
-require_once("hooks.inc");
+require_once("lib/config.inc");
+require_once("lib/hooks.inc");
 
 define('DB_MAX_RESULTS', 50);	// Max # of results to return, if not
 				// otherwise specified.

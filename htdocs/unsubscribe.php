@@ -3,9 +3,9 @@
  * Remove a feed.
  */
 $out_fmt = "html";
-require_once("common.inc");
-require_once("database.inc");
-require_once("hooks.inc");
+require_once("lib/common.inc");
+require_once("lib/database.inc");
+require_once("lib/hooks.inc");
 
 load_hooks(PLUGIN_DIR);
 

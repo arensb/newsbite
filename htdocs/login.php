@@ -52,7 +52,7 @@ $NO_AUTH_CHECK = true;		// Don't authenticate the user in
 				// common.inc. That's what the code
 				// below is for.
 $default_fmt = "html";
-require_once("common.inc");
+require_once("lib/common.inc");
 
 $from = NULL;
 if (isset($_REQUEST['from']))

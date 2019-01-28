@@ -4,9 +4,9 @@
  */
 // XXX - Split this up into HTML vs. REST.
 $out_fmt = "html";		// Mandatory output format
-require_once("common.inc");
-require_once("database.inc");
-require_once("group.inc");
+require_once("lib/common.inc");
+require_once("lib/database.inc");
+require_once("lib/group.inc");
 
 $feed_id = NULL;
 if (isset($_REQUEST['id']))
