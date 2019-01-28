@@ -34,7 +34,7 @@ switch ($classname)
     case "article":
 	try {
 		// Load the code that'll handle this class.
-		$err = require_once("rest/$classname.inc");
+		$err = require_once("lib/rest/$classname.inc");
 			// XXX - Error-checking.
 
 		// Create and run the controller for this class.
