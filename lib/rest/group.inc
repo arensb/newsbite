@@ -1,7 +1,7 @@
 <?php
-require_once("common.inc");		// Mostly for authentication
-require_once("database.inc");
-require_once("group.inc");
+require_once("lib/common.inc");		// Mostly for authentication
+require_once("lib/database.inc");
+require_once("lib/group.inc");
 
 /* group REST controller
  *	GET /group	Get all groups

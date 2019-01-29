@@ -2,9 +2,9 @@
 /* net.inc
  * Network-related functions.
  */
-require_once("config.inc");
-require_once("database.inc");
-require_once("parse-feed.inc");
+require_once("lib/config.inc");
+require_once("lib/database.inc");
+require_once("lib/parse-feed.inc");
 
 // XXX - Move the HTTP-fetching stuff to a separate function, so that
 // we can retrieve URLs separately.

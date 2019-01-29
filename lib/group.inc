@@ -2,8 +2,8 @@
 /* group.inc
  * Group-related functions.
  */
-require_once("common.inc");
-require_once("database.inc");
+require_once("lib/common.inc");
+require_once("lib/database.inc");
 
 # XXX - A function to return groups, as a tree of groups and feeds.
 /* group_tree

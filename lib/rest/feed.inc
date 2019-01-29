@@ -1,7 +1,7 @@
 <?php
-require_once("common.inc");		// Mostly for authentication
-require_once("database.inc");
-require_once("net.inc");
+require_once("lib/common.inc");		// Mostly for authentication
+require_once("lib/database.inc");
+require_once("lib/net.inc");
 
 /* feed REST controller
  *	GET /feed	Get information about all feeds

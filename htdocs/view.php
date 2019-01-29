@@ -3,7 +3,7 @@
  * Display a feed.
  */
 $out_fmt = "html";
-require_once("common.inc");
+require_once("lib/common.inc");
 
 // Tell the client to cache this for a week
 // XXX - Rewrite this as a static HTML document so it can be cached

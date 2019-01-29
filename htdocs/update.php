@@ -31,8 +31,8 @@ if (php_sapi_name() == "cli")
 		$feed_id = $_REQUEST["id"];
 }
 
-require_once("common.inc");
-require_once("net.inc");
+require_once("lib/common.inc");
+require_once("lib/net.inc");
 
 // XXX - Use the {html,json}_output_handler classes throughout, so we
 // can eliminate a bunch of "switch ($out_fmt)" statements.
