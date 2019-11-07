@@ -124,7 +124,7 @@ if (isset($feed_url))
 /* Construct the URL for subscribing to a feed (i.e., the URL of this
  * script), so we can pass it to JavaScript magic.
  */
-$subscribe_url = "http://";
+$subscribe_url = "//";
 if ($_SERVER['SERVER_NAME'] != "")
 	$subscribe_url .= $_SERVER['SERVER_NAME'];
 else
