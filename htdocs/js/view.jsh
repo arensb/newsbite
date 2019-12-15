@@ -874,11 +874,12 @@ function item2node(item)
 	var item_values = {
 		id:		item.id,
 		url:		item.url,
-		url_attr:	(mobile != "" ?
-				 'target="_blank"'
-				 : ""),
+		// url_attr:	(mobile != "" ?
+		// 		 'target="_blank"'
+		// 		 : ""),
 			// On mobile devices, open title link in a new
 			// window.
+		url_attr:	'target="_blank"',
 		title:		title,
 		feed_url:	item_feed.url,
 		feed_title:	item_feed.displaytitle(),

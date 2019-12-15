@@ -132,8 +132,17 @@ h1 {
 /*outline:		1px dotted blue;*/
 }
 
+/* Different backgrounds for different devices */
+/*@media only screen and (max-width: 1025px) {*/
+    body {
+	background-color:	#8080c0;
+	background-image:	none;
+	/* Graphics slow things down */
+    }
+/*}*/
+
 body {
-	background-image:	url(../images/gray-bg.jpg);
+/*	background-image:	url(../images/gray-bg.jpg);*/
 	margin-top:		0px;
 	margin-left:		0px;
 }

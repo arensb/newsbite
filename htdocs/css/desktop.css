@@ -2,5 +2,6 @@
  * Stylesheet specific to desktop (not mobile) browsers.
  */
 .button-box-left {
-	display:	none;
+    /*	display:	none;*/
+    outline:	1px solid green;
 }
