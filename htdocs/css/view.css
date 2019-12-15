@@ -8,7 +8,7 @@ body {
 	margin-left:		0px;
 	margin-right:		0px;
 	margin-bottom:		0px;
-	background-image:	url(../images/gray-bg.jpg);
+/*	background-image:	url(../images/gray-bg.jpg);*/
 	z-index:		0;
 	position:		relative;
 }
@@ -41,12 +41,12 @@ body {
 }
 
 /* Rules for big screens */
-@media screen and (min-width: 5in) {
+/*@media screen and (min-width: 6in) {*/
 	.button-box-left {
 		display:	table-cell;
 		/* XXX - I'd like this to be "none" on desktops. */
 	}
-}
+/*}*/
 
 h1 {
 	margin-left:		1em;
