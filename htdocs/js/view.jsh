@@ -869,6 +869,11 @@ function item2node(item)
 	}
 
 	var title = item.displaytitle();
+    if (! "pub_date" in item)
+    {
+	// XXX - Why would pub_date ever be undefined?
+	item.pub_date = new Date();
+    }
 
 	// Fill in values to plug into item template
 	var item_values = {
