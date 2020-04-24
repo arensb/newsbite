@@ -329,16 +329,15 @@ function update_all_feeds($handler)
 							// updating a single
 							// feed.
 
-							if ($verbose)
-							  error_log("Feed " .
-								    $handle['feed']['id'] .
-								    ", \"" .
-								    $handle['feed']['title'] .
-								    "\": " .
-								    $handle['feed']['feed_url'] .
-								    " redirects to " .
-								    $fetch_http_extra['redirect'] .
-								    ". Consider updating the feed.");
+							error_log("Feed " .
+								  $handle['feed']['id'] .
+								  ", \"" .
+								  $handle['feed']['title'] .
+								  "\": " .
+								  $handle['feed']['feed_url'] .
+								  " redirects to " .
+								  $fetch_http_extra['redirect'] .
+								  ". Consider updating the feed.");
 							$handle['feed']['feed_url'] = $fetch_http_extra['redirect'];
 							// XXX - Instead of updating the feed, ought to notify the
 							// user, ideally by creating a new post with a link that'll
