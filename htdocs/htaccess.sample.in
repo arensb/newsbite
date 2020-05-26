@@ -72,6 +72,8 @@ AddType text/javascript .js
 	ExpiresByType image/png "access plus 1 week"
 	ExpiresByType image/gif "access plus 1 week"
 #	ExpiresByType text/javascript "access plus 1 day"
+	# REST results should not be cached.
+	ExpiresBytype application/json "access"
 </IfModule>
 
 # Turn on REST by finding RESTful URLs and rewriting them
