@@ -467,6 +467,12 @@ function _open_curl_handle($url, $username = NULL, $passwd = NULL)
 		      CURLOPT_FOLLOWLOCATION => true,	// Follow redirects
 		      CURLOPT_MAXREDIRS	=> 2));
 				// Max # redirects to follow
+	if (defined("USER_AGENT") && USER_AGENT != NULL)
+	{
+		error_log("Setting User-Agent header " . USER_AGENT);
+		curl_setopt($ch, CURLOPT_USERAGENT, USER_AGENT);
+	} else
+		error_log("Using default User-Agent");
 
 	/* Use authentication if required */
 	if ($username != "" || $passwd != "")

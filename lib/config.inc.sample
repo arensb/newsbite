@@ -62,4 +62,8 @@ define('AUTH_COOKIE_DURATION', 87600*7);
  * and set it to where you installed the HTMLPurifier library.
  */
 //define('HTMLPURIFIER_LIB', "/path/to/htmlpurifier/library");
+
+/* If you want to use a non-default User-Agent HTTP header, set it here.
+ */
+//define('USER_AGENT', 'Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:91.0) Gecko/20100101 Firefox/91.0');
 ?>
