@@ -471,8 +471,7 @@ function _open_curl_handle($url, $username = NULL, $passwd = NULL)
 	{
 		error_log("Setting User-Agent header " . USER_AGENT);
 		curl_setopt($ch, CURLOPT_USERAGENT, USER_AGENT);
-	} else
-		error_log("Using default User-Agent");
+	}
 
 	/* Use authentication if required */
 	if ($username != "" || $passwd != "")
