@@ -469,7 +469,7 @@ function _open_curl_handle($url, $username = NULL, $passwd = NULL)
 				// Max # redirects to follow
 	if (defined("USER_AGENT") && USER_AGENT != NULL)
 	{
-		error_log("Setting User-Agent header " . USER_AGENT);
+		// error_log("Setting User-Agent header " . USER_AGENT);
 		curl_setopt($ch, CURLOPT_USERAGENT, USER_AGENT);
 	}
 
