@@ -28,6 +28,15 @@ var mobile = function(){
 	if (user_agent.match(/Mozilla\/\S+ \(iPod;/))
 		return "iPhone";
 	else if (user_agent.match(/Mozilla\/\S+ \(iPad;/))
+// XXX - For some reason, on iPad, I get desktop background.
+// Here's what I get, in case it's an agent problem:
+// Firefox on iPad:
+// 56.40.255.16 - - [18/Nov/2019:11:16:13 -0800] "GET /newsbite/newsbite.manifest HTTP/1.1" 304 3783 "https://www.ooblick.com/newsbite/view.php" "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15) AppleWebKit/605.1.15 (KHTML, like Gecko)"
+// Safari on iPad:
+// 156.40.255.16 - - [18/Nov/2019:11:23:02 -0800] "GET /newsbite/newsbite.manifest HTTP/1.1" 304 3783 "https://www.ooblick.com/newsbite/view.php" "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/13.0.1 Safari/605.1.15"
+// Firefox on iMac:
+// 130.14.12.225 - - [18/Nov/2019:11:27:01 -0800] "GET /newsbite/newsbite.manifest HTTP/1.1" 304 3978 "https://www.ooblick.com/newsbite/" "Mozilla/5.0 (Macintosh; Intel Mac OS X 10.14; rv:60.0) Gecko/20100101 Firefox/60.0"
+	    alert("This is an iPad")
 		return "iPad";
 	else if (user_agent.match(/Mozilla\/\S+ .*Kindle/))
 		// This needs to go above the Android line, because
