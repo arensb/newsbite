@@ -1725,7 +1725,12 @@ function atom_element_handler(
 				// equivalent?
 //error_log("Found a self-link: parent [$parent]; [" .
 //	print_r($attrs, TRUE) . "]");
-				$retval['feed_url'] = $attrs['href'];
+
+				// Don't actually update the database:
+				// too many sites have this set to a
+				// bogus URL.
+
+				// $retval['feed_url'] = $attrs['href'];
 				break;
 			}
 			break;
