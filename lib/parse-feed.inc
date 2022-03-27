@@ -1761,7 +1761,12 @@ function atom_element_handler(
 				// standard, but I'm not sure.
 				if (preg_match(',^application/(rss|atom)\+xml$,',
 					       $attrs['type']))
-					$retval['feed_url'] = $attrs['href'];
+					// Don't actually update the
+					// database: too many sites
+					// have this set to a bogus
+					// URL.
+					// $retval['feed_url'] = $attrs['href'];
+					true;	// Do nothing.
 				else
 					$retval['url'] = $attrs['href'];
 				$feed_info['url'] = $retval['url'];
