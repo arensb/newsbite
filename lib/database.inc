@@ -115,7 +115,7 @@ EOT
 
 	// Also look up any entries in group_members: tell us which
 	// groups a feed is in.
-	$query = "SELECT * FROM group_members";
+	$query = "SELECT * FROM `group_members`";
 	$result = $dbh->query($query);
 	if (!$result)
 	{
@@ -152,7 +152,7 @@ SELECT	*,
 	UNIX_TIMESTAMP(last_update) as unix_last_update,
 	IF(DATEDIFF(NOW(),
 		    IFNULL(last_update, '1970-01-01')) > %d, 1, 0) as stale
-FROM	feeds
+FROM	`feeds`
 WHERE	id = %d
 EOT
 		,
@@ -170,7 +170,7 @@ EOT
 	$retval['groups'] = array();
 	$query = sprintf(<<<EOT
 SELECT	parent
-FROM	group_members
+FROM	`group_members`
 WHERE	member=%d
 EOT
 		,
@@ -202,7 +202,7 @@ function db_get_feed_counts($feed_id)
 	$query = sprintf(<<<EOT
 SELECT	num_read AS `read`,
 	total-num_read AS `unread`
-FROM	counts
+FROM	`counts`
 WHERE	feed_id = %d
 EOT
 			 ,
@@ -239,7 +239,7 @@ function db_get_feed_options($feed_id, $recursive = FALSE)
 	$query = sprintf(<<<EOT
 SELECT	`name` AS `option`,
 	`value`
-FROM	feed_options
+FROM	`feed_options`
 WHERE	feed_id = %d
 EOT
 	    ,
@@ -271,7 +271,7 @@ function db_set_feed_option($feed_id, $opt, $val)
 	$dbh = db_connect();
 
 	$query = <<<EOT
-INSERT INTO	feed_options
+INSERT INTO	`feed_options`
 	(feed_id, name, value)
 VALUES	(?,       ?,     ?)
 ON DUPLICATE KEY UPDATE
@@ -316,7 +316,7 @@ function db_get_all_feed_counts()
 SELECT		feed_id AS `feed_id`,
 		num_read AS `read`,
 		total-num_read AS `unread`
-FROM		counts
+FROM		`counts`
 EOT;
 	$result = $dbh->query($query);
 	if (!$result)
@@ -430,7 +430,7 @@ SELECT	items.id, items.feed_id, items.url, items.title,
 	UNIX_TIMESTAMP(items.last_update) as `last_update`,
 	IF(is_read, 1, 0) as `is_read`,
 	UNIX_TIMESTAMP(mtime) as `mtime`
-FROM	items
+FROM	`items`
 
 EOT;
 
@@ -609,7 +609,7 @@ function db_add_feed($feed)
 		}
 	}
 
-	$query = "INSERT INTO feeds (" .
+	$query = "INSERT INTO `feeds` (" .
 		implode(",", $fields) .
 		") VALUES (" .
 		implode(",", $values) .
@@ -647,7 +647,7 @@ function db_delete_feed($feed_id)
 	// XXX - Call any hooks to be run before the feed is deleted
 
 	/* First, delete all of the articles in the feed */
-	$query = "DELETE FROM items WHERE feed_id = ?";
+	$query = "DELETE FROM `items` WHERE feed_id = ?";
 	$stmt = $dbh->prepare($query);
 		// XXX - Error-checking
 	$err = $stmt->bind_param("i", $feed_id);
@@ -657,7 +657,7 @@ function db_delete_feed($feed_id)
 	$stmt->close();
 
 	/* Delete the feed from all groups that it's in. */
-	$query = "DELETE FROM group_members WHERE member = ?";
+	$query = "DELETE FROM `group_members` WHERE member = ?";
 	$stmt = $dbh->prepare($query);
 		// XXX - Error-checking
 	$err = $stmt->bind_param("i", $feed_id);
@@ -667,7 +667,7 @@ function db_delete_feed($feed_id)
 	$stmt->close();
 
 	/* Delete the entry for the feed itself. */
-	$query = "DELETE FROM feeds WHERE id = ?";
+	$query = "DELETE FROM `feeds` WHERE id = ?";
 	$stmt = $dbh->prepare($query);
 		// XXX - Error-checking
 	$err = $stmt->bind_param("i", $feed_id);
@@ -779,7 +779,7 @@ function db_update_feed_info($feed_id, $fields)
 	/* Update the database, if necessary */
 	if (count($updates) > 0)
 	{
-		$query = sprintf("UPDATE feeds SET\n%s\nWHERE id=%d",
+		$query = sprintf("UPDATE `feeds` SET\n%s\nWHERE id=%d",
 				 implode(",\n", $updates),
 				 $feed_id);
 		$result = $dbh->query($query);
@@ -909,7 +909,7 @@ function db_update_feed($feed_id, $feed)
 		 */
 
 		$query = <<<EOT
-INSERT INTO	items
+INSERT INTO	`items`
 		(feed_id, url, title, summary, content, author, category,
 		 comment_url, comment_rss, guid,
 		 pub_date,
@@ -1094,7 +1094,7 @@ error_log("Unknown value for is_read: [" . print_r($item['is_read'], true) . "]"
 	 * should default to the epoch.
 	 */
 	$query = <<<EOT
-UPDATE	feeds
+UPDATE	`feeds`
 	SET	last_update = 
 		(SELECT	IFNULL(MAX(items.pub_date), NOW())
 		 FROM	items
@@ -1120,7 +1120,7 @@ EOT;
 	// Fellowship. In this case, the feed parser should insert an
 	// artificial date.
 	$query = <<<EOT
-DELETE FROM	items
+DELETE FROM	`items`
 WHERE		feed_id = ?
   AND		pub_date < NOW() -
 		  INTERVAL get_option(feed_id, "autodelete") DAY
@@ -1161,7 +1161,7 @@ SELECT	items.id, items.feed_id, items.url, items.title,
 	UNIX_TIMESTAMP(items.last_update) as `last_update`,
 	IF(is_read, 1, 0) as `is_read`,
 	UNIX_TIMESTAMP(mtime) as `mtime`
-FROM	items
+FROM	`items`
 WHERE	id
 EOT;
 
@@ -1209,7 +1209,7 @@ function db_mark_items($is_read, $items)
 	// by one?
 	// Time it and see.
 	$query = sprintf(<<<EOT
-UPDATE	items
+UPDATE	`items`
 SET	is_read=%s,
 	mtime=NOW()
 WHERE	id IN(%s)
@@ -1238,7 +1238,7 @@ function db_get_groups()
 {
 	$dbh = db_connect();
 
-	$query = "SELECT * FROM groups";
+	$query = "SELECT * FROM `groups`";
 	$result = $dbh->query($query);
 	if (!$result)
 	{
@@ -1289,7 +1289,7 @@ function db_get_group($gid)
 {
 	$dbh = db_connect();
 
-	$query = sprintf("SELECT * FROM groups WHERE id=%d",
+	$query = sprintf("SELECT * FROM `groups` WHERE id=%d",
 			 $gid);
 	$result = $dbh->query($query);
 	if (!$result)
@@ -1307,7 +1307,7 @@ function db_get_group($gid)
 	// In each group's entry, 'members' is an array listing the
 	// IDs of members of that group. Positive IDs corresond to
 	// feeds, and negative IDs correspond to groups.
-	$query = sprintf("SELECT * FROM group_members WHERE parent=%d",
+	$query = sprintf("SELECT * FROM `group_members` WHERE parent=%d",
 			 $gid);
 	$result = $dbh->query($query);
 	if (!$result)
@@ -1356,7 +1356,7 @@ function db_add_group($name, $parent = -1)
 	$dbh = db_connect();
 
 	// Create the group
-	$query = "INSERT INTO groups (parent, name) VALUES (?,?)";
+	$query = "INSERT INTO `groups` (parent, name) VALUES (?,?)";
 	$stmt = $dbh->prepare($query);
 	$result = $stmt->bind_param("is", $parent, $name);
 	$result = $stmt->execute();
@@ -1428,7 +1428,7 @@ function db_update_group_info($gid, $fields)
 		}
 	}
 
-	$query = "UPDATE groups SET parent=?, name=? WHERE id=?";
+	$query = "UPDATE `groups` SET parent=?, name=? WHERE id=?";
 	$stmt = $dbh->prepare($query);
 	$result = $stmt->bind_param("isi",
 		$new['parent'],
@@ -1495,7 +1495,7 @@ function db_delete_group($gid)
 	// Politics up one level. So normally we'd wind up with two
 	// instances of "New York Times in News". "IGNORE" says to
 	// skip those cases. We'll handle them separately, next.
-	$query = sprintf("UPDATE IGNORE group_members SET parent=%d WHERE parent=%d",
+	$query = sprintf("UPDATE IGNORE `group_members` SET parent=%d WHERE parent=%d",
 			 $old['parent'],
 			 $gid);
 	$result = $dbh->query($query);
@@ -1507,7 +1507,7 @@ function db_delete_group($gid)
 		return NULL;
 	}
 	/* Delete any duplicates */
-	$query = sprintf("DELETE FROM group_members WHERE parent=%d",
+	$query = sprintf("DELETE FROM `group_members` WHERE parent=%d",
 			 $gid);
 	$result = $dbh->query($query);
 	if (!$result)
@@ -1521,7 +1521,7 @@ function db_delete_group($gid)
 	/* If this group has any child groups, move them up one level
 	 * as well, into the parent of $gid.
 	 */
-	$query = sprintf("UPDATE groups SET parent=%d WHERE parent=%d",
+	$query = sprintf("UPDATE `groups` SET parent=%d WHERE parent=%d",
 			 $old['parent'],
 			 $gid);
 	$result = $dbh->query($query);
@@ -1534,7 +1534,7 @@ function db_delete_group($gid)
 	}
 
 	/* Delete this group from `groups` */
-	$query = sprintf("DELETE FROM groups WHERE id=%d",
+	$query = sprintf("DELETE FROM `groups` WHERE id=%d",
 			 $gid);
 	$result = $dbh->query($query);
 	if (!$result)
@@ -1562,7 +1562,7 @@ function db_group_add_member($group, $member)
 
 	$dbh = db_connect();
 
-	$query = "INSERT INTO group_members (member, parent) VALUES (?,?)";
+	$query = "INSERT INTO `group_members` (member, parent) VALUES (?,?)";
 	$stmt = $dbh->prepare($query);
 	$result = $stmt->bind_param("ii", $member, $group);
 	$result = $stmt->execute();
@@ -1590,7 +1590,7 @@ function db_group_remove_member($gid, $member)
 {
 	$dbh = db_connect();
 
-	$query = sprintf("DELETE FROM group_members where member=%d and parent=%d",
+	$query = sprintf("DELETE FROM `group_members` where member=%d and parent=%d",
 			 $member, $gid);
 	$result = $dbh->query($query);
 	if (!$result)
@@ -1618,7 +1618,7 @@ echo "Escaped: [", $dbh->real_escape_string("http://foo%20bar/"), "]\n";
 return;
 
 	$query = sprintf(<<<EOT
-UPDATE	items
+UPDATE	`items`
 SET	is_read=?,
 	mtime=NOW()
 WHERE	url=?
