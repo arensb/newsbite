@@ -358,7 +358,7 @@ function update_feed_info($feed_id)
 
 	/* Update feed options */
 	// autodelete
-	$opt_autodelete = $_REQUEST['opt_autodelete'] + 0;
+	$opt_autodelete = (int) $_REQUEST['opt_autodelete'];
 	if (is_numeric($opt_autodelete) &&
 	    is_integer($opt_autodelete) &&
 	    $opt_autodelete > 0)
