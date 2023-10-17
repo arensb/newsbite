@@ -1,5 +1,5 @@
 TOP =		../..
-JQUERY =	jquery-2.1.3.min.js
+JQUERY =	jquery-3.7.1.min.js
 
 # *.jsh: files that will be run through cpp
 JS_SRC =	$(wildcard *.jsh)
