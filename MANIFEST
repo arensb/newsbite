@@ -57,7 +57,7 @@ htdocs/index.html
 htdocs/js/Makefile
 htdocs/js/feeds.jsh
 htdocs/js/group.jsh
-htdocs/js/jquery-2.1.3.min.js
+htdocs/js/jquery-3.7.1.min.js
 htdocs/js/profiler.js
 htdocs/js/view.js
 htdocs/js/view.jsh
