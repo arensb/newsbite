@@ -2242,8 +2242,12 @@ error_log("After hooks, link is array\n");
 		switch ($parent)
 		{
 		    case "items":
-			$retval['RDF:Seq'] = $children['li'];
-			break;
+		      if (gettype($children) != "array") {
+		          $retval['RDF:Seq'] = [];
+			  break;
+		      }
+		      $retval['RDF:Seq'] = $children['li'];
+		      break;
 
 		    default:
 			// XXX - Better error-reporting
